@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "vault-268122",
+  "private_key_id": "d9b6581331895b4b93c1de741a7fdd8ca6372f4f",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQC/kqono6Xrwrs4\n3Uc9F4Y1l+TKnK9alFmUeqqM28YUmf0BsLAIA2qxwb2EO1Sm5jmfH/R3RBO9hTkV\nl+CxQrMm+KTthn+00GrNAee3pywI19RHKHvn7d/0uOdxhrsRiPR54KMEAMQp6zgZ\nuFYXkMdzdnj2G4n3o+45dr1DDqRWF3C8TcYZJog54T0zKuCm934dLoNDTsxrlxew\nJUFnyLJ66cWFEMsMjDEreWgy58NPWOcj+90gE8xZeH3vaNMZrOb/4IDI4oI6VWNY\nsky62rfOjuyh3iV2lbJpdnSp3sQf/XOJFmhDljXQzOG+QQI5iI1E3Fa1w6REDEoK\nFUp/dXuBAgMBAAECggEAByhbDmpXPo7q6RneaaZNe8biM95FEHqyuqEXKnZjKR2k\nRfoEp7X9+GiDVNOVKvu22y7J1uNuo+H8gyWmreTOtgXr/ppr/tTbKq/3qQVYWDe9\nLQ/yijS5bYazkgqtRl9SOBQILzP6oFDTKqXYJJ8Cjro2VIasodmogtHgiib7xaIf\nxUk96nH8f934Zwm7pZJY3LXg8iBCaSZTbeWDIkn/SSDtZ4BIPaWJAayHVwqBL8GH\nayNONY3IMjgzaQr7XrV4iyvrWxmCkl8/KyliVrGksI7OdcqvY/jWBr+o9dkHQnIY\nVVnQeFX0m4Unte8mnXqv0dfyVzkvPppyCkk049zSYQKBgQDh8DT65Rnvdigpe1c9\nr+yjYMeNAI4n6BWIMS1bOxD7iRzAxwCb8tqylpGXY2ilcs/H7hE+IDoAP5Hi/uob\nzSspl/zW8q/T+bpn4pEXVikG36Z7ukBH72ZV9Et7O13h7IANacVnokItojaICMan\nTUV4dDNpBSJm6Tnt0V1Tv2/D8QKBgQDZD+vefGuIU5kOmCW9dltgcoom/i+8D0aW\nQVsw2ytPsJRc5bhJI++1/yLboxe/JwsIAnEw4qgSR3f0B0jlTm5zTiXrC/02XFRo\nZb/SVqxlwUKIpzMaMF9+KmwgGcf6eN95tGZwyC0AihePr48uaS3QSx+mb3r9yQxX\n79/yxR+AkQKBgEByiko+64T4yT/75Mi909xOkN1RmTsc4nd0v6FUWeXGGKOMoEnb\nnjJu7JyoSINZGpfG+rgj7SeA+pYrbI/9mCBHMGIH28u1YkybvhNQCmfhh9WnLQrX\n6PL/ukAukPsOwQASebKz//iQWsm25yN10SkozDlas5NzV4jUvbBT3QehAoGANCRF\n9cEPl8T1LHNSBYwr8SQymaFP2C4XN7rla/wKEG+LhDFOrosqZx6twfMQnkODu93S\nUPrxgsqWPxGM6kCH+bzZEPhlUCynvhhLFvzpFtxw3iDD/tOF7OnF5YQr7Lgifrre\nLNN5M/r4I/T5QR3U+odBSBrZgaNNCsa9ljTSF3ECgYBnn1UbxAI+tCSkLRZ2IkcA\nyoPyrnrhum0v4iA4gUYCTy3OV9gjvq8aD5VLI5247iZF0tyNrFU8u3uc2yemn/CN\ndanZpThq/yGv3Az6Ckx2sv0jydgwAp0AjqPjTLxX8qST/VTTa2TVzgqInhfcN8qt\n3sySe7oCMusnNjKdjhR9gQ==\n-----END PRIVATE KEY-----\n",
+  "client_email": "proteamedge@vault-268122.iam.gserviceaccount.com",
+  "client_id": "117315790018162369667",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/proteamedge%40vault-268122.iam.gserviceaccount.com"
+}

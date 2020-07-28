@@ -1,0 +1,224 @@
+
+
+
+ALTER TABLE alpn_interactions
+ADD revisit_date datetime GENERATED ALWAYS AS ( if(expiration_minutes, DATE_ADD(created_date, INTERVAL expiration_minutes MINUTE),0) ) VIRTUAL
+
+ALTER TABLE alpn_interactions
+ADD imp_time_urgency_value float GENERATED ALWAYS AS ( if(expiration_minutes, if( TIMESTAMPDIFF(MINUTE, created_date, NOW()) > 0, TIMESTAMPDIFF(MINUTE, created_date, NOW()), 1) / TIMESTAMPDIFF(MINUTE, created_date, revisit_date), 0)) VIRTUAL
+
+ALTER TABLE alpn_interactions
+ADD imp_time_urgency_minutes_top_temp float GENERATED ALWAYS AS (if(expiration_minutes, TIMESTAMPDIFF(MINUTE, created_date, NOW()), 0)) VIRTUAL
+
+ALTER TABLE alpn_interactions
+ADD imp_time_urgency_minutes_bottom_temp float GENERATED ALWAYS AS (if(expiration_minutes, TIMESTAMPDIFF(MINUTE, created_date, revisit_date) + 1, 0)) VIRTUAL
+
+ALTER TABLE alpn_interactions
+ADD imp_values float GENERATED ALWAYS AS ((imp_network_value * imp_network_total) + (imp_topic_value * imp_topic_total) + (imp_interaction_type_value * imp_interaction_type_total) + (imp_requires_user_attention_value * imp_requires_user_attention_total) + (imp_time_urgency_value * imp_time_urgency_total)) VIRTUAL
+
+ALTER TABLE alpn_interactions
+ADD imp_totals float GENERATED ALWAYS AS ( (imp_network_value > 0) * imp_network_total + (imp_topic_value > 0) * imp_topic_total + (imp_interaction_type_value > 0) * imp_interaction_type_total + (imp_requires_user_attention_value > 0) * imp_requires_user_attention_total + (imp_time_urgency_value > 0) * imp_time_urgency_total) VIRTUAL
+
+ALTER TABLE alpn_interactions
+ADD priority float GENERATED ALWAYS AS ( imp_values / (imp_totals + (100 - imp_totals) * imp_easing_total )) VIRTUAL
+
+
+
+explore -> develop -> team
+
+exploring -> developing -> teaming
+discover -> develop -> team
+
+ALTER TABLE alpn_interactions
+ADD imp_values float GENERATED ALWAYS AS ((imp_network_value * imp_network_total + (imp_topic_value > 0) * imp_topic_total) + (imp_interaction_type_value > 0) * imp_interaction_type_total) VIRTUAL
+
+
+
+Credentials for Standalone DB same as replica cuz duped
+Username:
+DB00002069
+Default Password:
+U5lp93,RmjZbSs7199kn1X4
+
+
+Twilio Recovery Token: wxDKNqNCMONEne8S1dZRiokbVl22cGldJQ3U5UbA
+Mercury: usual with 1965
+
+Twilio API Key: 757XB9O73yyHAK27DNo5vYY4qWqZ6oTh
+
+"koolreport/export":"*",
+        "koolreport/datagrid":"*",
+        "koolreport/inputs":"*"
+
+
+for each notification type:
+
+send_when: Red Yellow Green never, hidden
+type_key: email, sms, in-app, browser, extensible, fax(?), callbacks...
+friendly name: E-mail 1, Email 2, Text/SMS, Browser Notification, In-App Notification
+Config Settings:
+
+
+[
+      {
+        "type_key": "email",
+        "friendly_name": "Email - 1",
+        "send_when": "green",
+		"settings": {
+			"email_address": "pvermont@proteamedge.com"
+		}
+      },
+      {
+        "type_key": "email",
+        "friendly_name": "Email - 2",
+        "send_when": "red",
+		"settings": {
+			"email_address": "pvermont@gmail.com"
+		}
+      },
+      {
+        "type_key": "sms",
+        "friendly_name": "Text/SMS - 1",
+        "send_when": "green",
+		"settings": {
+			"phone_number": "+14084100365"
+		}
+      },
+	  {
+        "type_key": "browser",
+        "friendly_name": "Browser Notification",
+        "send_when": "green",
+		"settings": {
+		}
+      }
+]
+
+
+[
+      {
+        "type_key": "email",
+        "friendly_name": "Email - 1",
+        "send_when": "red",
+		"settings": {
+			"email_address": "avermont@exceptionalcm.com"
+		}
+      },
+      {
+        "type_key": "email",
+        "friendly_name": "Email - 2",
+        "send_when": "green",
+		"settings": {
+			"email_address": "sazzy1.an@gmail.com"
+		}
+      },
+      {
+        "type_key": "sms",
+        "friendly_name": "Text/SMS - 1",
+        "send_when": "green",
+		"settings": {
+			"phone_number": "+6505268577"
+		}
+      },
+	  {
+        "type_key": "browser",
+        "friendly_name": "Browser Notification",
+        "send_when": "green",
+		"settings": {
+		}
+      }
+]
+
+
+Captcha Site Key
+6Le2UuYUAAAAAJtgkhTL4GwbNPlc0vN-pFblwtoE
+
+Secret Key
+6Le2UuYUAAAAACfldQSbJttqZg29C0-FhK3U_vOl
+
+alias ptedev='cd /var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master'
+
+Example: nohup exec php process.php hello world > /dev/null &
+
+htop: show processes, start stop -- need function keys on mac...
+
+nohup php -f alpn_event_loop.php > /dev/null &     ----- starts event loop in the background. use htop to view. Stop from htop or adding pte stop to server.
+
+
+808816623627.apps.googleusercontent.com
+
+	Google Service Account Client ID: 117315790018162369667
+
+Hipaa Vault: 8&UPTED92uj
+
+$html .= print_r($wpdb->last_query, true);
+$html .= print_r($wpdb->last_error, true);
+
+
+VAULT ITEMS -- GOOD
+
+1) My Vault Items (for this topic?)
+2)  topic linked
+
+SELECT v.id, v.owner_id, v.access_level, v.created_date, v.modified_date, v.name, v.description, v.file_name, v.submission_id, v.mime_type, v.form_id, v.dom_id, v.draw_id, v.topic_id, "owned" AS row_source, v.upload_id, v.file_source, v.status, v.ready_date
+FROM alpn_vault v
+WHERE v.topic_id = %VAR1%
+
+UNION
+
+SELECT v.id, p.owner_id, v.access_level, v.created_date, v.modified_date, v.name, v.description, v.file_name, v.submission_id, v.mime_type, v.form_id, v.dom_id, v.draw_id, p.topic_id, "linked" AS row_source, v.upload_id, v.file_source, v.status, v.ready_date
+FROM alpn_vault v
+JOIN alpn_proteams p
+ON v.topic_id = p.connected_topic_id AND v.access_level <= p.access_level
+WHERE p.topic_id = %VAR1%
+
+
+
+CREATE VIEW alpn_connected_topics_view AS
+SELECT v.id, v.owner_id, v.access_level, v.created_date, v.modified_date, v.name, v.description, v.file_name, v.submission_id, v.mime_type, v.form_id, v.dom_id, v.draw_id, v.topic_id, "owned" AS row_source, v.upload_id, v.file_source, v.status, v.ready_date
+FROM alpn_vault v
+UNION
+SELECT v.id, p.owner_id, v.access_level, v.created_date, v.modified_date, v.name, v.description, v.file_name, v.submission_id, v.mime_type, v.form_id, v.dom_id, v.draw_id, p.topic_id, "linked" AS row_source, v.upload_id, v.file_source, v.status, v.ready_date
+FROM alpn_vault v
+JOIN alpn_proteams p
+ON v.topic_id = p.connected_topic_id
+
+
+ISSUE-- userId (wordpress) is not equal to TopicNetworkId (pte topic id for profiles) -- need to be able to map and be clear when storing one or the other in the datbase for ownership purposes.
+
+
+CREATE VIEW alpn_forms_view AS
+SELECT f.owner_id AS o_id, s.*, f.sort_order
+FROM alpn_forms f
+LEFT JOIN alpn_form_sources s
+ON f.form_id = s.id
+
+
+CREATE VIEW alpn_topics_network_view AS
+SELECT t.id, t.owner_id, t.topic_type_id, t.name, t.about, t.topic_meta, t.dom_id, t.draw_id, m.id AS w_id
+FROM alpn_topics t
+LEFT JOIN alpn_user_metadata m
+ON t.id = m.topic_user_id
+WHERE t.topic_type_id = 4
+ORDER BY t.name ASC
+
+
+
+CREATE VIEW `alpn_topics_network_profile`  AS  select `t`.`id` AS `id`,`t`.`owner_id` AS `owner_id`,`t`.`topic_type_id` AS `topic_type_id`,`t`.`name` AS `name`,`t`.`about` AS `about`,`t`.`last_op` AS `last_op`,`t`.`created_date` AS `created_date`,`t`.`modified_date` AS `modified_date`,`t`.`topic_content` AS `topic_content`,`t`.`topic_meta` AS `topic_meta`,`t`.`dom_id` AS `dom_id`,`t`.`draw_id` AS `draw_id`,`t`.`connected_id` AS `connected_id`,`t`.`channel_id` AS `channel_id`, `t`.`image_handle` AS `image_handle`,`t2`.`topic_content` AS `profile_content`,`t2`.`image_handle` AS `profile_handle` from (`alpn_topics` `t` left join `alpn_topics` `t2` on(((`t`.`connected_id` = `t2`.`owner_id`) and (`t2`.`topic_type_id` = 5)))) where (`t`.`topic_type_id` = 4) order by `t`.`name` ;
+
+
+
+
+CREATE TRIGGER `create_draw_id_vault` BEFORE INSERT ON `alpn_vault` FOR EACH ROW BEGIN
+    SET NEW.dom_id = uuid();
+END
+
+
+
+CREATE TRIGGER `create_draw_id_items` BEFORE INSERT ON `alpn_topic_items` FOR EACH ROW BEGIN
+    SET NEW.dom_id = uuid();
+END
+
+
+CREATE TRIGGER `create_draw_id_topics` BEFORE INSERT ON `alpn_topics` FOR EACH ROW BEGIN
+    SET NEW.dom_id = uuid();
+END

@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta id="viewport"
+        content="width=device-width, initial-scale=1, shrink-to-fit=no"
+  >
+  <meta id="theme-color" content="#000000">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <title>PVM UI DEMO</title>
+  <style>
+    .token {
+      color: blue;
+    }
+  </style>
+</head>
+<body>
+  <h2><a href="https://github.com/formapro/pvm-ui">PVM UI</a> is a web based user interface for <a href="https://github.com/formapro/pvm">PVM</a>.
+</h2>
+
+<div><a id="show_process_link" href="#">show process info</a></div>
+<div id="graph"></div>
+
+<noscript>
+  You need to enable JavaScript to run this app.
+</noscript>
+
+<script src="./dist/main.js"
+        type="text/javascript"></script>
+<script>
+
+var pvmContext = {
+    "process": {
+        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Process.json",
+        "id": "f84b6dc2-8b35-4e2e-8776-c8189b59c470",
+        "nodes": {
+            "fork": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Node.json",
+                "id": "fork",
+                "behavior": "fork"
+            },
+            "task_1": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Node.json",
+                "id": "task_1",
+                "behavior": "print_label"
+            },
+            "task_2": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Node.json",
+                "id": "task_2",
+                "behavior": "print_label"
+            },
+            "task_3": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Node.json",
+                "id": "task_3",
+                "behavior": "print_label"
+            },
+            "task_4": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Node.json",
+                "id": "task_4",
+                "behavior": "print_label"
+            },
+            "join": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Node.json",
+                "id": "join",
+                "behavior": "join"
+            }
+        },
+        "transitions": {
+            "2425336b-d945-4871-b736-e2ba2731bab9": {
+                "id": "2425336b-d945-4871-b736-e2ba2731bab9",
+                "weight": 1,
+                "async": false,
+                "active": true,
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Transition.json",
+                "from": "fork",
+                "to": "task_1"
+            },
+            "3ac5c022-e51e-4666-9ead-fc6b42c78ff8": {
+                "id": "3ac5c022-e51e-4666-9ead-fc6b42c78ff8",
+                "weight": 1,
+                "async": false,
+                "active": true,
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Transition.json",
+                "from": "fork",
+                "to": "task_2"
+            },
+            "574f2e1d-2fe1-4201-8989-19820dfaf7c8": {
+                "id": "574f2e1d-2fe1-4201-8989-19820dfaf7c8",
+                "weight": 1,
+                "async": false,
+                "active": true,
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Transition.json",
+                "from": "fork",
+                "to": "task_3"
+            },
+            "da58a230-00b9-4d37-9636-33880a7c74b9": {
+                "id": "da58a230-00b9-4d37-9636-33880a7c74b9",
+                "weight": 1,
+                "async": false,
+                "active": true,
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Transition.json",
+                "from": "task_1",
+                "to": "join"
+            },
+            "5ddb0973-e091-4a4f-b712-3a5500a55766": {
+                "id": "5ddb0973-e091-4a4f-b712-3a5500a55766",
+                "weight": 1,
+                "async": false,
+                "active": true,
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Transition.json",
+                "from": "task_2",
+                "to": "join"
+            },
+            "605cea06-ef5a-4212-bd18-c9235057055c": {
+                "id": "605cea06-ef5a-4212-bd18-c9235057055c",
+                "weight": 1,
+                "async": false,
+                "active": true,
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Transition.json",
+                "from": "task_3",
+                "to": "join"
+            },
+            "175e13af-ece9-454c-8545-456632ed9698": {
+                "id": "175e13af-ece9-454c-8545-456632ed9698",
+                "weight": 1,
+                "async": false,
+                "active": true,
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Transition.json",
+                "from": "join",
+                "to": "task_4"
+            },
+            "c0ca33d1-8459-4a66-9a96-a46c40e77572": {
+                "id": "c0ca33d1-8459-4a66-9a96-a46c40e77572",
+                "weight": 1,
+                "async": false,
+                "active": true,
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Transition.json",
+                "to": "fork"
+            }
+        },
+        "outTransitions": {
+            "fork": [
+                "2425336b-d945-4871-b736-e2ba2731bab9",
+                "3ac5c022-e51e-4666-9ead-fc6b42c78ff8",
+                "574f2e1d-2fe1-4201-8989-19820dfaf7c8"
+            ],
+            "task_1": [
+                "da58a230-00b9-4d37-9636-33880a7c74b9"
+            ],
+            "task_2": [
+                "5ddb0973-e091-4a4f-b712-3a5500a55766"
+            ],
+            "task_3": [
+                "605cea06-ef5a-4212-bd18-c9235057055c"
+            ],
+            "join": [
+                "175e13af-ece9-454c-8545-456632ed9698"
+            ]
+        },
+        "inTransitions": {
+            "task_1": [
+                "2425336b-d945-4871-b736-e2ba2731bab9"
+            ],
+            "task_2": [
+                "3ac5c022-e51e-4666-9ead-fc6b42c78ff8"
+            ],
+            "task_3": [
+                "574f2e1d-2fe1-4201-8989-19820dfaf7c8"
+            ],
+            "join": [
+                "da58a230-00b9-4d37-9636-33880a7c74b9",
+                "5ddb0973-e091-4a4f-b712-3a5500a55766",
+                "605cea06-ef5a-4212-bd18-c9235057055c"
+            ],
+            "task_4": [
+                "175e13af-ece9-454c-8545-456632ed9698"
+            ],
+            "fork": [
+                "c0ca33d1-8459-4a66-9a96-a46c40e77572"
+            ]
+        },
+        "tokens": {
+            "638f1a34-8f0d-4b41-88b3-a62297e56411": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Token.json",
+                "id": "638f1a34-8f0d-4b41-88b3-a62297e56411",
+                "transitions": [
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "5bff3593-d92a-4b05-ae4b-b1115fb3e3f8",
+                        "transitionId": "c0ca33d1-8459-4a66-9a96-a46c40e77572",
+                        "weight": 1,
+                        "state": "opened",
+                        "time": 15324385084015
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "209fec6f-4e24-4e58-b2e6-b99c1c09eefe",
+                        "transitionId": "c0ca33d1-8459-4a66-9a96-a46c40e77572",
+                        "weight": 1,
+                        "state": "passed",
+                        "time": 15324385084025
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "f761d2dc-5dba-442b-90b6-59590050feed",
+                        "transitionId": "2425336b-d945-4871-b736-e2ba2731bab9",
+                        "weight": 1,
+                        "state": "opened",
+                        "time": 15324385084027
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "2eb63f22-9b93-41e4-9efa-7ccf9cdec437",
+                        "transitionId": "2425336b-d945-4871-b736-e2ba2731bab9",
+                        "weight": 1,
+                        "state": "passed",
+                        "time": 15324385084031
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "31b44f83-9f95-4a98-9c17-bc5d599ce3e1",
+                        "transitionId": "da58a230-00b9-4d37-9636-33880a7c74b9",
+                        "weight": 1,
+                        "state": "interrupted",
+                        "time": 15324385084033,
+                        "reason": ""
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "e0fed2d0-f4c7-470e-9b4c-1ba7ca7f040c",
+                        "transitionId": "da58a230-00b9-4d37-9636-33880a7c74b9",
+                        "weight": 1,
+                        "state": "interrupted",
+                        "time": 15324385084045
+                    }
+                ]
+            },
+            "9c5762c0-c80e-4f8c-8c84-b016090bcc68": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Token.json",
+                "id": "9c5762c0-c80e-4f8c-8c84-b016090bcc68",
+                "transitions": [
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "fc40108d-09d6-4fe3-9923-d1c43a0d4540",
+                        "transitionId": "3ac5c022-e51e-4666-9ead-fc6b42c78ff8",
+                        "weight": 1,
+                        "state": "opened",
+                        "time": 15324385084049
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "8a3ca00a-d921-4f8a-9a6f-16f00efa5dd2",
+                        "transitionId": "3ac5c022-e51e-4666-9ead-fc6b42c78ff8",
+                        "weight": 1,
+                        "state": "passed",
+                        "time": 15324385084053
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "faa9e729-a7ee-497c-8b73-b8de0dea1959",
+                        "transitionId": "5ddb0973-e091-4a4f-b712-3a5500a55766",
+                        "weight": 1,
+                        "state": "interrupted",
+                        "time": 15324385084055,
+                        "reason": ""
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "8c2e329f-940d-4500-8e7d-75360a9b6e0d",
+                        "transitionId": "5ddb0973-e091-4a4f-b712-3a5500a55766",
+                        "weight": 1,
+                        "state": "interrupted",
+                        "time": 15324385084059
+                    }
+                ]
+            },
+            "a3407b6b-1931-4510-9fce-3c9513cbfee0": {
+                "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Token.json",
+                "id": "a3407b6b-1931-4510-9fce-3c9513cbfee0",
+                "transitions": [
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "84358c06-feb5-43ad-92e8-26698654d004",
+                        "transitionId": "574f2e1d-2fe1-4201-8989-19820dfaf7c8",
+                        "weight": 1,
+                        "state": "opened",
+                        "time": 15324385084062
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "6dc3b08f-445d-4884-b373-0e9f8569b8cd",
+                        "transitionId": "574f2e1d-2fe1-4201-8989-19820dfaf7c8",
+                        "weight": 1,
+                        "state": "passed",
+                        "time": 15324385084067
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "33a730a9-2e08-48e9-8dfe-a9f8e5b969c2",
+                        "transitionId": "605cea06-ef5a-4212-bd18-c9235057055c",
+                        "weight": 1,
+                        "state": "opened",
+                        "time": 15324385084070
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "cba644d9-e38a-4030-97f5-6ac2d8055be8",
+                        "transitionId": "605cea06-ef5a-4212-bd18-c9235057055c",
+                        "weight": 1,
+                        "state": "passed",
+                        "time": 15324385084073
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "d1dc8e8a-4479-4dac-87dd-661a446ec243",
+                        "transitionId": "175e13af-ece9-454c-8545-456632ed9698",
+                        "weight": 1,
+                        "state": "opened",
+                        "time": 15324385084076
+                    },
+                    {
+                        "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                        "id": "ae12c08e-745b-4138-b13d-0ad433a7b3b7",
+                        "transitionId": "175e13af-ece9-454c-8545-456632ed9698",
+                        "weight": 1,
+                        "state": "passed",
+                        "time": 15324385084080
+                    }
+                ]
+            }
+        }
+    },
+    "tokens": [
+        {
+            "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Token.json",
+            "id": "638f1a34-8f0d-4b41-88b3-a62297e56411",
+            "transitions": [
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "5bff3593-d92a-4b05-ae4b-b1115fb3e3f8",
+                    "transitionId": "c0ca33d1-8459-4a66-9a96-a46c40e77572",
+                    "weight": 1,
+                    "state": "opened",
+                    "time": 15324385084015
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "209fec6f-4e24-4e58-b2e6-b99c1c09eefe",
+                    "transitionId": "c0ca33d1-8459-4a66-9a96-a46c40e77572",
+                    "weight": 1,
+                    "state": "passed",
+                    "time": 15324385084025
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "f761d2dc-5dba-442b-90b6-59590050feed",
+                    "transitionId": "2425336b-d945-4871-b736-e2ba2731bab9",
+                    "weight": 1,
+                    "state": "opened",
+                    "time": 15324385084027
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "2eb63f22-9b93-41e4-9efa-7ccf9cdec437",
+                    "transitionId": "2425336b-d945-4871-b736-e2ba2731bab9",
+                    "weight": 1,
+                    "state": "passed",
+                    "time": 15324385084031
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "31b44f83-9f95-4a98-9c17-bc5d599ce3e1",
+                    "transitionId": "da58a230-00b9-4d37-9636-33880a7c74b9",
+                    "weight": 1,
+                    "state": "interrupted",
+                    "time": 15324385084033,
+                    "reason": ""
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "e0fed2d0-f4c7-470e-9b4c-1ba7ca7f040c",
+                    "transitionId": "da58a230-00b9-4d37-9636-33880a7c74b9",
+                    "weight": 1,
+                    "state": "interrupted",
+                    "time": 15324385084045
+                }
+            ]
+        },
+        {
+            "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Token.json",
+            "id": "9c5762c0-c80e-4f8c-8c84-b016090bcc68",
+            "transitions": [
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "fc40108d-09d6-4fe3-9923-d1c43a0d4540",
+                    "transitionId": "3ac5c022-e51e-4666-9ead-fc6b42c78ff8",
+                    "weight": 1,
+                    "state": "opened",
+                    "time": 15324385084049
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "8a3ca00a-d921-4f8a-9a6f-16f00efa5dd2",
+                    "transitionId": "3ac5c022-e51e-4666-9ead-fc6b42c78ff8",
+                    "weight": 1,
+                    "state": "passed",
+                    "time": 15324385084053
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "faa9e729-a7ee-497c-8b73-b8de0dea1959",
+                    "transitionId": "5ddb0973-e091-4a4f-b712-3a5500a55766",
+                    "weight": 1,
+                    "state": "interrupted",
+                    "time": 15324385084055,
+                    "reason": ""
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "8c2e329f-940d-4500-8e7d-75360a9b6e0d",
+                    "transitionId": "5ddb0973-e091-4a4f-b712-3a5500a55766",
+                    "weight": 1,
+                    "state": "interrupted",
+                    "time": 15324385084059
+                }
+            ]
+        },
+        {
+            "schema": "http:\/\/pvm.forma-pro.com\/schemas\/Token.json",
+            "id": "a3407b6b-1931-4510-9fce-3c9513cbfee0",
+            "transitions": [
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "84358c06-feb5-43ad-92e8-26698654d004",
+                    "transitionId": "574f2e1d-2fe1-4201-8989-19820dfaf7c8",
+                    "weight": 1,
+                    "state": "opened",
+                    "time": 15324385084062
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "6dc3b08f-445d-4884-b373-0e9f8569b8cd",
+                    "transitionId": "574f2e1d-2fe1-4201-8989-19820dfaf7c8",
+                    "weight": 1,
+                    "state": "passed",
+                    "time": 15324385084067
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "33a730a9-2e08-48e9-8dfe-a9f8e5b969c2",
+                    "transitionId": "605cea06-ef5a-4212-bd18-c9235057055c",
+                    "weight": 1,
+                    "state": "opened",
+                    "time": 15324385084070
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "cba644d9-e38a-4030-97f5-6ac2d8055be8",
+                    "transitionId": "605cea06-ef5a-4212-bd18-c9235057055c",
+                    "weight": 1,
+                    "state": "passed",
+                    "time": 15324385084073
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "d1dc8e8a-4479-4dac-87dd-661a446ec243",
+                    "transitionId": "175e13af-ece9-454c-8545-456632ed9698",
+                    "weight": 1,
+                    "state": "opened",
+                    "time": 15324385084076
+                },
+                {
+                    "schema": "http:\/\/pvm.forma-pro.com\/schemas\/TokenTransition.json",
+                    "id": "ae12c08e-745b-4138-b13d-0ad433a7b3b7",
+                    "transitionId": "175e13af-ece9-454c-8545-456632ed9698",
+                    "weight": 1,
+                    "state": "passed",
+                    "time": 15324385084080
+                }
+            ]
+        }
+    ],
+    "dot": "digraph G {\n    rankdir=TB;\n    ranksep=\"1\";\n    __start [label=Start, color=blue, shape=circle];\n    __end [label=End, color=red, shape=circle];\n    fork [label=fork, id=fork, shape=box];\n    \"task_1\" [label=\"task_1\", id=\"task_1\", shape=box];\n    \"task_2\" [label=\"task_2\", id=\"task_2\", shape=box];\n    \"task_3\" [label=\"task_3\", id=\"task_3\", shape=box];\n    \"task_4\" [label=\"task_4\", id=\"task_4\", shape=box];\n    join [label=join, id=join, shape=box];\n    fork -> \"task_1\" [id=\"2425336b-d945-4871-b736-e2ba2731bab9\", label=\"\", color=blue];\n    fork -> \"task_2\" [id=\"3ac5c022-e51e-4666-9ead-fc6b42c78ff8\", label=\"\", color=blue];\n    fork -> \"task_3\" [id=\"574f2e1d-2fe1-4201-8989-19820dfaf7c8\", label=\"\", color=blue];\n    \"task_1\" -> join [id=\"da58a230-00b9-4d37-9636-33880a7c74b9\", label=\"\", color=red];\n    \"task_2\" -> join [id=\"5ddb0973-e091-4a4f-b712-3a5500a55766\", label=\"\", color=red];\n    \"task_3\" -> join [id=\"605cea06-ef5a-4212-bd18-c9235057055c\", label=\"\", color=blue];\n    join -> \"task_4\" [id=\"175e13af-ece9-454c-8545-456632ed9698\", label=\"\", color=blue];\n    \"task_4\" -> __end [label=\"\", color=blue];\n    __start -> fork [label=\"\", color=blue];\n}\n"
+};
+
+pvm.renderGraph(pvmContext, "graph", "show_process_link");
+
+</script>
+
+<div id="graph">
+
+</div>
+</body>
+</html>

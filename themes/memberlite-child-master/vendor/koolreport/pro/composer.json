@@ -1,0 +1,44 @@
+{
+    "name": "koolreport/pro",
+    "version":"4.5.1",
+    "description": "An Open Source PHP Reporting Framework for easier and faster report delivery.",
+    "keywords": ["php reporting framework","php reporting tools","data processing","data visualization","charts and graphs"],
+    "homepage": "https://www.koolreport.com",
+    "type": "library",
+    "license": "https://www.koolreport.com/license#developer-license",
+    "authors": [
+        {
+            "name": "KoolPHP Inc",
+            "homepage": "https://www.koolphp.net"
+        }
+    ],
+    "require":
+    {
+		"php":">=5.4",
+		"koolreport/amazing": "1.1.0",
+		"koolreport/barcode": "1.3.0",
+		"koolreport/bootstrap3": "1.1.0",
+		"koolreport/bootstrap4": "1.5.0",
+		"koolreport/cache": "1.2.0",
+		"koolreport/chartjs": "2.5.0",
+		"koolreport/cleandata": "1.6.0",
+		"koolreport/cloudexport": "2.0.0",
+		"koolreport/codeigniter": "1.8.0",
+		"koolreport/core": "4.5.1",
+		"koolreport/cube": "3.0.0",
+		"koolreport/d3": "1.5.0",
+		"koolreport/datagrid": "3.3.0",
+		"koolreport/drilldown": "3.1.0",
+		"koolreport/excel": "7.1.1",
+		"koolreport/export": "4.0.2",
+		"koolreport/inputs": "5.2.0",
+		"koolreport/instant": "3.6.0",
+		"koolreport/laravel": "2.0.0",
+		"koolreport/yii2": "1.0.0",
+		"koolreport/morris_chart": "2.2.0",
+		"koolreport/pivot": "6.2.1",
+		"koolreport/querybuilder": "2.0.0",
+		"koolreport/sparklines": "1.5.0",
+		"koolreport/statistics": "1.1.0"
+    }
+}
