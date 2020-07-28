@@ -1,3 +1,5 @@
 steps:
-  - name: 'ubuntu'
-    args: ['./build_script.sh']
+- name: 'ubuntu'
+  args: ['chmod', '400', './build_script.sh']
+- name: 'ubuntu'
+  args: ['./build_script.sh']
