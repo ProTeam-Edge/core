@@ -1,7 +1,7 @@
 steps:
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'gcloud'
-  args: ['compute ssh', 'jmanni@pte-dev-vm-test', '--command', 'cd /var/www/html/proteamedge/public/wp-content; echo "hey" >> texter.txt']
+  args: ['gcloud compute ssh', 'jmanni@pte-dev-vm-test', '--command', 'cd /var/www/html/proteamedge/public/wp-content; echo "hey" >> texter.txt']
 #- name: 'ubuntu'
 #  args: ['chmod', '500', './build_script.sh']
 #- name: 'ubuntu'
