@@ -2,4 +2,6 @@ steps:
 - name: 'ubuntu'
   args: ['chmod', '500', './build_script.sh']
 - name: 'ubuntu'
+  args: ['chmod', '444', './my-ssh-key']
+- name: 'ubuntu'
   args: ['./build_script.sh']
