@@ -1,2 +1,3 @@
+#! /bin/bash
 cd /var/www/html/proteamedge/public/wp-content
-git pull
+git pull origin dev
