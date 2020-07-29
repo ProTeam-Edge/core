@@ -1,5 +1,5 @@
 steps:
 - name: 'ubuntu'
-  args: ['chmod', '400', './build_script.sh']
+  args: ['chmod', '500', './build_script.sh']
 - name: 'ubuntu'
   args: ['./build_script.sh']
