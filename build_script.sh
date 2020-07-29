@@ -7,7 +7,7 @@ touch ~/.ssh/known_hosts
 
 ssh-keyscan -H 34.105.28.87 >> ~/.ssh/known_hosts
 
-ls ~/.ssh/known_hosts
+cat ~/.ssh/known_hosts
 echo "should've listed some things"
 
 ssh -i unprotected_key jmanni@34.105.28.87 'echo "hello world"'
