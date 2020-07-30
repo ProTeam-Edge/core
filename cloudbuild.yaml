@@ -4,4 +4,4 @@ steps:
   args: ['config', 'set', 'project', 'proteam-edge']
 - name: 'gcr.io/cloud-builders/gcloud'
   entrypoint: 'gcloud'
-  args: ['compute',  'ssh', 'jmanni@pte-dev-vm-test', '--zone', 'us-west1-c', '--command', 'cd /var/www/html/proteamedge/public/wp-content; git pull origin dev]
+  args: ['compute',  'ssh', 'jmanni@pte-dev-vm-test', '--zone', 'us-west1-c', '--command', 'cd /var/www/html/proteamedge/public/wp-content; git pull origin dev']
