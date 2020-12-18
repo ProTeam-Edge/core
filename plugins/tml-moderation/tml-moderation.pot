@@ -1,0 +1,203 @@
+# Copyright (C) 2019 Theme My Login Moderation
+# This file is distributed under the same license as the Theme My Login Moderation package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Theme My Login Moderation 1.1\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/theme-my-login-moderation\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-01-21T14:29:53-05:00\n"
+"PO-Revision-Date: 2019-01-21T14:29:53-05:00\n"
+"X-Domain: theme-my-login-moderation\n"
+
+#: functions.php:29
+msgid "Activate Your Account"
+msgstr ""
+
+#: functions.php:65
+msgid "Moderated User"
+msgstr ""
+
+#: functions.php:67
+#: functions.php:73
+#: functions.php:79
+#: functions.php:85
+#: tml-moderation.php:92
+#: tml-moderation.php:210
+msgid "Moderation"
+msgstr ""
+
+#: functions.php:71
+msgid "New User Activated"
+msgstr ""
+
+#: functions.php:77
+msgid "New User Approved"
+msgstr ""
+
+#: functions.php:83
+msgid "Resend User Activation"
+msgstr ""
+
+#: functions.php:201
+msgid "<strong>ERROR</strong>: Invalid username."
+msgstr ""
+
+#: functions.php:203
+msgid "<strong>ERROR</strong>: Invalid email address."
+msgstr ""
+
+#: functions.php:205
+msgid "<strong>ERROR</strong>: Invalid username or email address."
+msgstr ""
+
+#: functions.php:210
+msgid "<strong>ERROR</strong>: This account has already been activated. However, it must be approved by an administrator. You will receive an email when this process is complete."
+msgstr ""
+
+#: functions.php:213
+msgid "<strong>ERROR</strong>: This account has already been activated. Click <a href=\"%s\">here</a> to log in."
+msgstr ""
+
+#: functions.php:241
+msgid "Please check your email for the new activation link."
+msgstr ""
+
+#: functions.php:250
+msgid "<strong>ERROR</strong>: Invalid activation key. Click <a href=\"%s\">here</a> to get a new one."
+msgstr ""
+
+#: functions.php:263
+msgid "Your account has been activated. However, it must be approved by an administrator. You will receive an email when this process is complete."
+msgstr ""
+
+#: functions.php:266
+msgid "Your account has been activated. You may now <a href=\"%s\">log in</a>."
+msgstr ""
+
+#: functions.php:350
+msgid "Thanks for registering at %s! To complete the activation of your account please click the following link: "
+msgstr ""
+
+#: functions.php:355
+msgid "[%s] Activate Your Account"
+msgstr ""
+
+#: functions.php:406
+msgid "New user requires approval on your blog %s:"
+msgstr ""
+
+#: functions.php:407
+msgid "Username: %s"
+msgstr ""
+
+#: functions.php:408
+msgid "E-mail: %s"
+msgstr ""
+
+#: functions.php:409
+msgid "To approve or deny this user:"
+msgstr ""
+
+#: functions.php:414
+msgid "[%s] New User Awaiting Approval"
+msgstr ""
+
+#: functions.php:502
+msgid "<strong>ERROR</strong>: Your registration has not yet been approved."
+msgstr ""
+
+#: functions.php:504
+msgid "<strong>ERROR</strong>: Your registration is still pending."
+msgstr ""
+
+#: functions.php:556
+msgid "Your registration was successful but you must now confirm your email address before you can log in. Please check your email and click on the link provided."
+msgstr ""
+
+#: functions.php:570
+msgid "Your registration was successful but you must now be approved by an administrator before you can log in. You will be notified by email once your account has been approved."
+msgstr ""
+
+#: tml-moderation.php:209
+msgid "Theme My Login Moderation Settings"
+msgstr ""
+
+#: admin.php:145
+msgid "Status"
+msgstr ""
+
+#: admin.php:166
+msgid "Active"
+msgstr ""
+
+#: admin.php:172
+msgid "Pending Activation"
+msgstr ""
+
+#: admin.php:178
+msgid "Pending Approval"
+msgstr ""
+
+#: admin.php:220
+#: admin.php:254
+msgid "Resend Activation"
+msgstr ""
+
+#: admin.php:227
+#: admin.php:255
+msgid "Activate"
+msgstr ""
+
+#: admin.php:237
+#: admin.php:258
+msgid "Approve"
+msgstr ""
+
+#: admin.php:321
+msgid "Activation email sent."
+msgstr ""
+
+#: admin.php:331
+msgid "User activated."
+msgstr ""
+
+#: admin.php:341
+msgid "User approved."
+msgstr ""
+
+#: admin.php:387
+#: admin.php:391
+msgid "Moderation Type"
+msgstr ""
+
+#: admin.php:394
+msgid "Require email activation"
+msgstr ""
+
+#: admin.php:399
+msgid "Require admin approval"
+msgstr ""
+
+#. Plugin Name of the plugin
+msgid "Theme My Login Moderation"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://thememylogin.com/extensions/moderation"
+msgstr ""
+
+#. Description of the plugin
+msgid "Adds user moderation support to Theme My Login."
+msgstr ""
+
+#. Author of the plugin
+msgid "Theme My Login"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://thememylogin.com"
+msgstr ""

@@ -1,0 +1,60 @@
+# Copyright (C) 2019 Theme My Login
+# This file is distributed under the same license as the Theme My Login Avatars plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Theme My Login Avatars 1.0.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/tml-avatars\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-12-19T11:28:34-05:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.2.0\n"
+"X-Domain: tml-avatars\n"
+
+#. Plugin Name of the plugin
+msgid "Theme My Login Avatars"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://thememylogin.com/extensions/avatars"
+msgstr ""
+
+#. Description of the plugin
+msgid "Adds user avatar support to Theme My Login and WordPress."
+msgstr ""
+
+#. Author of the plugin
+msgid "Theme My Login"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://thememylogin.com"
+msgstr ""
+
+#: functions.php:268
+msgid "Choose File"
+msgstr ""
+
+#: functions.php:275
+msgid "Remove"
+msgstr ""
+
+#: functions.php:276
+msgid "or"
+msgstr ""
+
+#: tml-avatars.php:92
+#: tml-avatars.php:157
+msgid "Avatars"
+msgstr ""
+
+#: tml-avatars.php:156
+msgid "Theme My Login Avatar Settings"
+msgstr ""
+
+#: admin.php:55
+msgid "Disable Gravatars"
+msgstr ""

@@ -1,0 +1,187 @@
+# Copyright (C) 2019 Theme My Login
+# This file is distributed under the same license as the Theme My Login Security plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Theme My Login Security 1.1.3\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/tml-security\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-12-19T13:39:17-05:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.2.0\n"
+"X-Domain: tml-security\n"
+
+#. Plugin Name of the plugin
+msgid "Theme My Login Security"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://thememylogin.com/extensions/security"
+msgstr ""
+
+#. Description of the plugin
+msgid "Adds security features to Theme My Login."
+msgstr ""
+
+#. Author of the plugin
+msgid "Theme My Login"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://thememylogin.com"
+msgstr ""
+
+#: functions.php:80
+#: functions.php:93
+#: functions.php:106
+#: functions.php:115
+msgid "<strong>ERROR</strong>: You have been temporarily banned from logging in."
+msgstr ""
+
+#: functions.php:448
+msgid "<strong>ERROR</strong>: Passwords must be at least %d characters long."
+msgstr ""
+
+#: functions.php:456
+msgid "<strong>ERROR</strong>: Passwords must contain at least 1 letter."
+msgstr ""
+
+#: functions.php:463
+msgid "<strong>ERROR</strong>: Passwords must contain at least 1 capital letter."
+msgstr ""
+
+#: functions.php:470
+msgid "<strong>ERROR</strong>: Passwords must contain at least 1 number."
+msgstr ""
+
+#: functions.php:486
+msgid "<strong>ERROR</strong>: Passwords must contain at least one of the following: %s."
+msgstr ""
+
+#: tml-security.php:92
+#: tml-security.php:167
+msgid "Security"
+msgstr ""
+
+#: tml-security.php:166
+msgid "Theme My Login Security Settings"
+msgstr ""
+
+#: admin.php:27
+msgid "Locked"
+msgstr ""
+
+#: admin.php:78
+#: admin.php:103
+msgid "Unlock"
+msgstr ""
+
+#: admin.php:86
+#: admin.php:102
+msgid "Lock"
+msgstr ""
+
+#: admin.php:161
+msgid "User locked."
+msgstr ""
+
+#: admin.php:163
+msgid "%s user locked."
+msgid_plural "%s users locked."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin.php:171
+msgid "User unlocked."
+msgstr ""
+
+#: admin.php:173
+msgid "%s user unlocked."
+msgid_plural "%s users unlocked."
+msgstr[0] ""
+msgstr[1] ""
+
+#: admin.php:203
+msgid "Throttling & Lockout"
+msgstr ""
+
+#: admin.php:209
+msgid "Passwords"
+msgstr ""
+
+#: admin.php:229
+msgid "Disabe wp-login.php"
+msgstr ""
+
+#: admin.php:234
+msgid "Disable traffic to wp-login.php"
+msgstr ""
+
+#: admin.php:244
+msgid "Login Attempts"
+msgstr ""
+
+#: admin.php:256
+msgid "Lockout Threshold"
+msgstr ""
+
+#: admin.php:267
+msgid "Lockout Duration"
+msgstr ""
+
+#: admin.php:278
+msgid "Invalid Usernames"
+msgstr ""
+
+#: admin.php:283
+msgid "Immediately lockout invalid usernames"
+msgstr ""
+
+#: admin.php:293
+msgid "Minimum Length"
+msgstr ""
+
+#: admin.php:305
+#: admin.php:309
+msgid "Requirements"
+msgstr ""
+
+#: admin.php:312
+msgid "Require letters"
+msgstr ""
+
+#: admin.php:317
+msgid "Require capital letters"
+msgstr ""
+
+#: admin.php:322
+msgid "Require numbers"
+msgstr ""
+
+#: admin.php:327
+msgid "Require special characters"
+msgstr ""
+
+#: admin.php:359
+#: admin.php:360
+#: admin.php:361
+msgid "%d Minutes"
+msgstr ""
+
+#: admin.php:362
+msgid "1 Hour"
+msgstr ""
+
+#: admin.php:363
+#: admin.php:364
+#: admin.php:365
+#: admin.php:366
+msgid "%d Hours"
+msgstr ""
+
+#: admin.php:367
+msgid "1 Day"
+msgstr ""

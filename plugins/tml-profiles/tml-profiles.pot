@@ -1,0 +1,172 @@
+# Copyright (C) 2019 Theme My Login
+# This file is distributed under the same license as the Theme My Login Profiles plugin.
+msgid ""
+msgstr ""
+"Project-Id-Version: Theme My Login Profiles 1.0.7\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/theme-my-login-profiles\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2019-06-13T10:04:53-04:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"X-Generator: WP-CLI 2.2.0\n"
+"X-Domain: theme-my-login-profiles\n"
+
+#. Plugin Name of the plugin
+msgid "Theme My Login Profiles"
+msgstr ""
+
+#. Plugin URI of the plugin
+msgid "https://thememylogin.com/extensions/profiles"
+msgstr ""
+
+#. Description of the plugin
+msgid "Adds profile support to Theme My Login."
+msgstr ""
+
+#. Author of the plugin
+msgid "Theme My Login"
+msgstr ""
+
+#. Author URI of the plugin
+msgid "https://thememylogin.com"
+msgstr ""
+
+#: functions.php:28
+#: functions.php:537
+msgid "Your Profile"
+msgstr ""
+
+#: functions.php:70
+msgctxt "profile section"
+msgid "Personal Options"
+msgstr ""
+
+#: functions.php:78
+msgid "Show Toolbar when viewing site"
+msgstr ""
+
+#: functions.php:117
+msgctxt "profile section"
+msgid "Name"
+msgstr ""
+
+#: functions.php:124
+msgid "Username"
+msgstr ""
+
+#: functions.php:125
+msgid "Usernames cannot be changed."
+msgstr ""
+
+#: functions.php:136
+msgid "First Name"
+msgstr ""
+
+#: functions.php:144
+msgid "Last Name"
+msgstr ""
+
+#: functions.php:152
+msgid "Nickname"
+msgstr ""
+
+#: functions.php:160
+msgid "Display name publicly as"
+msgstr ""
+
+#: functions.php:172
+msgctxt "profile section"
+msgid "Contact Info"
+msgstr ""
+
+#: functions.php:181
+msgid "Email"
+msgstr ""
+
+#: functions.php:183
+msgid "There is a pending change of your email to %s."
+msgstr ""
+
+#: functions.php:191
+msgid "Cancel"
+msgstr ""
+
+#: functions.php:200
+msgid "Website"
+msgstr ""
+
+#: functions.php:221
+msgctxt "profile section"
+msgid "About Yourself"
+msgstr ""
+
+#: functions.php:228
+msgid "Biographical Info"
+msgstr ""
+
+#: functions.php:229
+msgid "Share a little biographical information to fill out your profile. This may be shown publicly."
+msgstr ""
+
+#: functions.php:249
+msgctxt "profile section"
+msgid "Account Management"
+msgstr ""
+
+#: functions.php:256
+msgid "New Password"
+msgstr ""
+
+#: functions.php:266
+msgid "Repeat New Password"
+msgstr ""
+
+#: functions.php:267
+msgid "Type your new password again."
+msgstr ""
+
+#: functions.php:284
+msgid "Update Profile"
+msgstr ""
+
+#: functions.php:320
+msgid "Profile updated."
+msgstr ""
+
+#: functions.php:364
+msgid "Sorry, you are not allowed to edit this user."
+msgstr ""
+
+#: functions.php:596
+msgid "Profile Picture"
+msgstr ""
+
+#: functions.php:601
+msgid "You can change your profile picture on <a href=\"%s\">Gravatar</a>."
+msgstr ""
+
+#: functions.php:602
+msgid "https://en.gravatar.com/"
+msgstr ""
+
+#: tml-profiles.php:92
+#: tml-profiles.php:165
+msgid "Profiles"
+msgstr ""
+
+#: tml-profiles.php:164
+msgid "Theme My Login Profiles Settings"
+msgstr ""
+
+#: admin.php:100
+#: admin.php:104
+msgid "Themed Profile Roles"
+msgstr ""
+
+#: admin.php:110
+#: admin.php:114
+msgid "Restricted Admin Roles"
+msgstr ""
