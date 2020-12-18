@@ -30,7 +30,7 @@
 			s = this.settings;
 
 			// Document ready.
-			$( document ).ready( WPFormsAdmin.ready );
+			$( WPFormsAdmin.ready );
 
 			// Forms Overview.
 			WPFormsAdmin.initFormOverview();
@@ -45,7 +45,7 @@
 			WPFormsAdmin.initWelcome();
 
 			// Addons List.
-			WPFormsAdmin.initAddons();
+			$( document ).on( 'wpformsReady', WPFormsAdmin.initAddons );
 
 			// Settings.
 			WPFormsAdmin.initSettings();
@@ -128,7 +128,7 @@
 						confirm: {
 							text: wpforms_admin.ok,
 							btnClass: 'btn-confirm',
-							keys: [ 'enter' ]
+							keys: [ 'enter' ],
 						}
 					}
 				});
@@ -753,38 +753,33 @@
 		 */
 		initAddons: function() {
 
-			// Some actions have to be delayed to document.ready.
-			$( document ).on( 'wpformsReady', function() {
+			// Only run on the addons page.
+			if ( ! $( '#wpforms-admin-addons' ).length ) {
+				return;
+			}
 
-				// Only run on the addons page.
-				if ( ! $( '#wpforms-admin-addons' ).length ) {
-					return;
-				}
+			WPFormsAdmin.matchHeightAddonBlocks();
 
-				// Display all addon boxes as the same height.
-				$( '.addon-item .details' ).matchHeight( { byrow: false, property: 'height' } );
+			// Addons searching.
+			if ( $( '#wpforms-admin-addons-list' ).length ) {
+				var addonSearch = new List( 'wpforms-admin-addons-list', {
+					valueNames: [ 'addon-name' ] } );
 
-				// Addons searching.
-				if ( $('#wpforms-admin-addons-list').length ) {
-					var addonSearch = new List( 'wpforms-admin-addons-list', {
-						valueNames: [ 'addon-name' ]
-					} );
+				$( '#wpforms-admin-addons-search' ).on( 'keyup', function() {
+					var searchTerm = $( this ).val(),
+						$heading = $( '#addons-heading' );
 
-					$( '#wpforms-admin-addons-search' ).on( 'keyup', function () {
-						var searchTerm = $( this ).val(),
-							$heading = $( '#addons-heading' );
+					if ( searchTerm ) {
+						$heading.text( wpforms_admin.addon_search );
+					} else {
+						$heading.text( $heading.data( 'text' ) );
+					}
 
-						if ( searchTerm ) {
-							$heading.text( wpforms_admin.addon_search );
-						}
-						else {
-							$heading.text( $heading.data( 'text' ) );
-						}
+					addonSearch.search( searchTerm );
+				} );
+			}
 
-						addonSearch.search( searchTerm );
-					} );
-				}
-			});
+			$( window ).on( 'resize', WPFormsAdmin.matchHeightAddonBlocks );
 
 			// Toggle an addon state.
 			$( document ).on( 'click', '#wpforms-admin-addons .addon-item button', function( event ) {
@@ -796,7 +791,46 @@
 				}
 
 				WPFormsAdmin.addonToggle( $( this ) );
-			});
+			} );
+		},
+
+		/**
+		 * Change plugin/addon state.
+		 *
+		 * @since 1.6.3
+		 *
+		 * @param {string}   plugin     Plugin slug or URL for download.
+		 * @param {string}   state      State status activate|deactivate|install.
+		 * @param {string}   pluginType Plugin type addon or plugin.
+		 * @param {Function} callback   Callback for get result from AJAX.
+		 */
+		setAddonState: function( plugin, state, pluginType, callback ) {
+
+			var actions = {
+					'activate': 'wpforms_activate_addon',
+					'install': 'wpforms_install_addon',
+					'deactivate': 'wpforms_deactivate_addon',
+				},
+				action = actions[ state ];
+
+			if ( ! action ) {
+				return;
+			}
+
+			var data = {
+				action: action,
+				nonce: wpforms_admin.nonce,
+				plugin: plugin,
+				type: pluginType,
+			};
+
+			$.post( wpforms_admin.ajax_url, data, function( res ) {
+
+				callback( res );
+			} ).fail( function( xhr ) {
+
+				console.log( xhr.responseText );
+			} );
 		},
 
 		/**
@@ -808,7 +842,7 @@
 
 			var $addon = $btn.closest( '.addon-item' ),
 				plugin = $btn.attr( 'data-plugin' ),
-				plugin_type = $btn.attr( 'data-type' ),
+				pluginType = $btn.attr( 'data-type' ),
 				action,
 				cssClass,
 				statusText,
@@ -829,45 +863,48 @@
 				// Deactivate.
 				action     = 'wpforms_deactivate_addon';
 				cssClass   = 'status-inactive';
-				if ( plugin_type === 'plugin' ) {
+				if ( pluginType === 'plugin' ) {
 					cssClass += ' button button-secondary';
 				}
 				statusText = wpforms_admin.addon_inactive;
 				buttonText = wpforms_admin.addon_activate;
-				if ( plugin_type === 'addon' ) {
+				errorText  = wpforms_admin.addon_deactivate;
+				if ( pluginType === 'addon' ) {
 					buttonText = s.iconActivate + buttonText;
+					errorText  = s.iconDeactivate + errorText;
 				}
-				errorText  = s.iconDeactivate + wpforms_admin.addon_deactivate;
 
 			} else if ( $btn.hasClass( 'status-inactive' ) ) {
 				// Activate.
 				action     = 'wpforms_activate_addon';
 				cssClass   = 'status-active';
-				if ( plugin_type === 'plugin' ) {
+				if ( pluginType === 'plugin' ) {
 					cssClass += ' button button-secondary disabled';
 				}
 				statusText = wpforms_admin.addon_active;
 				buttonText = wpforms_admin.addon_deactivate;
-				if ( plugin_type === 'addon' ) {
+				if ( pluginType === 'addon' ) {
 					buttonText = s.iconDeactivate + buttonText;
-				} else if ( plugin_type === 'plugin' ) {
+					errorText  = s.iconActivate + wpforms_admin.addon_activate;
+				} else if ( pluginType === 'plugin' ) {
 					buttonText = wpforms_admin.addon_activated;
+					errorText  = wpforms_admin.addon_activate;
 				}
-				errorText  = s.iconActivate + wpforms_admin.addon_activate;
 
 			} else if ( $btn.hasClass( 'status-download' ) ) {
 				// Install & Activate.
 				action   = 'wpforms_install_addon';
 				cssClass = 'status-active';
-				if ( plugin_type === 'plugin' ) {
+				if ( pluginType === 'plugin' ) {
 					cssClass += ' button disabled';
 				}
 				statusText = wpforms_admin.addon_active;
 				buttonText = wpforms_admin.addon_activated;
-				if ( plugin_type === 'addon' ) {
+				errorText  = s.iconInstall;
+				if ( pluginType === 'addon' ) {
 					buttonText = s.iconActivate + wpforms_admin.addon_deactivate;
+					errorText += wpforms_admin.addon_install;
 				}
-				errorText = s.iconInstall + wpforms_admin.addon_activate;
 
 			} else {
 				return;
@@ -877,7 +914,7 @@
 				action: action,
 				nonce : wpforms_admin.nonce,
 				plugin: plugin,
-				type  : plugin_type
+				type  : pluginType,
 			};
 			$.post( wpforms_admin.ajax_url, data, function( res ) {
 
@@ -886,17 +923,14 @@
 						$btn.attr( 'data-plugin', res.data.basename );
 						successText = res.data.msg;
 						if ( ! res.data.is_activated ) {
-							cssClass = 'status-inactive';
-							if ( plugin_type === 'plugin' ) {
-								cssClass = 'button';
-							}
 							statusText = wpforms_admin.addon_inactive;
-							buttonText = s.iconActivate + wpforms_admin.addon_activate;
+							buttonText = 'plugin' === pluginType ? wpforms_admin.addon_activate : s.iconActivate + wpforms_admin.addon_activate;
+							cssClass   = 'plugin' === pluginType ? 'status-inactive button button-secondary' : 'status-inactive';
 						}
 					} else {
 						successText = res.data;
 					}
-					$addon.find( '.actions' ).append( '<div class="msg success">'+successText+'</div>' );
+					$addon.find( '.actions' ).append( '<div class="msg success">' + successText + '</div>' );
 					$addon.find( 'span.status-label' )
 						  .removeClass( 'status-active status-inactive status-download' )
 						  .addClass( cssClass )
@@ -907,15 +941,20 @@
 						.removeClass( 'button button-primary button-secondary disabled' )
 						.addClass( cssClass ).html( buttonText );
 				} else {
-					if ( 'download_failed' === res.data[0].code ) {
-						if ( plugin_type === 'addon' ) {
-							$addon.find( '.actions' ).append( '<div class="msg error">'+wpforms_admin.addon_error+'</div>' );
+					if ( 'object' === typeof res.data ) {
+						if ( pluginType === 'addon' ) {
+							$addon.find( '.actions' ).append( '<div class="msg error">' + wpforms_admin.addon_error + '</div>' );
 						} else {
-							$addon.find( '.actions' ).append( '<div class="msg error">'+wpforms_admin.plugin_error+'</div>' );
+							$addon.find( '.actions' ).append( '<div class="msg error">' + wpforms_admin.plugin_error + '</div>' );
 						}
 					} else {
 						$addon.find( '.actions' ).append( '<div class="msg error">'+res.data+'</div>' );
 					}
+
+					if ( 'wpforms_install_addon' === action && 'plugin' === pluginType ) {
+						$btn.addClass( 'status-go-to-url' ).removeClass( 'status-download' );
+					}
+
 					$btn.html( errorText );
 				}
 
@@ -929,6 +968,16 @@
 			}).fail( function( xhr ) {
 				console.log( xhr.responseText );
 			});
+		},
+
+		/**
+		 * Display all addon boxes as the same height.
+		 *
+		 * @since 1.6.3
+		 */
+		matchHeightAddonBlocks: function() {
+
+			$( '.addon-item .details' ).matchHeight( { byrow: false, property: 'height' } );
 		},
 
 		//--------------------------------------------------------------------//
@@ -1124,7 +1173,7 @@
 					confirm: {
 						text: wpforms_admin.ok,
 						btnClass: 'btn-confirm',
-						keys: [ 'enter' ]
+						keys: [ 'enter' ],
 					}
 				}
 			});
@@ -1217,7 +1266,7 @@
 						confirm: {
 							text: wpforms_admin.ok,
 							btnClass: 'btn-confirm',
-							keys: [ 'enter' ]
+							keys: [ 'enter' ],
 						}
 					}
 				});
@@ -1270,7 +1319,7 @@
 						confirm: {
 							text: wpforms_admin.ok,
 							btnClass: 'btn-confirm',
-							keys: [ 'enter' ]
+							keys: [ 'enter' ],
 						}
 					}
 				});
@@ -1322,7 +1371,7 @@
 						confirm: {
 							text: wpforms_admin.ok,
 							btnClass: 'btn-confirm',
-							keys: [ 'enter' ]
+							keys: [ 'enter' ],
 						}
 					}
 				});
@@ -1373,7 +1422,7 @@
 							confirm: {
 								text: wpforms_admin.ok,
 								btnClass: 'btn-confirm',
-								keys: [ 'enter' ]
+								keys: [ 'enter' ],
 							}
 						}
 					});
@@ -1493,7 +1542,7 @@
 							confirm: {
 								text: wpforms_admin.ok,
 								btnClass: 'btn-confirm',
-								keys: [ 'enter' ]
+								keys: [ 'enter' ],
 							}
 						}
 					});

@@ -5,7 +5,7 @@ $qVars = $_POST;
 $source = isset($qVars['source']) ? $qVars['source'] : '';
 $handle = isset($qVars['handle']) ? $qVars['handle'] : '';
 $topicId = isset($qVars['topic_id']) ? $qVars['topic_id'] : 0;
-$topicTypeId = isset($qVars['topic_type_id']) ? $qVars['topic_type_id'] : 0;
+$topicSpecial = isset($qVars['topic_special']) ? $qVars['topic_special'] : 'topic';
 
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
@@ -21,12 +21,13 @@ if ($userID && $handle && $topicId) {
 			$rowData = array(
 				"image_handle" => $handle
 			);
-			if ($topicTypeId == 5) {  //replaces or adds metadata value for profile image into the WP system WP function
+			if ($topicSpecial == 'user') {  //replaces or adds metadata value for profile image into the WP system WP function
 				update_user_meta( $userID, "tml_avatar",  $handle);
 				$data = array(
-					"image_handle" => $handle
+					"image_handle" => $handle,
+					"owner_id" => $userID
 				);
-				pte_manage_cc_groups("update_user_image", $data);				
+				pte_manage_cc_groups("update_user_image", $data);
 			}
 		}
 		$whereClause['owner_id'] = $userID;

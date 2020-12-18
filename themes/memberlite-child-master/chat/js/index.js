@@ -161,14 +161,14 @@ function logIn() {
         client.on('tokenAboutToExpire', () => {
           $.getJSON( '../pte_chat/token.php', {
             device: 'browser'
-          }, function(data) {
-            if (data.token) {
+          }, function(data1) {
+            if (data1.token) {
               console.log('Got new token!');
-              client.updateToken(data.token);
-              userContext = {identity: data.identity};
+              client.updateToken(data1.token);
+              userContext = {identity: data1.identity};
             } else {
               console.error('Failed to get a token ');
-              throw new Error(data);
+              throw new Error(data1);
             }
           });
         });

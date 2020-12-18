@@ -137,6 +137,18 @@ var wpDataTablesHighchart = function(){
             for( var property in options ){
                 this.options[property] = options[property];
             }
+            Highcharts.setOptions({
+                lang: {
+                    decimalPoint: this.getNumberFormat() === '1' ?  ',' : '.',
+                    thousandsSep: this.getNumberFormat() === '1' ?  '.' : ','
+                }
+            });
+        },
+        setNumberFormat: function( numberFormat ){
+            this.numberFormat = numberFormat;
+        },
+        getNumberFormat:function(){
+            return this.numberFormat;
         },
         getOptions: function(){
             return this.options;
@@ -669,6 +681,12 @@ var wpDataTablesHighchart = function(){
                         obj.renderCallback( obj );
                     }
                     obj.chart = new Highcharts.Chart( obj.options );
+                    Highcharts.setOptions({
+                        lang: {
+                            decimalPoint: obj.getNumberFormat() === 1 ?  ',' : '.',
+                            thousandsSep: obj.getNumberFormat() === 1 ?  '.' : ','
+                        }
+                    });
                 }
             });
         }

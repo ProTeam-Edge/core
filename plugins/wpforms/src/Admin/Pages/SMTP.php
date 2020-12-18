@@ -27,6 +27,7 @@ class SMTP {
 	 */
 	private $config = array(
 		'lite_plugin'       => 'wp-mail-smtp/wp_mail_smtp.php',
+		'lite_wporg_url'    => 'https://wordpress.org/plugins/wp-mail-smtp/',
 		'lite_download_url' => 'https://downloads.wordpress.org/plugin/wp-mail-smtp.zip',
 		'pro_plugin'        => 'wp-mail-smtp-pro/wp_mail_smtp.php',
 		'smtp_settings'     => 'admin.php?page=wp-mail-smtp',
@@ -230,14 +231,14 @@ class SMTP {
 					<li>%5$s</li>
 					<li>%6$s</li>
 					<li>%7$s</li>
-				</ul>			
+				</ul>
 			</section>',
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/smtp/screenshot-tnail.png' ),
 			esc_attr__( 'WP Mail SMTP screenshot', 'wpforms-lite' ),
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/smtp/screenshot-full.png' ),
 			esc_html__( 'Over 1,000,000 websites use WP Mail SMTP.', 'wpforms-lite' ),
 			esc_html__( 'Send emails authenticated via trusted parties.', 'wpforms-lite' ),
-			esc_html__( 'Transactional Mailers: Pepipost, SendinBlue, Mailgun, SendGrid, Amazon SES.', 'wpforms-lite' ),
+			esc_html__( 'Transactional Mailers: SMTP.com, Pepipost, SendinBlue, Mailgun, SendGrid, Amazon SES.', 'wpforms-lite' ),
 			esc_html__( 'Web Mailers: Gmail, G Suite, Office 365, Outlook.com.', 'wpforms-lite' )
 		);
 	}
@@ -255,6 +256,17 @@ class SMTP {
 			return;
 		}
 
+		$button_format = '<button class="button %3$s" data-plugin="%1$s" data-action="%4$s">%2$s</button>';
+		if (
+			! $this->output_data['plugin_installed'] &&
+			! $this->output_data['pro_plugin_installed'] &&
+			! wpforms_can_install( 'plugin' )
+		) {
+			$button_format = '<a class="link" href="%1$s" target="_blank" rel="nofollow noopener">%2$s <span aria-hidden="true" class="dashicons dashicons-external"></span></a>';
+		}
+
+		$button = sprintf( $button_format, esc_attr( $step['plugin'] ), esc_html( $step['button_text'] ), esc_attr( $step['button_class'] ), esc_attr( $step['button_action'] ) );
+
 		printf(
 			'<section class="step step-install">
 				<aside class="num">
@@ -264,17 +276,14 @@ class SMTP {
 				<div>
 					<h2>%3$s</h2>
 					<p>%4$s</p>
-					<button class="button %5$s" data-plugin="%6$s" data-action="%7$s">%8$s</button>
-				</div>		
+					%5$s
+				</div>
 			</section>',
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/' . $step['icon'] ),
 			esc_attr__( 'Step 1', 'wpforms-lite' ),
-			esc_html__( 'Install and Activate WP Mail SMTP', 'wpforms-lite' ),
-			esc_html__( 'Install WP Mail SMTP from the WordPress.org plugin repository.', 'wpforms-lite' ),
-			esc_attr( $step['button_class'] ),
-			esc_attr( $step['plugin'] ),
-			esc_attr( $step['button_action'] ),
-			esc_html( $step['button_text'] )
+			esc_html( $step['heading'] ),
+			esc_html( $step['description'] ),
+			wp_kses_post( $button )
 		);
 	}
 
@@ -301,7 +310,7 @@ class SMTP {
 					<h2>%4$s</h2>
 					<p>%5$s</p>
 					<button class="button %6$s" data-url="%7$s">%8$s</button>
-				</div>		
+				</div>
 			</section>',
 			esc_attr( $step['section_class'] ),
 			esc_url( WPFORMS_PLUGIN_URL . 'assets/images/' . $step['icon'] ),
@@ -323,7 +332,9 @@ class SMTP {
 	 */
 	protected function get_data_step_install() {
 
-		$step = array();
+		$step                = array();
+		$step['heading']     = esc_html__( 'Install and Activate WP Mail SMTP', 'wpforms-lite' );
+		$step['description'] = esc_html__( 'Install WP Mail SMTP from the WordPress.org plugin repository.', 'wpforms-lite' );
 
 		$this->output_data['all_plugins']          = get_plugins();
 		$this->output_data['plugin_installed']     = array_key_exists( $this->config['lite_plugin'], $this->output_data['all_plugins'] );
@@ -337,6 +348,13 @@ class SMTP {
 			$step['button_class']  = '';
 			$step['button_action'] = 'install';
 			$step['plugin']        = $this->config['lite_download_url'];
+
+			if ( ! wpforms_can_install( 'plugin' ) ) {
+				$step['heading']     = esc_html__( 'WP Mail SMTP', 'wpforms-lite' );
+				$step['description'] = '';
+				$step['button_text'] = esc_html__( 'WP Mail SMTP on WordPress.org', 'wpforms-lite' );
+				$step['plugin']      = $this->config['lite_wporg_url'];
+			}
 		} else {
 			$this->output_data['plugin_activated'] = $this->is_smtp_activated();
 			$this->output_data['plugin_setup']     = $this->is_smtp_configured();
@@ -489,7 +507,7 @@ class SMTP {
 		$phpmailer = $this->get_phpmailer();
 
 		$mailer             = \WPMailSMTP\Options::init()->get( 'mail', 'mailer' );
-		$is_mailer_complete = wp_mail_smtp()->get_providers()->get_mailer( $mailer, $phpmailer )->is_mailer_complete();
+		$is_mailer_complete = empty( $mailer ) ? false : wp_mail_smtp()->get_providers()->get_mailer( $mailer, $phpmailer )->is_mailer_complete();
 
 		return 'mail' !== $mailer && $is_mailer_complete;
 	}

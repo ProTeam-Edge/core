@@ -19,7 +19,7 @@ $existingContactEmails = array();
 if (isset($existingContacts[0])) {
 	foreach ($existingContacts as $key => $value){
 		 $details = json_decode($value->topic_content, true);
-		 $existingContactEmails[] = $details['patient.telecom.1.value'];
+		 $existingContactEmails[] = $details['person_email'];
 	}
 }
 
@@ -75,24 +75,11 @@ foreach ($contacts as $key => $value) {
 			$about = $about ? $about : $newEmail;
 
 			$topicContent = array(
-				"patient.telecom.1.value" => $newEmail,
-				"patient.pte.title" => $title,
-				"organization.address.0.line[0]" => $street,
-				"organization.address.0.city" => $city,
-				"organization.address.0.state" => $state,
-				"organization.address.0.postalCode" => $postalCode,
-				"organization.name" => $company,
-				"organization.type" => 41,
-				"patient.name.0.given" => $first,
-				"patient.name.0.family" => $last,
-				"organization.address.0.line[1]" => "",
-				"organization.pte.website" => "",
-				"organization.telecom.0.value" => "",
-				"organization.telecom.1.value" => "",
-				"patient.pte.about" => "",
-				"organization.pte.about" => "",
-				"patient.pte.linkedin" => "",
-				"patient.telecom.0.value" => $phone
+				"person_email" => $newEmail,
+				"person_jobtitle" => $title,
+				"person_givenname" => $first,
+				"person_familyname" => $last,
+				"person_telephone" => $phone
 			);
 			$existingContactEmails[] = $newEmail;
 			$newContacts[] = $topicContent;

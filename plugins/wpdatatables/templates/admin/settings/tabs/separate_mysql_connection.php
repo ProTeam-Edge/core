@@ -11,36 +11,35 @@
 <div role="tabpanel" class="tab-pane" id="separate-mysql-connection">
     <div class="row">
         <div class="col-sm-6 col-md-6 separate-connection">
-            <h4 class="c-black m-b-20">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Separate MySQL connection', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('If this checkbox is checked, wpDataTables will use its own connection to MySQL bases. In other case it will use the main WordPress MySQL connection.', 'wpdatatables'); ?>"></i>
             </h4>
-            <div class="toggle-switch p-b-20 p-t-5" data-ts-color="blue">
+            <div class="toggle-switch p-b-16" data-ts-color="blue">
+                <input id="wdt-separate-connection" type="checkbox">
                 <label for="wdt-separate-connection"
                        class="ts-label"><?php _e('Use separate MySQL connection', 'wpdatatables'); ?></label>
-                <input id="wdt-separate-connection" type="checkbox" hidden="hidden">
-                <label for="wdt-separate-connection" class="ts-helper"></label>
             </div>
         </div>
 
         <div class="col-sm-6 col-md-6 hidden mysql-serverside-settings-block">
-            <h4 class="c-black m-b-20">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Test connection', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Click this button to test if wpDataTables is able to connect to the MySQL server with the details you provided.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
-                <button class="btn btn-primary waves-effect" id="wp-my-sql-test">Test MySQL settings</button>
+                <button class="btn btn-primary" id="wp-my-sql-test">Test MySQL settings</button>
             </div>
         </div>
     </div>
 
     <div class="row hidden mysql-serverside-settings-block">
         <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+            <h4 class="c-title-color m-b-2 m-t-20">
                 <?php _e('MySQL host', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('MySQL host address.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
@@ -49,9 +48,9 @@
             </div>
         </div>
         <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+            <h4 class="c-title-color m-b-2 m-t-20">
                 <?php _e('MySQL database', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('MySQL database name.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
@@ -63,9 +62,9 @@
 
     <div class="row hidden mysql-serverside-settings-block">
         <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+            <h4 class="c-title-color m-b-2 m-t-20">
                 <?php _e('MySQL user', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('MySQL username for the connection.', 'wpdatatables'); ?>"></i>
             </h4>
 
@@ -75,9 +74,9 @@
             </div>
         </div>
         <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+            <h4 class="c-title-color m-b-2 m-t-20">
                 <?php _e('MySQL password', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('MySQL password for the provided user.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
@@ -89,9 +88,9 @@
 
     <div class="row hidden mysql-serverside-settings-block">
         <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+            <h4 class="c-title-color m-b-2 m-t-20">
                 <?php _e('MySQL port', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('MySQL port for the connection (default: 3306).', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">

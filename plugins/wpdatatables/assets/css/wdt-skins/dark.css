@@ -5,11 +5,11 @@
 @import url('https://fonts.googleapis.com/css?family=Roboto:400,500');
 
 @font-face {
-    font-family: WPDataTablesIconsPurple;
+    font-family: wpDataTablesIcons;
     font-style: normal;
     font-stretch: normal;
-    src: url(../../fonts/wpdatatablesiconsaqua-base.eot);
-    src: url(../../fonts/wpdatatablesiconsaqua-base.eot?#iefix) format('embedded-opentype'), url(../../fonts/wpdatatablesiconsaqua-base.woff) format('woff'), url(../../fonts/wpdatatablesiconsaqua-base.ttf) format('truetype'), url(../../fonts/wpdatatablesiconsaqua-base.svg#wpdatatablesiconsaqua-base) format('svg');
+    src: url(../../fonts/wpDataTablesIcons.eot);
+    src: url(../../fonts/wpDataTablesIcons.eot?#iefix) format('embedded-opentype'), url(../../fonts/wpDataTablesIcons.woff) format('woff'), url(../../fonts/wpDataTablesIcons.ttf) format('truetype'), url(../../fonts/wpDataTablesIcons.svg#wpDataTablesIcons) format('svg');
 }
 /*  Table   */
 
@@ -95,7 +95,7 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
     font-weight: normal;
 }
 .wpdt-c .wpDataTablesWrapper .dataTables_filter label .wdt-search-icon:before{
-    font-family: WPDataTablesIconsPurple;
+    font-family: wpDataTablesIcons;
     content: '\e901';
     position: absolute;
     top: -3px;
@@ -142,13 +142,13 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 }
 
 .wpdt-c .wpDataTablesWrapper .dataTables_length .bootstrap-select > .btn-default:before{
-    font-family: WPDataTablesIconsPurple;
-    content: "\e903";
-    color: #ffffff;
+    font-family: wpDataTablesIcons;
+    content: "\f0e1";
+    color: #606266;
     position: absolute;
     right: 6px;
-    top: 13px;
-    font-size: 9px;
+    top: 4px;
+    font-size: 15px;
     height: 0;
     width: 0;
     background-image: none;
@@ -210,7 +210,8 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 }
 .wpdt-c .wpDataTablesWrapper .dataTables_length .bootstrap-select .check-mark:before {
     position: absolute;
-    content: '\f26a';
+    font-family: 'wpDataTablesIcons';
+    content: '\f14b';
     top: 3px;
     font-size: 19px;
     color: #606fc7;
@@ -218,11 +219,11 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 .wpdt-c .wpDataTablesWrapper .dataTables_length .bootstrap-select .check-mark:after {
     position: absolute;
     top: 5px;
-    right: -13px;
-    content: '\f26b';
+    right: -16px;
+    content: '\f00c';
     font-size: 15px;
     font-weight: 600;
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     color: #ffffff;
 }
 
@@ -312,17 +313,17 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 /*  Sorting icons  */
 
 .wpdt-c .wpDataTablesWrapper table.wpDataTable thead th.sorting_asc:before {
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     display: inline-block;
-    content: '\f2f9';
+    content: '\f107';
     color: #ffffff;
     padding-right: 10px ;
 }
 
 .wpdt-c .wpDataTablesWrapper table.wpDataTable thead th.sorting_desc:before {
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     display: inline-block;
-    content: '\f2fc';
+    content: '\f106';
     color: #ffffff;
     padding-right: 10px ;
 }
@@ -414,7 +415,7 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
     line-height: 1;
     letter-spacing: normal;
     color: #606266;
-    margin-right: 20px;
+    margin-right: 0;
     margin-top: 6px;
 }
 
@@ -441,6 +442,7 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
     display: inline-block;
     padding: 10px 3px;
     font-size: 15px;
+    text-decoration: none !important;
 }
 
 .wpdt-c .wpDataTablesWrapper .dataTables_paginate a.paginate_button:focus {
@@ -454,7 +456,7 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 }
 
 .wpdt-c .wpDataTablesWrapper .dataTables_paginate .ellipsis {
-    padding: 5px 7px 7px;
+    padding: 6px 7px 7px;
     display: inline-block;
 }
 
@@ -526,7 +528,7 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 .wpdt-c .wpDataTablesWrapper .paginate_button:before,
 .wpdt-c .wpDataTablesWrapper table.has-columns-hidden span.responsiveExpander:before {
     display: inline-block;
-    font-family: WPDataTablesIcons !important;
+    font-family: wpDataTablesIcons !important;
     font-style: normal;
     font-weight: 400;
     text-align: center;
@@ -579,13 +581,13 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
     background-color: #4f5dba;
 }
 .wpdt-c .wpDataTablesWrapper table.has-columns-hidden span.responsiveExpander:after {
-    content: '\f278';
+    content: '\f067';
     display: inline-block;
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     position: absolute;
     color: #606266;
     background-image: none;
-    font-size: 35px;
+    font-size: 27px;
     left: 24px;
 }
 
@@ -595,13 +597,13 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 }
 
 .wpdt-c .wpDataTablesWrapper table.has-columns-hidden > tbody > tr.detail-show > td span.responsiveExpander:after {
-    content: '\f273';
+    content: '\f068';
     display: inline-block;
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     position: absolute;
     color: #ffffff;
     background-image: none;
-    font-size: 35px;
+    font-size: 27px;
     left: 24px;
 }
 
@@ -623,6 +625,9 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
     min-width: 200px;
     margin-left: 20px;
     color: #ffffff;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -o-pre-wrap;
 }
 .wpdt-c .wpDataTablesWrapper table.has-columns-hidden tr.row-detail > td ul li span.columnTitle{
     display: inline-block;
@@ -1068,13 +1073,13 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 .wpdt-c .wpDataTablesWrapper .wpDataTableFilterBox .wpDataTableFilterSection .bootstrap-select > .btn-default:before,
 .wpdt-c .wpDataTablesWrapper table.wpDataTable .bootstrap-select > .btn-default:before,
 .wpdt-c .modal#wdt-frontend-modal .bootstrap-select > .btn-default:before{
-    font-family: WPDataTablesIconsPurple;
-    content: "\e903";
+    font-family: wpDataTablesIcons;
+    content: "\f0e1";
     color: #606266;
     position: absolute;
-    right: 19px;
-    top: 13px;
-    font-size: 9px;
+    right: 20px;
+    top: 4px;
+    font-size: 15px;
     height: 0;
     width: 0;
     background-image: none;
@@ -1151,6 +1156,7 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
     clear: inherit;
     padding: 0;
     color: #ffffff;
+    text-transform: uppercase;
 }
 
 .wpdt-c .modal#wdt-frontend-modal .modal-dialog .modal-content .modal-header button.close,
@@ -1387,22 +1393,22 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
     border-left:1px solid #606266;
 }
 
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-prev-edit-button i.zmdi,
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-next-edit-button i.zmdi{
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-prev-edit-button i,
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-next-edit-button i{
     margin-top: 0px;
     margin-bottom: 1px;
     color: #c0c4cc;
     float: none;
 }
 
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-prev-edit-button i.zmdi-chevron-left{
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-prev-edit-button i.wpdt-icon-chevron-left{
     padding-right: 120px;
     font-size: 20px;
     vertical-align: sub;
     margin-top: 2px;
 }
 
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-next-edit-button i.zmdi-chevron-right{
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-next-edit-button i.wpdt-icon-chevron-right{
     padding-left: 120px;
     font-size: 20px;
     vertical-align: sub;
@@ -1447,11 +1453,11 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-cancel-edit-button:hover {
     text-transform: uppercase;
 }
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-gf-edit-dialog-button-block button.wdt-ok-edit-button i.zmdi,
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-gf-edit-dialog-button-block button.wdt-cancel-edit-button i.zmdi,
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-apply-edit-button i.zmdi,
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-ok-edit-button i.zmdi,
-.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-cancel-edit-button i.zmdi {
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-gf-edit-dialog-button-block button.wdt-ok-edit-button i,
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-gf-edit-dialog-button-block button.wdt-cancel-edit-button i,
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-apply-edit-button i,
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-ok-edit-button i,
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-cancel-edit-button i {
     margin-top: 1px;
     float: none;
     vertical-align: sub;
@@ -1468,6 +1474,9 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.07);
     margin-left: 0;
     color: #606fc7;
+    text-transform: uppercase;
+}
+.wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-ok-edit-button {
     text-transform: uppercase;
 }
 .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-gf-edit-dialog-button-block button.wdt-ok-edit-button,
@@ -1540,8 +1549,8 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 }
 
 .wpdt-c #wdt-frontend-modal #wdt-checkbox-filter-reset:before{
-    font-family: WPDataTablesIconsPurple;
-    content: "\e90b";
+    font-family: wpDataTablesIcons;
+    content: "\f00d";
     font-size: 12px;
     position: absolute;
     top: 8px;
@@ -1549,8 +1558,8 @@ div#wpdatatable-preview-container.wpDataTablesWrapper .wpDataTablesWrapper{
 }
 
 .wpdt-c #wdt-frontend-modal #wdt-checkbox-filter-close:before{
-    font-family: WPDataTablesIconsPurple;
-    content: "\e90a";
+    font-family: wpDataTablesIcons;
+    content: "\f00c";
     font-size: 18px;
     position: absolute;
     top: 5px;
@@ -1663,7 +1672,7 @@ div.dt-button-collection a.dt-button.buttons-pdf:before,
 .wpDataTablesWrapper .DTTT_button.DTTT_button_edit:before,
 .wpDataTablesWrapper .DTTT_button.DTTT_button_delete:before,
 .wpDataTablesWrapper .DTTT_button.DTTT_button_colvis:before{
-    font-family: WPDataTablesIconsPurple !important;
+    font-family: wpDataTablesIcons !important;
     font-size: 18px;
     font-style: normal;
     font-stretch: normal;
@@ -1692,13 +1701,13 @@ div.dt-button-collection a.dt-button.buttons-pdf:before,
 
 .wpDataTablesWrapper .DTTT_button.DTTT_button_export:after,
 .wpDataTablesWrapper .DTTT_button.DTTT_button_colvis:after{
-    font-family: WPDataTablesIconsPurple;
-    content: "\e903";
+    font-family: wpDataTablesIcons;
+    content: "\f0e1";
     color: #ffffff80;
     position: absolute;
     right: 13px;
-    top: 16px;
-    font-size: 9px;
+    top: 8px;
+    font-size: 15px;
 }
 .wpDataTablesWrapper .DTTT_button.DTTT_button_colvis:after{
     color: #ffffff80;
@@ -1710,7 +1719,7 @@ div.dt-button-collection a.dt-button.buttons-pdf:before,
 }
 
 .wpDataTablesWrapper .DTTT_button.DTTT_button_print:before{
-    font-family: WPDataTablesIconsPurple !important;
+    font-family: wpDataTablesIcons !important;
     content: "\e90e";
     vertical-align: middle;
 }
@@ -1726,7 +1735,7 @@ div.dt-button-collection a.dt-button.buttons-pdf:before,
 }
 
 div.dt-button-collection a.dt-button.buttons-excel:before{
-    content: '\e908';
+    content: '\e90a';
     vertical-align: middle;
 }
 
@@ -1736,12 +1745,12 @@ div.dt-button-collection a.dt-button.buttons-csv:before{
 }
 
 div.dt-button-collection a.dt-button.buttons-copy:before{
-    content: '\e907';
+    content: '\e908';
     vertical-align: middle;
 }
 
 div.dt-button-collection a.dt-button.buttons-pdf:before{
-    content: '\e90d';
+    content: '\e912';
     vertical-align: middle;
 }
 
@@ -1773,7 +1782,7 @@ div.dt-button-collection a.dt-button.buttons-pdf:before{
 
 .wpDataTablesWrapper .DTTT_button.DTTT_button_delete:before,
 .wpdt-c .modal#wdt-delete-modal .modal-dialog .modal-content .modal-footer button#wdt-browse-delete-button:before{
-    font-family: WPDataTablesIconsPurple;
+    font-family: wpDataTablesIcons;
     content: '\e90f';
     color: #FFFFFF;
     vertical-align: top;
@@ -1807,7 +1816,7 @@ div.dt-button-collection a.dt-button.buttons-pdf:before{
     color: #ffffff;
 }
 
-.wpdt-c .modal#wdt-delete-modal .modal-dialog .modal-content .modal-footer .zmdi-delete:before {
+.wpdt-c .modal#wdt-delete-modal .modal-dialog .modal-content .modal-footer .wpdt-icon-trash:before {
     content: '';
 }
 
@@ -2052,10 +2061,10 @@ div.dt-button-collection a.dt-button:last-child {
 
 div.dt-button-collection a.dt-button.buttons-columnVisibility.active:before {
     position: absolute;
-    content: "\f26a";
+    content: "\f14b";
     font-size: 19px;
     color: #606fc7;
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     -o-transform: scale(1);
@@ -2063,11 +2072,11 @@ div.dt-button-collection a.dt-button.buttons-columnVisibility.active:before {
 }
 div.dt-button-collection a.dt-button.buttons-columnVisibility.active:after {
     position: absolute;
-    content: "\f26b";
+    content: "\f00c";
     font-size: 15px;
-    font-weight: 600;
+    font-weight: 900;
     color: #ffffff;
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     -o-transform: scale(1);
@@ -2078,10 +2087,11 @@ div.dt-button-collection a.dt-button.buttons-columnVisibility.active:after {
 
 div.dt-button-collection a.dt-button.buttons-columnVisibility:before {
     position: absolute;
-    content: "\f279";
+    content: "\f04e";
+    font-weight: 400;
     font-size: 19px;
     color: #323232;
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     -o-transform: scale(1);
@@ -2111,7 +2121,7 @@ div.dt-button-collection a.dt-button.buttons-columnVisibility:before {
 
 .wpdt-c div.dt-button-info:before, div.dt-button-info:before{
     position: absolute;
-    font-family: WPDataTablesIconsPurple;
+    font-family: wpDataTablesIcons;
     content: '\e905';
     left: 7px;
     top:6px;
@@ -2121,7 +2131,7 @@ div.dt-button-collection a.dt-button.buttons-columnVisibility:before {
 
 .wpdt-c div.dt-button-info:after, div.dt-button-info:after{
     position: absolute;
-    font-family: WPDataTablesIconsPurple;
+    font-family: wpDataTablesIcons;
     content: '\e906';
     left: 8px;
     top: 6px;
@@ -2130,7 +2140,7 @@ div.dt-button-collection a.dt-button.buttons-columnVisibility:before {
 }
 
 .wpdt-c div.dt-button-info h2, div.dt-button-info h2{
-    font-family: GraphikWeb;
+    font-family: wpDataTablesIcons;
     font-size: 14px;
     font-weight: 500;
     font-style: normal;
@@ -2351,9 +2361,9 @@ div.dt-button-collection a.dt-button.buttons-columnVisibility:before {
         margin-left: 0;
     }
 
-    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-apply-edit-button i.zmdi,
-    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-ok-edit-button i.zmdi,
-    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-cancel-edit-button i.zmdi {
+    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-apply-edit-button i,
+    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-ok-edit-button i,
+    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-cancel-edit-button i {
         font-size: 12px;
     }
 
@@ -2362,11 +2372,11 @@ div.dt-button-collection a.dt-button.buttons-columnVisibility:before {
         width: 43%;
     }
 
-    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-next-edit-button i.zmdi-chevron-right {
+    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-next-edit-button i.wpdt-icon-chevron-right {
         padding-left: 38%;
     }
 
-    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-prev-edit-button i.zmdi-chevron-left {
+    .wpdt-c .modal#wdt-frontend-modal .modal-content .modal-footer .wdt-edit-dialog-button-block button.wdt-prev-edit-button i.wpdt-icon-chevron-left {
         padding-right: 38%;
     }
 

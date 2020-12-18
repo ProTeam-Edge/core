@@ -13,7 +13,7 @@
 
             <!-- .modal-header -->
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="wpdt-icon-times-full"></i></span>
                 </button>
                 <h4 class="modal-title"><?php _e('Duplicate chart', 'wpdatatables') ?></h4>
             </div>
@@ -23,10 +23,10 @@
             <div class="modal-body">
                 <!-- .row -->
                 <div class="row">
-                    <div class="col-sm-5">
-                        <label class="duplicate-chart-label"><?php _e('New chart title', 'wpdatatables'); ?></label>
+                    <div class="col-sm-12">
+                        <label class="c-title-color duplicate-chart-label m-b-4 f-500"><?php _e('New chart title', 'wpdatatables'); ?></label>
                     </div>
-                    <div class="col-sm-7">
+                    <div class="col-sm-12">
                         <input type="text" value="" class="wdt-duplicate-chart-name form-control input-sm" title=""/>
                     </div>
                 </div>
@@ -36,11 +36,16 @@
 
             <!-- .modal-footer -->
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger btn-icon-text waves-effect" data-dismiss="modal"><i
-                            class="zmdi zmdi-close"></i> <?php _e('Cancel', 'wpdatatables'); ?></button>
+                <hr>
                 <button type="button"
-                        class="btn btn-success btn-icon-text waves-effect wdt-apply duplicate-chart-button"><i
-                            class="zmdi zmdi-copy"></i> <?php _e('Duplicate', 'wpdatatables'); ?></button>
+                        class="btn btn-danger btn-icon-text"
+                        data-dismiss="modal">
+                    <?php _e('Cancel', 'wpdatatables'); ?></button>
+                <button type="button"
+                        class="btn btn-primary btn-icon-text wdt-apply duplicate-chart-button">
+                    <i class="wpdt-icon-clone"></i>
+                    <?php _e('Duplicate', 'wpdatatables'); ?>
+                </button>
             </div>
             <!--/ .modal-footer -->
         </div>

@@ -1346,7 +1346,7 @@ class wpDataTableConstructor
             $ret_val = ob_get_contents();
             ob_end_clean();
         } else {
-            $ret_val = __('<div class="alert alert-danger m-15">No results found. Please check if this query is correct! Table Constructor needs a query that returns data to build a wpDataTable.', 'wpdatatables');
+            $ret_val = __('<div class="alert alert-danger"><i class="wpdt-icon-exclamation-triangle"></i>No results found. Please check if this query is correct! Table Constructor needs a query that returns data to build a wpDataTable.', 'wpdatatables');
             if (!(Connection::isSeparate($connection)) && !empty($wpdb->last_error)) {
                 $ret_val .= '<br>Error: ' . $wpdb->last_error . '</div>';
             }
@@ -1374,7 +1374,7 @@ class wpDataTableConstructor
         $tableData['query'] = wdtSanitizeQuery(($tableData['query']));
 
         $table_array = array(
-            'title' => '',
+            'title' =>  sanitize_text_field($tableData['name']),
             'table_type' => 'mysql',
             'connection' => $tableData['connection'],
             'content' => '',

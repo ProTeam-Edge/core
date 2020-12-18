@@ -3,21 +3,21 @@
 <script id="wdt-constructor-column-block-template" type="text/x-jsrender">
     <div class="wdt-constructor-column-block col-sm-3">
 
-        <div class="card">
+        <div class="card m-b-15 m-t-15">
 
             <div class="card-header col-sm-12 ch-alt p-t-10 p-b-10 p-r-0 p-l-0">
 
-                <div class="col-sm-10 p-l-25">
+                <div class="col-sm-10">
                     <div class="fg-line">
                         <input type="text" class="form-control input-sm wdt-constructor-column-name" value="{{>name}}">
-                        <i class="zmdi zmdi-edit"></i>
+                        <i class="wpdt-icon-pen"></i>
                     </div>
                 </div>
 
                 <ul class="actions wdt-constructor-remove-column">
                     <li>
                         <a>
-                            <i class="zmdi zmdi-close"></i>
+                            <i class="wpdt-icon-trash-reg"></i>
                         </a>
                     </li>
                 </ul>
@@ -70,7 +70,7 @@
                     </h5>
                     <div class="form-group">
                         <div class="fg-line">
-                            <input type="text" class="form-control input-sm wdt-constructor-default-value" value="">
+                            <input type="text" class="form-control input-sm wdt-constructor-default-value" value="" placeholder="Enter predifined value">
                         </div>
                     </div>
                 </div>

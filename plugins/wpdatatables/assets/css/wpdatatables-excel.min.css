@@ -51,7 +51,7 @@ div.wpExcelTable {
 
 .wpExcelTable > .handsontable:first-child .overlayed_elm:after {
     display: inline-block;
-    font-family: WPDataTablesIcons!important;
+    font-family: wpDataTablesIcons!important;
     font-style: normal;
     font-weight: 400;
     text-align: center;
@@ -61,6 +61,5 @@ div.wpExcelTable {
 }
 
 .wpExcelTable > .handsontable:first-child .overlayed_elm:after {
-    font-family: dashicons!important;
-    content: "\f463"
+    content: "\e982"
 }

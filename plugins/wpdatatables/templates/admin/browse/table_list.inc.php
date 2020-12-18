@@ -3,14 +3,14 @@
 <?php /** @var WDTBrowseTable $this */ ?>
 <!-- .container -->
 <div class="container">
-    <div class="row m-t-30 m-b-30">
+    <div class="row">
         <div class="col-xs-6">
-            <div class="col-sm-6 bulk-action-container">
+            <div class="bulk-action-container">
                 <?php $this->display_tablenav('top'); ?>
             </div>
         </div>
         <div class="col-xs-6">
-            <div class="col-sm-6 pull-right search-box-container">
+            <div class="pull-right search-box-container">
                 <?php $this->search_box('search', 'search_id'); ?>
             </div>
         </div>
@@ -32,35 +32,19 @@
     <?php $this->display_rows_or_placeholder(); ?>
     </tbody>
 
-    <tfoot>
-    <tr>
-        <?php $this->print_column_headers(false); ?>
-    </tr>
-    </tfoot>
+
 </table>
 <!--/ .wp-list-table -->
 
 <!-- .container -->
 <div class="container">
-    <div class="row m-t-30 m-b-15">
-        <div class="col-xs-6">
-            <div class="col-sm-6 bulk-action-container">
-                <?php $this->display_tablenav('bottom'); ?>
-            </div>
-        </div>
-        <div class="col-xs-6">
+    <div class="row">
+        <div class="col-sm-6 pull-right">
             <?php $this->pagination('bottom'); ?>
         </div>
-    </div>
-</div>
-<!--/ .container -->
-
-<!-- .container -->
-<div class="container">
-    <div class="row m-t-15 m-b-30 p-l-10 p-r-10">
-        <div class="col-xs-12">
-            <a class="btn btn-default btn-icon-text waves-effect wdt-documentation" data-doc-page="browse_page">
-                <i class="zmdi zmdi-help-outline"></i> Documentation
+        <div class="col-sm-6 pull-left">
+            <a class="btn btn-default btn-icon-text wdt-documentation" data-doc-page="browse_page">
+                <i class="wpdt-icon-file-thin"></i> <?php _e(' View Documentation', 'wpdatatables'); ?>
             </a>
         </div>
     </div>

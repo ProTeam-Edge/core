@@ -244,9 +244,10 @@ class WPForms_Field_Address extends WPForms_Field {
 
 		// Add Postal code input mask for US address.
 		if ( 'us' === $scheme ) {
-			$properties['inputs']['postal']['class'][]                  = 'wpforms-masked-input';
-			$properties['inputs']['postal']['data']['inputmask-mask']   = '99999[-9999]';
-			$properties['inputs']['postal']['data']['inputmask-greedy'] = 'false';
+			$properties['inputs']['postal']['class'][]                   = 'wpforms-masked-input';
+			$properties['inputs']['postal']['data']['inputmask-mask']    = '99999[-9999]';
+			$properties['inputs']['postal']['data']['inputmask-greedy']  = 'false';
+			$properties['inputs']['postal']['data']['rule-empty-blanks'] = true;
 		}
 
 		return $properties;
@@ -381,8 +382,8 @@ class WPForms_Field_Address extends WPForms_Field {
 				printf( '<input type="text" class="default" id="wpforms-field-option-%d-address2_default" name="fields[%d][address2_default]" value="%s">', $field['id'], $field['id'], $address2_default );
 				printf( '<label for="wpforms-field-option-%d-address2_default" class="sub-label">%s</label>', $field['id'], esc_html__( 'Default Value', 'wpforms' ) );
 			echo '</div>';
-			echo '<div class="hide">';
-				printf( ' <input type="checkbox" class="hide" name="fields[%d][address2_hide]" value="1" %s>', $field['id'], checked( true, $address2_hide, false ) );
+			echo '<div class="wpforms-subfield-hide">';
+				printf( ' <input type="checkbox" class="wpforms-subfield-hide" name="fields[%d][address2_hide]" value="1" %s>', (int) $field['id'], checked( true, $address2_hide, false ) );
 			echo '</div>';
 		echo '</div>';
 
@@ -440,8 +441,8 @@ class WPForms_Field_Address extends WPForms_Field {
 				printf( '<input type="text" class="default" id="wpforms-field-option-%d-postal_default" name="fields[%d][postal_default]" value="%s">', $field['id'], $field['id'], $postal_default );
 				printf( '<label for="wpforms-field-option-%d-postal_default" class="sub-label">%s</label>', $field['id'], esc_html__( 'Default Value', 'wpforms' ) );
 			echo '</div>';
-			echo '<div class="hide">';
-				printf( ' <input type="checkbox" class="hide" name="fields[%d][postal_hide]" value="1" %s>', $field['id'], checked( true, $postal_hide, false ) );
+			echo '<div class="wpforms-subfield-hide">';
+				printf( ' <input type="checkbox" class="wpforms-subfield-hide" name="fields[%d][postal_hide]" value="1" %s>', (int) $field['id'], checked( true, $postal_hide, false ) );
 			echo '</div>';
 		echo '</div>';
 
@@ -464,8 +465,8 @@ class WPForms_Field_Address extends WPForms_Field {
 				printf( '<input type="text" class="default" id="wpforms-field-option-%d-country_default" name="fields[%d][country_default]" value="%s">', $field['id'], $field['id'], $country_default );
 				printf( '<label for="wpforms-field-option-%d-country_default" class="sub-label">%s</label>', $field['id'], esc_html__( 'Default Value', 'wpforms' ) );
 			echo '</div>';
-			echo '<div class="hide">';
-				printf( ' <input type="checkbox" class="hide" name="fields[%d][country_hide]" value="1" %s>', $field['id'], checked( '1', $country_hide, false ) );
+			echo '<div class="wpforms-subfield-hide">';
+				printf( ' <input type="checkbox" class="wpforms-subfield-hide" name="fields[%d][country_hide]" value="1" %s>', (int) $field['id'], checked( '1', $country_hide, false ) );
 			echo '</div>';
 		echo '</div>';
 
@@ -893,6 +894,35 @@ class WPForms_Field_Address extends WPForms_Field {
 			'postal'   => sanitize_text_field( $postal ),
 			'country'  => sanitize_text_field( $country ),
 		);
+	}
+
+	/**
+	 * Get field name for ajax error message.
+	 *
+	 * @since 1.6.3
+	 *
+	 * @param string $name  Field name for error triggered.
+	 * @param array  $field Field settings.
+	 * @param array  $props List of properties.
+	 * @param string $error Error message.
+	 *
+	 * @return string
+	 */
+	public function ajax_error_field_name( $name, $field, $props, $error ) {
+
+		if ( ! isset( $field['type'] ) || 'address' !== $field['type'] ) {
+			return $name;
+		}
+		if ( ! isset( $field['scheme'] ) ) {
+			return $name;
+		}
+		if ( 'us' === $field['scheme'] ) {
+			$input = isset( $props['inputs']['postal'] ) ? $props['inputs']['postal'] : [];
+		} else {
+			$input = isset( $props['inputs']['country'] ) ? $props['inputs']['country'] : [];
+		}
+
+		return isset( $input['attr']['name'] ) ? $input['attr']['name'] : $name;
 	}
 }
 

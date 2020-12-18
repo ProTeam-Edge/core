@@ -18,73 +18,94 @@
     <!-- /Preloader -->
 
     <div class="card-header wdt-admin-card-header ch-alt">
-        <div class="col-sm-8 p-l-0 p-t-5">
-            <h2><?php _e('Table preview and columns setup', 'wpdatatables'); ?> <?php echo Connection::enabledSeparate() ? ' (' . Connection::getName($connection) . ')' : ''; ?></h2>
+        <div class="col-sm-6 p-l-0 p-t-5">
+            <h2><?php _e('Table preview and columns setup', 'wpdatatables'); ?><?php echo Connection::enabledSeparate() ? ' (' . Connection::getName($connection) . ')' : ''; ?></h2>
         </div>
-        <div class="col-sm-4 wdt-table-action-buttons">
-            <button class="btn btn-primary waves-effect waves-float pull-right wdt-add-formula-column "
-                    title="<?php _e('Add a formula (calculated) column', 'wpdatatables'); ?>" data-toggle="tooltip">
-                <i class="zmdi zmdi-collection-plus"></i> <?php _e('Add a formula column', 'wpdatatables'); ?>
-            </button>
-            <button class="btn bgm-amber waves-effect waves-float pull-right"
-                    title="<?php _e('Complete column list', 'wpdatatables'); ?>" data-toggle="tooltip"
-                    id="wdt-open-columns-list">
-                <i class="zmdi zmdi-view-column"></i>
-            </button>
-            <?php if (isset($tableData) && $tableData->table->table_type === 'manual') { ?>
-                <button class="btn bgm-green waves-effect waves-float pull-right wdt-add-column"
-                        title="<?php _e('Add column', 'wpdatatables'); ?>" data-toggle="tooltip"></button>
-                <button class="btn bgm-red waves-effect waves-float pull-right wdt-remove-column"
-                        title="<?php _e('Remove column', 'wpdatatables'); ?>" data-toggle="tooltip"></button>
-            <?php } ?>
-        </div>
-        <div class="clear"></div>
-    </div>
-    <!-- /.card-header -->
-    <div class="card-body card-padding">
-
-        <div class="col-sm-12 p-0 wdt-edit-buttons hidden">
-            <span class="pull-right"><?php _e('Switch View:', 'wpdatatables'); ?>
+        <div class="col-sm-6 p-0 wdt-edit-buttons hidden">
+            <span class="pull-right wdt-view-buttons">
                 <?php if (isset($_GET['table_view']) && $_GET['table_view'] == 'excel') { ?>
-                    <a href="<?php echo admin_url(isset($_GET['table_id']) ? 'admin.php?page=wpdatatables-constructor&source&table_id=' . (int)$_GET['table_id'] : ''); ?>"><?php _e('STANDARD', 'wpdatatables'); ?></a> |
-                    <?php _e('EXCEL-LIKE', 'wpdatatables'); ?>
+                    <button class="btn wdt-standard-view" title="" data-toggle="tooltip"
+                            data-original-title="Swich to Standard table view">
+                    <a href="<?php echo admin_url(isset($_GET['table_id']) ? 'admin.php?page=wpdatatables-constructor&source&table_id=' . (int)$_GET['table_id'] : ''); ?>">
+                       <?php _e('Standard view', 'wpdatatables'); ?></a></button>
+                    <button class="btn pull-right wdt-excel-view-selected" title="">
+                     <?php _e('Excel Like', 'wpdatatables'); ?></button>
                 <?php } else { ?>
-                    <?php _e('STANDARD', 'wpdatatables'); ?> |
-                    <a href="<?php echo admin_url(isset($_GET['table_id']) ? 'admin.php?page=wpdatatables-constructor&source&table_id=' . (int)$_GET['table_id'] . '&table_view=excel' : ''); ?>"><?php _e('EXCEL-LIKE', 'wpdatatables'); ?></a>
+                    <button class="btn wdt-standard-view-selected " title="">
+                    <?php _e('Standard view', 'wpdatatables'); ?></button>
+                    <button class="btn pull-right wdt-excel-view " title="" data-toggle="tooltip"
+                            data-original-title="Swich to Excel-like table view">
+                    <a href="<?php echo admin_url(isset($_GET['table_id']) ? 'admin.php?page=wpdatatables-constructor&source&table_id=' . (int)$_GET['table_id'] . '&table_view=excel' : ''); ?>">
+                        <?php _e('Excel Like', 'wpdatatables'); ?></a></button>
                 <?php } ?>
             </span>
         </div>
         <div class="clearfix"></div>
 
-        <div class="row wpDataTableContainer wpDataTables wpDataTablesWrapper" id="wpdatatable-preview-container">
-            <?php if (isset($tableData)) {
-                echo $tableData->wdtHtml;
-            } ?>
-        </div>
-        <!-- /.wpDataTableContainer -->
+    </div>
+    <!-- /.card-header -->
+    <div class="card-body card-padding">
 
-        <div class="row">
-
-            <div class="col-md-12">
-                <button class="btn btn-default btn-icon-text waves-effect wdt-documentation"
-                        data-doc-page="table_preview">
-                    <i class="zmdi zmdi-help-outline"></i> <?php _e('Documentation', 'wpdatatables'); ?>
+        <div class="wdt-table-action-buttons">
+            <span class="pull-right">
+                 <button class="btn pull-right"
+                         title="<?php _e('Complete column list', 'wpdatatables'); ?>" data-toggle="tooltip"
+                         id="wdt-open-columns-list">
+               <i class="wpdt-icon-line-columns"></i>
+                     <?php _e('Column List', 'wpdatatables'); ?>
+            </button>
+            </span>
+            <span class="pull-left">
+              <?php if (isset($tableData) && $tableData->table->table_type === 'manual') { ?>
+                  <button class="btn pull-right wdt-remove-column">
+                      <i class="wpdt-icon-minus" style="color: #F03E3E;"></i>
+                      <?php _e('Remove column', 'wpdatatables'); ?>
+                  </button>
+              <?php } ?>
+                <button class="btn pull-right wdt-add-formula-column">
+                <i class="wpdt-icon-function-reg"></i>
+                    <?php _e('Add a Formula Column', 'wpdatatables'); ?>
                 </button>
+              <?php if (isset($tableData) && $tableData->table->table_type === 'manual') { ?>
+                  <button class="btn pull-right wdt-add-column">
+                      <i class="wpdt-icon-plus-full"></i>
+                      <?php _e('Add column', 'wpdatatables'); ?>
+                  </button>
+              <?php } ?>
+           </span>
 
-                <div class="pull-right">
-                    <button class="btn btn-danger btn-icon-text waves-effect wdt-backend-close">
-                        <i class="zmdi zmdi-close"></i> <?php _e('Cancel', 'wpdatatables'); ?>
-                    </button>
-                    <button class="btn btn-success btn-icon-text waves-effect wdt-apply">
-                        <i class="zmdi zmdi-check"></i> <?php _e('Apply', 'wpdatatables'); ?>
-                    </button>
-                </div>
-            </div>
-            <!-- /.col-md-12 -->
         </div>
-        <!-- /.row -->
+        <div class="clear"></div>
+        <div id="wpdt-view-container">
+            <div class="row wpDataTableContainer wpDataTables wpDataTablesWrapper" id="wpdatatable-preview-container">
+                <?php if (isset($tableData)) {
+                    echo $tableData->wdtHtml;
+                } ?>
+            </div>
+            <!-- /.wpDataTableContainer -->
+        </div>
 
     </div>
     <!-- /.card-body -->
+    <div class="row wpdt-actions-bottom">
+
+        <div class="col">
+            <button class="btn btn-default btn-icon-text wdt-documentation"
+                    data-doc-page="table_preview">
+                <i class="wpdt-icon-file-thin"></i><?php _e('View Documentation', 'wpdatatables'); ?>
+            </button>
+
+            <div class="pull-right">
+                <button class="btn btn-danger btn-icon-text wdt-backend-close">
+                    <?php _e('Cancel', 'wpdatatables'); ?>
+                </button>
+                <button class="btn btn-primary btn-icon-text wdt-apply">
+                    <i class="wpdt-icon-save"></i> <?php _e('Save Changes', 'wpdatatables'); ?>
+                </button>
+            </div>
+        </div>
+        <!-- /.col-md-12 -->
+    </div>
+    <!-- /.row -->
 </div>
 <!-- /.card /.column-settings -->

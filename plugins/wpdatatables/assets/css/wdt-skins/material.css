@@ -63,16 +63,16 @@
 }
 
 .wpDataTablesWrapper table.wpDataTable thead th.sorting_asc:before {
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     display: inline-block;
-    content: '\f2fe';
+    content: '\f175';
     padding-right: 10px ;
 }
 
 .wpDataTablesWrapper table.wpDataTable thead th.sorting_desc:before {
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     display: inline-block;
-    content: '\f303';
+    content: '\f176';
     padding-right: 10px ;
 }
 
@@ -210,7 +210,7 @@
 .wpDataTablesWrapper .paginate_button:before,
 .wpDataTablesWrapper table.has-columns-hidden span.responsiveExpander:before {
     display: inline-block;
-    font-family: WPDataTablesIcons !important;
+    font-family: wpDataTablesIcons !important;
     font-style: normal;
     font-weight: 400;
     text-align: center;
@@ -302,7 +302,7 @@
 }
 
 .wpdt-c button.wdt-clear-filters-button:before, button.wdt-clear-filters-widget-button:before {
-    font-family: WPDataTablesIcons;
+    font-family: wpDataTablesIcons;
     content: "";
 }
 
@@ -394,10 +394,11 @@ table.has-columns-hidden > tbody > tr.row-detail > td > ul > li > span.columnTit
 }
 
 .wpdt-c .wpDataTablesWrapper table.has-columns-hidden > tbody > tr > td > span.responsiveExpander:after {
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     display: inline-block;
     line-height: 0;
-    content: "\f278";
+    margin-right: 5px;
+    content: "\f067";
     height: 11px;
     width: 11px;
     background-image: none;
@@ -406,10 +407,10 @@ table.has-columns-hidden > tbody > tr.row-detail > td > ul > li > span.columnTit
 }
 
 .wpdt-c table.has-columns-hidden > tbody > tr.detail-show > td span.responsiveExpander:after {
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     display: inline-block;
     line-height: 0;
-    content: "\f273";
+    content: "\f068";
     height: 11px;
     width: 11px;
     background-image: none;
@@ -473,9 +474,10 @@ div.dt-button-collection a.dt-button.active:hover {
 
 div.dt-button-collection a.dt-button.active:before {
     position: absolute;
-    content: "\f26b";
+    content: "\f00c";
+    font-weight: 300;
     font-size: 19px;
-    font-family: 'Material-Design-Iconic-Font';
+    font-family: 'wpDataTablesIcons';
     -webkit-transform: scale(1);
     -ms-transform: scale(1);
     -o-transform: scale(1);
@@ -510,8 +512,8 @@ div.dt-button-collection a.dt-button.active:before {
 }
 
 .wpDataTables .overlayed:after {
-    font-family: dashicons !important;
-    content: "\f463";
+    font-family: wpDataTablesIcons !important;
+    content: "\e982";
 }
 
 @-moz-keyframes spin {

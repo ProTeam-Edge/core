@@ -16,7 +16,7 @@
 
             <!-- .modal-header -->
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="wpdt-icon-times-full"></i></span>
                 </button>
                 <h4 class="modal-title"><?php _e('Add Column', 'wpdatatable'); ?></h4>
             </div>
@@ -105,10 +105,9 @@
 
                         <div class="col-xs-12">
                             <div class="toggle-switch" data-ts-color="blue">
+                                <input id="wdt-add-column-fill-with-default" type="checkbox">
                                 <label for="wdt-add-column-fill-with-default"
                                        class="ts-label"><?php _e('Fill with default value', 'wpdatatables'); ?></label>
-                                <input id="wdt-add-column-fill-with-default" type="checkbox" hidden="hidden">
-                                <label for="wdt-add-column-fill-with-default" class="ts-helper"></label>
                             </div>
                         </div>
 
@@ -121,14 +120,14 @@
 
             <!-- .modal-footer -->
             <div class="modal-footer">
-                <button class="btn btn-danger btn-icon-text waves-effect" data-toggle="modal"
+                <hr>
+                <button class="btn btn-danger btn-icon-text" data-toggle="modal"
                         data-target="#wdt-add-column-modal">
-                    <i class="zmdi zmdi-close"></i>
                     <?php _e('Cancel', 'wpdatatables'); ?>
                 </button>
-                <button class="btn btn-success btn-icon-text waves-effect" id="wdt-add-column-submit">
-                    <i class="zmdi zmdi-check"></i>
-                    <?php _e('OK', 'wpdatatables'); ?>
+                <button class="btn btn-primary btn-icon-text" id="wdt-add-column-submit">
+                    <i class="wpdt-icon-save"></i>
+                    <?php _e('Save', 'wpdatatables'); ?>
                 </button>
             </div>
             <!--/ .modal-footer -->

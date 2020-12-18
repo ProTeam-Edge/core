@@ -291,7 +291,7 @@ function wdtSaveTableFrontend() {
                 // Sanitize data
                 $formData[$column->orig_header] = strip_tags(
                     $formData[$column->orig_header],
-                    '<br/><br><b><strong><h1><h2><h3><a><i><em><ol><ul><li><img><blockquote><div><hr><p><span><select><option><sup><sub><iframe>'
+                    '<br/><br><b><strong><h1><h2><h3><a><i><em><ol><ul><li><img><blockquote><div><hr><p><span><select><option><sup><sub><iframe><button>'
                 );
 
                 // Formatting for DB based on column type
@@ -566,7 +566,7 @@ function wdtSaveTableCellsFrontend() {
                     if (in_array($allColumnsTypes[$columnName], array('string', 'email', 'link', 'image'))) {
                         $cellData[$columnName] = strip_tags(
                             $cellData[$columnName],
-                            '<br/><br><b><strong><h1><h2><h3><a><i><em><ol><ul><li><img><blockquote><div><hr><p><span><select><option><sup><sub><iframe>'
+                            '<br/><br><b><strong><h1><h2><h3><a><i><em><ol><ul><li><img><blockquote><div><hr><p><span><select><option><sup><sub><iframe><button>'
                         );
                         $cellData[$columnName] = WDTTools::prepareStringCell($cellData[$columnName], $tableData->connection);
                     }
@@ -614,7 +614,7 @@ function wdtSaveTableCellsFrontend() {
                             $qSet .= $leftSysIdentifier
                                 . $cell_column_key
                                 . $rightSysIdentifier
-                                . "= '$cell_value'";
+                                . "= $cell_value";
                         }
                         $qWhere = $leftSysIdentifier
                             . $idColumnKey

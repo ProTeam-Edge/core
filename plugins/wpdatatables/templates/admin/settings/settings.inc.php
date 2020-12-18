@@ -2,7 +2,9 @@
 
 <div class="wrap wdt-datatables-admin-wrap">
     <?php do_action('wpdatatables_admin_before_settings'); ?>
-
+    <!-- Preloader -->
+    <?php include WDT_TEMPLATE_PATH . 'admin/common/preloader.inc.php'; ?>
+    <!-- /Preloader -->
     <!-- .container -->
     <div class="container">
 
@@ -12,23 +14,21 @@
             <div class="card plugin-settings">
                 <?php wp_nonce_field('wdtSettingsNonce', 'wdtNonce'); ?>
                 <div class="card-header wdt-admin-card-header ch-alt">
-                    <img id="wpdt-inline-logo" style="width: 60px;height: 50px;"
-                         src="<?php echo WDT_ROOT_URL; ?>assets/img/logo-large.png"/>
+                    <img id="wpdt-inline-logo"
+                         src="<?php echo WDT_ROOT_URL; ?>assets/img/logo.svg"/>
                     <h2>
-                        <span title="<?php _e('Settings for the plugin', 'wpdatatables'); ?>">wpDataTables Settings</span>
-                        <small><?php _e('Settings for the plugin', 'wpdatatables'); ?></small>
+                        <span style="display: none">wpDataTables Settings</span>
+                        <?php _e('Settings', 'wpdatatables'); ?>
                     </h2>
                     <ul class="actions p-t-5">
                         <li>
-                            <button class="btn bgm-red btn-icon btn-lg waves-effect waves-circle waves-float wdt-backend-close"
-                                    title="<?php _e('Cancel', 'wpdatatables'); ?>" data-toggle="tooltip">
-                                <i class="zmdi zmdi-close"></i>
+                            <button class="btn wdt-backend-close">
+                                <?php _e('Cancel', 'wpdatatables'); ?>
                             </button>
                         </li>
                         <li>
-                            <button class="btn bgm-green btn-icon btn-lg waves-effect waves-circle waves-float wdt-apply"
-                                    title="<?php _e('Save', 'wpdatatables'); ?>" data-toggle="tooltip">
-                                <i class="zmdi zmdi-check"></i>
+                            <button class="btn btn-primary btn-lg wdt-apply">
+                                <i class="wpdt-icon-save"></i><?php _e('Save Changes', 'wpdatatables'); ?>
                             </button>
                         </li>
                     </ul>
@@ -55,10 +55,6 @@
                                 <a href="#custom-js-and-css" aria-controls="custom-js-and-css" role="tab"
                                    data-toggle="tab"><?php _e('Custom JS and CSS', 'wpdatatables'); ?></a>
                             </li>
-                            <li class="info-tab">
-                                <a href="#info" aria-controls="info" role="tab"
-                                   data-toggle="tab"><?php _e('Info', 'wpdatatables'); ?></a>
-                            </li>
                             <li class="wdt-activation-tab">
                                 <a href="#wdt-activation" aria-controls="wdt-activation" role="tab"
                                    data-toggle="tab"><?php _e('Activation', 'wpdatatables'); ?></a>
@@ -82,32 +78,28 @@
                             <?php include 'tabs/custom_js_and_css.php' ?>
                             <!-- /Custom JS and CSS settings tab-->
 
-                            <!-- Info tab-->
-                            <?php include 'tabs/info.php' ?>
-                            <!-- /Info tab-->
-
                             <!-- Activation tab-->
                             <?php include 'tabs/activation.php' ?>
                             <!-- /Activation tab-->
                         </div>
                     </div>
-                    <div class="row m-t-15 m-b-5 p-l-15 p-r-15">
-                        <div class="pull-right">
-                            <button class="btn btn-primary waves-effect reset-color-settings" id="reset-color-settings"
-                                    style="display: none;">
-                                <?php _e('Reset colors and fonts to default', 'wpdatatables'); ?>
-                            </button>
-                            <button class="btn btn-success btn-icon-text waves-effect wdt-apply">
-                                <i class="zmdi zmdi-check"></i><?php _e('Apply', 'wpdatatables'); ?>
-                            </button>
-                        </div>
-                        <a class="btn btn-default btn-icon-text waves-effect wdt-documentation"
-                           data-doc-page="settings_page">
-                            <i class="zmdi zmdi-help-outline"></i> Documentation
-                        </a>
-                    </div>
-                </div>
 
+                </div>
+                <div class="row m-t-15 m-b-5 p-l-15 p-r-15">
+                    <div class="pull-right">
+                        <button class="btn btn-primary reset-color-settings" id="reset-color-settings"
+                                style="display: none;">
+                            <?php _e('Reset colors and fonts to default', 'wpdatatables'); ?>
+                        </button>
+                        <button class="btn btn-primary btn-icon-text wdt-apply">
+                            <i class="wpdt-icon-save"></i><?php _e('Save Changes', 'wpdatatables'); ?>
+                        </button>
+                    </div>
+                    <a class="btn btn-default btn-icon-text wdt-documentation"
+                       data-doc-page="settings_page">
+                        <i class="wpdt-icon-file-thin"></i> <?php _e(' View Documentation', 'wpdatatables'); ?>
+                    </a>
+                </div>
             </div>
 
         </div>

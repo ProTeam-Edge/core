@@ -383,8 +383,10 @@ class WPForms_Conditional_Logic_Core {
 															$selected = false;
 														}
 
+														$field_label = isset( $form_field['label'] ) && ! wpforms_is_empty_string( trim( $form_field['label'] ) ) ? $form_field['label'] : sprintf( /* translators: %d - field ID. */ __( 'Field #%d', 'wpforms-lite' ), absint( $form_field['id'] ) );
+
 														$selected = selected( $selected, $form_field['id'], false );
-														printf( '<option value="%s" %s>%s</option>', absint( $form_field['id'] ), $selected, esc_html( $form_field['label'] ) );
+														printf( '<option value="%s" %s>%s</option>', absint( $form_field['id'] ), esc_attr( $selected ), esc_html( $field_label ) );
 													}
 												}
 
@@ -460,7 +462,7 @@ class WPForms_Conditional_Logic_Core {
 												} else {
 
 													printf(
-														'<select name="%s[conditionals][%s][%s][value]" class="wpforms-conditional-value" %d>',
+														'<select name="%1$s[conditionals][%2$s][%3$s][value]" class="wpforms-conditional-value" %4$d>',
 														$field_name,
 														$group_id,
 														$rule_id,
@@ -472,9 +474,19 @@ class WPForms_Conditional_Logic_Core {
 														if ( ! empty( $form_fields[ $rule['field'] ]['choices'] ) ) {
 
 															foreach ( $form_fields[ $rule['field'] ]['choices'] as $option_id => $option ) {
-																$value    = isset( $rule['value'] ) ? $rule['value'] : '';
-																$selected = selected( $option_id, $value, false );
-																printf( '<option value="%s" %s>%s</option>', $option_id, $selected, esc_html( $option['label'] ) );
+																$value = isset( $rule['value'] ) ? $rule['value'] : '';
+																$label = ! isset( $option['label'] ) || '' === trim( $option['label'] )
+																	? sprintf( /* translators: %d - choice number. */
+																		esc_html__( 'Choice %d', 'wpforms-lite' ),
+																		(int) $option_id
+																	)
+																	: $option['label'];
+																printf(
+																	'<option value="%1$s" %2$s>%3$s</option>',
+																	esc_attr( $option_id ),
+																	selected( $option_id, $value, false ),
+																	esc_html( trim( $label ) )
+																);
 															}
 														}
 

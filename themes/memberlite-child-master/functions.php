@@ -12,7 +12,6 @@ include('alpn_data.php');
 //include('pte_interactions.php');
 include('pte_messaging.php');
 
-
 $wpdb_readonly = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,'sky0001654.mdb0001643.db.skysql.net:5003');  //TODO use this connection anywhere that isn't susceptible to master/slave, add/update lag. Coming from add/update, pass in JSON. use different connection
 
 function pte_dequeue_unnecessary_styles() {
@@ -23,7 +22,7 @@ add_action( 'wp_print_styles', 'pte_dequeue_unnecessary_styles' );
 
 //Enqueue scripts and styles.
 function memberlite_child_enqueue_styles() {
-	wp_enqueue_style( 'pte_font_awesome', get_template_directory_uri() . '-child-master/fa/css/all.min.css');
+	  wp_enqueue_style( 'pte_font_awesome', get_template_directory_uri() . '-child-master/fa/css/all.min.css');
     wp_enqueue_style( 'pte_foxit_pdf', get_template_directory_uri() . '-child-master/foxitpdf/lib/UIExtension.css' );
     wp_enqueue_style( 'memberlite', get_template_directory_uri() . '/style.css' );
 }
@@ -45,24 +44,31 @@ add_action( 'switch_theme', 'memberlite_child_switch_theme_update_mods' );
 
 function alpn_select2_enqueue_styles() {
 
-    wp_enqueue_style( 'alpn_uppy', 'https://transloadit.edgly.net/releases/uppy/v1.14.1/uppy.min.css' );
-    wp_enqueue_style( 'alpn_doka', get_template_directory_uri() . '-child-master/doka/bin/browser/doka.min.css' );
+    wp_enqueue_style( 'alpn_uppy', 'https://transloadit.edgly.net/releases/uppy/v1.18.0/uppy.min.css' );
+    wp_enqueue_style( 'pte_doka', get_template_directory_uri() . '-child-master/doka/bin/browser/doka.min.css');
     wp_enqueue_style( 'alpn_select2', get_template_directory_uri() . '-child-master/dist/css/select2.min.css' );
     wp_enqueue_style( 'alpn_select2_bootstrap', get_template_directory_uri() . '-child-master/dist/css/select2-bootstrap.css' );
-    wp_enqueue_style( 'alpn_wait', get_template_directory_uri() . '-child-master/wait/waitMe.min.css' );
 }
 add_action( 'wp_enqueue_scripts', 'alpn_select2_enqueue_styles' );
 
 //CSS handled by the template
 
 function alpn_load_script(){
-
+/*
   wp_register_script(
       'alpn_twilio_sync',
       '//media.twiliocdn.com/sdk/js/sync/v0.8/twilio-sync.min.js',
-      array( )
+      array()
   );
   wp_enqueue_script( 'alpn_twilio_sync' );
+*/
+
+    wp_register_script(
+        'alpn_twilio_sync',
+        '//media.twiliocdn.com/sdk/js/sync/v0.8/twilio-sync.min.js',
+        array()
+    );
+    wp_enqueue_script( 'alpn_twilio_sync' );
 
     wp_register_script(
         'alpn_select2',
@@ -71,19 +77,33 @@ function alpn_load_script(){
     );
     wp_enqueue_script( 'alpn_select2' );
 
-	wp_register_script(
-        'alpn_wait',
-        get_template_directory_uri() . '/../memberlite-child-master/wait/waitMe.min.js',
+	wp_register_script(   //TODO Remover WAITME?
+        'alpn_indicator',
+        get_template_directory_uri() . '/../memberlite-child-master/dist/js/progressbar.min.js',
         array( 'jquery' )
     );
-    wp_enqueue_script( 'alpn_wait' );
+    wp_enqueue_script( 'alpn_indicator' );
+
+    wp_register_script(   //TODO Remover WAITME?
+          'alpn_md5',
+          get_template_directory_uri() . '/../memberlite-child-master/dist/js/md5.min.js',
+          array( 'jquery' )
+      );
+      wp_enqueue_script( 'alpn_md5' );
 
 	wp_register_script(
   	'alpn_date',
-  	'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.8.20/dayjs.min.js',
+  	'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.1/dayjs.min.js',
   	array( 'jquery' )
     );
     wp_enqueue_script( 'alpn_date' );
+
+    wp_register_script(
+    	'alpn_date_utc',
+    	'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.1/plugin/utc.min.js',
+    	array( 'alpn_date' )
+      );
+      wp_enqueue_script( 'alpn_date_utc' );
 
     wp_register_script(
         'alpn_script',
@@ -94,7 +114,7 @@ function alpn_load_script(){
 
     wp_register_script(
         'alpn_uppy',
-        'https://transloadit.edgly.net/releases/uppy/v1.14.1/uppy.min.js',
+        'https://transloadit.edgly.net/releases/uppy/v1.22.0/uppy.min.js',
         array( 'memberlite-script' )
     );
     wp_enqueue_script( 'alpn_uppy' );
@@ -113,33 +133,37 @@ function alpn_load_script(){
     );
     wp_enqueue_script( 'alpn_cloud_sponge' );
 
-	wp_register_script(
-        'pte_pdf_adaptive',
-		 get_template_directory_uri() . '/../memberlite-child-master/foxitpdf/lib/adaptive.js',
-		array( 'jquery' )
-    );
-    wp_enqueue_script( 'pte_pdf_adaptive' );
+    if (!is_admin()) {
 
-	wp_register_script(
-        'pte_pdf_license',
-		 get_template_directory_uri() . '/../memberlite-child-master/foxitpdf/examples/license-key.js',
-		array( 'pte_pdf_adaptive' )
-    );
-    wp_enqueue_script( 'pte_pdf_license' );
+      wp_register_script(   //TODO Remover WAITME?
+            'pte_print_page',
+            get_template_directory_uri() . '/../memberlite-child-master/dist/js/jquery.printPage.js',
+            array( 'jquery' )
+        );
+        wp_enqueue_script( 'pte_print_page' );
 
-	wp_register_script(
-        'pte_pdf_preloader_core',
-		 get_template_directory_uri() . '/../memberlite-child-master/foxitpdf/lib/preload-jr-worker.js',
-		array( 'pte_pdf_license' )
-    );
-    wp_enqueue_script( 'pte_pdf_preloader_core' );
+      	wp_register_script(
+              'pte_pdf_license',
+      		 get_template_directory_uri() . '/../memberlite-child-master/foxitpdf/examples/license-key.js',
+      		array( 'jquery' )
+          );
+          wp_enqueue_script( 'pte_pdf_license' );
 
-	wp_register_script(
-        'pte_ui_extension',
-		 get_template_directory_uri() . '/../memberlite-child-master/foxitpdf/lib/UIExtension.full.js',
-		array( 'pte_pdf_preloader_core' )
-    );
-    wp_enqueue_script( 'pte_ui_extension' );
+      	wp_register_script(
+              'pte_pdf_preloader_core',
+      		 get_template_directory_uri() . '/../memberlite-child-master/foxitpdf/lib/preload-jr-worker.js',
+      		array( 'pte_pdf_license' )
+          );
+          wp_enqueue_script( 'pte_pdf_preloader_core' );
+
+      	wp_register_script(
+              'pte_ui_extension',
+      		 get_template_directory_uri() . '/../memberlite-child-master/foxitpdf/lib/UIExtension.full.js',
+      		array( 'pte_pdf_preloader_core' )
+          );
+          wp_enqueue_script( 'pte_ui_extension' );
+    }
+
 }
 add_action('wp_enqueue_scripts', 'alpn_load_script');
 add_action('admin_enqueue_scripts', 'alpn_load_script');
@@ -227,62 +251,27 @@ function remove_tml_profile_fields() {
 	tml_remove_form_field( 'profile', 'url' );
 	tml_remove_form_field( 'profile', 'about_yourself_section_header' );
 	tml_remove_form_field( 'profile', 'description' );
-	tml_remove_form_field( 'profile', 'account_management_section_header' );
+  tml_remove_form_field( 'profile', 'account_management_section_header' );
 }
 add_action( 'init', 'remove_tml_profile_fields' );
 
-
-/*
-personal_options_section_header
-admin_bar_front
-locale
-name_section_header
-user_login
-first_name
-last_name
-nickname
-display_name
-contact_info_section_header
-email
-url
-aim (As a result of wp_get_user_contact_methods())
-yim (As a result of wp_get_user_contact_methods())
-jabber (As a result of wp_get_user_contact_methods())
-about_yourself_section_header
-description
-avatar
-account_management_section_header
-pass1
-pass2
-show_user_profile (This is the action hook)
-submit
-
-*/
-
-
 add_filter("pmpro_checkout_confirm_email", "__return_false");  //remove email confirmation on login.
+add_filter("pmpro_checkout_confirm_password", "__return_false");  //remove email confirmation on login.
 
 
-function sync_alpn_user_info_on_register ($user_id) {
-
+function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets up default topics and sample data.
 	global $wpdb;
 	$now = date ("Y-m-d H:i:s", time());
+  $formId = pte_create_default_topics($user_id, true);   //with sample data
 
 	$entry = array(
-		'id' => '1104',  //source user template type
+		'id' => $formId,  //source user template type  Using custom TT
 		'new_owner' => $user_id,
 		'fields' => array()
 	);
 	alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
 
-	//add default forms
-	$wpdb->query(
-			"INSERT INTO alpn_forms
-            (owner_id, form_id, sort_order)
-            VALUES
-            ('{$user_id}', '2', '0'),
-            ('{$user_id}', '5', '100')
-			");
+
 }
 add_action('user_register', 'sync_alpn_user_info_on_register');
 //add_action('profile_update', 'sync_alpn_user_info_on_register');
@@ -292,108 +281,56 @@ add_action('user_register', 'sync_alpn_user_info_on_register');
 
 function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { //Add record to topic with special handling for user and network
 
-	global $wpdb;
-	$pteUserTimezoneOffset = 0;
+  global $wpdb;
+  $returnDetails = array();
+
+  alpn_log("alpn_handle_topic_add_edit");
+  alpn_log($fields);
+
+  $fieldsAll = $fields;
+  $row_id = $userEmail = '';
 
 	$formId = $entry['id'];
+  $fields = $entry['fields'];
+
+  alpn_log($fields);
+
+
+  //alpn_log('alpn_handle_topic_add_edit_TEXTAREAFIELDS');
+  //alpn_log($fieldsAll);
 
 	if (isset($entry['new_owner'])) {
 		$userId = $entry['new_owner'];
+    $userInfo = get_userdata($userId);
+    $userEmail = $userInfo->user_email;
 	} else {
 		$userInfo = wp_get_current_user();
 		$userId = $userInfo->data->ID;
 		$userEmail = $userInfo->data->user_email;
 	}
-	$formId = $entry['id'];
-	$fields = $entry['fields'];
 
-	$formData = json_decode($form_data['settings']['form_desc'], true);
-	$type = isset($formData['type']) ? $formData['type'] : 'form';
-
+  $type = 'form';
 	$now = date ("Y-m-d H:i:s", time());
 	switch ($type) {
-		case 'list':
-		case 'formlet':
-			$results = $wpdb->get_results(
-				$wpdb->prepare("SELECT id, name, meta FROM alpn_topic_tabs WHERE form_id = %s", $formId)
-			 );
-			if (isset($results[0])) {
-				$result = $results[0];
-				$tabId = $result->id;
-				$tabName = $result->name;
-				$tabMeta = json_decode($result->meta, true);
-				$topicId = $row_id = "";
-				$hiddenFieldId = $tabMeta['pte.meta'];
-				$alpnNormalizeMap = $tabMeta['field_map'];
-				$alpnNormalizeMapFlipped = array_flip($alpnNormalizeMap);
-				$aboutSource = $tabMeta['alpn_about_source'];
-				$nameSource = $tabMeta['alpn_name_source'];
-				$sortSource = $tabMeta['alpn_sort_source'];
-
-				if (isset($fields[$hiddenFieldId])) {
-					$field = json_decode($fields[$hiddenFieldId], true);
-					if (isset($field['topic_id'])) {
-						$topicId = $field['topic_id'];
-					}
-					if (isset($field['row_id'])) {
-						$row_id = $field['row_id'];
-					}
-					if (isset($field['tab_type_id'])) {
-						$tabTypeId = $field['tab_type_id'];
-					}
-					if (isset($field['pte_user_timezone_offset'])) {
-						$pteUserTimezoneOffset = $field['pte_user_timezone_offset'];
-					}
-				}
-				$mappedFields = array();
-				foreach($alpnNormalizeMapFlipped as $key => $value) {
-					if (isset($fields[$key])) {
-						$mappedFields[$alpnNormalizeMapFlipped[$key]] = $fields[$key];
-					} else {
-						$mappedFields[$alpnNormalizeMapFlipped[$key]] = '';
-					}
-				}
-				$topicName = pte_make_string($nameSource, $fields, $alpnNormalizeMap, $pteUserTimezoneOffset);
-				$topicAbout = pte_make_string($aboutSource, $fields, $alpnNormalizeMap, $pteUserTimezoneOffset);
-				$topicSort = pte_make_string($sortSource, $fields, $alpnNormalizeMap, $pteUserTimezoneOffset);
-				$topicData = array("modified_date" => $now, "topic_id" => $topicId, "owner_id" => $userId, "name" => $topicName, "description" => $topicAbout, "content" => json_encode($mappedFields), "tab_type_id" => $tabTypeId, "sort_value" => $topicSort);
-
-				if ($row_id) { //edit
-					$whereClause['id'] = $row_id;
-					$wpdb->update( 'alpn_topic_items', $topicData, $whereClause );
-				} else { //add
-					$wpdb->insert( 'alpn_topic_items', $topicData );
-					$row_id = $wpdb->insert_id;
-				}
-			}
-		break;
-
 		case 'form':
-
 			$results = $wpdb->get_results(
-				$wpdb->prepare("SELECT id, name, topic_type_meta, icon FROM alpn_topic_types WHERE form_id = %s", $formId)
+				$wpdb->prepare("SELECT id, name, topic_type_meta, icon, special, schema_key FROM alpn_topic_types WHERE form_id = %s", $formId)
 			 );
-
 			if (isset($results[0])) {
-
-				$topicType = $results['0'];
-				$topicTypeId = $topicType->id;
+				$topicType = $results[0];
+        $topicTypeId = $topicType->id;
+        $topicSchemaKey = $topicType->schema_key;
+				$topicTypeSpecial = $topicType->special;
 				$topicTypeMeta = json_decode($topicType->topic_type_meta, true);
-				$alpnNormalizeMap = $topicTypeMeta['field_map'];
+				$alpnNormalizeMap = pte_map_extract($topicTypeMeta['field_map']);
 				$alpnNormalizeMapFlipped = array_flip($alpnNormalizeMap);
-				$dbTableName = $topicTypeMeta['alpn_db_table_name'];
-				$hiddenFieldId = $topicTypeMeta['pte.meta'];
 				$nameSource = $topicTypeMeta['alpn_name_source'];
 				$aboutSource = $topicTypeMeta['alpn_about_source'];
 
-				if (isset($fields[$hiddenFieldId])) {
-					$field = json_decode($fields[$hiddenFieldId], true);
-					if (isset($field['row_id'])) {
-						$row_id = $field['row_id'];
-					}
-					if (isset($field['pte_user_timezone_offset'])) {
-						$pteUserTimezoneOffset = $field['pte_user_timezone_offset'];
-					}
+				if (isset($fields[0])) { //metadata carried with form
+					$field = json_decode($fields[0], true);
+          $returnDetails = isset($field['return_details']) ? $field['return_details'] : array();
+          $row_id = isset($field['row_id']) ? $field['row_id'] : 0;
 				}
 
 				$mappedFields = array();
@@ -408,85 +345,121 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 				if (isset($entry['new_owner'])) {
 					$topicName = "New Member";
 					$topicAbout = "";
+				} else if ($fields) {
+					$topicName = pte_make_string($nameSource, $fields, $alpnNormalizeMap);
+					$topicAbout = pte_make_string($aboutSource, $fields, $alpnNormalizeMap);
 				} else {
-					$topicName = pte_make_string($nameSource, $fields, $alpnNormalizeMap, $pteUserTimezoneOffset);
-					$topicAbout = pte_make_string($aboutSource, $fields, $alpnNormalizeMap, $pteUserTimezoneOffset);
-				}
+          $topicName = '';
+          $topicAbout = '';
+        }
 
 				$last_topic_id = "";
         $altId = ""; //email address for type 4 topics contact and topicid
 				$last_record_id = array();
 				$topicMeta = array();
 
-				if ($topicTypeId == '4') { //Network
-          $altId = $mappedFields['patient.telecom.1.value'];  //Email
-				} else if ($topicTypeId == '5') { //User
-					$mappedFields['patient.telecom.1.value'] = $userEmail;  //sets user profile email to WP email
+				if ($topicTypeSpecial == 'contact') { //Network
+          $altId = $mappedFields['person_email'];  //Email
+				} else if ($topicTypeSpecial == 'user') { //User
+					$mappedFields['person_email'] = $userEmail;  //sets user profile email to WP email
 				}
 
 				//TODO Topic Meta. Network: user-editable status: prospect, active, trusted (need better name). Topic: type.
-				$topicData = array("alt_id" => $altId, "modified_date" => $now, "owner_id" => $userId, "topic_type_id" => $topicTypeId, "name" => $topicName, "about" => $topicAbout, "topic_content" => json_encode($mappedFields), "topic_meta" => json_encode($topicMeta));
+				$topicData = array("alt_id" => $altId, "modified_date" => $now, "owner_id" => $userId, "topic_type_id" => $topicTypeId, "special" => $topicTypeSpecial, "name" => $topicName, "about" => $topicAbout, "topic_content" => json_encode($mappedFields), "topic_meta" => json_encode($topicMeta));
 
 				//TODO topics: lotsa other stats.
 
-				if ($row_id) { //edit
+				if ($row_id) { //EDIT
+
+          if ($topicSchemaKey == "Person") {  //Recalc the pretty first letter icon placeholder but only if the image isn't an icon yet. TODO any way to know this without hitting db again?
+            $userRow = $wpdb->get_results(
+              $wpdb->prepare("SELECT image_handle FROM alpn_topics WHERE id = %d", $row_id)
+             );
+            if (isset($userRow[0])) {
+              $currentImageHandle = $userRow[0]->image_handle;
+              if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
+                $topicData['image_handle'] = "pte_icon_letter_" . strtolower(substr($mappedFields['person_givenname'], 0, 1)) . ".png";
+              }
+            }
+          }
 					$topicData['last_op'] = "edit";
 					$whereClause['id'] = $row_id;
 					$wpdb->update( 'alpn_topics', $topicData, $whereClause );
 					$last_record_id['last_topic_add_id'] = $row_id;
 
-          if ($topicTypeId == 4) { //Update connection
+          if ($topicTypeSpecial == 'contact') { //Update connection
             $topicData['contact_topic_id'] = $row_id;
-            $topicData['contact_email'] = $mappedFields['patient.telecom.1.value'];
+            $topicData['contact_email'] = $mappedFields['person_email'];
+            $topicData['owner_wp_id'] = $userId;
             pte_manage_user_connection($topicData);
           }
+          if ($topicTypeSpecial == 'user') { //update user
 
-          if ($topicTypeId == 5) { //update user
-            $data['topic_name'] = $mappedFields['patient.name.0.given'];
+            $data['user_id'] = $userId;
+            $data['topic_id'] = $row_id;
+            $data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
             pte_manage_cc_groups("update_user", $data);
-            update_user_meta( $userId, "pte_user_network_id",  $row_id); //SH
+
+            //update_user_meta( $userId, "pte_user_network_id",  $row_id); //SH  TODO probably don't need this so I commented it. Because once ID, always id.
             $data = array(
-              "sync_type" => "create_sync_id",
+              "sync_type" => "return_create_sync_id",
               "sync_payload" => array()
             );
             pte_manage_user_sync($data);
           }
-
-
 				} else { //add
+          if ($topicSchemaKey == "Person") {$topicData['image_handle'] = "pte_icon_letter_n.png";}  //Dor new user until they edit
           $data = array();
           $topicData['last_op'] = "add";
           $topicData['created_date'] = $now;
           $wpdb->insert( 'alpn_topics', $topicData );
-
           $row_id = $wpdb->insert_id;
           $last_record_id['last_topic_add_id'] = $row_id;
 
-          if ($topicTypeId == 4) { //Update connection
+          //TODO Use Sync to send update to client.
+
+          $isLinkTopic = isset($returnDetails['return_to']) && (substr($returnDetails['return_to'], 0, 5) == "core_");
+
+          if ($isLinkTopic) {  //Add Topic Link
+            $subjectToken = $returnDetails['subject_token'];
+            $requestData = array(
+            	'owner_id' => $userId,
+            	'topic_id' => $returnDetails['topic_id'],
+            	'connected_id' => $userId,
+            	'connection_link_topic_id' => $row_id
+            );
+            $returnDetails['new_connected_link_details'] = pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData, $subjectToken);
+          }
+
+          if ($topicTypeSpecial == 'contact') { //Update connection
             $topicData['contact_topic_id'] = $row_id;
-            $topicData['contact_email'] = $mappedFields['patient.telecom.1.value'];
+            $topicData['contact_email'] = $mappedFields['person_email'];
+            $topicData['owner_wp_id'] = $userId;
             pte_manage_user_connection($topicData);
           }
 
-          if ($topicTypeId == 5) { //Add user but don't create channels or members -- JIT
-            $data['user_id'] = $userId;
-            $data['topic_name'] = $mappedFields['patient.name.0.given'];
-            $last_record_id['wp_id'] = $row_id;
+          if ($topicTypeSpecial == 'user') { //Add user but don't create CHAT channels or CHAT members -- JIT
+            $data['owner_id'] = $userId;
+            $data['topic_id'] = $row_id;
+            $data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
             pte_manage_cc_groups("add_user", $data);
             update_user_meta( $userId, "pte_user_network_id",  $row_id);
             $data = array(
-              "sync_type" => "create_sync_id",
+              "sync_type" => "return_create_sync_id",
+              "sync_user_id" => $userId,
               "sync_payload" => array()
             );
             pte_manage_user_sync($data);
 				}
       }
-				//Update last record for UI purposes
+				//Update last record metadata for UI/UX purposes
 				$last_record_id['id'] = $userId;
+        $last_record_id['last_return_to'] = json_encode($returnDetails);
 				$wpdb->replace( 'alpn_user_metadata', $last_record_id );
 				}
 		break;
     }
+    return $row_id;
 
 	} // no topic info
 add_action( 'wpforms_process_complete', 'alpn_handle_topic_add_edit', 10, 4 );

@@ -16,7 +16,7 @@
 
             <!-- .modal-header -->
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="wpdt-icon-times-full"></i></span>
                 </button>
                 <h4 class="modal-title"><?php _e('Remove Column', 'wpdatatable'); ?></h4>
             </div>
@@ -32,8 +32,8 @@
                         <!-- .form-group -->
                         <div class="form-group col-xs-12">
                             <label for="wdtDeleteColumnSelect"
-                                   class="col-sm-3 control-label"><strong><?php _e('Remove Column', 'wpdatatable'); ?></strong></label>
-                            <div class="col-sm-9">
+                                   class="col-sm-12 p-l-0 c-title-color f-500 p-r-0 control-label"><?php _e('Remove Column', 'wpdatatable'); ?></label>
+                            <div class="col-sm-12 p-l-0 p-r-0">
                                 <div class="fg-line">
                                     <div class="select">
                                         <select id="wdtDeleteColumnSelect" class="selectpicker">
@@ -54,16 +54,16 @@
 
                         <!-- .form-group -->
                         <div class="form-group col-xs-12 wdt-remove-column-confirmation">
-                            <label for="wdtDeleteColumnSelect"
-                                   class="col-sm-3 control-label"><strong><?php _e('Confirm', 'wpdatatable'); ?></strong></label>
-                            <div class="col-sm-9">
-                                <div class="fg-line checkbox">
-                                    <label>
-                                        <input id="wdt-remove-column-confirm" type="checkbox" value="">
-                                        <i class="input-helper"></i>
-                                        <?php _e('Are you sure? There is no undo!', 'wpdatatables'); ?>
-                                    </label>
-                                </div>
+                            <h4 class="c-title-color m-b-2">
+                                <?php _e('Confirm', 'wpdatatables'); ?>
+                            </h4>
+                            <div class="toggle-switch" data-ts-color="blue">
+                                <input type="checkbox" id="wdt-remove-column-confirm" name="wdt-remove-column-confirm"
+                                       value="" title="">
+
+                                <label for="wdt-remove-column-confirm" class="control-label">
+                                    <?php _e('Are you sure? There is no undo!', 'wpdatatables'); ?>
+                                </label>
                             </div>
                         </div>
                         <!--/ .form-group -->
@@ -76,14 +76,14 @@
 
             <!-- .modal-footer -->
             <div class="modal-footer">
-                <button class="btn btn-danger btn-icon-text waves-effect" data-toggle="modal"
+                <hr>
+                <button class="btn btn-danger btn-icon-text" data-toggle="modal"
                         data-target="#wdt-remove-column-modal">
-                    <i class="zmdi zmdi-close"></i>
                     <?php _e('Cancel', 'wpdatatables'); ?>
                 </button>
-                <button class="btn btn-success btn-icon-text waves-effect" id="wdt-remove-column-submit">
-                    <i class="zmdi zmdi-check"></i>
-                    <?php _e('OK', 'wpdatatables'); ?>
+                <button class="btn btn-icon-text" id="wdt-remove-column-submit">
+                    <i class="wpdt-icon-trash"></i>
+                    <?php _e('Remove', 'wpdatatables'); ?>
                 </button>
             </div>
             <!--/ .modal-footer -->

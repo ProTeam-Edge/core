@@ -13,35 +13,29 @@ $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 
 $html="";
-
-$html .= "<div class='wp-block-columns alpn_vault_add_edit_inner'>
-
-		  <div class='wp-block-column alpn_vault_about' style='flex-basis: 50% !important;'>
-			
-			<div>Description</div>
-
-			<textarea id='alpn_about_field' placeholder='Describe your vault entry so it can be easily found...'></textarea>
-			
-			<div id='pte_add_sharing_line'>
-				<div id='pte_add_sharing_line_left'>			
-					<div style='margin-top: 5px;'>Access</div>	 			
-					<select id='alpn_selector_sharing' class='alpn_selector_sharing'>
-						<option value='40'>Private</option>
-						<option value='10'>General</option>
-						<option value='20'>Restricted</option>
-					</select>
-				</div>
-				<div id='pte_add_sharing_line_right'>			
-					<button id='alpn_vault_save_info' class='btn btn-danger btn-work-area' onclick='pte_handle_workarea_button(\"update_info\")'>Save Info</button>
-				</div>
-			</div>
-			<div style='clear: both;'></div>
-		   </div>
-		   
-		  <div id='alpn_vault_forms' class='wp-block-column alpn_vault_forms' style='flex-basis: 50% !important;'>
-		  	
-		  </div>		   
-		  </div>";
+$html .= "			  <div class='pte_vault_row'>
+										<div class='pte_vault_row_67 pte_vault_text_xlarge pte_vault_bold'>
+											<span id='alpn_name_field_label'>Name</span>
+											<div class='pte_field_padding_right'><input id='alpn_name_field' placeholder='From Upload'></div>
+										</div>
+										<div class='pte_vault_row_33 pte_vault_text_xlarge pte_field_padding_right'>
+											<span class='pte_vault_bold'>Access</span>
+											<select id='alpn_selector_sharing' class='alpn_selector_sharing'>
+												<option value='40'>Private</option>
+												<option value='10'>General</option>
+												<option value='20'>Restricted</option>
+											</select>
+										</div>
+								</div>
+								<div class='pte_vault_row pte_row_top_margin'>
+										<div class='pte_vault_row_67 pte_vault_text_xlarge pte_vault_bold pte_field_padding_right'>
+											Description
+											<textarea id='alpn_about_field' placeholder='Describe your vault entry so it can be easily found...' class='pte_field_padding_right'></textarea>
+										</div>
+										<div class='pte_vault_row_33 pte_vault_text_xlarge pte_field_padding_right'>
+										</div>
+								</div>
+					";
 $html = str_replace('table_1', 'table_form_search', $html);
 $html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
 

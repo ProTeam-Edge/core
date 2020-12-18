@@ -3,8 +3,8 @@ Contributors: britner
 Tags: gutenberg, blocks, page builder, google fonts, dual buttons, svg icons, editor width,
 Donate link: https://www.kadencewp.com/about-us/
 Requires at least: 5.2
-Tested up to: 5.4.2
-Stable tag: 1.8.10
+Tested up to: 5.6.0
+Stable tag: 1.9.9
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,6 +86,108 @@ Install the plugin into the `/wp-content/plugins/` folder, and activate it.
 6. Editor Width settings inside Gutenberg
 
 == Changelog ==
+
+= 1.9.9 =
+* Update: Measure Settings Control.
+* Fix: Possible issue with gallery carousel overflow.
+* Fix: Possible issue with defaults.
+* Fix: RTL Collapse grid gutter.
+* Fix: RTL Column select.
+* Fix: Accordion Mobile Font size.
+
+= 1.9.8 =
+* Update: Admin Styling for WP 5.6
+* Fix: Advanced header link option not showing.
+
+= 1.9.7 =
+* Fix: Possible update issue.
+
+= 1.9.6 =
+* Add: MailerLite option to Kadence Blocks.
+* Update: Initial Update to Blocks settings page.
+* Update: Initial Update to use WPScripts.
+* Fix: Issue with dashes in table to contents when building links.
+* Fix: Issue with Column Margin/Padding controls.
+* Fix: Issue with Button Text Size Input.
+* Fix: Issue with accordions pane link with multiple accordions on the page.
+* Fix: Issue with border radius 0 for testimonial block.
+
+= 1.9.5 =
+* Fix: Issue with rendering when previously had selected muli font.
+
+= 1.9.4 =
+* Update font list, change muli to mulish.
+* Update: Better column Padding/Margin Controls.
+* Fix: Anchor Header issue.
+* Update: Better inheriting of font options from global settings in Kadence Theme.
+* Fix: Gallery Captions Tablet and Mobile sizes.
+* Fix: issue with TOC in certain contexts.
+* Fix: RTL issue in editor.
+* Update: Show Error Message Below submit for validation errors.
+* Add: Error Message to issue with recaptcha v3 failing on second post without reloading the page.
+
+= 1.9.3 =
+* Add: Polyfill for Safari Scroll to ID.
+* Add: Margin control for TOC block.
+* Fix TOC title font size not showing live.
+* Fix: Issue with TOC if all allowed headers turned off.
+* Fix: Testimonial Rating not working with global palette.
+* Fix: Issue with latest desktop safari and parallax. 
+* Fix: Issue with 2 column icon list block.
+* Fix: Issue with change columns not assigning ids correctly.
+* FixL Issue with three column tablet and mobile layout.
+
+= 1.9.2 =
+* Add: TOC Block Box Shadow.
+* Add: TOC Block Border Radius.
+* Add: TOC Block Max Width.
+* Add: TOC Block Scroll to ID.
+* Fix: TOC columns for mobile.
+* Fix: Expand Icon.
+* Fix: TOC better special character support.
+
+= 1.9.1 =
+* Fix: PHP 7.2 error.
+
+= 1.9.0 =
+* Add: Table of Content Block.
+* Update: Inline style support for different kinds of embedding
+* Fix: Some prebuilt content not loading.
+* Fix: Row layout not updating correctly when columns changed.
+* Fix: Various small bugs with colors not updating in the settings panel.
+
+= 1.8.14 =
+* Add: Option for Advanced Heading Block to be Paragraph.
+* Fix: Image align for testimonials.
+* Fix: Accordion scroll issue.
+* Fix: A few RTL issues.
+* Fix: More range controls moved over to Kadence Range.
+* Fix: Info Box allow two different links.
+* Fix: Two Icon size for range.
+* Fix: Firefox issue with range.
+* Fix: Margin unit in button.
+* Fix: Loading styles outside of content area issues.
+* Update: Add support for themes using css variables for color. Thanks @andreiglingeanu
+ 
+= 1.8.13 =
+* Add: User visibility setting for showing to a specific user.
+* Fix: Device visibility setting for columns.
+* Add: Device visibility setting for spacer block.
+* Fix: Issue with range input being near impossible to type in.
+* Fix: Issue with limit of 24 tabs.
+* Fix: Issue with slower loading and accordion js.
+
+= 1.8.12 =
+* Add: User visibility settings.
+* Fix: Name on Plugins page.
+* Fix: Issue with columns resizer.
+* Fix button margin not working issue.
+* Fix: Radio field option for form.
+* Fix: Tabs interlinking issue.
+
+= 1.8.11 =
+* Update: Accordion and Tab Color selectors.
+* Fix: Margin issue for icon list.
 
 = 1.8.10 =
 * Fix: Gallery Tablet and Mobile Gutter not working.

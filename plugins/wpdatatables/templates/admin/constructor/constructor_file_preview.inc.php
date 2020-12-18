@@ -5,22 +5,22 @@
     <?php if ($header !== null) { ?>
         <div class="wdt-constructor-column-block wdt-constructor-column-block-file col-sm-3">
 
-            <div class="card">
+            <div class="card m-b-15 m-t-15">
 
                 <div class="card-header col-sm-12 ch-alt p-t-10 p-b-10 p-r-0 p-l-0">
 
-                    <div class="col-sm-10 p-l-25">
+                    <div class="col-sm-10">
                         <div class="fg-line">
                             <input type="text" class="form-control input-sm wdt-constructor-column-name"
                                    value="<?php echo $header ?>">
-                            <i class="zmdi zmdi-edit"></i>
+                            <i class="wpdt-icon-pen"></i>
                         </div>
                     </div>
 
                     <ul class="actions wdt-constructor-remove-column">
                         <li>
                             <a>
-                                <i class="zmdi zmdi-close"></i>
+                                <i class="wpdt-icon-trash-reg"></i>
                             </a>
                         </li>
                     </ul>
@@ -48,7 +48,7 @@
                     </div>
 
                     <div class="col-sm-12 wdt-constructor-date-input-format-block p-0" style="display: none;">
-                        <h5 class="c-black m-b-20">
+                        <h5 class="c-title-color m-b-2">
                             <?php _e('Date input format', 'wpdatatables'); ?>
                         </h5>
 
@@ -100,7 +100,7 @@
                         </h5>
                         <div class="form-group">
                             <div class="fg-line">
-                                <input type="text" class="form-control input-sm wdt-constructor-default-value" value="">
+                                <input type="text" class="form-control input-sm wdt-constructor-default-value" value="" placeholder="Enter predifined value">
                             </div>
                         </div>
                     </div>

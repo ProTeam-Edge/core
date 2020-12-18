@@ -48,36 +48,44 @@
 }
 
 .wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon {
-  font-family: 'Material-Design-Iconic-Font';
+  font-family: 'wpDataTablesIcons';
   font-size: 18px;
 }
 
 .wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon-chevron-left:before {
-  content: "\f2ff";
+  content: "\f30a";
 }
 
 .wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon-chevron-right:before {
-  content: "\f301";
+  content: "\f30b";
 }
 
 .wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon-time:before {
-  content: "\f337";
+  content: "\f019";
 }
 
 .wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon-trash:before {
-  content: "\f330";
+  content: "\f273";
 }
 
 .wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon-calendar:before {
-  content: "\f32e";
+  content: "\f073";
 }
 
 .wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon-chevron-up:before {
-  content: "\f1e5";
+  content: "\f0dd" !important;
+}
+.wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .btn[data-action="incrementMinutes"]:after,
+.wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .btn[data-action="incrementHours"]:after {
+  display: none !important;
 }
 
-.wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon-chevron-down:before {
-  content: "\f1e4";
+.wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .glyphicon-chevron-down:before{
+  content: "\f0e1" !important;
+}
+.wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .btn[data-action="decrementMinutes"]:after,
+.wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget .btn[data-action="decrementHours"]:after {
+  display: none !important;
 }
 
 .wpdt-c .wdt-datetimepicker-modal.bootstrap-datetimepicker-widget a[data-action] {
@@ -96,7 +104,7 @@
 }
 
 .wpdt-c .wdt-datetimepicker-modal .timepicker-picker .table-condensed > tbody > tr > td {
-  padding: 10px;
+  padding: 0;
   background: transparent;
 }
 
@@ -137,6 +145,7 @@
   height: 30px;
   border-radius: 50%;
   line-height: 29px;
+  text-decoration: none !important;
 }
 
 .wpdt-c .wdt-datetimepicker-modal .datepicker table thead tr th:hover .glyphicon {

@@ -126,14 +126,26 @@ var wpdatatable_plugin_config = {
 
         if (purchaseCode) {
             jQuery('#wdt-purchase-code-store').prop('disabled', 'disabled');
-            jQuery('#wdt-activate-plugin').removeClass('btn-primary').addClass('btn-danger').html('Deactivate');
+            jQuery('#wdt-activate-plugin').removeClass('btn-primary').addClass('btn-danger').html('<i class="wpdt-icon-times-circle-full"></i>Deactivate');
         } else {
             jQuery('#wdt-purchase-code-store').prop('disabled', '');
-            jQuery('#wdt-activate-plugin').removeClass('btn-danger').addClass('btn-primary').html('Activate');
+            jQuery('#wdt-activate-plugin').removeClass('btn-danger').addClass('btn-primary').html('<i class="wpdt-icon-check-circle-full"></i>Activate');
         }
 
     },
 
+    setGettingStartedPageStatus: function (gettingStartedPageStatus) {
+        wdt_current_config.wdtGettingStartedPageStatus = gettingStartedPageStatus;
+        if( jQuery('#wdt-getting-started-page-status').val() != gettingStartedPageStatus ){
+            jQuery('#wdt-getting-started-page-status').prop( 'checked', gettingStartedPageStatus );
+        }
+    },
+    setLiteVSPremiumPageStatus: function (liteVSPremiumPageStatus) {
+        wdt_current_config.wdtLiteVSPremiumPageStatus = liteVSPremiumPageStatus;
+        if( jQuery('#wdt-lite-vs-premium-page-status').val() != liteVSPremiumPageStatus ){
+            jQuery('#wdt-lite-vs-premium-page-status').prop( 'checked', liteVSPremiumPageStatus );
+        }
+    },
     setIncludeBootstrap: function (includeBootstrap) {
         wdt_current_config.wdtIncludeBootstrap = includeBootstrap;
         if( jQuery('#wdt-include-bootstrap').val() != includeBootstrap ){
@@ -186,7 +198,9 @@ var wpdatatable_plugin_config = {
                     jQuery('input[data-name=' + settingName + ']').val( settingValue );
                     break;
                 default:
-                    jQuery('input[data-name=' + settingName + ']').closest('.color-picker').colorpicker('setValue', settingValue);
+                    jQuery('input[data-name=' + settingName + ']').val( settingValue );
+                    jQuery('input[data-name=' + settingName + '] + .wpcolorpicker-icon i').css( "background-color",  settingValue );
+
             }
         }
     },

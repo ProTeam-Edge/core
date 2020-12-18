@@ -1,3 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+
+@font-face {
+  font-family: 'wpDataTablesIcons' !important;
+  src: url(../../fonts/wpDataTablesIcons.eot);
+  src: url(../../fonts/wpDataTablesIcons.eot?#iefix) format('embedded-opentype'), url(../../fonts/wpDataTablesIcons.woff) format('woff'), url(../../fonts/wpDataTablesIcons.ttf) format('truetype'), url(../../fonts/wpDataTablesIcons.svg#wpDataTablesIcons) format('svg');
+}
 .wpdt-c .t-view[data-tv-type="image"]:before {
   content: "\f17f";
   background: #4CAF50;
@@ -1828,188 +1836,8 @@ html.ismobile .page-loader {
   margin: 1px 9px 0;
 }
 
-.wpdt-c .fc-day-header {
-  font-size: 0;
-  padding-bottom: 20px !important;
-}
 
-.wpdt-c .fc-day-header:first-letter {
-  font-size: 14px;
-  color: #c2c2c2;
-  text-align: left;
-  border-bottom-width: 0;
-  border-right-color: #eee;
-  padding: 10px 12px;
-  text-transform: uppercase;
-  font-weight: 700;
-}
 
-.wpdt-c .fc-today {
-  color: #FFC107;
-}
-
-.wpdt-c .fc-toolbar {
-  margin-bottom: 0;
-  padding: 20px 17px 19px;
-  position: relative;
-}
-
-.wpdt-c .fc-toolbar h2 {
-  margin-top: 7px;
-}
-
-.wpdt-c .fc-toolbar .ui-button {
-  border: 0;
-  background: 0 0;
-  padding: 0;
-  outline: none !important;
-  text-align: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-}
-
-.wpdt-c .fc-toolbar .ui-button:hover {
-  background: #EFEFEF;
-}
-
-.wpdt-c .fc-toolbar .ui-button > span {
-  position: relative;
-  font-family: 'Material-Design-Iconic-Font';
-  font-size: 24px;
-  line-height: 100%;
-  width: 30px;
-  display: block;
-  margin-top: 2px;
-}
-
-.wpdt-c .fc-toolbar .ui-button > span:before {
-  position: relative;
-  z-index: 1;
-}
-
-.wpdt-c .fc-toolbar .ui-button > span.ui-icon-circle-triangle-w:before {
-  content: "\f2fa";
-}
-
-.wpdt-c .fc-toolbar .ui-button > span.ui-icon-circle-triangle-e:before {
-  content: "\f2fb";
-}
-
-.wpdt-c .fc-event {
-  padding: 0;
-  font-size: 11px;
-  border-radius: 2px;
-  border: 0;
-}
-
-.wpdt-c .fc-event .fc-title {
-  padding: 2px 8px;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.wpdt-c .fc-event .fc-time {
-  float: left;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 2px 6px;
-  margin: 0 0 0 -1px;
-}
-
-.wpdt-c .fc-view,
-.wpdt-c .fc-view > table {
-  border: 0;
-  overflow: hidden;
-}
-
-.wpdt-c .fc-view > table > tbody > tr > .ui-widget-content {
-  border-top: 0;
-}
-
-div.fc-row {
-  margin-right: 0 !important;
-  border: 0 !important;
-}
-
-.wpdt-c .fc-today {
-  color: #FFC107 !important;
-}
-
-/* Even Tag Color */
-
-.wpdt-c .event-tag {
-  margin-top: 5px;
-}
-
-.wpdt-c .event-tag > span {
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  margin-right: 3px;
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.wpdt-c .event-tag > span:hover {
-  opacity: 0.8;
-  filter: alpha(opacity=80);
-}
-
-.wpdt-c .event-tag > span.selected:before {
-  font-family: 'Material-Design-Iconic-Font';
-  content: "\f26b";
-  position: absolute;
-  text-align: center;
-  top: 3px;
-  width: 100%;
-  font-size: 17px;
-  color: #FFF;
-}
-
-hr.fc-divider {
-  border-width: 1px;
-  border-color: #eee;
-}
-
-.wpdt-c .fc-day-grid-container.fc-scroller {
-  height: auto !important;
-  overflow: hidden !important;
-}
-
-/* Even Tag Color */
-
-.wpdt-c .event-tag {
-  margin-top: 5px;
-}
-
-.wpdt-c .event-tag > span {
-  border-radius: 50%;
-  width: 30px;
-  height: 30px;
-  margin-right: 3px;
-  position: relative;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.wpdt-c .event-tag > span:hover {
-  opacity: 0.8;
-  filter: alpha(opacity=80);
-}
-
-.wpdt-c .event-tag > span.selected:before {
-  font-family: 'Material-Design-Iconic-Font';
-  content: "\f26b";
-  position: absolute;
-  text-align: center;
-  top: 3px;
-  width: 100%;
-  font-size: 17px;
-  color: #FFF;
-}
 
 .wpdt-c .bootgrid-footer .infoBar,
 .wpdt-c .bootgrid-header .actionBar {
@@ -2039,13 +1867,6 @@ hr.fc-divider {
   padding: 9px 10px 0;
 }
 
-.wpdt-c .bootgrid-header .search .glyphicon-search:before {
-  content: "\f1c3";
-  font-family: 'Material-Design-Iconic-Font';
-  font-size: 17px;
-  vertical-align: top;
-  line-height: 100%;
-}
 
 @media (min-width: 480px) {
   .bootgrid-header .search {
@@ -2085,11 +1906,6 @@ hr.fc-divider {
   display: none;
 }
 
-.wpdt-c .bootgrid-header .actions .btn-group .zmdi {
-  line-height: 100%;
-  font-size: 18px;
-  vertical-align: top;
-}
 
 @media (max-width: 480px) {
   .bootgrid-header .actions {
@@ -2202,10 +2018,10 @@ hr.fc-divider {
   top: 10px;
   width: 40px;
   height: 100%;
-  content: "\f1c3";
-  font-family: 'Material-Design-Iconic-Font';
-  font-size: 25px;
-  padding: 4px 0 0 15px;
+  content: "\f002";
+  font-family: 'wpDataTablesIcons';
+  font-size: 20px;
+  padding: 4px 0 0 11px;
 }
 
 .wpdt-c .bootstrap-select .bs-searchbox input {
@@ -2241,8 +2057,9 @@ hr.fc-divider {
 }
 
 .wpdt-c .bootstrap-select .check-mark:before {
-  content: "\f26b";
-  font-family: 'Material-Design-Iconic-Font';
+  content: "\f00c";
+  font-weight: 300;
+  font-family: 'wpDataTablesIcons';
 }
 
 .wpdt-c .bootstrap-select .selected .check-mark {
@@ -2296,14 +2113,6 @@ hr.fc-divider {
   position: relative;
 }
 
-.wpdt-c .chosen-container .chosen-results li.result-selected:before {
-  content: "\f26b";
-  font-family: 'Material-Design-Iconic-Font';
-  position: absolute;
-  right: 15px;
-  top: 10px;
-  font-size: 19px;
-}
 
 .wpdt-c .chosen-container .chosen-results li.group-result {
   color: #B2B2B2;
@@ -2357,17 +2166,6 @@ hr.fc-divider {
   background: #F7F7F7;
 }
 
-.wpdt-c .chosen-container-single .chosen-search:before {
-  content: "\f1c3";
-  font-family: 'Material-Design-Iconic-Font';
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 40px;
-  height: 100%;
-  font-size: 25px;
-  padding: 5px 0 0 15px;
-}
 
 .wpdt-c .chosen-container-single .chosen-search input[type=text] {
   border: 0;
@@ -2404,21 +2202,6 @@ hr.fc-divider {
   height: 31px;
 }
 
-.wpdt-c .search-choice-close {
-  cursor: pointer;
-}
-
-.wpdt-c .search-choice-close:before {
-  display: inline-block;
-  font-family: 'Material-Design-Iconic-Font';
-  content: "\f135";
-  position: relative;
-  top: 1px;
-  color: #9C9C9C;
-  z-index: 2;
-  background: #EAEAEA;
-  font-size: 12px;
-}
 
 .wpdt-c .noUi-target {
   border-radius: 0;
@@ -2605,136 +2388,6 @@ hr.fc-divider {
   vertical-align: middle;
 }
 
-.wpdt-c .note-editor .fa:before,
-.wpdt-c .note-popover .fa:before {
-  font-family: 'Material-Design-Iconic-Font';
-}
-
-.wpdt-c .note-editor .fa.fa-magic:before,
-.wpdt-c .note-popover .fa.fa-magic:before {
-  content: "\f16a";
-}
-
-.wpdt-c .note-editor .fa.fa-bold:before,
-.wpdt-c .note-popover .fa.fa-bold:before {
-  content: "\f23d";
-}
-
-.wpdt-c .note-editor .fa.fa-italic:before,
-.wpdt-c .note-popover .fa.fa-italic:before {
-  content: "\f245";
-}
-
-.wpdt-c .note-editor .fa.fa-underline:before,
-.wpdt-c .note-popover .fa.fa-underline:before {
-  content: "\f24f";
-}
-
-.wpdt-c .note-editor .fa.fa-font:before,
-.wpdt-c .note-popover .fa.fa-font:before {
-  content: "\f242";
-}
-
-.wpdt-c .note-editor .fa.fa-list-ul:before,
-.wpdt-c .note-popover .fa.fa-list-ul:before {
-  content: "\f247";
-}
-
-.wpdt-c .note-editor .fa.fa-list-ol:before,
-.wpdt-c .note-popover .fa.fa-list-ol:before {
-  content: "\f248";
-}
-
-.wpdt-c .note-editor .fa.fa-align-left:before,
-.wpdt-c .note-popover .fa.fa-align-left:before {
-  content: "\f23b";
-}
-
-.wpdt-c .note-editor .fa.fa-align-right:before,
-.wpdt-c .note-popover .fa.fa-align-right:before {
-  content: "\f23c";
-}
-
-.wpdt-c .note-editor .fa.fa-align-center:before,
-.wpdt-c .note-popover .fa.fa-align-center:before {
-  content: "\f239";
-}
-
-.wpdt-c .note-editor .fa.fa-align-justify:before,
-.wpdt-c .note-popover .fa.fa-align-justify:before {
-  content: "\f23a";
-}
-
-.wpdt-c .note-editor .fa.fa-indent:before,
-.wpdt-c .note-popover .fa.fa-indent:before {
-  content: "\f244";
-}
-
-.wpdt-c .note-editor .fa.fa-outdent:before,
-.wpdt-c .note-popover .fa.fa-outdent:before {
-  content: "\f243";
-}
-
-.wpdt-c .note-editor .fa.fa-text-height:before,
-.wpdt-c .note-popover .fa.fa-text-height:before {
-  content: "\f246";
-}
-
-.wpdt-c .note-editor .fa.fa-table:before,
-.wpdt-c .note-popover .fa.fa-table:before {
-  content: "\f320";
-}
-
-.wpdt-c .note-editor .fa.fa-link:before,
-.wpdt-c .note-popover .fa.fa-link:before {
-  content: "\f18e";
-}
-
-.wpdt-c .note-editor .fa.fa-picture-o:before,
-.wpdt-c .note-popover .fa.fa-picture-o:before {
-  content: "\f17f";
-}
-
-.wpdt-c .note-editor .fa.fa-minus:before,
-.wpdt-c .note-popover .fa.fa-minus:before {
-  content: "\f22f";
-}
-
-.wpdt-c .note-editor .fa.fa-arrows-alt:before,
-.wpdt-c .note-popover .fa.fa-arrows-alt:before {
-  content: "\f16d";
-}
-
-.wpdt-c .note-editor .fa.fa-code:before,
-.wpdt-c .note-popover .fa.fa-code:before {
-  content: "\f13a";
-}
-
-.wpdt-c .note-editor .fa.fa-question:before,
-.wpdt-c .note-popover .fa.fa-question:before {
-  content: "\f1f5";
-}
-
-.wpdt-c .note-editor .fa.fa-eraser:before,
-.wpdt-c .note-popover .fa.fa-eraser:before {
-  content: "\f23f";
-}
-
-.wpdt-c .note-editor .fa.fa-square:before,
-.wpdt-c .note-popover .fa.fa-square:before {
-  content: "\f279";
-}
-
-.wpdt-c .note-editor .fa.fa-circle-o:before,
-.wpdt-c .note-popover .fa.fa-circle-o:before {
-  content: "\f26c";
-}
-
-.wpdt-c .note-editor .fa.fa-times:before,
-.wpdt-c .note-popover .fa.fa-times:before {
-  content: "\f136";
-}
-
 .wpdt-c .note-editor .note-air-popover .arrow,
 .wpdt-c .note-popover .note-air-popover .arrow {
   left: 20px;
@@ -2767,28 +2420,28 @@ hr.fc-divider {
 }
 
 .wpdt-c .bootstrap-datetimepicker-widget .glyphicon {
-  font-family: 'Material-Design-Iconic-Font';
+  font-family: 'wpDataTablesIcons';
   font-size: 18px;
 }
 
 .wpdt-c .bootstrap-datetimepicker-widget .glyphicon-chevron-left:before {
-  content: "\f2ff";
+  content: "\f177";
 }
 
 .wpdt-c .bootstrap-datetimepicker-widget .glyphicon-chevron-right:before {
-  content: "\f301";
+  content: "\f178";
 }
 
 .wpdt-c .bootstrap-datetimepicker-widget .glyphicon-time:before {
-  content: "\f337";
+  content: "\f017";
 }
 
 .wpdt-c .bootstrap-datetimepicker-widget .glyphicon-calendar:before {
-  content: "\f32e";
+  content: "\f0e1";
 }
 
 .wpdt-c .bootstrap-datetimepicker-widget .glyphicon-chevron-up:before {
-  content: "\f1e5";
+  content: "\f0dd";
 }
 
 .wpdt-c .bootstrap-datetimepicker-widget .glyphicon-chevron-down:before {

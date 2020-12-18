@@ -2,18 +2,22 @@
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 require('/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/kr/pte/reports/zip2pdf/zip2pdf/handlezip2pdf.php');
 
+
+
 global $wpdb;
 
 if (isset($_POST['transloadit'])){
 
 	$tli = json_decode(stripslashes($_POST['transloadit']), true);
 
+	alpn_log($tli);
+
 	if (isset($tli['fields']['pte_uid'])) {
 
 		$pteUid = $tli['fields']['pte_uid'];
 		$pteResults = $tli['results'];
 
-		$ptePdfKey = $pteFileKey = "";
+		$ptePdfKey = $pteFileKey = $originalMimeType = $newMimeType = "";
 		$pteFileSize = $ptePdfSize = 0;
 
 		$now = date ("Y-m-d H:i:s", time());
@@ -23,10 +27,11 @@ if (isset($_POST['transloadit'])){
 			"status" => "ready",
 			"ready_date" => $now
 		);
-		if (isset($pteResults['supported_types'])) {
-			$type = $pteResults['supported_types'][0];
+		if (isset($pteResults[':original'])) {
+			$type = $pteResults[':original'][0];
 			$pteFileKey = $type['id'] . "." . $type['ext'];
 			$pteFileSize = $type['size'];
+			$originalMimeType = $type['mime'];
 		}
 
 		if (isset($pteResults['zipped_unsupported_types'])) {
@@ -49,10 +54,10 @@ if (isset($_POST['transloadit'])){
 
 		if (isset($pteResults['zipped_unsupported_types'])) {
 			$rowData["mime_type"] = "application/zip";
+			$newMimeType = "application/zip";
 		}
 
-		if (isset($pteResults['zip_types'])) {
-			$type = $pteResults['zip_types'][0];
+		if ($originalMimeType == 'application/zip' || $newMimeType == 'application/zip') {
 			$ptfZip = pte_zip_structure_pdf($pteFileKey);
 			$ptePdfKey = $ptfZip['pte_pdf_key'];
 			$ptePdfSize = $ptfZip['pte_pdf_size'];
@@ -80,7 +85,7 @@ if (isset($_POST['transloadit'])){
 				$data = array(
 					"sync_type" => 'add_update_section',
 					"sync_section" => 'file_workflow_update',
-					"sync_user" => $topicData->owner_id,
+					"sync_user_id" => $topicData->owner_id,
 					"sync_payload" => array(
 						"dom_id" => $topicData->dom_id,
 						"vault_id" => $topicData->id

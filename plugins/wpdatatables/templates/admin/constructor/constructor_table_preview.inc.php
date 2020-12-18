@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') or die('Access denied.'); ?>
 
-<table class="table table-striped table-condensed">
+<table class="table table-condensed">
 
     <thead>
     <tr>

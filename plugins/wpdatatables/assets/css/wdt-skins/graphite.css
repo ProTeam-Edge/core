@@ -276,7 +276,7 @@
 .wpDataTablesWrapper .paginate_button:before,
 .wpDataTablesWrapper table.has-columns-hidden span.responsiveExpander:before {
     display: inline-block;
-    font-family: WPDataTablesIcons !important;
+    font-family: wpDataTablesIcons !important;
     font-style: normal;
     font-weight: 400;
     text-align: center;
@@ -469,8 +469,8 @@ table.dataTable.dtr-inline.collapsed > tbody > tr > th:first-child:before {
 }
 
 .wpDataTables .overlayed:after {
-    font-family: dashicons !important;
-    content: "\f463";
+    font-family: wpDataTablesIcons !important;
+    content: "\e982";
 }
 
 @-moz-keyframes spin {

@@ -1,5 +1,6 @@
 <?php
-include('../../../wp-blog-header.php');
+
+include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 require 'vendor/autoload.php';
 use Google\Cloud\Storage\StorageClient;
@@ -28,22 +29,21 @@ if (array_key_exists('0', $results)) {
 	if ($whichFile == 'pdf') {
 		$objectName = $results[0]->pdf_key ? $results[0]->pdf_key : $results[0]->file_key;
 		$mimeType = "application/pdf";
+		$fileName = $results[0]->pdf_key;
 	} else {
 		$objectName = $results[0]->file_key;
 	}
 try {
-	$storageService = new StorageClient([
-		'projectId' => 'proteam-edge'
+	$storage = new StorageClient([
+			'keyFilePath' => '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/proteam-edge-cf8495258f58.json'
 	]);
-	$storageService->registerStreamWrapper();
-
+	$storage->registerStreamWrapper();
 	$content = file_get_contents("gs://pte_file_store1/{$objectName}");
 
 	header('Content-Disposition: attachment; filename="' . $fileName . '"');
 	header("Content-Type: {$mimeType}");
 	header("Content-Length: " . strlen($content));
 	echo $content;
-	exit;
 } catch (\Exception $e) { // Global namespace
 		$pte_response = array("topic" => "pte_get_vault_google_exception", "message" => "Problem accessing Google Vailt.", "data" => $e);
 		pp($pte_response);

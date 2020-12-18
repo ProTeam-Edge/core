@@ -12,7 +12,7 @@
 
             <!-- .modal-header -->
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="wpdt-icon-times-full"></i></span>
                 </button>
                 <h4 class="modal-title"><?php _e('Are you sure?', 'wpdatatables') ?></h4>
             </div>
@@ -23,7 +23,7 @@
                 <!-- .row -->
                 <div class="row">
                     <div class="col-sm-12">
-                        <small><?php _e('There is no undo! You will be redirected to wpDataTables page.', 'wpdatatables'); ?></small>
+                        <small><?php _e('You are about to cancel creating wizard, there is no undo! You will be redirect to Browse page.', 'wpdatatables'); ?></small>
                     </div>
                 </div>
                 <!--/ .row -->
@@ -32,10 +32,11 @@
 
             <!-- .modal-footer -->
             <div class="modal-footer">
-                <button type="button" class="btn bgm-gray btn-icon-text waves-effect" data-dismiss="modal"><i
-                            class="zmdi zmdi-close"></i> <?php _e('Cancel', 'wpdatatables'); ?></button>
-                <button type="button" class="btn btn-danger btn-icon-text waves-effect"
-                        id="wdt-backend-close-button"><?php _e('Yes', 'wpdatatables'); ?></button>
+                <hr>
+                <button type="button" class="btn btn-icon-text" data-dismiss="modal"
+                        id="wdt-backend-continue-button"><?php _e('No, Continue', 'wpdatatables'); ?></button>
+                <button type="button" class="btn btn-danger btn-icon-text"
+                        id="wdt-backend-close-button"><i class="wpdt-icon-times-full"></i><?php _e('Yes, Cancel', 'wpdatatables'); ?></button>
             </div>
             <!--/ .modal-footer -->
         </div>
