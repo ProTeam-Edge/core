@@ -1,6 +1,6 @@
 <?php defined('ABSPATH') or die('Access denied.'); ?>
 
-<div class="col-sm-12 p-0 wdt-constructor-step hidden" data-step="2-3">
+<div class="col p-0 wdt-constructor-step bg-white hidden" data-step="2-3">
 
     <div class="card">
 
@@ -9,7 +9,7 @@
             <ul class="actions">
                 <li class="wdt-constructor-refresh-wp-query">
                     <a>
-                        <i class="zmdi zmdi-refresh-alt" data-toggle="tooltip" data-placement="top"
+                        <i class="wpdt-icon-sync" data-toggle="tooltip" data-placement="top"
                            title="<?php _e('Click to refresh the table', 'wpdatatables'); ?>"></i>
                     </a>
                 </li>
@@ -23,9 +23,9 @@
     </div>
     <!-- /.row -->
 
-    <div class="card">
+    <div class="card wdt-preview-card">
 
-        <div class="card-header">
+        <div class="card-header p-l-0">
             <h2><?php _e('Preview the 5 first result rows', 'wpdatatables'); ?></h2>
         </div>
         <div class="card-body">

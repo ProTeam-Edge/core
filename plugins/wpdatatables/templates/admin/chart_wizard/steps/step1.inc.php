@@ -4,9 +4,9 @@
 
     <!-- .col-sm-4 -->
     <div class="col-sm-6 col-md-6 chart-name">
-        <h4 class="c-black m-b-20">
+        <h4 class="c-title-color m-b-2">
             <?php _e('Chart name', 'wpdatatables'); ?>
-            <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+            <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                title="<?php _e('Please define the title of the chart that you will use to identify it', 'wpdatatables'); ?>"></i>
         </h4>
         <div class="form-group">
@@ -24,13 +24,13 @@
 
     <!-- .col-sm-4 -->
     <div class="col-sm-6 col-md-6 render-engine">
-        <h4 class="c-black m-b-20">
+        <h4 class="c-title-color m-b-2">
             <?php _e('Chart render engine', 'wpdatatables'); ?>
 
-            <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
-               title="<?php _e('Please choose the render engine.', 'wpdatatables'); ?> <?php _e('Please note that HighCharts license is NOT included with wpDataTables and you must purchase the license separately on', 'wpdatatables'); ?> http://highcharts.com"></i>
+            <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
+               title="<?php _e('Please choose the render engine.', 'wpdatatables'); ?> <?php _e(' Please note that HighCharts license from verion 3.0.4 IS included with wpDataTables and you DON\'T NEED to purchase the license separately on', 'wpdatatables'); ?> http://highcharts.com"></i>
         </h4>
-        <div class="form-group">
+        <div class="form-group col-sm-6 col-md-6">
             <div class="fg-line">
                 <div class="select">
                     <select class="selectpicker" name="chart-render-engine" id="chart-render-engine">

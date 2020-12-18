@@ -8,12 +8,12 @@
  */
 ?>
 
-<div role="tabpanel" class="tab-pane <?php if($wdtSeparateConnection['default']) echo 'active'; ?> separate-connection" id="connection<?php echo $key; ?>">
+<div role="tabpanel" class="tab-pane <?php if(($isDefault && $allDefaultOptions[$key]) || (!$isDefault && $key== 0)) echo 'active'; ?> separate-connection" id="connection<?php echo $key; ?>">
     <div class="row">
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Connection Name', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Connection Name.', 'wpdatatables'); ?>"></i>
             </h4>
 
@@ -22,14 +22,14 @@
                        placeholder="<?php _e('Connection Name', 'wpdatatables'); ?>" value="<?php echo $wdtSeparateConnection['name']; ?>">
             </div>
         </div>
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Test connection', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline wdt-my-sql-test" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle wdt-my-sql-test" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Click this button to test if wpDataTables is able to connect to the DB server with the details you provided.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
-                <button class="btn btn-primary waves-effect wdt-my-sql-test">Test DB settings</button>
+                <button class="btn btn-primary wdt-my-sql-test">Test DB settings</button>
             </div>
         </div>
 
@@ -37,10 +37,10 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Vendor', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Pick the vendor.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
@@ -54,10 +54,10 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Name', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Database name.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
@@ -68,10 +68,10 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Host', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Host address.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
@@ -79,10 +79,10 @@
                        placeholder="<?php _e('Host address', 'wpdatatables'); ?>" value="<?php echo $wdtSeparateConnection['host']; ?>">
             </div>
         </div>
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Port', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline connection-port" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle connection-port" data-toggle="tooltip" data-placement="right"
                    title="<?php
                    $defaultPort = '';
                    if($wdtSeparateConnection['vendor'] === "mysql")
@@ -103,10 +103,10 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('User', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Username for the connection.', 'wpdatatables'); ?>"></i>
             </h4>
 
@@ -115,10 +115,10 @@
                        placeholder="<?php _e('User', 'wpdatatables'); ?>" value="<?php echo $wdtSeparateConnection['user']; ?>">
             </div>
         </div>
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Password', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Password for the provided user.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
@@ -129,10 +129,10 @@
     </div>
 
     <div class="row">
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20 m-t-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Driver', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Pick the driver.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
@@ -146,31 +146,30 @@
                 </div>
             </div>
         </div>
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Default Connection', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Set this connection as default.', 'wpdatatables'); ?>"></i>
             </h4>
-            <div class="toggle-switch p-b-20 p-t-5" data-ts-color="blue">
+            <div class="toggle-switch" data-ts-color="blue">
+                <input id="wdt-my-sql-default<?php echo $key; ?>" <?php if($wdtSeparateConnection['default']) echo 'checked'; ?> type="checkbox" class="wdt-my-sql-default-checkbox">
                 <label for="wdt-my-sql-default<?php echo $key; ?>"
                        class="ts-label wdt-my-sql-default-label"><?php _e('Set this connection as default', 'wpdatatables'); ?></label>
-                <input id="wdt-my-sql-default<?php echo $key; ?>" <?php if($wdtSeparateConnection['default']) echo 'checked'; ?> type="checkbox" hidden="hidden" class="wdt-my-sql-default-checkbox">
-                <label for="wdt-my-sql-default<?php echo $key; ?>" class="ts-helper wdt-my-sql-default-label"></label>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20">
+        <div class="col-sm-6 col-md-6 m-b-16">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Delete', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Delete this connection.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
-                <button type="button" class="btn btn-danger btn-icon-text waves-effect wdt-my-sql-delete">
-                    <i class="zmdi zmdi-delete"></i> <?php _e('Delete', 'wpdatatables'); ?>
+                <button type="button" class="btn btn-danger btn-icon-text wdt-my-sql-delete">
+                    <i class="wpdt-icon-trash"></i> <?php _e('Delete', 'wpdatatables'); ?>
                 </button>
             </div>
         </div>

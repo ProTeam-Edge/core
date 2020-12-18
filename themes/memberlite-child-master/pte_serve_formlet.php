@@ -11,7 +11,6 @@ $tabTypeId = isset($pVars['tab_type_id']) ? $pVars['tab_type_id'] : '';
 $topicId = isset($pVars['topic_id']) ? $pVars['topic_id'] : '';
 $formId = isset($pVars['form_id']) ? $pVars['form_id'] : '';
 $uniqueFieldId = isset($pVars['unique_field_id']) ? $pVars['unique_field_id'] : '';
-$pteUserTimezoneOffset = isset($pVars['pte_user_timezone_offset']) ? $pVars['pte_user_timezone_offset'] : '';
 
 
 $userInfo = wp_get_current_user();
@@ -33,12 +32,11 @@ $results = $wpdb->get_results(
 		$tabTypeMeta = json_decode($tabData->tab_type_meta, true);
 
 		$fieldMap = $tabTypeMeta['field_map'];
-		$uniqueFieldId = $tabTypeMeta['pte.meta'];
+		$uniqueFieldId = '0';
 
 		$meta = json_decode($content['id'], true);  //Need to writte in row id and write back
 		$meta['row_id'] =  $itemId;
 		$meta['tab_type_id'] =  $tabTypeId;
-		$meta['pte_user_timezone_offset'] =  $pteUserTimezoneOffset;
 
 		$formId = $tabData->form_id;
 
@@ -63,8 +61,6 @@ $results = $wpdb->get_results(
 	$meta['row_id'] =  '';
 	$meta['tab_type_id'] =  $tabTypeId;
 	$meta['topic_id'] =  $topicId;
-	$meta['pte_user_timezone_offset'] =  $pteUserTimezoneOffset;
-
 }
 
 $_GET["wpf{$formId}_{$uniqueFieldId}"] = json_encode($meta); //handle unique topic id

@@ -310,11 +310,14 @@ var inlineEditClass = function (tableDescription, dataTableOptions, $) {
                 // Set focus to inserted input
                 $(obj.params.editSelector).focus();
 
-                // Saving event
+                // Saving event and fix for double ajax call
+                var hasFired = false;
                 $(obj.params.editSelector).blur(function () {
-                    obj.params.value = $(this).val();
-
-                    obj.validateAndSave($(this));
+                    if(!hasFired){
+                        hasFired = true;
+                        obj.params.value = $(this).val();
+                        obj.validateAndSave($(this));
+                    }
                 })
             },
             timeCell: function () {
@@ -485,7 +488,7 @@ var inlineEditClass = function (tableDescription, dataTableOptions, $) {
 
                 // Create a control buttons and a file information block
                 obj.params.code =
-                    '<span class="btn btn-primary m-r-10 waves-effect fileupload_row_edit_' + tableDescription.tableId + '" ' +
+                    '<span class="btn btn-primary m-r-10 fileupload_row_edit_' + tableDescription.tableId + '" ' +
                     'id="row_edit_' + tableDescription.tableId + '_sets_button" ' +
                     'data-column_type="icon" ' +
                     'data-rel_input="row_edit_' + tableDescription.tableId + '_sets">' +
@@ -499,7 +502,7 @@ var inlineEditClass = function (tableDescription, dataTableOptions, $) {
                     'class="editDialogInput" ' +
                     '/>' +
                     '</span>' +
-                    '<button class="btn btn-primary waves-effect fileinput-save m-r-10">' + wpdatatables_frontend_strings.saveFileAttachment + '</button>' +
+                    '<button class="btn btn-primary fileinput-save m-r-10">' + wpdatatables_frontend_strings.saveFileAttachment + '</button>' +
                     '<button class="btn btn-danger fileinput-exists wdt-detach-attachment-file-inline m-r-10" data-dismiss="fileinput">' + wpdatatables_frontend_strings.removeFileAttachment + '</button>' +
                     '<span class="fileinput-filename"></span>';
 
@@ -609,6 +612,8 @@ var inlineEditClass = function (tableDescription, dataTableOptions, $) {
         // Cell editing on double click event
         bindClickEvent: function () {
             $(tableDescription.selector + ' tbody').on('dblclick', 'td', function (e) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
 
                 // Prevent click event if current element is input, has invalid value or already is edited
                 var target = e.target || e.srcElement;

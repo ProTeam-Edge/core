@@ -8,6 +8,7 @@ $topicContext = isset($qVars['topic_context']) ? $qVars['topic_context'] : '';
 $topicNetworkId = isset($qVars['topic_id']) ? $qVars['topic_id'] : '';
 $topicNetworkName = isset($qVars['topic_name']) ? $qVars['topic_name'] : '';
 $topicWpId = isset($qVars['topic_wp_id']) ? $qVars['topic_wp_id'] : '';
+$networkDomId = isset($qVars['network_dom_id']) ? $qVars['network_dom_id'] : '';
 
 $html = "";
 
@@ -49,7 +50,6 @@ if ($topicNetworkId) {
 	$proTeamData = array( //TODO start IA and store processID
 		'owner_id' => $userID,
 		'topic_id' => $topicContext,
-		'connected_topic_id' => 0,
 		'proteam_member_id' => $topicNetworkId,
 		'wp_id' => $topicWpId,
 		'access_level' => $defaultAccessLevel,
@@ -63,6 +63,7 @@ if ($topicNetworkId) {
 		'topicNetworkId' => $topicNetworkId,
 		'topicNetworkName' => $topicNetworkName,
 		'topicAccessLevel' => $defaultAccessLevel,
+		'topicDomId' => $networkDomId,
 		'state' => $defaultState,
 		'checked' => $checked
 	);
@@ -76,7 +77,8 @@ if ($topicNetworkId) {
 		'owner_id' => $userID,
 		'process_data' => array(
 				'topic_id' => $topicContext,
-				'interaction_network_id' => $topicNetworkId
+				'interaction_network_id' => $topicNetworkId,
+				'proteam_row_id' => $wpdb->insert_id
 		)
 	);
 	pte_manage_interaction($data);  //start new interaction (empty processId)

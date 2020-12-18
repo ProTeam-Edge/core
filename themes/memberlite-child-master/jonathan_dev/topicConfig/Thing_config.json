@@ -1,0 +1,1 @@
+{"topic_name":"Thing","friendly_fields":{"Thing_descriptionfriendly":"About","Thing_namefriendly":"Name"},"checkedBoxes":["thing_description_text","thing_name_text"],"requiredCheckedBoxes":["thing_description_text_required","thing_name_text_required"],"hiddenCheckedBoxes":[],"additionalProperties":{}}

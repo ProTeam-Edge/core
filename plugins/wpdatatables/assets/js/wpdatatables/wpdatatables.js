@@ -542,11 +542,14 @@ var singleClick = false;
                 fn: function (oSettings) {
                     var api = oSettings.oInstance.api();
 
-                    if (api.page.len() >= api.page.info().recordsDisplay || api.data().page.len() == -1) {
-                        $('#' +  tableDescription.tableId + '_paginate').hide();
-                    } else {
-                        $('#' +  tableDescription.tableId + '_paginate').show();
+                    if (typeof (api.page.info()) != 'undefined'){
+                        if (api.page.len() >= api.page.info().recordsDisplay || api.data().page.len() == -1) {
+                            $('#' +  tableDescription.tableId + '_paginate').hide();
+                        } else {
+                            $('#' +  tableDescription.tableId + '_paginate').show();
+                        }
                     }
+
                 }
             });
 
@@ -1458,7 +1461,7 @@ var singleClick = false;
         /**
          * Loop through all tables on the page and render the wpDataTables elements
          */
-        $('table.wpDataTable').each(function () {
+        $('table.wpDataTable:not(.wpdtSimpleTable)').each(function () {
             var tableDescription = JSON.parse($('#' + $(this).data('described-by')).val());
             wdtRenderDataTable($(this), tableDescription);
         });

@@ -14,7 +14,7 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 		init: function() {
 
 			// Document ready.
-			$( document ).ready( app.ready );
+			$( app.ready );
 
 			// Page load.
 			$( window ).on( 'load', app.load );
@@ -53,6 +53,9 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 					$list.append( $listItems.splice( Math.floor( Math.random() * $listItems.length ), 1 )[0] );
 				}
 			} );
+
+			// Unlock pagebreak navigation.
+			$( '.wpforms-page-button' ).prop( 'disabled', false );
 
 			$( document ).trigger( 'wpformsReady' );
 		},
@@ -166,6 +169,50 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 					return this.optional( element ) || /^[a-z0-9.!#$%&'*+\/=?^_`{|}~-]+@((?=[a-z0-9-]{1,63}\.)(xn--)?[a-z0-9]+(-[a-z0-9]+)*\.)+[a-z]{2,63}$/i.test( value );
 				};
 
+				// Validate email by allowlist/blocklist.
+				$.validator.addMethod( 'restricted-email', function( value, element ) {
+
+					var validator = this,
+						$el = $( element ),
+						$field = $el.closest( '.wpforms-field' ),
+						$form = $el.closest( '.wpforms-form' );
+
+					if ( ! $el.val().length ) {
+						return true;
+					}
+
+					this.startRequest( element );
+					$.post( {
+						url: wpforms_settings.ajaxurl,
+						type: 'post',
+						async: false,
+						data: {
+							'token': $form.data( 'token' ),
+							'action': 'wpforms_restricted_email',
+							'form_id': $form.data( 'formid' ),
+							'field_id': $field.data( 'field-id' ),
+							'email': $el.val(),
+						},
+						dataType: 'json',
+						success: function( response ) {
+
+							var isValid =  response.success && response.data,
+								errors = {};
+
+							if ( isValid ) {
+								validator.resetInternals();
+								validator.toHide = validator.errorsFor( element );
+								validator.showErrors();
+							} else {
+								errors[ element.name ] = wpforms_settings.val_email_restricted;
+								validator.showErrors( errors );
+							}
+							validator.stopRequest( element, isValid );
+						},
+					} );
+					return 'pending';
+				}, wpforms_settings.val_email_restricted );
+
 				// Validate confirmations.
 				$.validator.addMethod( 'confirm', function( value, element, param ) {
 					return $.validator.methods.equalTo.call( this, value, element, param );
@@ -211,6 +258,14 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 					}, wpforms_settings.val_phone );
 				}
 
+				// Validate Input Mask minimum length.
+				$.validator.addMethod( 'empty-blanks', function( value, element ) {
+					if ( typeof $.fn.inputmask === 'undefined' ) {
+						return true;
+					}
+					return ! ( value.indexOf( element.inputmask.opts.placeholder ) + 1 );
+				}, wpforms_settings.val_empty_blanks );
+
 				// Validate US Phone Field.
 				$.validator.addMethod( 'us-phone-field', function( value, element ) {
 					if ( value.match( /[^\d()\-+\s]/ ) ) {
@@ -243,27 +298,17 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 							errorClass: 'wpforms-error',
 							validClass: 'wpforms-valid',
 							errorPlacement: function( error, element ) {
-								if ( 'radio' === element.attr( 'type' ) || 'checkbox' === element.attr( 'type' ) ) {
-									if ( element.hasClass( 'wpforms-likert-scale-option' ) ) {
-										if ( element.closest( 'table' ).hasClass( 'single-row' ) ) {
-											element.closest( 'table' ).after( error );
-										} else {
-											element.closest( 'tr' ).find( 'th' ).append( error );
-										}
-									} else if ( element.hasClass( 'wpforms-net-promoter-score-option' ) ) {
-										element.closest( 'table' ).after( error );
-									} else {
-										element.closest( '.wpforms-field-checkbox' ).find( 'label.wpforms-error' ).remove();
-										element.parent().parent().parent().append( error );
-									}
-								} else if ( element.is( 'select' ) && element.attr( 'class' ).match( /date-month|date-day|date-year/ ) ) {
-									if ( 0 === element.parent().find( 'label.wpforms-error:visible' ).length ) {
-										element.parent().find( 'select:last' ).after( error );
-									}
-								} else if ( element.hasClass( 'wpforms-smart-phone-field' ) ) {
-									element.parent().after( error );
-								} else if ( element.hasClass( 'wpforms-validation-group-member' ) ) {
+
+								if ( app.isLikertScaleField( element ) ) {
+									element.closest( 'table' ).hasClass( 'single-row' ) ?
+										element.closest( '.wpforms-field' ).append( error ) :
+										element.closest( 'tr' ).find( 'th' ).append( error );
+								} else if ( app.isWrappedField( element ) ) {
 									element.closest( '.wpforms-field' ).append( error );
+								} else if ( app.isDateTimeField( element ) ) {
+									app.dateTimeErrorPlacement( element, error );
+								} else if ( app.isFieldInColumn( element ) ) {
+									element.parent().append( error );
 								} else {
 									error.insertAfter( element );
 								}
@@ -296,6 +341,12 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 									$submit     = $form.find( '.wpforms-submit' ),
 									altText     = $submit.data( 'alt-text' ),
 									recaptchaID = $submit.get( 0 ).recaptchaID;
+
+								if ( $form.data( 'token' ) && 0 === $( '.wpforms-token', $form ).length ) {
+									$( '<input type="hidden" class="wpforms-token" name="wpforms[token]" />' )
+										.val( $form.data( 'token' ) )
+										.appendTo( $form );
+								}
 
 								$submit.prop( 'disabled', true );
 								$form.find( '#wpforms-field_recaptcha-error' ).remove();
@@ -387,6 +438,93 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 		},
 
 		/**
+		 * Is field inside column.
+		 *
+		 * @since 1.6.3
+		 *
+		 * @param {jQuery} element current form element.
+		 *
+		 * @returns {boolean} true/false.
+		 */
+		isFieldInColumn( element ) {
+
+			return element.parent().hasClass( 'wpforms-one-half' ) ||
+				element.parent().hasClass( 'wpforms-two-fifths' ) ||
+				element.parent().hasClass( 'wpforms-one-fifth' );
+		},
+
+		/**
+		 * Is datetime field.
+		 *
+		 * @since 1.6.3
+		 *
+		 * @param {jQuery} element current form element.
+		 *
+		 * @returns {boolean} true/false.
+		 */
+		isDateTimeField( element ) {
+
+			return element.hasClass( 'wpforms-timepicker' ) ||
+				element.hasClass( 'wpforms-datepicker' ) ||
+				( element.is( 'select' ) && element.attr( 'class' ).match( /date-month|date-day|date-year/ ) );
+		},
+
+		/**
+		 * Is field wrapped in some container.
+		 *
+		 * @since 1.6.3
+		 *
+		 * @param {jQuery} element current form element.
+		 *
+		 * @returns {boolean} true/false.
+		 */
+		isWrappedField( element ) {
+
+			return 'checkbox' === element.attr( 'type' ) ||
+			'radio' === element.attr( 'type' ) ||
+			'range' === element.attr( 'type' ) ||
+			'select' === element.is( 'select' ) ||
+			element.parent().hasClass( 'iti' ) ||
+			element.hasClass( 'wpforms-validation-group-member' ) ||
+			element.hasClass( 'choicesjs-select' ) ||
+			element.hasClass( 'wpforms-net-promoter-score-option' );
+		},
+
+		/**
+		 * Is likert scale field.
+		 *
+		 * @since 1.6.3
+		 *
+		 * @param {jQuery} element current form element.
+		 *
+		 * @returns {boolean} true/false.
+		 */
+		isLikertScaleField( element ) {
+
+			return element.hasClass( 'wpforms-likert-scale-option' );
+		},
+
+		/**
+		 * Print error message into date time fields.
+		 *
+		 * @since 1.6.3
+		 *
+		 * @param {jQuery} element current form element.
+		 * @param {string} error Error message.
+		 */
+		dateTimeErrorPlacement( element, error ) {
+
+			var $wrapper = element.closest( '.wpforms-field-row-block' );
+			if ( $wrapper.length ) {
+				if ( ! $wrapper.find( 'label.wpforms-error' ).length ) {
+					$wrapper.append( error );
+				}
+			} else {
+				element.closest( '.wpforms-field' ).append( error );
+			}
+		},
+
+		/**
 		 * Load jQuery Date Picker.
 		 *
 		 * @since 1.2.3
@@ -396,7 +534,9 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 			// Only load if jQuery datepicker library exists.
 			if ( typeof $.fn.flatpickr !== 'undefined' ) {
 				$( '.wpforms-datepicker-wrap' ).each( function() {
+
 					var element = $( this ),
+						$input  = element.find( 'input' ),
 						form    = element.closest( '.wpforms-form' ),
 						formID  = form.data( 'formid' ),
 						fieldID = element.closest( '.wpforms-field' ).data( 'field-id' ),
@@ -424,7 +564,30 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 					}
 
 					properties.wrap = true;
-					properties.dateFormat = element.find( 'input' ).data( 'date-format' );
+					properties.dateFormat = $input.data( 'date-format' );
+					if ( $input.data( 'disable-past-dates' ) === 1 ) {
+						properties.minDate = 'today';
+					}
+
+					var limitDays = $input.data( 'limit-days' ),
+						weekDays = [ 'sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat' ];
+
+					if ( limitDays && limitDays !== '' ) {
+						limitDays = limitDays.split( ',' );
+
+						properties.disable = [ function( date ) {
+
+							var limitDay;
+							for ( var i in limitDays ) {
+								limitDay = weekDays.indexOf( limitDays[ i ] );
+								if ( limitDay === date.getDay() ) {
+									return false;
+								}
+							}
+
+							return true;
+						} ];
+					}
 
 					// Toggle clear date icon.
 					properties.onChange = function( selectedDates, dateStr, instance ) {
@@ -618,7 +781,7 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 						$( '#' + id + '_suggestion' ).remove();
 						var sugg = '<a href="#" class="mailcheck-suggestion" data-id="' + id + '" title="' + wpforms_settings.val_email_suggestion_title + '">' + suggestion.full + '</a>';
 						sugg = wpforms_settings.val_email_suggestion.replace( '{suggestion}', sugg );
-						$( el ).after( '<label class="wpforms-error mailcheck-error" id="' + id + '_suggestion">' + sugg + '</label>' );
+						$( el ).parent().append( '<label class="wpforms-error mailcheck-error" id="' + id + '_suggestion">' + sugg + '</label>' );
 					},
 					empty: function() {
 						$( '#' + id + '_suggestion' ).remove();
@@ -661,6 +824,12 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 						$input    = $( self.input.element ),
 						sizeClass = $element.data( 'size-class' );
 
+					// Remove hidden attribute and hide `<select>` like a screen-reader text.
+					// It's important for field validation.
+					$element
+						.removeAttr( 'hidden' )
+						.addClass( self.config.classNames.input + '--hidden' );
+
 					// Add CSS-class for size.
 					if ( sizeClass ) {
 						$( self.containerOuter.element ).addClass( sizeClass );
@@ -677,13 +846,26 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 						if ( self.getValue( true ).length ) {
 							$input.addClass( self.config.classNames.input + '--hidden' );
 						}
-
-						// On change event.
-						$element.on( 'change', function() {
-
-							self.getValue( true ).length ? $input.addClass( self.config.classNames.input + '--hidden' ) : $input.removeClass( self.config.classNames.input + '--hidden' );
-						} );
 					}
+
+					// On change event.
+					$element.on( 'change', function() {
+
+						var validator;
+
+						// Listen if multiple select has choices.
+						if ( $element.prop( 'multiple' ) ) {
+							self.getValue( true ).length > 0 ? $input.addClass( self.config.classNames.input + '--hidden' ) : $input.removeClass( self.config.classNames.input + '--hidden' );
+						}
+
+						validator = $element.closest( 'form' ).data( 'validator' );
+
+						if ( ! validator ) {
+							return;
+						}
+
+						validator.element( $element );
+					} );
 				};
 
 				args.callbackOnCreateTemplates = function() {
@@ -763,7 +945,7 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 			} );
 
 			// Payment radio/checkbox fields: preselect the selected payment (from dynamic/fallback population).
-			$( document ).ready( function() {
+			$( function() {
 
 				// Radios.
 				$( '.wpforms-field-radio .wpforms-image-choices-item input:checked' ).change();
@@ -798,7 +980,7 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 			} );
 
 			// Rating field: preselect the selected rating (from dynamic/fallback population).
-			$( document ).ready( function() {
+			$( function() {
 				$( '.wpforms-field-rating-item input:checked' ).change();
 			} );
 
@@ -947,8 +1129,9 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 			} );
 
 			// Allow only numbers, minus and decimal point to be entered into the Numbers field.
-			$( document ).on( 'input', '.wpforms-field-number input', function( e ) {
-				this.value = this.value.replace( /[^-0-9.]/g, '' );
+			$( document ).on( 'keypress', '.wpforms-field-number input', function( e ) {
+
+				return /^[-0-9.]+$/.test( String.fromCharCode( e.keyCode || e.which ) );
 			} );
 		},
 
@@ -1031,6 +1214,13 @@ var wpforms = window.wpforms || ( function( document, window, $ ) {
 				// Validate.
 				if ( typeof $.fn.validate !== 'undefined' ) {
 					$page.find( ':input' ).each( function( index, el ) {
+
+						// Skip input fields without `name` attribute, which could have fields.
+						// E.g. `Placeholder` input for Modern dropdown.
+						if ( ! $( el ).attr( 'name' ) ) {
+							return;
+						}
+
 						if ( ! $( el ).valid() ) {
 							valid = false;
 						}

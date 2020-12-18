@@ -40,10 +40,11 @@ module.exports = {
                 force: true
             },
             {
-                from: path.resolve(__dirname, '../../../../docs/FoxitPDFSDKforWeb_DeveloperGuide.pdf'),
+                from: path.resolve(__dirname, '../../../../docs/*.pdf'),
                 to: path.resolve(distPath, 'docs'),
                 force: true,
-                toType: 'dir'
+                toType: 'dir',
+                flatten: true,
             },
             {
                 from: path.resolve(__dirname, '../../../../external'),

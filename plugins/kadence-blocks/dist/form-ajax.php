@@ -47,7 +47,7 @@ class KB_Ajax_Form {
 				$valid = check_ajax_referer( 'kb_form_nonce', '_kb_form_verify', false );
 			}
 			if ( $valid ) {
-				error_log( print_r( $_POST, true ) );
+				//error_log( print_r( $_POST, true ) );
 				// Lets get form data.
 				$form_id = sanitize_text_field( wp_unslash( $_POST['_kb_form_id'] ) );
 				$post_id = absint( wp_unslash( $_POST['_kb_form_post_id'] ) );
@@ -74,11 +74,25 @@ class KB_Ajax_Form {
 					0 => array(
 						'success'          => esc_html__( 'Submission Success, Thanks for getting in touch!', 'kadence-blocks' ),
 						'error'            => esc_html__( 'Submission Failed', 'kadence-blocks' ),
-						'recaptchaerror'   => esc_html__( 'Submission Failed, reCaptcha spam prevention.', 'kadence-blocks' ),
+						'recaptchaerror'   => esc_html__( 'Submission Failed, reCaptcha spam prevention. Please reload your page and try again.', 'kadence-blocks' ),
 					),
 				);
-				if ( isset( $form_args['messages'] ) ) {
-					$messages = wp_parse_args( $messages, $form_args['messages'] );
+				if ( isset( $form_args['messages'] ) && isset( $form_args['messages'][0] ) ) {
+					if ( isset( $form_args['messages'][0]['recaptchaerror'] ) && ! empty( $form_args['messages'][0]['recaptchaerror'] ) ) {
+						$messages[0]['recaptchaerror'] = $form_args['messages'][0]['recaptchaerror'];
+					}
+					if ( isset( $form_args['messages'][0]['success'] ) && ! empty( $form_args['messages'][0]['success'] ) ) {
+						$messages[0]['success'] = $form_args['messages'][0]['success'];
+					}
+					if ( isset( $form_args['messages'][0]['error'] ) && ! empty( $form_args['messages'][0]['error'] ) ) {
+						$messages[0]['error'] = $form_args['messages'][0]['error'];
+					}
+					if ( isset( $form_args['messages'][0]['required'] ) && ! empty( $form_args['messages'][0]['required'] ) ) {
+						$messages[0]['required'] = $form_args['messages'][0]['required'];
+					}
+					if ( isset( $form_args['messages'][0]['invalid'] ) && ! empty( $form_args['messages'][0]['invalid'] ) ) {
+						$messages[0]['invalid'] = $form_args['messages'][0]['invalid'];
+					}
 				}
 				// Check Honey Pot.
 				if ( isset( $form_args['honeyPot'] ) && true === $form_args['honeyPot'] ) {
@@ -247,9 +261,86 @@ class KB_Ajax_Form {
 							break;
 						case 'redirect':
 							if ( isset( $form_args['redirect'] ) && ! empty( trim( $form_args['redirect'] ) ) ) {
-								$final_data['redirect'] = trim( $form_args['redirect'] );
+								$final_data['redirect'] = apply_filters( 'kadence_blocks_form_redirect', trim( $form_args['redirect'] ), $form_args, $fields, $form_id, $post_id );
 							}
 							break;
+						case 'mailerlite':
+							$api_key = get_option( 'kadence_blocks_mailerlite_api' );
+							if ( empty( $api_key ) ) {
+								return;
+							}
+							$mailerlite_default = array(
+								'map'    => array(),
+								'groupe' => '',
+							);
+							$mailerlite_args = ( isset( $form_args['mailerlite'] ) && is_array( $form_args['mailerlite'] ) && isset( $form_args['mailerlite'][0] ) && is_array( $form_args['mailerlite'][0] ) ? $form_args['mailerlite'][0] : $mailerlite_default );
+							$groups = ( isset( $mailerlite_args['group'] ) ? $mailerlite_args['group'] : array() );
+							$map = ( isset( $mailerlite_args['map'] ) && is_array( $mailerlite_args['map'] ) ? $mailerlite_args['map'] : array() );
+							$body = array(
+								'fields' => array(),
+							);
+							$email = false;
+							if ( ! empty( $map ) ) {
+								foreach ( $fields as $key => $data ) {
+									if ( isset( $map[ $key ] ) && ! empty( $map[ $key ] ) ) {
+										if ( 'email' === $map[ $key ] && ! $email ) {
+											$email = $data['value'];
+											$body['email'] = $data['value'];
+										} else {
+											$body['fields'][ $map[ $key ] ] = $data['value'];
+										}
+									}
+								}
+							} else {
+								foreach ( $fields as $key => $data ) {
+									if ( 'email' === $data['type'] ) {
+										$email = $data['value'];
+										$body['email'] = $data['value'];
+										break;
+									}
+								}
+							}
+							if ( empty( $body['fields'] ) ) {
+								unset( $body['fields'] );
+							}
+							if ( ! empty( $groups ) && is_array( $groups ) && isset( $groups[0] ) && ! empty( $groups[0] ) ) {
+								$group_id = $groups[0];
+							}
+							if ( isset( $body[ 'email' ] ) ) {
+								if ( ! empty( $group_id ) ) {
+									$api_url = 'https://api.mailerlite.com/api/v2/groups/' . $group_id . '/subscribers';
+								} else {
+									$api_url = 'https://api.mailerlite.com/api/v2/subscribers';
+								}
+								$response = wp_remote_post(
+									$api_url,
+									array(
+										'method'  => 'POST',
+										'timeout' => 10,
+										'headers' => array(
+											'accept'              => 'application/json',
+											'content-type'        => 'application/json',
+											'X-MailerLite-ApiKey' => $api_key,
+										),
+										'body'    => json_encode( $body ),
+									)
+								);
+
+								if ( is_wp_error( $response ) ) {
+									$error_message = $response->get_error_message();
+									error_log( "Something went wrong: $error_message" );
+								} else {
+									if ( ! isset( $response['response'] ) || ! isset( $response['response']['code'] ) ) {
+										error_log( __('No Response from MailerLite', 'kadence-blocks-pro' ) );
+										return;
+									}
+									if ( 400 === $response['response']['code'] ) {
+										error_log( $response['response']['message'] );
+										return;
+									}
+								}
+							}
+						break;
 					}
 				}
 
@@ -283,11 +374,13 @@ class KB_Ajax_Form {
 			case 'password':
 			case 'hidden':
 			case 'search':
-			case 'radio':
 			case 'select':
 				$value = ( $multi_select && is_array( $value ) ? sanitize_text_field( implode( ', ', $value ) ) : sanitize_text_field( $value ) );
 				break;
 			case 'checkbox':
+				$value = ( is_array( $value ) ? sanitize_text_field( implode( ', ', $value ) ) : sanitize_text_field( $value ) );
+				break;
+			case 'radio':
 				$value = ( is_array( $value ) ? sanitize_text_field( implode( ', ', $value ) ) : sanitize_text_field( $value ) );
 				break;
 			case 'url':

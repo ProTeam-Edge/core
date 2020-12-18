@@ -71,7 +71,7 @@ class WDTConfigController {
                     $res->wdtHtml = $wpDataTable->generateTable($tableData->connection);
 
                 } catch (Exception $e) {
-                    $res->error = $e->getMessage();
+                    $res->error = ltrim($e->getMessage(), '<br/><br/>');
                 }
             } else {
                 $res->error = $wpdb->last_error;
@@ -117,7 +117,7 @@ class WDTConfigController {
             $res->wdtJsonConfig = json_decode($wpDataTable->getJsonDescription());
             $res->wdtHtml = $wpDataTable->generateTable($tableData->connection);
         } catch (Exception $e) {
-            $res->error = $e->getMessage();
+            $res->error = ltrim($e->getMessage(), '<br/><br/>');
         }
         return $res;
     }
@@ -166,6 +166,12 @@ class WDTConfigController {
             $table->showAllRows = (isset($advancedSettings->showAllRows)) ? $advancedSettings->showAllRows : false;
             $table->clearFilters = (isset($advancedSettings->clearFilters)) ? $advancedSettings->clearFilters : 0;
             $table->connection = (isset($table->connection)) ? $table->connection : null;
+            $table->simpleHeader = (isset($table->simpleHeader)) ? $table->simpleHeader : 0;
+            $table->simpleResponsive = (isset($table->simpleResponsive)) ? $table->simpleResponsive : 0;
+            $table->stripeTable = (isset($table->stripeTable)) ? $table->stripeTable : 0;
+            $table->cellPadding = (isset($table->cellPadding)) ? $table->cellPadding : 10;
+            $table->verticalScroll = (isset($table->verticalScroll)) ? $table->verticalScroll : 0;
+            $table->verticalScrollHeight = (isset($table->verticalScrollHeight)) ? $table->verticalScrollHeight : 0;
 
             $table = self::sanitizeTableConfig($table);
 
@@ -283,7 +289,13 @@ class WDTConfigController {
                     'global_search' => $table->global_search,
                     'showRowsPerPage' => $table->showRowsPerPage,
                     'showAllRows' => $table->showAllRows,
-                    'clearFilters' => $table->clearFilters
+                    'clearFilters' => $table->clearFilters,
+                    'simpleResponsive' => $table->simpleResponsive,
+                    'simpleHeader' => $table->simpleHeader,
+                    'stripeTable' => $table->stripeTable,
+                    'cellPadding' => $table->cellPadding,
+                    'verticalScroll' => $table->verticalScroll,
+                    'verticalScrollHeight' => $table->verticalScrollHeight
                 )
             )
         );
@@ -330,11 +342,17 @@ class WDTConfigController {
         $table->hide_before_load = (int)$table->hide_before_load;
         $table->fixed_layout = (int)$table->fixed_layout;
         $table->scrollable = (int)$table->scrollable;
+        $table->verticalScroll = (int)$table->verticalScroll;
         $table->sorting = (int)$table->sorting;
         $table->word_wrap = (int)$table->word_wrap;
         $table->server_side = (int)$table->server_side;
         $table->auto_refresh = (int)$table->auto_refresh;
         $table->info_block = (int)$table->info_block;
+        $table->simpleResponsive = (int)$table->simpleResponsive;
+        $table->simpleHeader = (int)$table->simpleHeader;
+        $table->stripeTable = (int)$table->stripeTable;
+        $table->cellPadding = (int)$table->cellPadding;
+        $table->verticalScrollHeight = (int)$table->verticalScrollHeight;
         $table->filtering = (int)$table->filtering;
         $table->global_search = (int)$table->global_search;
         $table->editable = (int)$table->editable;
@@ -490,7 +508,7 @@ class WDTConfigController {
             }
             $result->table = $tbl;
         } catch (Exception $e) {
-            $result->error = $e->getMessage();
+            $result->error = ltrim($e->getMessage(), '<br/><br/>');
             return $result;
         }
 
@@ -1003,11 +1021,16 @@ class WDTConfigController {
         $table->hide_before_load = 1;
         $table->fixed_layout = 0;
         $table->scrollable = 0;
+        $table->verticalScroll = 0;
         $table->sorting = 1;
         $table->word_wrap = 0;
         $table->server_side = 0;
         $table->auto_refresh = 0;
         $table->info_block = 1;
+        $table->simpleResponsive = 0;
+        $table->simpleHeader = 0;
+        $table->stripeTable = 0;
+        $table->stripeTable = 10;
         $table->filtering = 1;
         $table->global_search = 1;
         $table->editable = 0;
@@ -1033,6 +1056,68 @@ class WDTConfigController {
         $table->content = '';
 
         return $table;
+    }
+
+    /**
+     * Helper method that load table config data for Simple table from DB
+     * @param int $tableID
+     */
+    public static function loadSimpleTableConfig($tableID){
+        $res = new stdClass();
+
+        try {
+            $wpDataTableRows = WPDataTableRows::loadWpDataTableRows($tableID);
+            $res->tableID = $wpDataTableRows->getTableID();
+            $res->table = $wpDataTableRows->getTableSettingsData();
+            $res->wdtHtml = $wpDataTableRows->generateTable($tableID);
+        } catch (Exception $e) {
+            $res->error = ltrim($e->getMessage(), '<br/><br/>');
+        }
+        return $res;
+    }
+    /**
+     * Helper method that load rows config data from DB
+     * @param int $tableID
+     */
+    public static function loadRowsDataFromDB($tableID){
+        global $wpdb;
+
+        do_action('wpdatatables_before_get_rows_metadata', $tableID);
+
+        $rowsQuery = $wpdb->prepare(
+            "SELECT data FROM " . $wpdb->prefix . "wpdatatables_rows WHERE table_id = %d", $tableID);
+
+        $rows = $wpdb->get_results($rowsQuery);
+
+        foreach ($rows as $key=> $row){
+            $rows[$key] = json_decode($row->data);
+        }
+
+        $rows = apply_filters('wpdatatables_filter_rows_metadata', $rows, $tableID);
+
+        return $rows;
+    }
+
+    /**
+     * Save row data from Simple table in database
+     * @param stdClass $rowData
+     * @param int $tableID
+     */
+    public static function saveRowData(stdClass $rowData, int $tableID)
+    {
+        global $wpdb;
+
+        do_action('wpdatatables_before_create_row', $tableID, $rowData);
+
+        $wpdb->insert(
+            $wpdb->prefix . "wpdatatables_rows",
+            array(
+                'table_id' => $tableID,
+                'data' => json_encode($rowData)
+            )
+        );
+
+        do_action('wpdatatables_after_save_row');
     }
 
 }

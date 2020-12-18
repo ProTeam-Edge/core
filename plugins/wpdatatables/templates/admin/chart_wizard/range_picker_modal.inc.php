@@ -12,7 +12,7 @@
 
             <!-- .modal-header -->
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true"><i class="wpdt-icon-times-full"></i></span>
                 </button>
                 <h4 class="modal-title"><?php _e('Pick Range', 'wpdatatable'); ?></h4>
             </div>
@@ -26,14 +26,14 @@
 
             <!-- .modal-footer -->
             <div class="modal-footer">
-                <button class="btn bgm-gray btn-icon-text waves-effect" data-toggle="modal"
-                        data-target="#wdt-range-picker">
-                    <i class="zmdi zmdi-close"></i>
+                <hr>
+                <button class="btn btn-icon-text" data-toggle="modal"
+                        data-target="#wdt-range-picker" id="wdt-cancel-range">
                     <?php _e('Cancel', 'wpdatatables'); ?>
                 </button>
-                <button class="btn btn-success btn-icon-text waves-effect" id="submit-pick-range">
-                    <i class="zmdi zmdi-check"></i>
-                    <?php _e('OK', 'wpdatatables'); ?>
+                <button class="btn btn-primary btn-icon-text" id="submit-pick-range">
+                    <i class="wpdt-icon-check-full"></i>
+                    <?php _e('Confirm', 'wpdatatables'); ?>
                 </button>
             </div>
             <!--/ .modal-footer -->

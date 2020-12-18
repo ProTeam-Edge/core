@@ -108,7 +108,7 @@
                                 />
                             </span>
                             <?php if ($dataColumn->getDataType() == 'icon') { ?>
-                            <a href="#" class="btn btn-danger fileinput-exists waves-effect wdt-detach-attachment-file"
+                            <a href="#" class="btn btn-danger fileinput-exists wdt-detach-attachment-file"
                                data-dismiss="fileinput">Remove</a>
                         </div>
                     <?php } else { ?>
@@ -151,33 +151,33 @@
 
 <div id="<?php echo $this->getId() ?>_edit_dialog_buttons" class="wdt-edit-dialog-button-block"
      style="display: none">
-    <button class="btn btn-danger btn-icon-text waves-effect wdt-cancel-edit-button" data-dismiss="modal">
-        <i class="zmdi zmdi-close"></i>
+    <button class="btn btn-danger btn-icon-text wdt-cancel-edit-button" data-dismiss="modal">
+        <i class="wpdt-icon-times-full"></i>
         <?php _e('Cancel', 'wpdatatables'); ?>
     </button>
-    <button id="<?php echo $this->getId() ?>_prev_edit_dialog" class="btn bgm-gray btn-icon-text waves-effect wdt-prev-edit-button">
-        <i class="zmdi <?php if(in_array($currentSkin, $skinsWithNewEditButtons )) { echo 'zmdi-chevron-left'; } else { echo 'zmdi-skip-previous'; }?>"></i>
+    <button id="<?php echo $this->getId() ?>_prev_edit_dialog" class="btn bgm-gray btn-icon-text wdt-prev-edit-button">
+        <i class="<?php if(in_array($currentSkin, $skinsWithNewEditButtons )) { echo 'wpdt-icon-chevron-left'; } else { echo 'wpdt-icon-step-backward'; }?>"></i>
         <?php _e('Prev', 'wpdatatables'); ?>
     </button>
-    <button id="<?php echo $this->getId() ?>_next_edit_dialog" class="btn bgm-gray btn-icon-text waves-effect wdt-next-edit-button">
+    <button id="<?php echo $this->getId() ?>_next_edit_dialog" class="btn bgm-gray btn-icon-text wdt-next-edit-button">
         <?php _e('Next', 'wpdatatables'); ?>
-        <i class="zmdi <?php if(in_array($currentSkin, $skinsWithNewEditButtons)) { echo 'zmdi-chevron-right'; } else { echo 'zmdi-skip-next'; }?>"></i>
+        <i class="<?php if(in_array($currentSkin, $skinsWithNewEditButtons)) { echo 'wpdt-icon-chevron-right'; } else { echo 'wpdt-icon-step-forward'; }?>"></i>
     </button>
-    <button id="<?php echo $this->getId() ?>_apply_edit_dialog" class="btn btn-success btn-icon-text waves-effect wdt-apply-edit-button">
-        <i class="zmdi <?php if(in_array($currentSkin, $skinsWithNewEditButtons)) { echo 'zmdi-check-circle'; } else { echo 'zmdi-check';  }?>"></i>
+    <button id="<?php echo $this->getId() ?>_apply_edit_dialog" class="btn btn-success btn-icon-text wdt-apply-edit-button">
+        <i class="<?php if(in_array($currentSkin, $skinsWithNewEditButtons)) { echo 'wpdt-icon-check-circle-full'; } else { echo 'wpdt-icon-check';  }?>"></i>
         <?php _e('Apply and add new', 'wpdatatables'); ?>
     </button>
-    <button id="<?php echo $this->getId() ?>_ok_edit_dialog" class="btn btn-success btn-icon-text waves-effect wdt-ok-edit-button">
-        <i class="zmdi <?php if(in_array($currentSkin, $skinsWithNewEditButtons)) { echo 'zmdi-check-circle'; } else { echo 'zmdi-check-all'; }?>"></i>
+    <button id="<?php echo $this->getId() ?>_ok_edit_dialog" class="btn btn-success btn-icon-text wdt-ok-edit-button">
+        <i class="<?php if(in_array($currentSkin, $skinsWithNewEditButtons)) { echo 'wpdt-icon-check-circle'; } else { echo 'wpdt-icon-check-double-reg'; }?>"></i>
         <?php if(in_array($currentSkin, $skinsWithNewEditButtons)) { _e('Submit', 'wpdatatables');} else {_e('OK', 'wpdatatables');} ?>
     </button>
 </div>
 <div id="<?php echo $this->getId() ?>_delete_dialog_buttons" style="display: none">
-    <button type="button" class="btn bgm-gray btn-icon-text waves-effect wdt-cancel-delete-button" data-dismiss="modal"><i
-            class="zmdi zmdi-close"></i> <?php _e('Cancel', 'wpdatatables'); ?></button>
-    <button type="button" class="btn btn-danger btn-icon-text waves-effect"
-            id="<?php echo $this->getId() ?>_wdt-browse-delete-button"><i
-            class="zmdi zmdi-delete"></i> <?php _e('Delete', 'wpdatatables'); ?></button>
+    <button type="button" class="btn bgm-gray btn-icon-text wdt-cancel-delete-button" data-dismiss="modal"><i
+            class="wpdt-icon-times-full"></i> <?php _e('Cancel', 'wpdatatables'); ?></button>
+    <button type="button" class="btn btn-danger btn-icon-text wdt-browse-delete-button"
+            id="<?php echo $this->getId() ?>_wdt-browse-delete-button"> <i class="wpdt-icon-trash"></i>
+        <?php _e('Delete', 'wpdatatables'); ?></button>
 </div>
 <script type='text/javascript' src='<?php echo site_url(); ?>/wp-includes/js/tinymce/tinymce.min.js'></script>
 <style>

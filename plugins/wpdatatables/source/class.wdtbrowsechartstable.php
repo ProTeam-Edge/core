@@ -29,7 +29,7 @@ class WDTBrowseChartsTable extends WP_List_Table {
             'engine' => 'Render Engine',
             'type' => 'Chart Type',
             'shortcode' => 'Shortcode',
-            'functions' => 'Functions',
+            'functions' => '',
         );
     }
 
@@ -143,28 +143,28 @@ class WDTBrowseChartsTable extends WP_List_Table {
     function column_default($item, $column_name) {
         switch ($column_name) {
             case 'shortcode':
-                return '<span class="wdt-shortcode bgm-green">[wpdatachart id=' . $item['id'] . ']</span>';
+                return '<a class="wdt-copy-shortcode-browse" data-toggle="tooltip" data-shortcode="[wpdatachart id=' . $item['id'] . ']" data-placement="top"  title="' . __('Click to copy shortcode', 'wpdatatables') . '"><i class="wpdt-icon-copy"></i></a><span class="wdt-shortcode">[wpdatachart id=' . $item['id'] . ']</span>';
                 break;
             case 'functions':
             case 'table_type':
-                $return_string =    ' <a type="button" 
+                $return_string =    '<div class="wdt-function-flex"><a type="button" 
 	                                     class="wdt-duplicate-chart" 
 	                                     data-chart_id="' . $item['id'] . '" 
 	                                     data-chart_name="' . $item['title'] . '"
 	                                     data-toggle="tooltip" title="' . __('Duplicate', 'wpdatatables') . '" 
-	                                     href="#"></a>';
+	                                     href="#"><i class="wpdt-icon-clone"></i></a>';
                 $return_string .=   ' <a type="button" 
                                          class="wdt-configure" 
                                          data-table_id="' . $item['id'] . '" 
                                          data-table_name="' . $item['title'] . '" 
                                          data-toggle="tooltip" title="' . __('Configure', 'wpdatatables') . '" 
-                                         href="admin.php?page=wpdatatables-chart-wizard&chart_id=' . $item['id'] . '"><i class="zmdi zmdi-settings"></i></a>';
+                                         href="admin.php?page=wpdatatables-chart-wizard&chart_id=' . $item['id'] . '"><i class="wpdt-icon-cog"></i></a>';
                 $return_string .=   ' <a type="button" 
                                          class="wdt-submit-delete" 
                                          data-table_id="' . $item['id'] . '" 
                                          data-table_name="' . $item['title'] . '" 
                                          data-toggle="tooltip" title="' . __('Delete', 'wpdatatables') . '" 
-                                         href="'. wp_nonce_url('admin.php?page=wpdatatables-charts&action=delete&chart_id=' . $item['id'] . '', 'wdtDeleteChartNonce', 'wdtNonce' ) .'"><i class="zmdi zmdi-delete"></i></a>';
+                                         href="'. wp_nonce_url('admin.php?page=wpdatatables-charts&action=delete&chart_id=' . $item['id'] . '', 'wdtDeleteChartNonce', 'wdtNonce' ) .'"><i class="wpdt-icon-trash"></i></a></div>';
                 return $return_string;
                 break;
             case 'id':
@@ -176,12 +176,12 @@ class WDTBrowseChartsTable extends WP_List_Table {
     }
 
     function column_title($item) {
-        $actions = array(
-            'edit' => '<a href="admin.php?page=wpdatatables-chart-wizard&chart_id=' . $item['id'] . '" title="' . __('Configure', 'wpdatatables') . '">' . __('Configure', 'wpdatatables') . '</a>',
-            'trash' => '<a class="wdt-submit-delete" title="' . __('Delete', 'wpdatatables') . '" href="'. wp_nonce_url('admin.php?page=wpdatatables-charts&action=delete&chart_id=' . $item['id'] . '', 'wdtDeleteChartNonce', 'wdtNonce' ) .'" rel="' . $item['id'] . '">' . __('Delete', 'wpdatatables') . '</a>'
-        );
+//        $actions = array(
+//            'edit' => '<a href="admin.php?page=wpdatatables-chart-wizard&chart_id=' . $item['id'] . '" title="' . __('Configure', 'wpdatatables') . '">' . __('Configure', 'wpdatatables') . '</a>',
+//            'trash' => '<a class="wdt-submit-delete" title="' . __('Delete', 'wpdatatables') . '" href="'. wp_nonce_url('admin.php?page=wpdatatables-charts&action=delete&chart_id=' . $item['id'] . '', 'wdtDeleteChartNonce', 'wdtNonce' ) .'" rel="' . $item['id'] . '">' . __('Delete', 'wpdatatables') . '</a>'
+//        );
 
-        return '<a href="admin.php?page=wpdatatables-chart-wizard&chart_id=' . $item['id'] . '">' . $item['title'] . '</a> ' . $this->row_actions($actions);
+        return '<a href="admin.php?page=wpdatatables-chart-wizard&chart_id=' . $item['id'] . '">' . $item['title'] . '</a> ';
     }
 
     /**
@@ -202,7 +202,7 @@ class WDTBrowseChartsTable extends WP_List_Table {
      */
     function column_cb($item) {
         return sprintf(
-            '<div class="checkbox"><input type="checkbox" name="chart_id[]" value="%s" /><i class="input-helper"></i></div>', $item['id']
+            '<div class="checkbox"></i><input type="checkbox" name="chart_id[]" value="%s" /></div>', $item['id']
         );
     }
 
@@ -214,130 +214,130 @@ class WDTBrowseChartsTable extends WP_List_Table {
     function column_type($item) {
         switch ($item['type']) {
             case 'google_column_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Column Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Column Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_histogram':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Histogram', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Histogram', 'wpdatatables') . '</span>';
                 break;
             case 'google_bar_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Bar Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Bar Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_stacked_bar_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Stacked Bar Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Stacked Bar Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_area_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Area Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Area Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_stepped_area_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Stepped Area Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Stepped Area Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_line_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Line Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Line Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_pie_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Pie Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Pie Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_bubble_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Bubble Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Bubble Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_donut_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Donut Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Donut Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_gauge_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Gauge Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Gauge Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_scatter_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Scatter Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Scatter Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_candlestick_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Candlestick Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Candlestick Chart', 'wpdatatables') . '</span>';
                 break;
             case 'google_waterfall_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Waterfall Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Waterfall Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_line_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Line Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Line Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_polar_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Polar chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Polar chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_spiderweb_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Spiderweb chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Spiderweb chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_spline_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Spline Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Spline Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_basic_area_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Basic Area Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Basic Area Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_stacked_area_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Stacked Area Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Stacked Area Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_basic_bar_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Basic Bar Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Basic Bar Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_stacked_bar_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Stacked Bar Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Stacked Bar Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_basic_column_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Basic Column Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Basic Column Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_stacked_column_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Stacked Column Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Stacked Column Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_pie_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Pie Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Pie Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_pie_with_gradient_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Pie With Gradient Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Pie With Gradient Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_donut_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Donut Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Donut Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_scatter_plot':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Scatter Plot', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Scatter Plot', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_3d_column_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('3D Column Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('3D Column Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_3d_pie_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('3D Pie Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('3D Pie Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_3d_donut_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('3D Donut Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('3D Donut Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_treemap_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Treemap Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Treemap Chart', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts_treemap_level_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Treemap level Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Treemap level Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_line_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Line Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Line Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_area_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Area Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Area Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_stacked_area_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Stacked Area Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Stacked Area Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_column_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Column Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Column Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_radar_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Radar Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Radar Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_polar_area_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Polar Area Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Polar Area Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_pie_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Pie Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Pie Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_doughnut_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Doughnut Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Doughnut Chart', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs_bubble_chart':
-                return '<span class="wdt-chart-type bgm-gray">' . __('Bubble Chart', 'wpdatatables') . '</span>';
+                return '<span class="wdt-chart-type">' . __('Bubble Chart', 'wpdatatables') . '</span>';
                 break;
             default:
                 return $item;
@@ -349,13 +349,13 @@ class WDTBrowseChartsTable extends WP_List_Table {
     function column_engine($item) {
         switch ($item['engine']) {
             case 'google':
-                return '<span class="wdt-render-engine bgm-gray">' . __('Google', 'wpdatatables') . '</span>';
+                return '<span class="wdt-render-engine">' . __('Google', 'wpdatatables') . '</span>';
                 break;
             case 'highcharts':
-                return '<span class="wdt-render-engine bgm-gray">' . __('Highcharts', 'wpdatatables') . '</span>';
+                return '<span class="wdt-render-engine">' . __('Highcharts', 'wpdatatables') . '</span>';
                 break;
             case 'chartjs':
-                return '<span class="wdt-render-engine bgm-gray">' . __('Chart.js', 'wpdatatables') . '</span>';
+                return '<span class="wdt-render-engine">' . __('Chart.js', 'wpdatatables') . '</span>';
                 break;
             default:
                 return $item;
@@ -420,7 +420,7 @@ class WDTBrowseChartsTable extends WP_List_Table {
         if (!empty($columns['cb'])) {
             static $cb_counter = 1;
             $columns['cb'] = '<label class="screen-reader-text" for="cb-select-all-' . $cb_counter . '">' . __('Select All') . '</label>'
-                . '<div class="checkbox"><input id="cb-select-all-' . $cb_counter . '" type="checkbox" /><i class="input-helper"></i></div>';
+                . '<div class="checkbox"><input id="cb-select-all-' . $cb_counter . '" type="checkbox" /></div>';
             $cb_counter++;
         }
 
@@ -449,7 +449,7 @@ class WDTBrowseChartsTable extends WP_List_Table {
                     $class[] = $current_order;
                 } else {
                     $order = $desc_first ? 'desc' : 'asc';
-                    $class[] = 'sortable';
+                    $class[] =  ($current_orderby == '' && $column_key == 'id' ) ? 'sorted' : 'sortable';
                     $class[] = $desc_first ? 'asc' : 'desc';
                 }
 

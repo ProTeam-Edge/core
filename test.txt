@@ -3,4 +3,5 @@ adding a line
 adding a line to see what happens
 adding another
 fifth line does it show up
-sixth line should now be reflected in test-dev VM server
+sixth line should now be reflected in test-dev VM serve
+seventh line 12/18/2020

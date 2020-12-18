@@ -1,0 +1,32 @@
+{
+"topic_name":"Place",
+"field_map": {
+  "place_name": {
+    "order":1,    
+    "style":"wpforms-one-half wpforms-first"},
+  "place_url": {
+    "order":8,
+    "style":"wpforms-one-half"},
+  "place_address_postaladdress_streetaddress": {
+    "order":2, 
+    "style":""},
+  "place_address_postaladdress_addresslocality": {
+    "order":3,
+    "style":"wpforms-two-fourths wpforms-first"},
+  "place_address_postaladdress_addressregion": {
+    "order":4,
+    "style":"wpforms-one-fourth"},
+  "place_address_postaladdress_postalcode": {
+    "order":5,
+    "style":"wpforms-one-fourth"},
+  "place_telephone": {
+    "order":6,
+    "style":"wpforms-one-half wpforms-first"},
+  "place_faxnumber": {
+    "order":7,
+    "style":"wpforms-one-half"},
+  "place_description": {
+    "order":9,
+    "style":""}
+  }
+}

@@ -18,17 +18,17 @@
 
                 <!-- .card-header -->
                 <div class="card-header wdt-admin-card-header ch-alt">
-                    <img id="wpdt-inline-logo" style="width: 60px;height: 50px;"
-                         src="<?php echo WDT_ROOT_URL; ?>assets/img/logo-large.png"/>
+                    <img id="wpdt-inline-logo"
+                         src="<?php echo WDT_ROOT_URL; ?>assets/img/logo.svg"/>
                     <h2>
-                        <span>wpDataCharts</span>
-                        <small><?php _e('wpDataCharts browse', 'wpdatatables'); ?></small>
+                        <span style="display: none">wpDataCharts</span>
+                        <?php _e('Browse Charts', 'wpdatatables'); ?>
                     </h2>
                     <ul class="actions">
                         <li>
                             <button onclick="location.href='admin.php?page=wpdatatables-chart-wizard'"
-                                    class="btn bgm-blue waves-effect wdt-add-new">
-                                <i class="zmdi zmdi-plus"></i>
+                                    class="btn btn-primary wdt-add-new">
+                                <i class="wpdt-icon-plus"></i>
                                 <?php _e('Add New', 'wpdatatables'); ?>
                             </button>
                         </li>

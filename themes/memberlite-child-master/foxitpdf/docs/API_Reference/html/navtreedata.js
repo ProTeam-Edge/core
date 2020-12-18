@@ -1,26 +1,3 @@
-/*
-@ @licstart  The following is the entire license notice for the
-JavaScript code in this file.
-
-Copyright (C) 1997-2017 by Dimitri van Heesch
-
-This program is free software; you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
-@licend  The above is the entire license notice
-for the JavaScript code in this file
-*/
 var NAVTREE =
 [
   [ "FoxitPDFSDKforWeb", "index.html", [
@@ -45,10 +22,13 @@ var NAVTREE =
 var NAVTREEINDEX =
 [
 "annotated.html",
-"class_header_footer.html#ae42d0d6d7fe281aa7a81be9144d6261f",
-"class_p_d_f_page_render.html",
-"functions_func_b.html",
-"group___consts_p_d_f.html#ggab91b34ae619fcdfcba4522b4f335bf83aa65c88ca01c14a18385de3ae19c1eaaf"
+"class_create_pencil_controller.html",
+"class_markup.html#ad71efb851087c99f0ac7f9dafc1a0679",
+"class_p_d_f_viewer.html#a52acc91bc4afe4d86f777b8a4df6db74",
+"class_u_i_fragment_options.html#a36ec064c988d4269a3cf7453dc89f9d7",
+"group___consts_p_d_f.html#gga00220cfc285f360a5768bcc31724ac5cabe792ecb74a006787ddb6bac19ae636d",
+"group___consts_p_d_f.html#ggaa6d3d3553e0efdc215d12e7d819f9ce1afc4df06884d15d1e0d031e87c1ed4030",
+"group___viewer_constants.html#gga6ec15891539f72f987e57e469aeebd9ea386adaaa735fcf9f91a4d1f80d8eba06"
 ];
 
 var SYNCONMSG = 'click to disable panel synchronisation';

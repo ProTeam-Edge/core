@@ -6,6 +6,9 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true"><i class="wpdt-icon-times-full"></i></span>
+                </button>
                 <h4 class="modal-title"><?php _e('Merge values?', 'wpdatatables'); ?></h4>
             </div>
             <div class="modal-body">
@@ -14,16 +17,16 @@
                 </p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-danger btn-icon-text waves-effect" data-dismiss="modal">
-                    <i class="zmdi zmdi-close"></i>
+                <hr>
+                <button type="button" class="btn btn-danger btn-icon-text" data-dismiss="modal">
                     <?php _e('Cancel', 'wpdatatables'); ?>
                 </button>
-                <button type="button" class="btn btn-primary btn-icon-text waves-effect wdt-merge-possible-values">
-                    <i class="zmdi zmdi-arrow-merge"></i>
+                <button type="button" class="btn btn-primary btn-icon-text wdt-merge-possible-values">
+                    <i class="wpdt-icon-compress-alt m-r-5"></i>
                     <?php _e('Merge', 'wpdatatables'); ?>
                 </button>
-                <button type="button" class="btn btn-primary btn-icon-text waves-effect wdt-replace-possible-values">
-                    <i class="zmdi zmdi-search-replace"></i>
+                <button type="button" class="btn btn-primary btn-icon-text wdt-replace-possible-values">
+                    <i class="wpdt-icon-exchange-alt m-r-5"></i>
                     <?php _e('Replace', 'wpdatatables'); ?>
                 </button>
             </div>

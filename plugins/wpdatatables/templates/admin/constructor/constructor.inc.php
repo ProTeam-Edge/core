@@ -17,27 +17,27 @@
                 <!-- /Preloader -->
 
                 <div class="card-header wdt-admin-card-header ch-alt">
-                    <img id="wpdt-inline-logo" style="width: 60px;height: 50px;"
-                         src="<?php echo WDT_ROOT_URL; ?>assets/img/logo-large.png"/>
+                    <img id="wpdt-inline-logo"
+                         src="<?php echo WDT_ROOT_URL; ?>assets/img/logo.svg"/>
                     <h2>
-                    <span class="" id=""
-                          title="<?php _e('Create a Table', 'wpdatatables'); ?>"><?php _e('Create a Table', 'wpdatatables'); ?></span>
-                        <small><?php _e('Table Creation Wizard', 'wpdatatables'); ?></small>
+                    <span style="display: none"><?php _e('Create a Table', 'wpdatatables'); ?></span>
+                        <?php _e('Create a Table', 'wpdatatables'); ?>
                     </h2>
                     <ul class="actions p-t-5">
                         <li>
-                            <button class="btn bgm-red btn-icon btn-lg waves-effect waves-circle waves-float wdt-backend-close"
-                                    title="<?php _e('Cancel', 'wpdatatables'); ?>" data-toggle="tooltip">
-                                <i class="zmdi zmdi-close"></i>
+                            <button class="btn wdt-backend-close">
+                                <?php _e('Cancel', 'wpdatatables'); ?>
                             </button>
                         </li>
                     </ul>
                 </div>
                 <!-- /.card-header -->
 
-                <div class="card-body card-padding">
+                <div class="card-body card-padding bg-white">
 
                     <?php include WDT_TEMPLATE_PATH . 'admin/constructor/steps/constructor_1.inc.php'; ?>
+
+                    <?php include WDT_TEMPLATE_PATH . 'admin/constructor/steps/constructor_1_0.inc.php'; ?>
 
                     <?php include WDT_TEMPLATE_PATH . 'admin/constructor/steps/constructor_1_1.inc.php'; ?>
 
@@ -53,12 +53,15 @@
 
                     <?php include WDT_TEMPLATE_PATH . 'admin/constructor/constructor_column_block.inc.php'; ?>
 
-                    <div class="row m-t-15 m-b-5 p-l-15 p-r-15">
+                </div>
+                <!-- /.card-body -->
+                <div class="row m-t-15 m-b-5 p-l-15 p-r-15">
+                    <div id="wpdt-control-buttons">
                         <div class="btn-group wdt-constructor-create-buttons pull-right m-l-5" style="display: none;">
-                            <button type="button" class="btn btn-success dropdown-toggle waves-effect"
+                            <button type="button" class="btn btn-primary dropdown-toggle"
                                     data-toggle="dropdown" aria-expanded="false">
                                 Create the table
-                                <span class="caret"></span>
+                                <i class="wpdt-icon-caret-down-full"></i>
                             </button>
                             <ul class="dropdown-menu" role="menu">
                                 <li id="wdt-constructor-create-table">
@@ -67,19 +70,17 @@
                                     <a><?php _e('Open in Excel-like editor', 'wpdatatables'); ?></a></li>
                             </ul>
                         </div>
-                        <button class="btn btn-primary waves-effect pull-right m-l-5"
+                        <button class="btn btn-primary pull-right m-l-5"
                                 disabled="disabled"
                                 id="wdt-constructor-next-step"><?php _e('Next ', 'wpdatatables'); ?></button>
-                        <button class="btn btn-primary waves-effect pull-right" id="wdt-constructor-previous-step"
+                        <button class="btn pull-right hidden" id="wdt-constructor-previous-step"
                                 disabled="disabled"><?php _e(' Previous', 'wpdatatables'); ?></button>
-                        <a class="btn btn-default btn-icon-text waves-effect wdt-documentation"
-                           data-doc-page="constructor">
-                            <i class="zmdi zmdi-help-outline"></i> <?php _e('Documentation', 'wpdatatables'); ?>
-                        </a>
                     </div>
-
+                    <a class="btn btn-default btn-icon-text wdt-documentation"
+                       data-doc-page="constructor">
+                        <i class="wpdt-icon-file-thin"></i> <?php _e('View Documentation', 'wpdatatables'); ?>
+                    </a>
                 </div>
-                <!-- /.card-body -->
 
             </div>
             <!-- /.card /.wdt-table-constructor -->

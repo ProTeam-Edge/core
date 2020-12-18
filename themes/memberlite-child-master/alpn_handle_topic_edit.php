@@ -5,7 +5,7 @@ $siteUrl = get_site_url();
 
 $qVars = $_POST;
 $uniqueRecId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
-$pteUserTimezoneOffset = isset($qVars['pte_user_timezone_offset']) ? $qVars['pte_user_timezone_offset'] : '';
+$returnDetails = isset($qVars['return_details']) ? json_decode(stripslashes($qVars['return_details']), true) : array();
 
 $html="";
 
@@ -23,6 +23,7 @@ $results = $wpdb->get_results(
 $topicData = $results[0];
 $topicId = $topicData->id;
 $topicTypeId = $topicData->topic_type_id;
+$topicTypeSpecial = $topicData->special;
 $topicTypeName = $topicData->topic_name;
 $topicImageHandle = $topicData->image_handle;
 $topicProfileHandle = $topicData->profile_handle;
@@ -34,38 +35,42 @@ $formId = $topicData->form_id;
 $topicContent = json_decode($topicData->topic_content, true);
 $topicMeta = json_decode($topicData->topic_type_meta, true);
 
-$fieldMap = $topicMeta['field_map'];
-$uniqueFieldId = $topicMeta['pte.meta'];
+$fieldMap = pte_map_extract($topicMeta['field_map']);
 
 $actualValue = '';
 foreach ($topicContent as $key => $value) {
 	if (is_array($value)) {
-		foreach ($value as $key2 => $value2) {
+		foreach ($value as $key2 => $value2) {    //Date I believe
 			$wpf = "wpf{$formId}_{$fieldMap[$key]}_{$key2}";
 			$_GET[$wpf] = $value2;
 		}
 	} else {
-		$wpf = "wpf{$formId}_{$fieldMap[$key]}";
-		$_GET[$wpf] = $value;
+		$wpf = isset($fieldMap[$key]) ? "wpf{$formId}_{$fieldMap[$key]}" : "";
+		$_GET[$wpf] = str_replace("\r\n", "*r*n*", $value);   //ENCODES carriage returns because wpforms does not support
 	}
 }
 
 $topicItemMeta = array(
 	"row_id" => $topicId,
-	"pte_user_timezone_offset" => $pteUserTimezoneOffset
+	"return_details" => $returnDetails
 );
 
-$_GET["wpf{$formId}_{$uniqueFieldId}"] = json_encode($topicItemMeta); //handle unique topic id
+$_GET["wpf{$formId}_0"] = json_encode($topicItemMeta); //handle unique topic id
+
+//pp($_GET);
 
 //$html .= print_r($_GET, true);
-
 $context = $topicTypeName;
 $name = $topicName;
+$personalTopic = 'false';
 
-if ($topicTypeId == '4') {
-	$context = "Network";
+if ($topicTypeSpecial == 'contact') {
+	$context = "Contact";
 }
-if ($topicTypeId == '5') {$context = "Me";}
+if ($topicTypeSpecial == 'user') {
+	$context = "Personal";
+	$personalTopic = 'true';
+}
 
 $ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 if ($topicProfileHandle) {
@@ -73,25 +78,41 @@ if ($topicProfileHandle) {
 } else if ($topicImageHandle) {
 	$topicImage = "<img src='{$ppCdnBase}{$topicImageHandle}' style='height: 35px; width: 35px; border-radius: 50%; margin-left: 10px;'>";
 } else {
-	$topicImage = "<i class='{$topicIcon}' style='margin-left: 15px; margin-top: 2px; color: rgb(68, 68, 68); font-size: 1.2em;'></i>";
+	$topicImage = "<i class='{$topicIcon}' style='margin-left: 10px; color: rgb(68, 68, 68); font-size: 24px;'></i>";
 }
 
-$html .= "<div class='outer_button_line'>
-			  <i class='far fa-lock-alt pte_icon_button' title='Vault' onclick='alpn_mission_control(\"vault\", \"{$topicDomId}\")' style='font-size: 28px; width: 40px; float: left; margin-left: 10px;'></i>
-			  <div id='alpn_message_area' class='alpn_message_area'>
-			  </div>
-			  <div id='alpn_vault_button_bar' class='alpn_vault_button_bar'>
-			  </div>
-			  <div style='clear: both;'></div>
-		  </div>
-		  ";
 
-$html .= "<div class='alpn_container_title_2' style='margin-bottom: 30px;'>
-			<div class='alpn_container_2_left'><i class='far fa-pencil-alt' style='width: 30px; margin-bottom: 5px; font-size: 1.2em; color: rgb(68, 68, 68);'></i>&nbsp;&nbsp;{$name}</div>
-			<div class='alpn_container_2_right'><div style='display: inline-block; vertical-align: middle;'>{$context}</div><div style='display: inline-block;  vertical-align: middle; height: 35px;'>{$topicImage}</div></div>
-		  </div>
-		  <div style='clear: both;'></div>";
-$html .= do_shortcode("[wpforms id='$formId']");
+$html .= "
+					<div class='outer_button_line'>
+						<div class='pte_vault_row_35'>
+						</div>
+						<div class='pte_vault_row_65'>
+						</div>
+						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
+	  			</div>
+	  ";
+
+$html .= "
+					<div class='alpn_container_title_2'>
+						<div id='pte_topic_form_title_view'>
+							<i class='far fa-pencil-alt pte_title_icon_margin_right'></i>{$name}
+						</div>
+						<div id='pte_topic_form_title_view' class='pte_vault_right'>
+							{$context} <div class='pte_title_topic_icon_container'>{$topicImage}</div>
+						</div>
+					</div>
+			";
+$editForm = do_shortcode("[wpforms id='$formId']");
+$html .= "
+						<div id='pte_editor_container' class='pte_vault_row' data-personal-topic='{$personalTopic}'>
+							<div id='pte_topic_form_edit_view_left'>
+								{$editForm}
+							</div>
+							<div id='pte_topic_form_edit_view_right'>
+							</div>
+						 </div>
+						";
+
 echo $html;
 
 ?>

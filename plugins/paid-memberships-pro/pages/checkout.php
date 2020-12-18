@@ -25,7 +25,7 @@
 	<input type="hidden" id="level" name="level" value="<?php echo esc_attr($pmpro_level->id) ?>" />
 	<input type="hidden" id="checkjavascript" name="checkjavascript" value="1" />
 	<?php if ($discount_code && $pmpro_review) { ?>
-		<input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="hidden" size="20" value="<?php echo esc_attr($discount_code) ?>" />
+		<input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="hidden" size="20" value="<?php echo esc_attr($discount_code) ?>" />
 	<?php } ?>
 
 	<?php if($pmpro_msg) { ?>
@@ -87,7 +87,7 @@
 				<?php if($pmpro_show_discount_code) { ?>
 				<div id="other_discount_code_tr" style="display: none;">
 					<label for="other_discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
-					<input id="other_discount_code" name="other_discount_code" type="text" class="<?php echo pmpro_get_element_class( 'input', 'other_discount_code' ); ?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
+					<input id="other_discount_code" name="other_discount_code" type="text" class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'other_discount_code' ); ?>" size="20" value="<?php echo esc_attr($discount_code); ?>" />
 					<input type="button" name="other_discount_code_button" id="other_discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
 				</div>
 				<?php } ?>
@@ -424,7 +424,7 @@
 				<?php if($pmpro_show_discount_code) { ?>
 					<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field pmpro_payment-discount-code', 'pmpro_payment-discount-code' ); ?>">
 						<label for="discount_code"><?php _e('Discount Code', 'paid-memberships-pro' );?></label>
-						<input class="<?php echo pmpro_get_element_class( 'input', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
+						<input class="<?php echo pmpro_get_element_class( 'input pmpro_alter_price', 'discount_code' ); ?>" id="discount_code" name="discount_code" type="text" size="10" value="<?php echo esc_attr($discount_code); ?>" />
 						<input type="button" id="discount_code_button" name="discount_code_button" value="<?php _e('Apply', 'paid-memberships-pro' );?>" />
 						<p id="discount_code_message" class="<?php echo pmpro_get_element_class( 'pmpro_message', 'discount_code_message' ); ?>" style="display: none;"></p>
 					</div>
@@ -447,7 +447,20 @@
 			</h3>
 			<div class="<?php echo pmpro_get_element_class( 'pmpro_checkout-fields' ); ?>">
 				<div id="pmpro_license" class="<?php echo pmpro_get_element_class( 'pmpro_checkout-field', 'pmpro_license' ); ?>">
-<?php echo wpautop(do_shortcode($tospage->post_content));?>
+<?php 
+	/**
+	 * Hook to run formatting filters before displaying the content of your "Terms of Service" page at checkout.
+	 *
+	 * @since 2.4.1
+	 *
+	 * @param string $pmpro_tos_content The content of the post assigned as the Terms of Service page.
+	 * @param string $tospage The post assigned as the Terms of Service page.
+	 *
+	 * @return string $pmpro_tos_content
+	 */
+	$pmpro_tos_content = apply_filters( 'pmpro_tos_content', do_shortcode( $tospage->post_content ), $tospage );
+	echo $pmpro_tos_content;
+?>
 				</div> <!-- end pmpro_license -->
 				<?php
 					if ( isset( $_REQUEST['tos'] ) ) {

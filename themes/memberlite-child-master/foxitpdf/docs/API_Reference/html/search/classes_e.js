@@ -1,24 +1,11 @@
 var searchData=
 [
-  ['screen',['Screen',['../class_screen.html',1,'']]],
-  ['scrollwrap',['ScrollWrap',['../class_scroll_wrap.html',1,'']]],
-  ['selecttextannotationcontroller',['SelectTextAnnotationController',['../class_select_text_annotation_controller.html',1,'']]],
-  ['seniorcomponentsuperclassoptions',['SeniorComponentSuperclassOptions',['../class_senior_component_superclass_options.html',1,'']]],
-  ['showactionscontroller',['ShowActionsController',['../class_show_actions_controller.html',1,'']]],
-  ['showannotpropertiescontroller',['ShowAnnotPropertiesController',['../class_show_annot_properties_controller.html',1,'']]],
-  ['showannotreplycontroller',['ShowAnnotReplyController',['../class_show_annot_reply_controller.html',1,'']]],
-  ['showredactplacedialogcontroller',['ShowRedactPlaceDialogController',['../class_show_redact_place_dialog_controller.html',1,'']]],
-  ['showsearchpanelcontroller',['ShowSearchPanelController',['../class_show_search_panel_controller.html',1,'']]],
-  ['sidebarcomponent',['SidebarComponent',['../class_sidebar_component.html',1,'']]],
-  ['sidebarpanelcomponentoptions',['SidebarPanelComponentOptions',['../class_sidebar_panel_component_options.html',1,'']]],
-  ['singlepagemodecontroller',['SinglePageModeController',['../class_single_page_mode_controller.html',1,'']]],
-  ['slotcomponent',['SlotComponent',['../class_slot_component.html',1,'']]],
-  ['snapshotserver',['SnapshotServer',['../class_snapshot_server.html',1,'']]],
-  ['sound',['Sound',['../class_sound.html',1,'']]],
-  ['square',['Square',['../class_square.html',1,'']]],
-  ['squiggly',['Squiggly',['../class_squiggly.html',1,'']]],
-  ['stamp',['Stamp',['../class_stamp.html',1,'']]],
-  ['statefulcontroller',['StatefulController',['../class_stateful_controller.html',1,'']]],
-  ['statehandlermanager',['StateHandlerManager',['../class_state_handler_manager.html',1,'']]],
-  ['strikeout',['StrikeOut',['../class_strike_out.html',1,'']]]
+  ['redact',['Redact',['../class_redact.html',1,'']]],
+  ['remoteannotationoperationdata',['RemoteAnnotationOperationData',['../class_remote_annotation_operation_data.html',1,'']]],
+  ['removeannotationcollaborationdata',['RemoveAnnotationCollaborationData',['../class_remove_annotation_collaboration_data.html',1,'']]],
+  ['removereplycollaborationdata',['RemoveReplyCollaborationData',['../class_remove_reply_collaboration_data.html',1,'']]],
+  ['removereplyoperationdata',['RemoveReplyOperationData',['../class_remove_reply_operation_data.html',1,'']]],
+  ['replycardcomponent',['ReplyCardComponent',['../class_reply_card_component.html',1,'']]],
+  ['resetformaction',['ResetFormAction',['../class_reset_form_action.html',1,'']]],
+  ['ribbonappearance',['RibbonAppearance',['../class_ribbon_appearance.html',1,'']]]
 ];

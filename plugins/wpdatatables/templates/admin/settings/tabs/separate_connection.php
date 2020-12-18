@@ -7,32 +7,38 @@
  * Time: 1:08 PM
  */
 ?>
-
+<?php
+$allDefaultOptions = [];
+$isDefault = '';
+foreach (Connection::getAll() as $key => $wdtSeparateConnection) {
+    $allDefaultOptions[] = $wdtSeparateConnection['default'];
+}
+(in_array(1, $allDefaultOptions)) ? $isDefault = true : $isDefault = false;
+            ?>
 <div role="tabpanel" class="tab-pane" id="separate-connection" data-count="<?php echo sizeof(Connection::getAll()); ?>">
     <div class="row">
         <div class="col-sm-6 col-md-6">
-            <h4 class="c-black m-b-20">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('Separate DB connection', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('If this checkbox is checked, wpDataTables will use its own connection to chosen vendor bases. In other case it will use the main WordPress MySQL connection.', 'wpdatatables'); ?>"></i>
             </h4>
-            <div class="toggle-switch p-b-20 p-t-5" data-ts-color="blue">
+            <div class="toggle-switch" data-ts-color="blue">
+                <input id="wdt-separate-connection" name="wdt-separate-connection"  type="checkbox" >
                 <label for="wdt-separate-connection"
                        class="ts-label"><?php _e('Use separate connection', 'wpdatatables'); ?></label>
-                <input id="wdt-separate-connection" type="checkbox" hidden="hidden">
-                <label for="wdt-separate-connection" class="ts-helper"></label>
             </div>
         </div>
 
 
         <div class="col-sm-6 col-md-6 mysql-serverside-settings-block">
-            <h4 class="c-black m-b-20">
+            <h4 class="c-title-color m-b-2">
                 <?php _e('New connection', 'wpdatatables'); ?>
-                <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                    title="<?php _e('Click this button to add new connection.', 'wpdatatables'); ?>"></i>
             </h4>
             <div class="fg-line">
-                <button id="wp-my-sql-add" class="btn btn-primary waves-effect">Add New Connection</button>
+                <button id="wp-my-sql-add" class="btn btn-primary"><?php _e('Add New Connection', 'wpdatatables'); ?></button>
             </div>
         </div>
 
@@ -40,7 +46,7 @@
 
     <ul class="tab-nav mysql-serverside-settings-block" role="tablist">
         <?php foreach (Connection::getAll() as $key => $wdtSeparateConnection) { ?>
-            <li class="<?php if($wdtSeparateConnection['default']) echo 'active'; ?>">
+            <li class="<?php if(($isDefault && $allDefaultOptions[$key]) || (!$isDefault && $key== 0)) echo 'active'; ?>">
                 <a href="#connection<?php echo $key; ?>" aria-controls="connection<?php echo $key; ?>" role="tab"
                    data-toggle="tab" style="text-transform: none;">
                     <?php _e($wdtSeparateConnection['name'], 'wpdatatables'); ?>

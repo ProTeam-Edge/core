@@ -130,7 +130,6 @@ class WPForms_Process {
 		$this->fields = array();
 		$form_id      = absint( $entry['id'] );
 		$form         = wpforms()->form->get( $form_id );
-		$honeypot     = false;
 
 		// Validate form is real and active (published).
 		if ( ! $form || 'publish' !== $form->post_status ) {
@@ -260,23 +259,39 @@ class WPForms_Process {
 			return;
 		}
 
-		// Validate honeypot early - before actual processing.
-		if (
-			! empty( $this->form_data['settings']['honeypot'] ) &&
-			'1' == $this->form_data['settings']['honeypot'] &&
-			! empty( $entry['hp'] )
-		) {
-			$honeypot = esc_html__( 'WPForms honeypot field triggered.', 'wpforms-lite' );
-		}
+		$honeypot = wpforms()->get( 'honeypot' )->validate( $this->form_data, $this->fields, $entry );
 
-		$honeypot = apply_filters( 'wpforms_process_honeypot', $honeypot, $this->fields, $entry, $this->form_data );
-
-		// If spam - return early.
+		// If we trigger the honey pot, we want to log the entry, disable the errors, and fail silently.
 		if ( $honeypot ) {
+
 			// Logs spam entry depending on log levels set.
 			wpforms_log(
 				'Spam Entry ' . uniqid(),
 				array( $honeypot, $entry ),
+				array(
+					'type'    => array( 'spam' ),
+					'form_id' => $this->form_data['id'],
+				)
+			);
+
+			// Fail silently.
+			return;
+		}
+
+		$antispam = wpforms()->get( 'token' )->validate( $this->form_data, $this->fields, $entry );
+
+		// If spam - return early.
+		// For antispam, we want to make sure that we have a value, we are not using AMP, and the value is an error string.
+		if ( $antispam && ! wpforms_is_amp() && is_string( $antispam ) ) {
+
+			if ( $antispam ) {
+				$this->errors[ $form_id ]['header'] = $antispam;
+			}
+
+			// Logs spam entry depending on log levels set.
+			wpforms_log(
+				esc_html__( 'Spam Entry ' ) . uniqid(),
+				array( $antispam, $entry ),
 				array(
 					'type'    => array( 'spam' ),
 					'form_id' => $this->form_data['id'],
@@ -711,6 +726,13 @@ class WPForms_Process {
 			wp_send_json_error();
 		}
 
+		if ( isset( $_POST['wpforms']['post_id'] ) ) { // phpcs:ignore
+			// We don't have a global $post when processing ajax requests.
+			// Therefore, it's needed to set a global $post manually for compatibility with functions used in smart tag processing.
+			global $post;
+			$post = WP_Post::get_instance( absint( $_POST['wpforms']['post_id'] ) ); // phpcs:ignore
+		}
+
 		add_filter( 'wp_redirect', array( $this, 'ajax_process_redirect' ), 999 );
 
 		do_action( 'wpforms_ajax_submit_before_processing', $form_id );
@@ -778,9 +800,7 @@ class WPForms_Process {
 		// Transform field ids to field names for jQuery Validate plugin.
 		foreach ( $field_errors as $key => $error ) {
 
-			$props = wpforms()->frontend->get_field_properties( $fields[ $key ], $form_data );
-			$name  = isset( $props['inputs']['primary']['attr']['name'] ) ? $props['inputs']['primary']['attr']['name'] : '';
-
+			$name = $this->ajax_error_field_name( $fields[ $key ], $form_data, $error );
 			if ( $name ) {
 				$field_errors[ $name ] = $error;
 			}
@@ -803,6 +823,24 @@ class WPForms_Process {
 		do_action( 'wpforms_ajax_submit_completed', $form_id, $response );
 
 		wp_send_json_error( $response );
+	}
+
+	/**
+	 * Get field name for ajax error message.
+	 *
+	 * @since 1.6.3
+	 *
+	 * @param array  $field     Field settings.
+	 * @param array  $form_data Form data and settings.
+	 * @param string $error     Error message.
+	 *
+	 * @return string
+	 */
+	private function ajax_error_field_name( $field, $form_data, $error ) {
+
+		$props = wpforms()->frontend->get_field_properties( $field, $form_data );
+
+		return apply_filters( 'wpforms_process_ajax_error_field_name', '', $field, $props, $error );
 	}
 
 	/**

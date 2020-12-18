@@ -12,34 +12,25 @@
 
     <div class="card-header ch-alt">
         <h2><?php _e('Column settings', 'wpdatatables'); ?>: <span
-                    class="label label-default bgm-gray wdtColumnOrigHeader">Position</span>
+                    class="label wdtColumnOrigHeader">Position</span>
         </h2>
         <ul class="actions">
             <li>
-                <button class="btn bgm-gray btn-icon waves-effect waves-circle waves-float"
-                        title="<?php _e('Documentation', 'wpdatatables'); ?>" data-toggle="tooltip"
-                        data-placement="bottom">
-                    <i class="zmdi zmdi-help-outline"></i>
+                <button class="btn wdt-cancel-column-settings">
+                    <?php _e('Cancel', 'wpdatatables'); ?>
                 </button>
             </li>
             <li>
-                <button class="btn bgm-red btn-icon waves-effect waves-circle waves-float wdt-cancel-column-settings"
-                        title="<?php _e('Cancel', 'wpdatatables'); ?>" data-toggle="tooltip" data-placement="bottom">
-                    <i class="zmdi zmdi-close"></i>
-                </button>
-            </li>
-            <li>
-                <button class="btn bgm-green btn-icon waves-effect waves-circle waves-float wdt-column-apply"
-                        title="<?php _e('Save', 'wpdatatables'); ?>" data-toggle="tooltip" data-placement="bottom">
-                    <i class="zmdi zmdi-check"></i>
+                <button class="btn btn-primary wdt-column-apply">
+                    <i class="wpdt-icon-save"></i><?php _e('Save Changes', 'wpdatatables'); ?>
                 </button>
             </li>
         </ul>
     </div>
     <!-- /.card-header -->
-    <div class="card-body card-padding">
+    <div class="card-body card-padding wpdt-column-settings-card">
 
-        <div class="row wpDataTableContainer wpDataTables wpDataTablesWrapper">
+        <div class="row wpDataTableContainer wpDataTables wpDataTablesWrapper m-l-5">
 
             <div role="tabpanel">
                 <ul class="tab-nav" role="tablist">
@@ -77,9 +68,9 @@
                         <div class="row">
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Displayed header', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="You can redefine the visible column header here, it will be shown instead of the orignial header."></i>
                                 </h4>
                                 <div class="form-group">
@@ -91,15 +82,20 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Column position', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="You can redefine the position of the column here. Other columns will automatically re-position if you change it and click Apply."></i>
                                 </h4>
                                 <div class="form-group">
-                                    <div class="fg-line">
-                                        <input type="number" min="0" class="form-control input-sm" value="1"
-                                               id="wdt-column-position">
+                                    <div class="fg-line wdt-custom-number-input">
+                                        <button type="button" class="btn btn-default wdt-btn-number wdt-button-minus" data-type="minus" data-field="wdt-column-position">
+                                            <i class="wpdt-icon-minus"></i>
+                                        </button>
+                                        <input type="text" name="wdt-column-position" min="0" value="" class="form-control input-sm input-number" id="wdt-column-position">
+                                        <button type="button" class="btn btn-default wdt-btn-number wdt-button-plus" data-type="plus" data-field="wdt-column-position">
+                                            <i class="wpdt-icon-plus-full"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -110,9 +106,9 @@
                         <div class="row">
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Cell content prefix', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-popover-content="#column-cell-prefix-hint"
+                                    <i class=" wpdt-icon-info-circle-thin" data-popover-content="#column-cell-prefix-hint"
                                        data-toggle="html-popover" data-trigger="hover" data-placement="right"></i>
                                 </h4>
 
@@ -140,9 +136,9 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Cell content suffix', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-popover-content="#column-cell-suffix-hint"
+                                    <i class=" wpdt-icon-info-circle-thin" data-popover-content="#column-cell-suffix-hint"
                                        data-toggle="html-popover" data-trigger="hover" data-placement="right"></i>
                                 </h4>
 
@@ -176,35 +172,33 @@
                         <div class="row wdt-columns-responsive-block">
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Hide on mobiles', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="Disabling this will make the column collapse to an expandable block when table viewed from mobile devices."></i>
                                 </h4>
 
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-hide-column-on-mobiles" type="checkbox">
                                         <label for="wdt-hide-column-on-mobiles"
                                                class="ts-label"><?php _e('Collapse column on mobile devices', 'wpdatatables'); ?></label>
-                                        <input id="wdt-hide-column-on-mobiles" type="checkbox" hidden="hidden">
-                                        <label for="wdt-hide-column-on-mobiles" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Hide on tablets', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="Disabling this will make the column collapse to an expandable block when table viewed from tablet devices."></i>
                                 </h4>
 
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-hide-column-on-tablets" type="checkbox">
                                         <label for="wdt-hide-column-on-tablets"
                                                class="ts-label"><?php _e('Collapse column on tablet devices', 'wpdatatables'); ?></label>
-                                        <input id="wdt-hide-column-on-tablets" type="checkbox" hidden="hidden">
-                                        <label for="wdt-hide-column-on-tablets" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
@@ -216,9 +210,9 @@
                         <div class="row">
 
                             <div class="col-sm-6 cp-container">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('CSS class(es)', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="Here you can define additional CSS classes, which will be applied to all the cells in this column and can be used for customizing the styling."></i>
                                 </h4>
                                 <div class="form-group">
@@ -230,18 +224,17 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Visible on front-end', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="Disabling this will hide the column from table front-end. Please note that if column visibility is enabled in Table Tools block, front-end users will be able to access hidden columns as well."></i>
                                 </h4>
 
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-visible" type="checkbox">
                                         <label for="wdt-column-visible"
                                                class="ts-label"><?php _e('Show column in front-end', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-visible" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-visible" class="ts-helper"></label>
                                     </div>
                                 </div>
 
@@ -254,9 +247,9 @@
                         <div class="row">
 
                             <div class="col-sm-6 wdt-column-width-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Column width', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="Input width for column( in percents with % or pixels without px). Leave a blank if you want to leave auto width."></i>
                                 </h4>
                                 <div class="form-group">
@@ -267,9 +260,9 @@
                             </div>
 
                             <div class="col-sm-6 cp-container">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Column color', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-popover-content="#column-color-hint  "
+                                    <i class=" wpdt-icon-info-circle-thin" data-popover-content="#column-color-hint  "
                                        data-toggle="html-popover" data-trigger="hover" data-placement="right"></i>
                                 </h4>
 
@@ -292,9 +285,9 @@
                                     <div class="form-group">
                                         <div class="fg-line dropdown">
                                             <div id="cp"
-                                                 class="input-group colorpicker-component colorpicker-element color-picker wpcolorpicker">
+                                                 class="input-group wdt-color-picker">
                                                 <input type="text" id="wdt-column-color" value=""
-                                                       class="form-control cp-value cp-inside"/>
+                                                       class="form-control cp-value cp-inside wdt-add-picker"/>
                                                 <span class="input-group-addon wpcolorpicker-icon"><i></i></span>
                                             </div>
                                         </div>
@@ -303,9 +296,9 @@
                             </div>
 
                             <div class="col-sm-6 wdt-group-column-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Group column', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-popover-content="#group-column"
+                                    <i class=" wpdt-icon-info-circle-thin" data-popover-content="#group-column"
                                        data-toggle="html-popover" data-trigger="hover" data-placement="right"></i>
                                 </h4>
 
@@ -327,10 +320,9 @@
 
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-group-column" type="checkbox">
                                         <label for="wdt-group-column"
                                                class="ts-label"><?php _e('Toggle column grouping', 'wpdatatables'); ?></label>
-                                        <input id="wdt-group-column" type="checkbox" hidden="hidden">
-                                        <label for="wdt-group-column" class="ts-helper"></label>
                                     </div>
                                 </div>
 
@@ -349,9 +341,9 @@
                         <div class="row">
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Column type', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('You can redefine the column data type here. Affects sorting, filtering and display logic. For manually created tables this will change the column type in database as well, which may result in data loss.', 'wpdatatables'); ?>"></i>
                                 </h4>
 
@@ -381,9 +373,9 @@
                             </div>
 
                             <div class="col-sm-6 wdt-formula-column-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Formula for calculation', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('You can create a formula (calculated column) based on other numeric columns (Integer and Float)', 'wpdatatables'); ?>"></i>
                                 </h4>
 
@@ -394,39 +386,43 @@
                             </div>
 
                             <div class="col-sm-6 wdt-numeric-column-block wdt-float-column-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Decimal places', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('You can redefine the visible decimal places for a float and formula columns here. If you leave this field empty amount of decimal places will be loaded from the settings page. 0 is available just for formula columns ', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
-                                    <div class="fg-line">
-                                        <input type="number" min="1" id="wdt-column-decimal-places"
-                                               class="form-control input-sm">
+                                    <div class="fg-line wdt-custom-number-input">
+                                        <button type="button" class="btn btn-default wdt-btn-number wdt-button-minus" data-type="minus" data-field="wdt-column-decimal-places">
+                                            <i class="wpdt-icon-minus"></i>
+                                        </button>
+                                        <input type="text" name="wdt-column-decimal-places" min="1" value="" class="form-control input-sm input-number" id="wdt-column-decimal-places">
+                                        <button type="button" class="btn btn-default wdt-btn-number wdt-button-plus" data-type="plus" data-field="wdt-column-decimal-places">
+                                            <i class="wpdt-icon-plus-full"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-numeric-column-block wdt-skip-thousands-separator-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Skip thousands separator', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Do not show thousands separator for this column (e.g. when showing years, IDs).', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-skip-thousands" type="checkbox">
                                         <label for="wdt-column-skip-thousands"
                                                class="ts-label"><?php _e('Skip thousands separator', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-skip-thousands" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-skip-thousands" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-possible-values-type-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Possible values for column', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="left"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="left"
                                        title="<?php _e('Define the logic for fetching the possible values for this column for filtering, and for editing: read from table itself on page load (will always contain only the values that already exist in the table), hard-code the list, or configure a relation with a different wpDataTable (use values in this column as foreign key).', 'wpdatatables'); ?>"></i>
                                 </h4>
 
@@ -444,9 +440,9 @@
                             </div>
 
                             <div class="col-sm-6 wdt-date-input-format-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Date input format', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Define date format which is used in the provided data source. Necessary for smooth reading of your dates.', 'wpdatatables'); ?>"></i>
                                 </h4>
 
@@ -486,14 +482,15 @@
                         <div class="row wdt-possible-values-options-block">
 
                             <div class="col-sm-12 wdt-manual-list-enter-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Values list', 'wpdatatables'); ?>
-                                    <button class="btn btn-primary btn-xs waves-effect"
-                                            id="wdt-column-values-read-from-table"><?php _e('Read from table', 'wpdatatables'); ?></button>
-                                    <button class="btn btn-danger btn-xs waves-effect"
-                                            id="wdt-column-values-reset"><?php _e('Reset', 'wpdatatables'); ?></button>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Enter the possible values for this column in this list, separate by pressing ENTER or comma. Click "Read from table" to fetch the list from existing column values. Values will be used in selectbox and checkbox filters and editors for the column.', 'wpdatatables'); ?>"></i>
+                                    <button class="btn btn-danger btn-xs pull-right"
+                                            id="wdt-column-values-reset"><i class="wpdt-icon-exclamation-triangle"></i><?php _e('Reset', 'wpdatatables'); ?></button>
+                                    <button class="btn btn-xs pull-right"
+                                            id="wdt-column-values-read-from-table"><?php _e('Read from table', 'wpdatatables'); ?></button>
+                                    <div class="clear"></div>
                                 </h4>
                                 <div class="form-group">
                                     <div class="fg-line">
@@ -505,13 +502,13 @@
                             <div class="col-sm-12 wdt-foreign-key-block" hidden="hidden">
 
                                 <div class="col-sm-6 wdt-foreign-values p-l-0">
-                                    <h4 class="c-black m-b-20">
+                                    <h4 class="c-title-color m-b-2">
                                         <?php _e('Use values from another wpDataTable', 'wpdatatables'); ?>
-                                        <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="bottom"
+                                        <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="bottom"
                                            title="<?php _e('Configure a relation with a separate wpDataTable: values in this column will be used as a foreign key, and replaced with values of a remote table column (e.g.: user name instead of user ID).', 'wpdatatables'); ?>"></i>
                                     </h4>
                                     <div class="form-group">
-                                        <button class="btn btn-primary btn-sm waves-effect"
+                                        <button class="btn btn-primary btn-sm"
                                                 id="wdt-foreign-key-open"><?php _e('Configure relation...', 'wpdatatables'); ?></button>
                                     </div>
                                 </div>
@@ -531,41 +528,39 @@
                             </div>
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Allow empty value', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Add an empty value to the possible values list, to allow empty editing and filtering inputs.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-values-add-empty" type="checkbox">
                                         <label for="wdt-column-values-add-empty"
                                                class="ts-label"><?php _e('Add an empty value to the list', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-values-add-empty" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-values-add-empty" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-possible-values-foreign-keys-block" >
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Possible values in edit modal for foreign key column', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('By turning this on you will show all possible values in edit modal from separate table that is connect with foreign keys when option Users can see and edit own data is enabled', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-possible-values-foreign-keys" type="checkbox">
                                         <label for="wdt-possible-values-foreign-keys"
                                                class="ts-label"><?php _e('Allow all possible values in edit modal', 'wpdatatables'); ?></label>
-                                        <input id="wdt-possible-values-foreign-keys" type="checkbox" hidden="hidden">
-                                        <label for="wdt-possible-values-foreign-keys" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-possible-values-ajax-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Number of possible values to load', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Define here how many possible values per page will be loaded in selectbox filters and editor inputs. It is recommended not to be set to All if you have more than 50 possible values for this column. This option is not working when Cascade Filtering option from Powerful Filters add-on is enabled.', 'wpdatatables'); ?>"></i>
                                 </h4>
 
@@ -591,93 +586,81 @@
                         <div class="row wdt-numeric-column-block">
 
                             <div class="col-sm-6 wdt-column-calc-total-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Calculate total', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Enable this to show a total (sum) for all cells in this column in table footer. You can also show it somewhere outside of the table by pasting the shortcode below the switch.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-calc-total" type="checkbox">
                                         <label for="wdt-column-calc-total"
                                                class="ts-label"><?php _e('Calculate a total for this column', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-calc-total" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-calc-total" class="ts-helper"></label>
                                     </div>
                                     <div class="m-t-5" id="wdt-column-calc-total-shortcode">
-                                        <button class="btn btn-primary btn-xs waves-effect p-5 wdt-copy-shortcode"
-                                                data-toggle="tooltip" data-placement="top"
-                                                title="<?php _e('Click to copy this shortcode. By placing this shortcode anywhere in your posts or pages you can see the total for this column.', 'wpdatatables'); ?>">
-
-                                        </button>
+                                        <a class="wdt-copy-shortcode" data-toggle="tooltip" data-shortcode-type="calc-total" title="<?php _e('Click to copy this shortcode. By placing this shortcode anywhere in your posts or pages you can see the total for this column.', 'wpdatatables'); ?>" data-placement="right" >
+                                            <i class="wpdt-icon-copy"></i></a>
+                                        <span id="wdt-calc-total-shortcode-id"></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-column-calc-avg-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Calculate average', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Enable this to show an average value for all cells in this column in table footer. You can also show it somewhere outside of the table by pasting the shortcode below the switch.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-calc-avg" type="checkbox">
                                         <label for="wdt-column-calc-avg"
                                                class="ts-label"><?php _e('Calculate average for this column', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-calc-avg" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-calc-avg" class="ts-helper"></label>
                                     </div>
                                     <div class="m-t-5" id="wdt-column-calc-avg-shortcode">
-                                        <button class="btn btn-primary btn-xs waves-effect p-5 wdt-copy-shortcode"
-                                                data-toggle="tooltip" data-placement="top"
-                                                title="<?php _e('Click to copy this shortcode. By placing this shortcode anywhere in your posts or pages you can see the average for this column.', 'wpdatatables'); ?>">
-
-                                        </button>
+                                        <a class="wdt-copy-shortcode" data-toggle="tooltip" data-shortcode-type="calc-avg" title="<?php _e('Click to copy this shortcode. By placing this shortcode anywhere in your posts or pages you can see the average for this column.', 'wpdatatables'); ?>" data-placement="right" >
+                                            <i class="wpdt-icon-copy"></i></a>
+                                        <span id="wdt-calc-avg-shortcode-id"></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-column-calc-min-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Calculate MIN value', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Enable this to show a minimum value within all cells in this column in table footer. You can also show it somewhere outside of the table by pasting the shortcode below the switch.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-calc-min" type="checkbox">
                                         <label for="wdt-column-calc-min"
                                                class="ts-label"><?php _e('Find a minimum value for this column', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-calc-min" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-calc-min" class="ts-helper"></label>
                                     </div>
                                     <div class="m-t-5" id="wdt-column-calc-min-shortcode">
-                                        <button class="btn btn-primary btn-xs waves-effect p-5 wdt-copy-shortcode"
-                                                data-toggle="tooltip" data-placement="top"
-                                                title="<?php _e('Click to copy this shortcode. By placing this shortcode anywhere in your posts or pages you can see the minimum for this column.', 'wpdatatables'); ?>">
-
-                                        </button>
+                                        <a class="wdt-copy-shortcode" data-toggle="tooltip" data-shortcode-type="calc-min" title="<?php _e('Click to copy this shortcode. By placing this shortcode anywhere in your posts or pages you can see the minimum for this column.', 'wpdatatables'); ?>" data-placement="right" >
+                                            <i class="wpdt-icon-copy"></i></a>
+                                        <span id="wdt-calc-min-shortcode-id"></span>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-column-calc-max-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Calculate MAX value', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Enable this to show a maximum value within all cells in this column in table footer. You can also show it somewhere outside of the table by pasting the shortcode below the switch.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-calc-max" type="checkbox">
                                         <label for="wdt-column-calc-max"
                                                class="ts-label"><?php _e('Find a maximum value for this column', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-calc-max" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-calc-max" class="ts-helper"></label>
                                     </div>
                                     <div class="m-t-5" id="wdt-column-calc-max-shortcode">
-                                        <button class="btn btn-primary btn-xs waves-effect p-5 wdt-copy-shortcode"
-                                                data-toggle="tooltip" data-placement="top"
-                                                title="<?php _e('Click to copy this shortcode. By placing this shortcode anywhere in your posts or pages you can see the maximum for this column.', 'wpdatatables'); ?>">
-
-                                        </button>
+                                        <a class="wdt-copy-shortcode" data-toggle="tooltip" data-shortcode-type="calc-max" title="<?php _e('Click to copy this shortcode. By placing this shortcode anywhere in your posts or pages you can see the maximum for this column.', 'wpdatatables'); ?>" data-placement="right" >
+                                            <i class="wpdt-icon-copy"></i></a>
+                                        <span id="wdt-calc-max-shortcode-id"></span>
                                     </div>
                                 </div>
                             </div>
@@ -688,42 +671,40 @@
                         <div class="row wdt-link-column-block">
 
                             <div class="col-sm-6 wdt-link-target-attribute-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('URL target attribute', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Set how to open URL Target', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-link-target-attribute" type="checkbox">
                                         <label for="wdt-link-target-attribute"
                                                class="ts-label"><?php _e('Open link in the new tab', 'wpdatatables'); ?></label>
-                                        <input id="wdt-link-target-attribute" type="checkbox" hidden="hidden">
-                                        <label for="wdt-link-target-attribute" class="ts-helper"></label>
                                     </div>
                                 </div>
 
                             </div>
 
                             <div class="col-sm-6 wdt-link-button-attribute-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Show link as a button', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('The link will be shown as a button ', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-link-button-attribute" type="checkbox">
                                         <label for="wdt-link-button-attribute"
                                                class="ts-label"><?php _e('Set the link to appear as a button', 'wpdatatables'); ?></label>
-                                        <input id="wdt-link-button-attribute" type="checkbox" hidden="hidden">
-                                        <label for="wdt-link-button-attribute" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-link-button-label-block" >
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Button text', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="You can set the button display text"></i>
                                 </h4>
                                 <div class="form-group">
@@ -735,9 +716,9 @@
                             </div>
 
                             <div class="col-sm-6 wdt-link-button-class-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Button class', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="You can set the button class"></i>
                                 </h4>
                                 <div class="form-group">
@@ -759,33 +740,31 @@
                         <!-- .row -->
                         <div class="row">
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Allow sorting', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Disable this to disallow sorting for this column.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-allow-sorting" type="checkbox">
                                         <label for="wdt-column-allow-sorting"
                                                class="ts-label"><?php _e('Allow sorting for this column', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-allow-sorting" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-allow-sorting" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-6 wdt-column-default-sorting-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Use as default sorting column', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Sort table by this column on load', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-default-sort" type="checkbox">
                                         <label for="wdt-column-default-sort"
                                                class="ts-label"><?php _e('Sort table by this column on load', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-default-sort" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-default-sort" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
@@ -795,9 +774,9 @@
                         <!-- .row -->
                         <div class="row">
                             <div class="col-sm-6 wdt-column-default-sorting-direction-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Default sorting direction', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Choose whether to sort ascending or descending by default.', 'wpdatatables'); ?>"></i>
                                 </h4>
 
@@ -823,9 +802,9 @@
                         <div class="row">
 
                             <div class="col-sm-6 wdt-column-enable-filter-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Add a filter for this column', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-popover-content="#column-filter-hint"
+                                    <i class=" wpdt-icon-info-circle-thin" data-popover-content="#column-filter-hint"
                                        data-toggle="html-popover" data-trigger="hover" data-placement="right"></i>
                                 </h4>
 
@@ -846,18 +825,18 @@
 
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-enable-filter" type="checkbox">
                                         <label for="wdt-column-enable-filter"
                                                class="ts-label"><?php _e('Allow filtering', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-enable-filter" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-enable-filter" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
 
+
                             <div class="col-sm-6 wdt-filtering-enabled-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Filter type', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('You can redefine the filter type here, it will affect the filtering logic.', 'wpdatatables'); ?>"></i>
                                 </h4>
 
@@ -888,9 +867,9 @@
                         <div class="row">
 
                             <div class="col-sm-6 wdt-filtering-enabled-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Filter label', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-popover-content="#filter-label-hint"
+                                    <i class=" wpdt-icon-info-circle-thin" data-popover-content="#filter-label-hint"
                                        data-toggle="html-popover" data-trigger="hover" data-placement="right"></i>
                                 </h4>
 
@@ -918,32 +897,30 @@
                             </div>
 
                             <div class="col-sm-6 wdt-filtering-enabled-block wdt-exact-filtering-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Exact filtering', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Enable exact search to use exact match logic for filtering, disable to allow partial match.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-exact-filtering" type="checkbox">
                                         <label for="wdt-column-exact-filtering"
                                                class="ts-label"><?php _e('Enable exact filtering', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-exact-filtering" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-exact-filtering" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-6 wdt-filtering-enabled-block wdt-number-range-slider">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Range slider', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Enable number range slider  for filtering', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-range-slider" type="checkbox">
                                         <label for="wdt-column-range-slider"
                                                class="ts-label"><?php _e('Number range slider', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-range-slider" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-range-slider" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
@@ -954,9 +931,9 @@
                         <div class="row">
 
                             <div class="col-sm-6 wdt-filtering-enabled-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Predefined value(s)', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Define value(s) that will be set as default pre-defined filter value(s) on page load.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group wdt-filter-default-value-block">
@@ -991,17 +968,16 @@
                             </div>
 
                             <div class="col-sm-6 wdt-filtering-enabled-block wdt-checkboxes-in-modal-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Render in modal', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Render checkboxes in modal.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-checkboxes-in-modal" type="checkbox">
                                         <label for="wdt-checkboxes-in-modal"
                                                class="ts-label"><?php _e('Render checkboxes in modal', 'wpdatatables'); ?></label>
-                                        <input id="wdt-checkboxes-in-modal" type="checkbox" hidden="hidden">
-                                        <label for="wdt-checkboxes-in-modal" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
@@ -1018,9 +994,9 @@
                         <div class="row">
 
                             <div class="col-sm-6">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Editor input type', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Choose which kind of editor input to use for this column.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
@@ -1047,17 +1023,16 @@
                             </div>
 
                             <div class="col-sm-6 wdt-editing-enabled-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Column cannot be empty', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('Enable to make this column mandatory. Users will see a warning when trying to save with empty input.', 'wpdatatables'); ?>"></i>
                                 </h4>
                                 <div class="form-group">
                                     <div class="toggle-switch" data-ts-color="blue">
+                                        <input id="wdt-column-not-null" type="checkbox">
                                         <label for="wdt-column-not-null"
                                                class="ts-label"><?php _e('Cannot be empty', 'wpdatatables'); ?></label>
-                                        <input id="wdt-column-not-null" type="checkbox" hidden="hidden">
-                                        <label for="wdt-column-not-null" class="ts-helper"></label>
                                     </div>
                                 </div>
                             </div>
@@ -1068,9 +1043,9 @@
                         <div class="row">
 
                             <div class="col-sm-6 wdt-editing-enabled-block">
-                                <h4 class="c-black m-b-20">
+                                <h4 class="c-title-color m-b-2">
                                     <?php _e('Predefined value(s)', 'wpdatatables'); ?>
-                                    <i class="zmdi zmdi-help-outline" data-toggle="tooltip" data-placement="right"
+                                    <i class=" wpdt-icon-info-circle-thin" data-toggle="tooltip" data-placement="right"
                                        title="<?php _e('If you would like to have some values pre-defined in editors (i.e. default editor values) please enter these here.', 'wpdatatables'); ?>"></i>
                                 </h4>
 
@@ -1108,9 +1083,9 @@
 
                         <div class="row">
 
-                            <div class="col-sm-12">
-                                <button class="btn btn-primary waves-effect pull-right wdt-column-add-conditional-formatting-rule">
-                                    <i class="zmdi zmdi-plus-circle"></i> <?php _e('Add rule', 'wpdatatables'); ?>
+                            <div class="col-sm-12 p-l-0">
+                                <button class="btn pull-left wdt-column-add-conditional-formatting-rule">
+                                    <i class="wpdt-icon-plus-thin"></i> <?php _e('Add New Rule', 'wpdatatables'); ?>
                                 </button>
                             </div>
 
@@ -1129,18 +1104,19 @@
 
         <div class="row">
 
-            <div class="col-md-12 p-l-20 p-r-20">
-                <button class="btn btn-default btn-icon-text waves-effect wdt-documentation"
+            <div class="col-md-12 p-l-20 p-r-20" id="wdt-column-settings-buttons">
+                <hr>
+                <button class="btn btn-default btn-icon-text wdt-documentation"
                         data-doc-page="column_settings">
-                    <i class="zmdi zmdi-help-outline"></i> <?php _e('Documentation', 'wpdatatables'); ?>
+                    <i class="wpdt-icon-file-thin"></i> <?php _e('View Documentation', 'wpdatatables'); ?>
                 </button>
 
                 <div class="pull-right">
-                    <button class="btn btn-danger btn-icon-text waves-effect wdt-cancel-column-settings">
-                        <i class="zmdi zmdi-close"></i> <?php _e('Cancel', 'wpdatatables'); ?>
+                    <button class="btn btn-danger btn-icon-text wdt-cancel-column-settings">
+                       <?php _e('Cancel', 'wpdatatables'); ?>
                     </button>
-                    <button class="btn btn-success btn-icon-text waves-effect wdt-column-apply">
-                        <i class="zmdi zmdi-check wdt-apply"></i> <?php _e('Apply', 'wpdatatables'); ?>
+                    <button class="btn btn-primary btn-icon-text wdt-column-apply">
+                        <i class="wpdt-icon-save"></i> <?php _e('Save Changes', 'wpdatatables'); ?>
                     </button>
                 </div>
             </div>

@@ -42,5 +42,5 @@ $token->addGrant($chatGrant);
 header('Content-type:application/json;charset=utf-8');
 echo json_encode(array(
     'identity' => $userID,
-    'token' => $token->toJWT(),
+    'token' => $token->toJWT()
 ));

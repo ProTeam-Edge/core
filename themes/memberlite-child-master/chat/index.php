@@ -25,8 +25,16 @@
     </div>
   </div>
   <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+
+  <!--
+
   <script src="https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js"></script>
-  <script src="https://media.twiliocdn.com/sdk/js/video/releases/1.14.0/twilio-video.js"></script>
+<script src="https://media.twiliocdn.com/sdk/js/video/releases/1.14.0/twilio-video.js"></script>
+ -->
+
+ <script src="https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js"></script>
+<script src="https://media.twiliocdn.com/sdk/js/video/releases/1.14.0/twilio-video.js"></script>
+
   <script type="text/javascript" src="./js/vendor/emojionearea.min.js"></script>
   <script type="text/javascript" src="./js/index.js"></script>
 </body>

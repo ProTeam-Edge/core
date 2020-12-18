@@ -4,14 +4,14 @@ include('../../../wp-blog-header.php');
 $userId = get_current_user_id();
 
 $results = $wpdb->get_results(
-	$wpdb->prepare("SELECT n.* FROM alpn_user_metadata m LEFT JOIN alpn_topics n ON m.last_topic_add_id = n.id WHERE m.id = %s", $userId)
+	$wpdb->prepare("SELECT n.special, n.dom_id, n.last_op, n.topic_type_id, n.id, n.name, n.about, m.last_return_to FROM alpn_user_metadata m LEFT JOIN alpn_topics n ON m.last_topic_add_id = n.id WHERE m.id = %s", $userId)
 	);
 
-if (array_key_exists("0", $results)){
+if (isset($results[0])){
 	$results = $results[0];
 }
 
 header('Content-Type: application/json');
 echo json_encode($results);
 
-?>	
+?>

@@ -288,7 +288,7 @@
 
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
-				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
+				$this->data["invoice_date"] = date_i18n( get_option( 'date_format' ), $invoice->getTimestamp() );
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
 				$this->data["billing_city"] = $invoice->billing->city;
@@ -333,7 +333,7 @@
 					$this->data["discount_code"] = "";	
 			}
 			
-			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone), '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
+			$enddate = $wpdb->get_var("SELECT UNIX_TIMESTAMP(CONVERT_TZ(enddate, '+00:00', @@global.time_zone)) FROM $wpdb->pmpro_memberships_users WHERE user_id = '" . $user->ID . "' AND status = 'active' LIMIT 1");
 			if($enddate)
 				$this->data["membership_expiration"] = "<p>" . sprintf(__("This membership will expire on %s.", 'paid-memberships-pro' ), date_i18n(get_option('date_format'), $enddate)) . "</p>\n";
 			else
@@ -388,7 +388,7 @@
 
 				$this->data["invoice_id"] = $invoice->code;
 				$this->data["invoice_total"] = pmpro_formatPrice($invoice->total);
-				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->timestamp);
+				$this->data["invoice_date"] = date_i18n(get_option('date_format'), $invoice->getTimestamp());
 				$this->data["billing_name"] = $invoice->billing->name;
 				$this->data["billing_street"] = $invoice->billing->street;
 				$this->data["billing_city"] = $invoice->billing->city;
@@ -711,7 +711,7 @@
 								"user_email" => $user->user_email,	
 								"invoice_id" => $invoice->code,
 								"invoice_total" => pmpro_formatPrice($invoice->total),
-								"invoice_date" => date_i18n(get_option('date_format'), $invoice->timestamp),
+								"invoice_date" => date_i18n(get_option('date_format'), $invoice->getTimestamp()),
 								"billing_name" => $invoice->billing->name,
 								"billing_street" => $invoice->billing->street,
 								"billing_city" => $invoice->billing->city,
