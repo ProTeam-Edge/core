@@ -22,7 +22,7 @@ function tml_retrieve_password() {
 	$user_data = false;
 
 	if ( empty( $_POST['user_login'] ) || ! is_string( $_POST['user_login'] ) ) {
-		$errors->add( 'empty_username', __( '<strong>Error</strong>: Enter a username or email address.' ) );
+		$errors->add( 'empty_username', __( '<strong>Error</strong>: Please enter a username or email address.' ) );
 	} elseif ( strpos( $_POST['user_login'], '@' ) ) {
 		$user_data = get_user_by( 'email', trim( wp_unslash( $_POST['user_login'] ) ) );
 		if ( empty( $user_data ) ) {
@@ -35,6 +35,9 @@ function tml_retrieve_password() {
 
 	/** This action is documented in wp-login.php */
 	do_action( 'lostpassword_post', $errors, $user_data );
+
+	/** This filter is documented in wp-login.php */
+	$errors = apply_filters( 'lostpassword_errors', $errors, $user_data );
 
 	if ( $errors->get_error_code() ) {
 		return $errors;
@@ -89,7 +92,16 @@ function tml_retrieve_password_notification( $user, $key ) {
 	$message .= sprintf( __( 'Username: %s' ), $user->user_login ) . "\r\n\r\n";
 	$message .= __( 'If this was a mistake, just ignore this email and nothing will happen.' ) . "\r\n\r\n";
 	$message .= __( 'To reset your password, visit the following address:' ) . "\r\n\r\n";
-	$message .= network_site_url( "wp-login.php?action=rp&key=$key&login=" . rawurlencode( $user->user_login ), 'login' ) . "\r\n";
+	$message .= network_site_url( "wp-login.php?action=rp&key=$key&login=" . rawurlencode( $user->user_login ), 'login' ) . "\r\n\r\n";
+
+	$requester_ip = $_SERVER['REMOTE_ADDR'];
+	if ( $requester_ip ) {
+		$message .= sprintf(
+			/* translators: %s: IP address of password reset requester. */
+			__( 'This password reset request originated from the IP address %s.' ),
+			$requester_ip
+		) . "\r\n";
+	}
 
 	/* translators: Password reset email subject. %s: Site name */
 	$title = sprintf( __( '[%s] Password Reset' ), $site_name );

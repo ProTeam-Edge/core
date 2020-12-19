@@ -30,6 +30,7 @@
                     wdtChart.setColumnIndexes( wpDataCharts[chart_id].render_data.column_indexes );
                     wdtChart.setGrouping( wpDataCharts[chart_id].group_chart );
                     wdtChart.setContainer( '#'+wpDataCharts[chart_id].container );
+                    wdtChart.setNumberFormat( wpDataCharts[chart_id].render_data.wdtNumberFormat );
                     if( typeof wpDataChartsCallbacks !== 'undefined' && typeof wpDataChartsCallbacks[chart_id] !== 'undefined' ){
                         wdtChart.setRenderCallback( wpDataChartsCallbacks[chart_id] );
                     }

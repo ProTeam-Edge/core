@@ -30,23 +30,22 @@
                 <!-- /Preloader -->
 
                 <div class="card-header wdt-admin-card-header ch-alt">
-                    <img id="wpdt-inline-logo" style="width: 60px;height: 50px;"
-                         src="<?php echo WDT_ROOT_URL; ?>assets/img/logo-large.png"/>
+                    <img id="wpdt-inline-logo"
+                         src="<?php echo WDT_ROOT_URL; ?>assets/img/logo.svg"/>
                     <h2>
-                        <span><?php _e('Create a Chart', 'wpdatatables'); ?></span>
-                        <small><?php _e('Chart Creation Wizard', 'wpdatatables'); ?></small>
+                        <span style="display: none"><?php _e('Create a Chart', 'wpdatatables'); ?></span>
+                        <?php _e('Create a Chart', 'wpdatatables'); ?>
                     </h2>
                     <ul class="actions p-t-5">
                         <li>
-                            <button class="btn bgm-red btn-icon btn-lg waves-effect waves-circle waves-float wdt-backend-close"
-                                    title="" data-toggle="tooltip" data-original-title="Cancel">
-                                <i class="zmdi zmdi-close"></i>
+                            <button class="btn wdt-backend-chart-close">
+                                <?php _e('Cancel', 'wpdatatables'); ?>
                             </button>
                         </li>
                     </ul>
                 </div>
 
-                <div class="card-body card-padding">
+                <div class="card-body card-padding" id="wdt-chart-wizard-body">
                     <?php wp_nonce_field('wdtChartWizardNonce', 'wdtNonce'); ?>
                     <input type="hidden" id="wp-data-chart-id" value="<?php echo $chartId ?>"/>
                     <input type="hidden" id="wdt-browse-charts-url"
@@ -99,20 +98,21 @@
 
                     </div>
 
-                    <div class="row m-t-15 m-b-5 p-l-15 p-r-15">
-                        <button class="btn btn-success btn-icon-text waves-effect pull-right m-l-5"
-                                style="display:none;" id="finishButton"><i
-                                    class="zmdi zmdi-check"></i> <?php _e('Finish', 'wpdatatables'); ?></button>
-                        <button class="btn btn-primary btn-icon-text waves-effect pull-right m-l-5"
-                                disabled="disabled"
-                                id="wdt-chart-wizard-next-step"><?php _e('Next ', 'wpdatatables'); ?></button>
-                        <button class="btn btn-primary btn-icon-text waves-effect pull-right" disabled="disabled"
-                                id="wdt-chart-wizard-previous-step"><?php _e(' Previous', 'wpdatatables'); ?></button>
-                        <a class="btn btn-default btn-icon-text waves-effect wdt-documentation"
-                           data-doc-page="chart_wizard">
-                            <i class="zmdi zmdi-help-outline"></i> Documentation
-                        </a></div>
                 </div>
+                <div class="row m-t-15 m-b-5 p-l-15 p-r-15">
+                    <button class="btn btn-primary btn-icon-text pull-right m-l-5"
+                            style="display:none;" id="finishButton">
+                        <?php _e('Browse charts', 'wpdatatables'); ?>
+                    </button>
+                    <button class="btn btn-primary btn-icon-text pull-right m-l-5"
+                            disabled="disabled"
+                            id="wdt-chart-wizard-next-step"><?php _e('Next ', 'wpdatatables'); ?></button>
+                    <button class="btn btn-icon-text pull-right hidden" disabled="disabled"
+                            id="wdt-chart-wizard-previous-step"><?php _e(' Previous', 'wpdatatables'); ?></button>
+                    <a class="btn btn-default btn-icon-text wdt-documentation"
+                       data-doc-page="chart_wizard">
+                        <i class="wpdt-icon-file-thin"></i> <?php _e(' View Documentation', 'wpdatatables'); ?>
+                    </a></div>
 
             </div>
 
@@ -134,32 +134,32 @@
 <script id="wdt-chart-series-setting-block" type="text/x-jsrender">
     {{for series}}
         <div class="chart-series-block" data-orig_header="{{>orig_header}}">
-            <h4 class="c-black m-b-20 title">
+            <h4 class="c-title-color m-b-4 title">
                     <?php _e('Serie', 'wpdatatables'); ?>: {{>label}}
             </h4>
             <div class="chart-series-label">
-                <h4 class="c-black m-b-20">
+                <h4 class="c-title-color m-b-4">
                     <?php _e('Label', 'wpdatatables'); ?>
                 </h4>
                 <div class="form-group">
                     <div class="fg-line">
                         <div class="row">
                             <div class="col-sm-12">
-                                <input type="text" name="font-name" id="series-label" value="{{>label}}" class="form-control input-sm series-label" />
+                                <input type="text" name="font-name" id="series-label-{{>orig_header}}" value="{{>label}}" class="form-control input-sm series-label" />
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="chart-series-color" id="chart-series-color">
-                 <h4 class="c-black m-b-20">
+                 <h4 class="c-title-color m-b-4">
                     <?php _e('Color', 'wpdatatables'); ?>
                 </h4>
                 <div class="cp-container">
                     <div class="form-group">
                         <div class="fg-line dropdown">
-                            <div id="cp" class="input-group colorpicker-component colorpicker-element color-picker wpcolorpicker"">
-                                <input type="text" id="series-color" value="" class="form-control cp-value series-color" />
+                            <div id="cp" class="input-group wdt-color-picker"">
+                                <input type="text" id="series-color-{{>orig_header}}" value="" class="form-control cp-value series-color wdt-add-picker" />
                                 <span class="input-group-addon wpcolorpicker-icon"><i></i></span>
                             </div>
                         </div>
@@ -167,7 +167,7 @@
                 </div>
             </div>
             <div class="chart-series-type" id="chart-series-type">
-                 <h4 class="c-black m-b-20">
+                 <h4 class="c-title-color m-b-4">
                     <?php _e('Type', 'wpdatatables'); ?>
                 </h4>
                 <div class="cp-container">
@@ -188,13 +188,12 @@
                 </div>
             </div>
             <div class="chart-show-yaxis">
-                 <h4 class="c-black m-b-20">
+                 <h4 class="c-title-color m-b-4">
                     <?php _e('Vertical axis', 'wpdatatables'); ?>
                  </h4>
-                  <div class="toggle-switch p-b-20 p-t-5" data-ts-color="blue">
+                  <div class="toggle-switch p-b-16" data-ts-color="blue">
+                      <input class="show-yaxis" id="show-yaxis-{{:#index}}" type="checkbox">
                       <label for="show-yaxis-{{:#index}}"><?php _e('Show vertical axis', 'wpdatatables'); ?></label>
-                      <input class="show-yaxis" id="show-yaxis-{{:#index}}" type="checkbox" hidden="hidden">
-                      <label for="show-yaxis-{{:#index}}" class="ts-helper"></label>
                   </div>
             </div>
         </div>
@@ -213,7 +212,6 @@
                     {{:header}}<br/>
                     <span class="checkbox">
                         <input type="checkbox" class="pick-column-range" {{if checked}}checked="checked"{{/if}} />
-                        <i class="input-helper"></i>
                     </span>
                 </th>
                {{/for}}
@@ -224,8 +222,7 @@
             <tr data-index={{:#index}}>
                 <td class="pick-row">
                     <span class="checkbox">
-                        <input type="checkbox" class="add-row-to-range" />
-                        <i class="input-helper"></i>
+                        <input type="checkbox" class="add-row-to-range" {{if rowChecked}}checked="checked"{{/if}}/>
                     </span>
                 </td>
                 {{props :}}

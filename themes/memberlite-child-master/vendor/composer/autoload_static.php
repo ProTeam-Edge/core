@@ -10,12 +10,13 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
         '7b11c4dc42b3b3023073cb14e519683c' => __DIR__ . '/..' . '/ralouphie/getallheaders/src/getallheaders.php',
         'a0edc8309cc5e1d60e3047b5df6b7052' => __DIR__ . '/..' . '/guzzlehttp/psr7/src/functions_include.php',
         'c964ee0ededf28c96ebd9db5099ef910' => __DIR__ . '/..' . '/guzzlehttp/promises/src/functions_include.php',
+        'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
         '25072dd6e2470089de65ae7bf11d3109' => __DIR__ . '/..' . '/symfony/polyfill-php72/bootstrap.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '37a3dc5111fe8f707ab4c132ef1dbc62' => __DIR__ . '/..' . '/guzzlehttp/guzzle/src/functions_include.php',
-        'decc78cc4436b1292c6c0d151b19445c' => __DIR__ . '/..' . '/phpseclib/phpseclib/phpseclib/bootstrap.php',
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
+        '56823cacd97af379eceaf82ad00b928f' => __DIR__ . '/..' . '/phpseclib/bcmath_compat/lib/bcmath.php',
         'a9ed0d27b5a698798a89181429f162c5' => __DIR__ . '/..' . '/khanamiryan/qrcode-detector-decoder/lib/Common/customFunctions.php',
         'abede361264e2ae69ec1eee813a101af' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/abs.php',
         '21a5860fbef5be28db5ddfbc3cca67c4' => __DIR__ . '/..' . '/markbaker/complex/classes/src/functions/acos.php',
@@ -78,6 +79,8 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
         'e39a8b23c42d4e1452234d762b03835a' => __DIR__ . '/..' . '/ramsey/uuid/src/functions.php',
         'd49e707fe29161c8c9e1db2a316cc7a1' => __DIR__ . '/..' . '/formapro/values/src/functions_include.php',
         '0b17741e1be8bc33be28693cd04d2893' => __DIR__ . '/..' . '/koolreport/core/autoload.php',
+        '383eaff206634a77a1be54e64e6459c7' => __DIR__ . '/..' . '/sabre/uri/lib/functions.php',
+        '79f66bc0a1900f77abe4a9a299057a0a' => __DIR__ . '/..' . '/starkbank/ecdsa/src/ellipticcurve.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -97,6 +100,10 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
         array (
             'chromeheadlessio\\' => 17,
         ),
+        'b' => 
+        array (
+            'bcmath_compat\\' => 14,
+        ),
         'Z' => 
         array (
             'Zxing\\' => 6,
@@ -114,6 +121,13 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
             'Symfony\\Component\\PropertyAccess\\' => 33,
             'Symfony\\Component\\OptionsResolver\\' => 34,
             'Symfony\\Component\\Inflector\\' => 28,
+            'SendGrid\\Stats\\' => 15,
+            'SendGrid\\Mail\\' => 14,
+            'SendGrid\\Helper\\' => 16,
+            'SendGrid\\EventWebhook\\' => 22,
+            'SendGrid\\Contacts\\' => 18,
+            'SendGrid\\' => 9,
+            'Sabre\\Uri\\' => 10,
         ),
         'R' => 
         array (
@@ -127,10 +141,13 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
             'Psr\\Cache\\' => 10,
             'Picqer\\Barcode\\' => 15,
             'PhpOffice\\PhpSpreadsheet\\' => 25,
+            'PascalDeVink\\ShortUuid\\' => 23,
         ),
         'M' => 
         array (
             'MyCLabs\\Enum\\' => 13,
+            'Moontoast\\Math\\Exception\\' => 25,
+            'Moontoast\\Math\\' => 15,
             'Monolog\\' => 8,
             'Matrix\\' => 7,
         ),
@@ -250,6 +267,7 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
         ),
         'B' => 
         array (
+            'Brick\\StructuredData\\' => 21,
             'Box\\Spout\\' => 10,
             'BaconQrCode\\' => 12,
         ),
@@ -271,6 +289,10 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
         'chromeheadlessio\\' => 
         array (
             0 => __DIR__ . '/..' . '/chromeheadlessio/php-client/src',
+        ),
+        'bcmath_compat\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/phpseclib/bcmath_compat/src',
         ),
         'Zxing\\' => 
         array (
@@ -308,6 +330,34 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
         array (
             0 => __DIR__ . '/..' . '/symfony/inflector',
         ),
+        'SendGrid\\Stats\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sendgrid/sendgrid/lib/stats',
+        ),
+        'SendGrid\\Mail\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sendgrid/sendgrid/lib/mail',
+        ),
+        'SendGrid\\Helper\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sendgrid/sendgrid/lib/helper',
+        ),
+        'SendGrid\\EventWebhook\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sendgrid/sendgrid/lib/eventwebhook',
+        ),
+        'SendGrid\\Contacts\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sendgrid/sendgrid/lib/contacts',
+        ),
+        'SendGrid\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sendgrid/php-http-client/lib',
+        ),
+        'Sabre\\Uri\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/sabre/uri/lib',
+        ),
         'Ramsey\\Uuid\\' => 
         array (
             0 => __DIR__ . '/..' . '/ramsey/uuid/src',
@@ -336,9 +386,21 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
         array (
             0 => __DIR__ . '/..' . '/phpoffice/phpspreadsheet/src/PhpSpreadsheet',
         ),
+        'PascalDeVink\\ShortUuid\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/pascaldevink/shortuuid/src',
+        ),
         'MyCLabs\\Enum\\' => 
         array (
             0 => __DIR__ . '/..' . '/myclabs/php-enum/src',
+        ),
+        'Moontoast\\Math\\Exception\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/moontoast/math/src/Moontoast/Math/Exception',
+        ),
+        'Moontoast\\Math\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/moontoast/math/src/Moontoast/Math',
         ),
         'Monolog\\' => 
         array (
@@ -735,6 +797,10 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
         array (
             0 => __DIR__ . '/..' . '/markbaker/complex/classes/src',
         ),
+        'Brick\\StructuredData\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/brick/structured-data/src',
+        ),
         'Box\\Spout\\' => 
         array (
             0 => __DIR__ . '/..' . '/box/spout/src/Spout',
@@ -778,8 +844,11 @@ class ComposerStaticInit52308eb524515d907c279b9234795f38
     );
 
     public static $classMap = array (
+        'BaseSendGridClientInterface' => __DIR__ . '/..' . '/sendgrid/sendgrid/lib/BaseSendGridClientInterface.php',
         'Google_Service_Exception' => __DIR__ . '/..' . '/google/apiclient/src/Google/Service/Exception.php',
         'Google_Service_Resource' => __DIR__ . '/..' . '/google/apiclient/src/Google/Service/Resource.php',
+        'SendGrid' => __DIR__ . '/..' . '/sendgrid/sendgrid/lib/SendGrid.php',
+        'TwilioEmail' => __DIR__ . '/..' . '/sendgrid/sendgrid/lib/TwilioEmail.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

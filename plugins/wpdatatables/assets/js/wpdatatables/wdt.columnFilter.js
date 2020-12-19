@@ -181,7 +181,7 @@ function wdtCreateInput(oTable, aoColumn, columnIndex, sColumnLabel, th, serverS
     else
         th.wrapInner('<span class="filter_column wdt-filter-text" data-filter_type="text" data-index="' + columnIndex + '"/>');
 
-    input.keyup(function (e) {
+    input.on('input',function (e) {
         inputSearch(this.value, e.keyCode);
     });
 
@@ -1017,7 +1017,7 @@ function wdtCreateMultiSelectbox(oTable, aoColumn, columnIndex, sColumnLabel, th
         // Create option for each value from possible values
         for (var j = 0; j < iLen; j++) {
             if (typeof aoColumn.defaultValue[0] === 'object') {
-                $.each(aoColumn.defaultValue, function (index, value) {
+                jQuery.each(aoColumn.defaultValue, function (index, value) {
                     selected = aoColumn.values[j].value.toString() == value.value ? 'selected="selected" ' : '';
                     if (selected !== '')
                         return false;
@@ -1189,7 +1189,7 @@ function wdtCreateCheckbox(oTable, aoColumn, columnIndex, sColumnLabel, th, serv
             r += '<div class="wdt_checkbox_option checkbox">' +
                 '<label>' +
                 '<input type="checkbox" class="wdt-checkbox-filter wdt-filter-control" value="' + encodeURI(value) + '" ' + checked + '>' +
-                '<i class="input-helper"></i>' + '<span class="wdt-checkbox-label">' + label + '</span>' +
+                 '<span class="wdt-checkbox-label">' + label + '</span>' +
                 '</label>' +
                 '</div>';
         }
@@ -1237,9 +1237,9 @@ function wdtCreateCheckbox(oTable, aoColumn, columnIndex, sColumnLabel, th, serv
             e.preventDefault();
             jQuery('#wdt-frontend-modal .modal-title').html(labelBtn);
             jQuery('#wdt-frontend-modal .modal-body').append(dlg.show());
-            jQuery('#wdt-frontend-modal .modal-footer').html('<button class="btn btn-danger btn-icon-text waves-effect" id="wdt-checkbox-filter-reset" href="#">Reset</button><button class="btn btn-success btn-icon-text waves-effect" id="wdt-checkbox-filter-close" href="#"><i class="zmdi zmdi-check"></i>OK</button>');
+            jQuery('#wdt-frontend-modal .modal-footer').html('<button class="btn btn-danger btn-icon-text" id="wdt-checkbox-filter-reset" href="#">Reset</button><button class="btn btn-success btn-icon-text" id="wdt-checkbox-filter-close" href="#"><i class="wpdt-icon-check-full"></i>OK</button>');
 
-            jQuery('input.wdt-checkbox-filter').off('change').on('change', function () {
+            jQuery('#wdt-frontend-modal input.wdt-checkbox-filter').off('change').on('change', function () {
                 checkboxSearch.call(jQuery(this), columnIndex, checkboxesDivId);
             });
 
@@ -1365,6 +1365,7 @@ function wdtClearFilters() {
         var button = jQuery(e.target);
         if (button.is('.wdt-clear-filters-widget-button')) {
             jQuery('.filter_column input:not([type="checkbox"])').val('');
+            jQuery('.filter_column select').val('').trigger('change');
             jQuery('.filter_column select').selectpicker('val', '');
             jQuery('.filter_column input:checkbox').removeAttr('checked');
             jQuery('.noUi-target').each(function(columnIndex){
@@ -1380,6 +1381,7 @@ function wdtClearFilters() {
             var wpDataTableSelecter = jQuery(this).closest('.wpDataTables');
 
             wpDataTableSelecter.find('.filter_column input:not([type="checkbox"])').val('');
+            wpDataTableSelecter.find('.filter_column select').val('').trigger('change');
             wpDataTableSelecter.find('.filter_column select').selectpicker('val', '');
             wpDataTableSelecter.find('.filter_column input:checkbox').removeAttr('checked');
 

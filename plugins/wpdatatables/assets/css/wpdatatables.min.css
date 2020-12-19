@@ -6,9 +6,9 @@
 @font-face {
     font-weight: 400;
     font-style: normal;
-    font-family: WPDataTablesIcons;
-    src: url(../fonts/wpdatatablesicons-base.eot);
-    src: url(../fonts/wpdatatablesicons-base.eot?#iefix) format('embedded-opentype'), url(../fonts/wpdatatablesicons-base.woff) format('woff'), url(../fonts/wpdatatablesicons-base.ttf) format('truetype'), url(../fonts/wpdatatablesicons-base.svg#wpdatatablesicons-base) format('svg');
+    font-family: wpDataTablesIcons;
+    src: url(../fonts/wpDataTablesIcons.eot);
+    src: url(../fonts/wpDataTablesIcons.eot?#iefix) format('embedded-opentype'), url(../fonts/wpDataTablesIcons.woff) format('woff'), url(../fonts/wpDataTablesIcons.ttf) format('truetype'), url(../fonts/wpDataTablesIcons.svg#wpDataTablesIcons) format('svg');
 }
 
 .wpDataTables:after, .wpDataTables:before {
@@ -42,6 +42,10 @@
 .wpDataTablesWrapper table.wpDataTable > tbody > tr > th,
 .wpDataTablesWrapper table.wpDataTable > tbody > tr > td {
     text-align: left;
+}
+.wpDataTablesWrapper table.wpDataTable.wpdtSimpleTable > tbody > tr > th,
+.wpDataTablesWrapper table.wpDataTable.wpdtSimpleTable > tbody > tr > td {
+    text-align: center;
 }
 
 /*  Table Header  */
@@ -291,9 +295,9 @@
 }
 
 .wpDataTablesWrapper .DTTT_button.DTTT_button_colvis:before {
-    font-family: "dashicons" !important;
-    font-size: 24px;
-    content:"\f177"
+    font-family: "wpDataTablesIcons" !important;
+    font-size: 20px;
+    content: "\f074";
 }
 
 .wpDataTablesWrapper .DTTT_button.DTTT_button_clear_filters:before {
@@ -301,7 +305,7 @@
 }
 
 button.wdt-clear-filters-button:before, button.wdt-clear-filters-widget-button:before {
-    font-family: WPDataTablesIcons;
+    font-family: wpDataTablesIcons;
     content: "\e817";
 }
 
@@ -345,6 +349,13 @@ div.wpDataTablesFilter span.filter_column .number-range-filter:first-child {
     overflow: hidden;
     display: initial;
 }
+
+@-moz-document url-prefix() {
+    .wpdt-c .wpDataTables.wpDataTablesWrapper{
+        position: initial !important;
+    }
+}
+
 .wpDataTables input[type="search"],
 .wpDataTables select,
 .wpDataTables textarea {
@@ -613,7 +624,7 @@ div.wdt-checkbox-modal-wrap div.wdt-checkbox-option label {
 }
 
 .wpdt-c #wdt-frontend-modal #wdt-checkbox-filter-reset:before {
-    font-family: WPDataTablesIcons;
+    font-family: wpDataTablesIcons;
     content: "\e817";
     margin-right: 5px;
 }
@@ -644,7 +655,7 @@ div.wdt-checkbox-modal-wrap div.wdt-checkbox-option label {
     position: absolute;
     height: 100%;
     width: 100%;
-    background-color: rgba(255,255,255,0.7);
+    background-color: rgba(255,255,255,1);
     text-align: center;
     z-index: 100;
 }
@@ -735,42 +746,7 @@ div.wdt-checkbox-modal-wrap div.wdt-checkbox-option label {
  *  Add lock icons in quickaccess tools for editing, sorting and filtering
  */
 
-.wpdt-c .modal .wdt-columns-container i.zmdi-filter-list-lock,
-.wpdt-c .modal .wdt-columns-container i.zmdi-sort-asc-lock,
-.wpdt-c .modal .wdt-columns-container i.zmdi-edit-lock {
-    position: relative;
-}
 
-.wpdt-c .modal .wdt-columns-container i.zmdi-filter-list-lock:after,
-.wpdt-c .modal .wdt-columns-container i.zmdi-sort-asc-lock:after,
-.wpdt-c .modal .wdt-columns-container i.zmdi-edit-lock:after {
-    content: '\f191';
-    position: absolute;
-    font-size: 6px;
-    right: -2px;
-    top: 9px;
-    background: #f7f7f7;
-}
-.wpdt-c .modal .wdt-columns-container i.zmdi-sort-asc:before,
-.wpdt-c .modal .wdt-columns-container i.zmdi-edit:before,
-.wpdt-c .modal .wdt-columns-container i.zmdi-filter-list,
-.wpdt-c .modal .wdt-columns-container i.zmdi-edit-lock:before,
-.wpdt-c .modal .wdt-columns-container i.zmdi-filter-list-lock:before,
-.wpdt-c .modal .wdt-columns-container i.zmdi-sort-asc-lock:before {
-    font-size: 16px;
-}
-
-.wpdt-c .modal .wdt-columns-container i.zmdi-edit-lock:before {
-    content: '\f158';
-}
-
-.wpdt-c .modal .wdt-columns-container i.zmdi-filter-list-lock:before {
-    content: '\f160';
-}
-
-.wpdt-c .modal .wdt-columns-container i.zmdi-sort-asc-lock:before {
-    content: '\f1cf';
-}
 
 /* Theme fixes */
 

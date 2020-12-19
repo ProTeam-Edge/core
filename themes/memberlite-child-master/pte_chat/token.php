@@ -38,9 +38,10 @@ $chatGrant = new ChatGrant();
 $chatGrant->setServiceSid($chatServiceId);
 $token->addGrant($chatGrant);
 
-// return serialized token and the user's randomly generated ID
+
 header('Content-type:application/json;charset=utf-8');
 echo json_encode(array(
     'identity' => $userID,
-    'token' => $token->toJWT(),
+    'token' => $token->toJWT()
+    
 ));

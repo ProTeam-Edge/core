@@ -9,7 +9,10 @@
         "twilio/sdk": "^6.6",
         "koolreport/core": "^4.5",
         "koolreport/pro":"*",
-		"transloadit/php-sdk": "^3.0",
-		"formapro/pvm": "^0.4.7"
+				"transloadit/php-sdk": "^3.0",
+				"formapro/pvm": "^0.4.7",
+				"pascaldevink/shortuuid": "^2.3",
+				"brick/structured-data": "^0.1.0",
+				"sendgrid/sendgrid": "^7.8"
     }
 }

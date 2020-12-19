@@ -1,10 +1,17 @@
 var group___viewer_customs =
 [
+    [ "OpenFileParameter", "class_open_file_parameter.html", [
+      [ "file", "class_open_file_parameter.html#a5f100eade7ad49e79dbbec054ff7cac1", null ],
+      [ "options", "class_open_file_parameter.html#a7964f72db09c5f8322da4532c394c4e7", null ],
+      [ "type", "class_open_file_parameter.html#a1984f054e8de3236ca28260fcdc67aa1", null ]
+    ] ],
     [ "PDFDocRendering", "class_p_d_f_doc_rendering.html", [
+      [ "destroy", "class_p_d_f_doc_rendering.html#a30cfa6c261c9da3118a90e73ba228d74", null ],
       [ "rendered", "class_p_d_f_doc_rendering.html#a153990c71e3ffe69c2df3921de606c3e", null ],
       [ "rendering", "class_p_d_f_doc_rendering.html#a074a84eda71a335e553a76e48cbd47d7", null ]
     ] ],
     [ "PDFPageRendering", "class_p_d_f_page_rendering.html", [
+      [ "destroy", "class_p_d_f_page_rendering.html#ad861bd2a8b192e61a9aa1ba949244fbb", null ],
       [ "rendered", "class_p_d_f_page_rendering.html#ad778199023941ca1a1530a967de377cd", null ],
       [ "rendering", "class_p_d_f_page_rendering.html#ab7f6eeb899790ffa4357ef1eb178d1ca", null ]
     ] ],

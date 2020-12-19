@@ -1,12 +1,15 @@
 var searchData=
 [
-  ['pagehandler',['pageHandler',['../class_i_state_handler.html#a68d55c045fd0ed1b7ebbfc45222c58ab',1,'IStateHandler']]],
-  ['pdfviewercreated',['pdfViewerCreated',['../class_u_i_x_addon.html#a0324217e9e852ed2bcc4fc2bf4161e8a',1,'UIXAddon']]],
-  ['postlink',['postlink',['../class_component.html#ad6976402654f273abc9d80a106854c54',1,'Component::postlink()'],['../class_controller.html#aa6e36c6aa19c9eb00f8c2d762cf92eb2',1,'Controller::postlink()']]],
-  ['prelink',['prelink',['../class_component.html#a8b8c3f79d3dfe9e5d268a08740828944',1,'Component::prelink()'],['../class_controller.html#ab381441568c130c9f50ffd73a6d2a93b',1,'Controller::prelink()']]],
-  ['prepend',['prepend',['../class_container_component.html#a9c353a9ded1548171c08563a385a0f36',1,'ContainerComponent']]],
-  ['previoussiblings',['previousSiblings',['../class_component.html#a7a6ea39b471f63a4d4cbab8e4a05c4aa',1,'Component']]],
-  ['prompt',['prompt',['../class_x_viewer_u_i.html#a159c3531790f89163ad2fd2a51ce3444',1,'XViewerUI']]],
-  ['putcannotmodifyany',['putCannotModifyAny',['../class_user_permission.html#ace1f576db281511cc78103be8349bd91',1,'UserPermission']]],
-  ['putcannotmodifyexcludeassemble',['putCannotModifyExcludeAssemble',['../class_user_permission.html#a474b470ce26a154ac398074e76508458',1,'UserPermission']]]
+  ['off',['off',['../class_component.html#ae61217f6dd2dad50ac443ec3bacbb1a8',1,'Component']]],
+  ['offshortcutkey',['offShortcutKey',['../class_p_d_f_viewer.html#a032a01c914031c8161546a16c025ca0e',1,'PDFViewer']]],
+  ['on',['on',['../class_component.html#a33f00cbd4285549c484ddb8dcb919277',1,'Component']]],
+  ['once',['once',['../class_component.html#a888ecd46740e170637ca81b4b5bfcc8a',1,'Component']]],
+  ['onshortcutkey',['onShortcutKey',['../class_p_d_f_viewer.html#abfc4a9b5c4b3f1e366ec23bb782a0ab4',1,'PDFViewer']]],
+  ['open',['open',['../class_g_tab_component.html#a9d3218b711fb0e594c9d47a4d8a34dcf',1,'GTabComponent::open()'],['../class_layer_component.html#abb58bae7dd93ef68523c973ba9ab40ed',1,'LayerComponent::open()']]],
+  ['openfilebyshareid',['openFileByShareId',['../class_p_d_f_viewer.html#a1837362fe85c2ec969e679c9da36153a',1,'PDFViewer']]],
+  ['openpdfbyfile',['openPDFByFile',['../class_p_d_f_viewer.html#a17d5d26a9944aeb4271819b948b78a9f',1,'PDFViewer']]],
+  ['openpdfbyhttprangerequest',['openPDFByHttpRangeRequest',['../class_p_d_f_viewer.html#a851027c594370b047cac39b85fe1db44',1,'PDFViewer']]],
+  ['openpdfbyid',['openPDFById',['../class_p_d_f_viewer.html#af9879a6281c1e0819d9336c5e02b4fe9',1,'PDFViewer']]],
+  ['or',['or',['../class_user_permission.html#a8607c36d1d2a48a111dcf0ee6823f382',1,'UserPermission']]],
+  ['out',['out',['../class_i_state_handler.html#a296820b4555091231e274da51e9e6869',1,'IStateHandler::out()'],['../class_i_view_mode.html#a5b591388fcc2d997ed5b6e3a78939e8a',1,'IViewMode::out()']]]
 ];

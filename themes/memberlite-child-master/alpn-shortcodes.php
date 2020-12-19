@@ -8,32 +8,38 @@ function usernetwork_shortcode($attr) {
         'block_type' => 'block_type'
     ), $attr));
 
-    $html = "";
+    $html = $domID = $userTopicId = $userImageHandle = $syncId = $userTopicId = $userTopicTypeId = $contactTopicTypeId = $userDisplayName = $standardColorCount = "";
 
 	$templateDirectory = get_template_directory_uri();
 
-	if (is_user_logged_in()) {  //only adds it one time
+	if (is_user_logged_in()) {  //TODO only hit database when needed
 		$userInfo = wp_get_current_user();
 		$userID = $userInfo->data->ID;
-		$userDisplayName = $userInfo->data->display_name;
+		$userEmail = $userInfo->user_email;
 		$ownerNetworkId = get_user_meta( $userID, 'pte_user_network_id', true ); //Owners Topic ID
-
-		$topicTypeId = '5';
+		$specialType = 'user';
 		$results = $wpdb->get_results(
-			$wpdb->prepare("SELECT dom_id, id, image_handle, name, sync_id FROM alpn_topics WHERE owner_id = '%s' AND topic_type_id = '%s';", $userID, $topicTypeId)
+			$wpdb->prepare("SELECT concat(JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_givenname')), ' ', JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_familyname'))) AS owner_nice_name, t.dom_id, t.id, t.image_handle, t.name, t.sync_id, t.topic_type_id AS user_topic_type_id, tt.id AS contact_topic_type_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.owner_id = t.owner_id AND tt.special = 'contact' WHERE t.owner_id = '%s' AND t.special = '%s';", $userID, $specialType)
 		);
-
 		if (isset($results[0])) {
 			$userTopicId = $results[0]->id;
+			$userTopicTypeId = $results[0]->user_topic_type_id;
+			$contactTopicTypeId = $results[0]->contact_topic_type_id;
 			$userImageHandle = $results[0]->image_handle;
 			$domId = $results[0]->dom_id;
 			$userName = $results[0]->name;
+			$userDisplayName = addslashes($results[0]->owner_nice_name);
 			$syncId = $results[0]->sync_id;
+			$standardColorCount = PTE_STANDARD_COLOR_COUNT;
+		} else {
+
 		}
 
 	} else {
 		$userTopicId = 0;
 		$userID = 0;
+		$userTopicTypeId = 0;
+		$contactTopicTypeId = 0;
 		$userImageHandle ="";
 		$userDisplayName = "Guest";
 		$fullAvatarUrl = "";
@@ -49,13 +55,84 @@ function usernetwork_shortcode($attr) {
 
     switch ($block_type) {
 
+			case 'load_user_data':
+				if ($userID) {
+					$html .= "
+					<script>
+						alpn_user_id = {$userID};
+						alpn_sync_id = '{$syncId}';
+						alpn_user_topic_id = {$userTopicId};
+						alpn_user_topic_type_id = {$userTopicTypeId};
+						alpn_contact_topic_type_id = {$contactTopicTypeId};
+						alpn_user_displayname = '{$userDisplayName}';
+						alpn_user_email = '{$userEmail}';
+						alpn_avatar_baseurl = '{$avatarUrl}';
+						alpn_avatar_handle = '{$userImageHandle}';
+						alpn_avatar_url = '{$fullAvatarUrl}';
+						alpn_templatedir = '{$templateDirectory}-child-master/';
+						pte_standard_color_count = $standardColorCount;
+					</script>
+					";
+				} else {
+					$html .= "
+					<script>
+						alpn_user_id = 0;
+					</script>
+					";
+				}
+			break;
+			case 'topic_manager':
+			 $topicManagerSettings = array(
+				 'setting_1' => 'open'
+			 );
+				$html .= pte_get_topic_manager($topicManagerSettings);
+
+				if ($userID) {
+					$html .= "
+					<script>
+						alpn_user_id = {$userID};
+						alpn_sync_id = '{$syncId}';
+						alpn_user_topic_id = {$userTopicId};
+						alpn_user_topic_type_id = {$userTopicTypeId};
+						alpn_contact_topic_type_id = {$contactTopicTypeId};
+						alpn_user_displayname = '{$userDisplayName}';
+						alpn_user_email = '{$userEmail}';
+						alpn_avatar_baseurl = '{$avatarUrl}';
+						alpn_avatar_handle = '{$userImageHandle}';
+						alpn_avatar_url = '{$fullAvatarUrl}';
+						alpn_templatedir = '{$templateDirectory}-child-master/';
+						pte_standard_color_count = $standardColorCount;
+					</script>
+					";
+				} else {
+					$html .= "
+					<script>
+						alpn_user_id = 0;
+					</script>
+					";
+				}
+
+			break;
+
+			case 'viewer':
+			 if (!$userID) {  //External visotor does not need to see navigations
+				 $html = "<style>#site-navigation{display: none;}</style>";
+			 }
+
+			 $viewerSettings = array(
+				 'sidebar_state' => 'open'
+			 );
+
+				$html .= pte_get_viewer($viewerSettings);
+			break;
+
 			case 'chrome':
 
 			$results = $wpdb_readonly->get_results(
 				$wpdb_readonly->prepare(
-					"SELECT id, name, '0' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND topic_type_id = '5' UNION
-					 SELECT id, name, '1' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND topic_type_id = '4' UNION
-					 SELECT id, name, '2' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND topic_type_id NOT IN ('4', '5')
+					"SELECT id, name, '0' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND special = 'user' UNION
+					 SELECT id, name, '1' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND special = 'contact' UNION
+					 SELECT id, name, '2' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND special = 'topic'
 					 ORDER BY row_type ASC, name ASC;",
 					 $userID, $userID, $userID)
 			);
@@ -139,11 +216,15 @@ function usernetwork_shortcode($attr) {
 				alpn_user_id = {$userID};
 				alpn_sync_id = '{$syncId}';
 				alpn_user_topic_id = {$userTopicId};
-				alpn_user_displayname = '{$userName}';
+				alpn_user_topic_type_id = {$userTopicTypeId};
+				alpn_contact_topic_type_id = {$contactTopicTypeId};
+				alpn_user_displayname = '{$userDisplayName}';
+				alpn_user_email = '{$userEmail}';
 				alpn_avatar_baseurl = '{$avatarUrl}';
 				alpn_avatar_handle = '{$userImageHandle}';
 				alpn_avatar_url = '{$fullAvatarUrl}';
 				alpn_templatedir = '{$templateDirectory}-child-master/';
+				pte_standard_color_count = $standardColorCount;
 				</script>
 			";
 
@@ -157,13 +238,10 @@ function usernetwork_shortcode($attr) {
 				$optionsStr .= "<option value='{$key}'>{$value}</option>";
 			}
 
-			$html = "<div id='alpn_section_network'><div class='alpn_title_bar'><div class='alpn_section_head_left'>Network Contacts</div><div class='alpn_section_head_right'><i class='far fa-plus-circle alpn_icons' title='Add Network Contact' onclick='alpn_mission_control(\"add_topic\", \"\", \"4\");'></i></div></div>
+			$html = "<div id='alpn_section_network'><div class='alpn_title_bar'><div class='alpn_section_head_left'>Contacts</div><div class='alpn_section_head_right'><i class='far fa-plus-circle alpn_icons' title='Add Network Contact' onclick='alpn_mission_control(\"add_topic\", \"\", alpn_contact_topic_type_id);'></i></div></div>
 			<div id='alpn_selector_container_left' class='alpn_selector_container_left'><select id='alpn_selector_network' class='alpn_selector'><option></option>{$optionsStr}</select></div>
 			";
 			$html .= do_shortcode("[wpdatatable id=2]");
-
-			//Hack the HTML -- TODO Find better way. Move to passing in array rather than one per line.
-			//$html = str_replace('table_1', 'table_vault', $html);
 
 			$html = str_replace('table_1', 'table_network', $html);
 			$html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
@@ -178,11 +256,15 @@ function usernetwork_shortcode($attr) {
 					   alpn_user_id = {$userID};
 						 alpn_sync_id = '{$syncId}';
 						 alpn_user_topic_id = {$userTopicId};
-						 alpn_user_displayname = '{$userName}';
+						 alpn_user_topic_type_id = {$userTopicTypeId};
+ 						 alpn_contact_topic_type_id = {$contactTopicTypeId};
+						 alpn_user_displayname = '{$userDisplayName}';
+						 alpn_user_email = '{$userEmail}';
 						 alpn_avatar_baseurl = '{$avatarUrl}';
 						 alpn_avatar_handle = '{$userImageHandle}';
 						 alpn_avatar_url = '{$fullAvatarUrl}';
 						 alpn_templatedir = '{$templateDirectory}-child-master/';
+						 pte_standard_color_count = $standardColorCount;
 						 </script>";
 			} else {
 				$html .= "<script>alpn_user_id = 0;</script>";
@@ -192,12 +274,13 @@ function usernetwork_shortcode($attr) {
 		case 'topic':
 
 			$selectHtml = "";
-			$status = 'active';
+			$status = 'user';
+			$topicClass = 'topic';
 
 			if ($userID) {
 				try {
 					$results = $wpdb->get_results(
-						$wpdb->prepare("SELECT id, name, icon FROM alpn_topic_types WHERE topic_state = %s ORDER BY name ASC;", $status)
+						$wpdb->prepare("SELECT id, name, icon FROM alpn_topic_types WHERE topic_class = %s AND topic_state = %s AND owner_id = %d AND special = 'topic' ORDER BY name ASC;", $topicClass, $status, $userID)
 					);
 					if (count($results)) {
 						foreach ($results as $key => $value) {
@@ -225,8 +308,6 @@ function usernetwork_shortcode($attr) {
 			";
 			$html .= do_shortcode("[wpdatatable id=3]");
 
-		  //Hack the HTML -- TODO Find better way. Move to passing in array
-
 			$html = str_replace('table_3', 'table_topic', $html);
 			$html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
 			$html = str_replace('"iDisplayLength":5,', '"iDisplayLength":5,', $html);
@@ -237,30 +318,50 @@ function usernetwork_shortcode($attr) {
 
 		case 'task':
 
-			$html = "<div id='alpn_section_alert'>
+		// <i class='far fa-repeat-alt' style='color: #3172B6; margin-right: 5px;'></i>18
+		// <i class='far fa-pause-circle' style='color: #3172B6; margin-left: 15px;'></i>
+
+			$html = "";
+			$html .= "<div id='alpn_section_alert'>
 								<div class='alpn_title_bar' style='background-color: transparent; margin-bottom: 5px;'>
 									<div class='alpn_section_head_left'>Interactions</div>
 									<div class='alpn_section_head_right'>
-										<i class='far fa-repeat-alt' style='color: #3172B6; margin-right: 5px;'></i>18
-										<i class='far fa-pause-circle' style='color: #3172B6; margin-left: 15px;'></i>
 									</div>
 							 </div>
 							 <div id='pte_interaction_outer_container'>
-							 <div id='pte_interaction_card_importance_editor'></div>
 							 <div id='pte_interaction_current'>
-
 		 					 </div>
 							 </div>
-							 <div id='pte_interactions_table_container'>
-					";
+							 <div id='pte_on_off_outer'><div class='onoffswitch' title='View Active or Filed Interactions'>
+							    <input onchange='pte_handle_active_filed_change(this);' type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='myonoffswitch' tabindex='0' checked>
+							    <label class='onoffswitch-label' for='myonoffswitch'>
+							        <span class='onoffswitch-inner'></span>
+							        <span class='onoffswitch-switch'></span>
+							    </label>
+							</div>
+							</div>";
+			$html .= "<div id='pte_interactions_table_container'>";
+
+			$interactionFilterTypes = array(
+				"10" => "All",
+			  "20" => "For Selected Topic",
+			  "30" => "Faxes Sent",
+			  "40" => "Faxes Received",
+			  "50" => "ProTeam Invite",
+			  "60" => "Form Fill Requests"
+			);
+
+			$optionsStr = '';
+			foreach ($interactionFilterTypes as $key => $value){
+				//$iconStr =
+				$optionsStr .= "<option value='{$key}'>{$value}</option>";
+			}
+			$html .= "<div id='pte_interaction_table_filter_container' class='alpn_selector_container_left'><select id='pte_interaction_table_filter' class='alpn_selector'>{$optionsStr}</select></div>";
 			$html .= do_shortcode("[wpdatatable id=4 var1='{$ownerNetworkId}' var2='active']");
-
-
-		//Hack the HTML -- TODO Find better way. Move to passing in array
-
 			$html = str_replace('table_5', 'table_interactions', $html);
 			$html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
-			$html .= "</div></div>";
+			$html .= "</div>";
+			$html .= "</div>";
 
 		break;
 
@@ -279,26 +380,16 @@ function usernetwork_shortcode($attr) {
 
 		case 'self':
 
-		/* Messaging Test
-			$message = array(
-					"title" => "Hey There Dude!",
-					"body" => "Hello, World! Welcome to PTE Messaging.",
-					"send_level" => "blue"
-				);
-
-			pte_send_message("12", $message);
-
-*/
 			if ($fullAvatarUrl) {
-				$profileImage = "<img id='user_profile_image' src='{$fullAvatarUrl}' style='height: 34px; width: 34px; border-radius: 50%;'>";
+				$profileImage = "<img id='user_profile_image' src='{$fullAvatarUrl}' style='height: 32px; width: 32px; border-radius: 50%;'>";
 			} else {
-				$profileImage = "<i class='far fa-address-card alpn_icon_left' style='font-size: 1.3em;  vertical-align: middle;' title='About Me'></i>";
+				$profileImage = "<i class='far fa-address-card alpn_icon_left' style='font-size: 20px;  line-height: 34px;' title='About Me'></i>";
 			}
 
 			$html .= "
 			<div class='alpn_user_outer' onclick='alpn_mission_control(\"select_by_mode\", \"{$domId}\");'>
 				<div id='alpn_me_field'>
-					<div id='alpn_field_{$domId}' class='alpn_user_container' data-uid='{$domId}' data-topic-id='{$userTopicId}' style='float: left; vertical-align: middle; line-height: 34px;'>
+					<div id='alpn_field_{$domId}' class='alpn_user_container' data-uid='{$domId}' data-topic-id='{$userTopicId}'>
 						Personal
 					</div>
 					<div id='alpn_me_icon' style='float: right; max-height: 34px;'>
@@ -306,7 +397,8 @@ function usernetwork_shortcode($attr) {
 					</div>
 					<div style='clear: both;'></div>
 				</div>
-			</div>";
+			</div>
+			";
 			break;
 
 

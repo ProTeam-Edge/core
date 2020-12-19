@@ -48,6 +48,8 @@ class WDTSettingsController {
             'wdtCSVDelimiter'                 => get_option('wdtCSVDelimiter'),
 			'wdtTabletWidth'                  => get_option('wdtTabletWidth'),
 			'wdtMobileWidth'                  => get_option('wdtMobileWidth'),
+			'wdtGettingStartedPageStatus'     => get_option('wdtGettingStartedPageStatus'),
+			'wdtLiteVSPremiumPageStatus'      => get_option('wdtLiteVSPremiumPageStatus'),
 			'wdtIncludeBootstrap'             => get_option('wdtIncludeBootstrap'),
             'wdtIncludeBootstrapBackEnd'      => get_option('wdtIncludeBootstrapBackEnd'),
 			'wdtPreventDeletingTables'        => get_option('wdtPreventDeletingTables'),

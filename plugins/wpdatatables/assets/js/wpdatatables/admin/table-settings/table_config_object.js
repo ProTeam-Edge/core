@@ -16,6 +16,7 @@ var wpdatatable_config = {
     hide_before_load: 1,
     fixed_layout: 0,
     scrollable: 0,
+    verticalScroll: 0,
     sorting: 1,
     word_wrap: 0,
     table_type: '',
@@ -23,6 +24,11 @@ var wpdatatable_config = {
     auto_refresh: 0,
     content: '',
     info_block: 1,
+    simpleResponsive: 0,
+    simpleHeader: 0,
+    stripeTable: 0,
+    cellPadding: 10,
+    verticalScrollHeight: 600,
     filtering: 1,
     global_search: 1,
     editable: 0,
@@ -115,7 +121,11 @@ var wpdatatable_config = {
      */
     setId: function( id ){
         wpdatatable_config.id = id;
-        jQuery( '#wdt-table-id' ).html( '[wpdatatable id='+id+']' );
+        jQuery( '#wdt-table-id' ).html(
+            ' <a class="wdt-copy-shortcode" data-toggle="tooltip" data-shortcode-type="table" data-placement="top" title="Click to copy shortcode">' +
+            '            <i class="wpdt-icon-copy"></i>' +
+            '        </a>' +
+            '        <span id="wdt-table-shortcode-id">[wpdatatable id='+id+']</span>' );
         if( jQuery( '#wdt-table-id' ).is(':hidden') ){
             jQuery( '#wdt-table-id' ).animateFadeIn();
         }
@@ -186,7 +196,6 @@ var wpdatatable_config = {
         else{
             jQuery('.display-settings-tab').addClass('hidden');
             jQuery('.table-sorting-filtering-settings-tab').addClass('hidden');
-            jQuery('.table-sorting-filtering-settings-tab').addClass('hidden');
             jQuery('.table-tools-settings-tab').addClass('hidden');
             jQuery('.editing-settings-tab').addClass('hidden');
             jQuery('.placeholders-settings-tab').addClass('hidden');
@@ -247,6 +256,20 @@ var wpdatatable_config = {
         jQuery('#wdt-scrollable').prop( 'checked', scrollable );
     },
     /**
+     * Enable or disable vertical scroll feature
+     * @param verticalScroll 1 or 0
+     */
+    setVerticalScroll: function( verticalScroll ){
+        wpdatatable_config.verticalScroll = verticalScroll;
+        if ( verticalScroll == 1 ){
+            jQuery('.vertical-scroll-height-block').animateFadeIn();
+        } else {
+            wpdatatable_config.setVerticalScrollHeight(600);
+            jQuery('.vertical-scroll-height-block').animateFadeOut();
+        }
+        jQuery('#wdt-vertical-scroll').prop( 'checked', verticalScroll );
+    },
+    /**
      * Enable or disable hiding before load
      * @param hideBeforeLoad 1 or 0
      */
@@ -305,6 +328,73 @@ var wpdatatable_config = {
     setInfoBlock: function( infoBlock ){
         wpdatatable_config.info_block = infoBlock;
         jQuery('#wdt-info-block').prop( 'checked', infoBlock );
+    },
+    /**
+     * Enable or disable simple responsive
+     * @param simpleResponsive 1 or 0
+     */
+    setSimpleResponsive: function( simpleResponsive ){
+        wpdatatable_config.simpleResponsive = simpleResponsive;
+        if ( simpleResponsive == 1 ){
+            wpdatatable_config.setScrollable(0);
+            wpdatatable_config.setLimitLayout(0);
+            wpdatatable_config.setWordWrap(0);
+            jQuery('.wdt-scrollable-block').addClass('hidden');
+            jQuery('.limit-table-width-settings-block').addClass('hidden');
+            jQuery('.word-wrap-settings-block').addClass('hidden');
+        } else {
+            if (wpdatatable_config.scrollable == 1){
+                jQuery('.limit-table-width-settings-block').hide();
+                jQuery('.word-wrap-settings-block').hide();
+                jQuery('.wdt-scrollable-block').show();
+            } else if(wpdatatable_config.fixed_layout == 1){
+                jQuery('.wdt-scrollable-block').hide();
+                jQuery('.limit-table-width-settings-block').show();
+                jQuery('.word-wrap-settings-block').show();
+            } else {
+                jQuery('.wdt-scrollable-block').animateFadeIn();
+                jQuery('.limit-table-width-settings-block').animateFadeIn();
+            }
+
+
+        }
+        jQuery('#wdt-simple-responsive').prop( 'checked', simpleResponsive );
+    },
+    /**
+     * Enable or disable first row as a header
+     * @param simpleHeader 1 or 0
+     */
+    setSimpleHeader: function( simpleHeader ){
+        wpdatatable_config.simpleHeader = simpleHeader;
+        jQuery('#wdt-simple-header').prop( 'checked', simpleHeader );
+    },
+    /**
+     * Enable or disable odds and even row classes
+     * @param stripeTable 1 or 0
+     */
+    setStripeTable: function( stripeTable ){
+        wpdatatable_config.stripeTable = stripeTable;
+        jQuery('#wdt-stripe-table').prop( 'checked', stripeTable );
+    },
+    /**
+     * Set cell padding value
+     * @param cellPadding 1 or 0
+     */
+    setCellPadding: function( cellPadding ){
+        wpdatatable_config.cellPadding = cellPadding;
+        if( jQuery('#wdt-cell-padding').val() != wpdatatable_config.cellPadding ){
+            jQuery('#wdt-cell-padding').val( wpdatatable_config.cellPadding );
+        }
+    },
+    /**
+     * Set vertical scroll height value
+     * @param verticalScrollHeight 1 or 0
+     */
+    setVerticalScrollHeight: function( verticalScrollHeight ){
+        wpdatatable_config.verticalScrollHeight = verticalScrollHeight;
+        if( jQuery('#wdt-vertical-scroll-height').val() != wpdatatable_config.verticalScrollHeight ){
+            jQuery('#wdt-vertical-scroll-height').val( wpdatatable_config.verticalScrollHeight );
+        }
     },
     /**
      * Enable or disable the advanced filtering
@@ -419,6 +509,7 @@ var wpdatatable_config = {
             jQuery('#wdt-inline-editable').prop( 'checked', 0 );
             jQuery('.own-rows-editing-settings-block').addClass('hidden');
             jQuery('#wdt-edit-only-own-rows').prop( 'checked', 0 );
+            jQuery('.show-all-rows-editing-settings-block').addClass('hidden');
             jQuery('#wdt-show-all-row').prop( 'checked', 0 );
 
             wpdatatable_config.popover_tools = 0;
@@ -812,8 +903,14 @@ var wpdatatable_config = {
         wpdatatable_config.setGlobalSearch( parseInt( tableJSON.global_search ) );
         wpdatatable_config.setHideBeforeLoad( parseInt( tableJSON.hide_before_load ) );
         wpdatatable_config.setInfoBlock( parseInt( tableJSON.info_block ) );
+        wpdatatable_config.setSimpleHeader( parseInt( tableJSON.simpleHeader ) );
+        wpdatatable_config.setStripeTable( parseInt( tableJSON.stripeTable ) );
+        wpdatatable_config.setCellPadding( parseInt( tableJSON.cellPadding ) );
+        wpdatatable_config.setVerticalScrollHeight( parseInt( tableJSON.verticalScrollHeight ) );
         wpdatatable_config.setResponsive( parseInt( tableJSON.responsive ) );
         wpdatatable_config.setScrollable( parseInt( tableJSON.scrollable ) );
+        wpdatatable_config.setSimpleResponsive( parseInt( tableJSON.simpleResponsive ) );
+        wpdatatable_config.setVerticalScroll( parseInt( tableJSON.verticalScroll ) );
         wpdatatable_config.setSorting( parseInt( tableJSON.sorting ) );
         wpdatatable_config.setShowTableTools( parseInt( tableJSON.tools ), tableJSON.tabletools_config );
         wpdatatable_config.setWordWrap( tableJSON.word_wrap );
@@ -829,7 +926,7 @@ var wpdatatable_config = {
         jQuery('.wdt-preload-layer').animateFadeOut();
         $table.find('thead tr:eq(0) th.wdtheader').each(function(){
             if (wpdatatable_config.columns[wpdatatable_config.dataTable.column( jQuery(this) ).index()].type == 'formula') {
-                var $formulaDeleteButton = jQuery('<button class="btn btn-default pull-right btn-xs waves-effect waves-float wdt-delete-formula-column" data-toggle="tooltip" title="Click to delete formula column"><i class="zmdi zmdi-delete"></i></button>');
+                var $formulaDeleteButton = jQuery('<button class="btn btn-default pull-right btn-xs wdt-delete-formula-column" data-toggle="tooltip" title="Click to delete formula column"><i class="wpdt-icon-trash"></i></button>');
                 $formulaDeleteButton.appendTo(this).click(function(e){
                     var formulaColumn = wpdatatable_config.columns.slice(wpdatatable_config.dataTable.column(jQuery(this).closest('th')).index())[0];
                     for (var i = formulaColumn.pos + 1; i <= wpdatatable_config.columns.length - 1; i++ ) {
@@ -843,7 +940,7 @@ var wpdatatable_config = {
                     jQuery('button.wdt-apply:eq(0)').click();
                 });
             }
-            var $button = jQuery('<button class="btn btn-default pull-right btn-xs waves-effect waves-float wdt-column-settings" data-toggle="tooltip" title="Click to open column settings"><i class="zmdi zmdi-settings"></i></button>');
+            var $button = jQuery('<button class="btn btn-default pull-right btn-xs wdt-column-settings" data-toggle="tooltip" title="Click to open column settings"><i class="wpdt-icon-cog"></i></button>');
             $button.appendTo(this).click(function(e){
                 e.preventDefault();
                 e.stopImmediatePropagation();

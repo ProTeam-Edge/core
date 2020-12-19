@@ -29,6 +29,11 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 // Load plugin file.
 require_once 'wpforms.php';
 
+// Disable Action Schedule Queue Runner.
+if ( class_exists( 'ActionScheduler_QueueRunner' ) ) {
+	ActionScheduler_QueueRunner::instance()->unhook_dispatch_async_request();
+}
+
 // Confirm user has decided to remove all data, otherwise stop.
 $settings = get_option( 'wpforms_settings', [] );
 if ( empty( $settings['uninstall-data'] ) ) {
@@ -49,6 +54,10 @@ $wpdb->query( 'DROP TABLE IF EXISTS ' . $wpdb->prefix . 'wpforms_entry_fields' )
 // Delete tasks meta table.
 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
 $wpdb->query( 'DROP TABLE IF EXISTS ' . \WPForms\Tasks\Meta::get_table_name() );
+
+// Delete logger table.
+// phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+$wpdb->query( 'DROP TABLE IF EXISTS ' . \WPForms\Logger\Repository::get_table_name() );
 
 // Delete Preview page.
 $preview_page = get_option( 'wpforms_preview_page', false );
@@ -91,6 +100,7 @@ $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_transient\
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_site\_transient\_wpforms\_%'" );
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_timeout\_wpforms\_%'" );
 $wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_site\_transient\_timeout\_wpforms\_%'" );
+$wpdb->query( "DELETE FROM {$wpdb->options} WHERE option_name LIKE '\_wpforms\_transient\_%'" );
 
 global $wp_filesystem;
 

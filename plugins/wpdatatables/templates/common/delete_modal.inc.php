@@ -15,7 +15,7 @@
                 <!-- .modal-header -->
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
-                                aria-hidden="true">&times;</span></button>
+                                aria-hidden="true"> <i class="wpdt-icon-times-full"></i></span></button>
                     <h4 class="modal-title"><?php _e('Are you sure?', 'wpdatatables') ?></h4>
                 </div>
                 <!--/ .modal-header -->
@@ -34,11 +34,12 @@
 
                 <!-- .modal-footer -->
                 <div class="modal-footer">
-                    <button type="button" class="btn bgm-gray btn-icon-text waves-effect wdt-cancel-delete-button" data-dismiss="modal"><i
-                                class="zmdi zmdi-close"></i> <?php _e('Cancel', 'wpdatatables'); ?></button>
-                    <button type="button" class="btn btn-danger btn-icon-text waves-effect"
+                    <hr>
+                    <button type="button" class="btn btn-icon-text wdt-cancel-delete-button" data-dismiss="modal">
+                        <?php _e('Cancel', 'wpdatatables'); ?></button>
+                    <button type="button" class="btn btn-danger btn-icon-text wdt-browse-delete-button"
                             id="wdt-browse-delete-button"><i
-                                class="zmdi zmdi-delete"></i> <?php _e('Delete', 'wpdatatables'); ?></button>
+                                class="wpdt-icon-trash"></i> <?php _e('Delete', 'wpdatatables'); ?></button>
                 </div>
                 <!--/ .modal-footer -->
             </div>

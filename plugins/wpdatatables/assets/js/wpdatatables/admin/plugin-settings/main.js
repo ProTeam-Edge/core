@@ -108,6 +108,20 @@
         });
 
         /**
+         * Set Lite vs Premium Page status
+         */
+        $('#wdt-lite-vs-premium-page-status').change(function (e) {
+            wpdatatable_plugin_config.setLiteVSPremiumPageStatus($(this).is(':checked') ? 1 : 0);
+        });
+
+        /**
+         * Set Getting Started Page status
+         */
+        $('#wdt-getting-started-page-status').change(function (e) {
+            wpdatatable_plugin_config.setGettingStartedPageStatus($(this).is(':checked') ? 1 : 0);
+        });
+
+        /**
          * Set Include Bootstrap
          */
         $('#wdt-include-bootstrap').change(function (e) {
@@ -188,7 +202,7 @@
         /**
          * Change table font color
          */
-        $('.color-picker').on('changeColor', function (e) {
+        $('.wdt-color-picker').change(function (e) {
             wpdatatable_plugin_config.setColorFontSetting($(this).find('.cp-value').data('name'), $(this).find('input').val());
         });
 
@@ -264,6 +278,8 @@
         wpdatatable_plugin_config.setDecimalPlaces(wdt_current_config.wdtDecimalPlaces);
         wpdatatable_plugin_config.setTabletWidth(wdt_current_config.wdtTabletWidth);
         wpdatatable_plugin_config.setMobileWidth(wdt_current_config.wdtMobileWidth);
+        wpdatatable_plugin_config.setGettingStartedPageStatus(wdt_current_config.wdtGettingStartedPageStatus== 1 ? 1 : 0);
+        wpdatatable_plugin_config.setLiteVSPremiumPageStatus(wdt_current_config.wdtLiteVSPremiumPageStatus== 1 ? 1 : 0);
         wpdatatable_plugin_config.setIncludeBootstrap(wdt_current_config.wdtIncludeBootstrap == 1 ? 1 : 0);
         wpdatatable_plugin_config.setIncludeBootstrapBackEnd(wdt_current_config.wdtIncludeBootstrapBackEnd == 1 ? 1 : 0);
         wpdatatable_plugin_config.setPreventDeletingTables(wdt_current_config.wdtPreventDeletingTables == 1 ? 1 : 0);
@@ -302,6 +318,7 @@
         $('.reset-color-settings').click(function (e) {
             e.preventDefault();
             $('#color-and-font-settings input.cp-value').val('').change();
+            $('#color-and-font-settings .wpcolorpicker-icon i').css('background','#fff');
             wdt_current_config.wdtFontColorSettings = _.mapObject(
                 wdt_current_config.wdtFontColorSettings,
                 function (color) {
@@ -327,7 +344,7 @@
         /**
          * Save settings on Apply button
          */
-        $('button.wdt-apply').click(function (e) {
+        $(document).on('click', 'button.wdt-apply', function (e) {
 
             $('.wdt-preload-layer').animateFadeIn();
 
@@ -495,7 +512,7 @@
 
                 $(element).find("input[name='wdt-my-sql-port']").val(defaultPort);
 
-                $(element).find('.zmdi-help-outline.connection-port').attr('title', 'Port for the connection' + (defaultPort ? ' (default: ' + defaultPort + ')' : '')).tooltip('fixTitle');
+                $(element).find('.wpdt-icon-info-circle-thin.connection-port').attr('title', 'Port for the connection' + (defaultPort ? ' (default: ' + defaultPort + ')' : '')).tooltip('fixTitle');
 
                 setTimeout(function () {
                     $(element).tooltip({
@@ -664,7 +681,7 @@
 
             $.ajax({
                 url: ajaxurl,
-                dataType: 'json',
+                dataType: 'text',
                 method: 'POST',
                 data: {
                     action: 'wpdatatables_save_plugin_settings',
@@ -678,12 +695,20 @@
                         wpdatatables_edit_strings.settings_saved_successful,
                         'success'
                     );
+                },
+                error: function (){
+                    $('.wdt-preload-layer').animateFadeOut();
+                    wdtNotify(
+                        wpdatatablesSettingsStrings.error,
+                        wpdatatablesSettingsStrings.settings_saved_error,
+                        'danger'
+                    );
                 }
             });
         }
 
         function activatePlugin() {
-            $('#wdt-activate-plugin').html('Loading...');
+            $('#wdt-activate-plugin').html('<i class="wpdt-icon-spinner9"></i>Loading...');
 
             let domain    = location.hostname;
             let subdomain = location.hostname;
@@ -708,27 +733,27 @@
                         wdt_current_config.wdtPurchaseCodeStore = $('#wdt-purchase-code-store').val();
                         wdtNotify(wpdatatablesSettingsStrings.success, wpdatatablesSettingsStrings.pluginActivated, 'success');
                         $('#wdt-purchase-code-store').prop('disabled', 'disabled');
-                        $('#wdt-activate-plugin').removeClass('btn-primary').addClass('btn-danger').html('Deactivate');
+                        $('#wdt-activate-plugin').removeClass('btn-primary').addClass('btn-danger').html('<i class="wpdt-icon-times-circle-full"></i>Deactivate');
                         $('.wdt-envato-activation-wpdatatables').hide()
                     } else if (valid === false) {
                         wdtNotify(wpdatatablesSettingsStrings.error, wpdatatablesSettingsStrings.purchaseCodeInvalid, 'danger');
-                        $('#wdt-activate-plugin').html('Activate');
+                        $('#wdt-activate-plugin').html('<i class="wpdt-icon-check-circle-full"></i>Activate');
                     } else {
                         wdtNotify(wpdatatablesSettingsStrings.error, wpdatatablesSettingsStrings.activation_domains_limit, 'danger');
-                        $('#wdt-activate-plugin').html('Activate');
+                        $('#wdt-activate-plugin').html('<i class="wpdt-icon-check-circle-full"></i>Activate');
                     }
                 },
                 error: function () {
                     wdt_current_config.wdtActivated = 0;
                     wdtNotify(wpdatatablesSettingsStrings.error, 'Unable to activate the plugin. Please try again.', 'danger');
-                    $('#wdt-activate-plugin').html('Activate');
+                    $('#wdt-activate-plugin').html('<i class="wpdt-icon-check-circle-full"></i>Activate');
                 }
             });
         }
 
         function deactivatePlugin() {
-            $('#wdt-activate-plugin').html('Loading...');
-            $('#wdt-envato-deactivation-wpdatatables').html('Loading...');
+            $('#wdt-activate-plugin').html('<i class="wpdt-icon-spinner9"></i>Loading...');
+            $('#wdt-envato-deactivation-wpdatatables').html('<i class="fad fa-spinner"></i>Loading...');
 
             let domain    = location.hostname;
             let subdomain = location.hostname;
@@ -744,9 +769,11 @@
             if (wdt_current_config.wdtPurchaseCodeStore) {
                 params.type = 'code';
                 params.purchaseCodeStore = wdt_current_config.wdtPurchaseCodeStore;
+                params.envatoTokenEmail = '';
             } else if (wdt_current_config.wdtEnvatoTokenEmail) {
                 params.type = 'envato';
                 params.envatoTokenEmail = wdt_current_config.wdtEnvatoTokenEmail;
+                params.purchaseCodeStore = '';
             }
 
             $.ajax({
@@ -760,17 +787,17 @@
                         wdt_current_config.wdtEnvatoTokenEmail = '';
                         wdt_current_config.wdtActivated = 0;
                         $('#wdt-purchase-code-store').prop('disabled', '').val('');
-                        $('#wdt-activate-plugin').removeClass('btn-danger').addClass('btn-primary').html('Activate');
+                        $('#wdt-activate-plugin').removeClass('btn-danger').addClass('btn-primary').html('<i class="wpdt-icon-check-circle-full"></i>Activate');
                         $('.wdt-envato-activation-wpdatatables').show()
                         $('.wdt-preload-layer').animateFadeOut();
                         $('#wdt-envato-activation-wpdatatables span').text(wpdatatablesSettingsStrings.activateWithEnvato);
                         $('#wdt-envato-activation-wpdatatables').prop('disabled', '');
-                        $('#wdt-envato-deactivation-wpdatatables').html('Deactivate').hide();
+                        $('#wdt-envato-deactivation-wpdatatables').html('<i class="wpdt-icon-times-circle-full"></i>Deactivate').hide();
                         $('.wdt-purchase-code').show();
                     } else {
                         wdtNotify(wpdatatablesSettingsStrings.error, wpdatatablesSettingsStrings.unable_to_deactivate_plugin, 'danger');
-                        $('#wdt-activate-plugin').html('Deactivate');
-                        $('#wdt-envato-deactivation-wpdatatables').html('Deactivate');
+                        $('#wdt-activate-plugin').html('<i class="wpdt-icon-times-circle-full"></i>Deactivate');
+                        $('#wdt-envato-deactivation-wpdatatables').html('<i class="wpdt-icon-times-circle-full"></i>Deactivate');
                     }
                 }
             });

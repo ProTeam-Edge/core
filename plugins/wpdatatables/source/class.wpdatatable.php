@@ -76,6 +76,12 @@ class WPDataTable {
     private $_tableToolsConfig = array();
     private $_autoRefreshInterval = 0;
     private $_infoBlock = true;
+    private $_simpleResponsive = false;
+    private $_verticalScroll = false;
+    private $_simpleHeader = false;
+    private $_stripeTable= false;
+    private $_cellPadding= 10;
+    private $_verticalScrollHeight= 600;
     private $_globalSearch = true;
     private $_showRowsPerPage = true;
     private $_showAllRows = false;
@@ -83,7 +89,7 @@ class WPDataTable {
     private $_ajaxReturn = false;
     private $_clearFilters = false;
     public $connection;
-    public static $allowedTableTypes = array('xls', 'csv', 'manual', 'mysql', 'json', 'google_spreadsheet', 'xml', 'serialized');
+    public static $allowedTableTypes = array('xls', 'csv', 'manual', 'mysql', 'json', 'google_spreadsheet', 'xml', 'serialized', 'simple');
 
     /**
      * @return bool
@@ -392,6 +398,17 @@ class WPDataTable {
     public function isScrollable() {
         return $this->_scrollable;
     }
+    public function setVerticalScroll($verticalScroll) {
+        if ($verticalScroll) {
+            $this->_verticalScroll = true;
+        } else {
+            $this->_verticalScroll = false;
+        }
+    }
+
+    public function isVerticalScroll() {
+        return $this->_verticalScroll;
+    }
 
     public function setInterfaceLanguage($lang) {
         if (empty($lang)) {
@@ -522,6 +539,73 @@ class WPDataTable {
      */
     public function setInfoBlock($infoBlock) {
         $this->_infoBlock = (bool)$infoBlock;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function isSimpleResponsive() {
+        return $this->_simpleResponsive;
+    }
+
+    /**
+     * @param boolean $simpleResponsive
+     */
+    public function setSimpleResponsive($simpleResponsive) {
+        $this->_simpleResponsive = (bool)$simpleResponsive;
+    }
+    /**
+     * @return boolean
+     */
+    public function isSimpleHeader() {
+        return $this->_simpleHeader;
+    }
+
+    /**
+     * @param boolean $simpleHeader
+     */
+    public function setSimpleHeader($simpleHeader) {
+        $this->_simpleHeader = (bool)$simpleHeader;
+    }
+    /**
+     * @return boolean
+     */
+    public function isStripeTable() {
+        return $this->_stripeTable;
+    }
+
+    /**
+     * @param boolean $stripeTable
+     */
+    public function setStripeTable($stripeTable) {
+        $this->_stripeTable = (bool)$stripeTable;
+    }
+
+    /**
+     * @return boolean
+     */
+    public function getCellPadding() {
+        return $this->_cellPadding;
+    }
+
+    /**
+     * @param boolean $cellPadding
+     */
+    public function setCellPadding($cellPadding) {
+        $this->_cellPadding = (bool)$cellPadding;
+    }
+    /**
+     * @return boolean
+     */
+    public function getVerticalScrollHeight() {
+        return $this->_verticalScrollHeight;
+    }
+
+    /**
+     * @param boolean $verticalScrollHeight
+     */
+    public function setVerticalScrollHeight($verticalScrollHeight) {
+        $this->_verticalScrollHeight = (bool)$verticalScrollHeight;
     }
 
     /**
@@ -1040,6 +1124,13 @@ class WPDataTable {
                             $dataRow[$key] = str_replace('.', '', $dataRow[$key]);
                         } else {
                             $dataRow[$key] = str_replace(',', '', $dataRow[$key]);
+                        }
+                    }
+                }
+                if ($columnType === 'string') {
+                    foreach ($this->_dataRows as &$dataRow) {
+                        if (is_float($dataRow[$key]) || is_int($dataRow[$key])) {
+                            $dataRow[$key] = strval($dataRow[$key]);
                         }
                     }
                 }
@@ -2343,7 +2434,7 @@ class WPDataTable {
         } else {
             throw new WDTException('File format not supported!');
         }
-
+        $xls_url = apply_filters( 'wpdatatables_filter_excel_based_data_url', $xls_url, $this->getWpId() );
         $objPHPExcel = $objReader->load($xls_url);
         $objWorksheet = $objPHPExcel->getActiveSheet();
         $highestRow = $objWorksheet->getHighestRow();
@@ -2719,6 +2810,7 @@ class WPDataTable {
      * @param $tableData
      * @param $columnData
      * @throws WDTException
+     * @throws Exception
      */
     public function fillFromData($tableData, $columnData) {
         if (empty($tableData->table_type)) {
@@ -2869,7 +2961,8 @@ class WPDataTable {
                 );
                 break;
             case 'serialized':
-                $serialized_content = apply_filters('wpdatatables_filter_serialized', WDTTools::curlGetData($tableData->content), $this->_wpId);
+                $url =  apply_filters('wpdatatables_filter_url_php_array', WDTTools::applyPlaceholders($tableData->content), $this->_wpId);
+                $serialized_content = apply_filters('wpdatatables_filter_serialized', WDTTools::curlGetData($url), $this->_wpId);
                 $array = unserialize($serialized_content);
                 $this->arrayBasedConstruct(
                     $array,
@@ -2979,11 +3072,23 @@ class WPDataTable {
             $this->setGlobalSearch($advancedSettings->global_search);
             $this->setShowRowsPerPage($advancedSettings->showRowsPerPage);
             isset($advancedSettings->showAllRows) ? $this->setShowAllRows($advancedSettings->showAllRows) : $this->setShowAllRows(false);
+            isset($advancedSettings->simpleHeader) ? $this->setSimpleResponsive($advancedSettings->simpleHeader) : $this->setSimpleResponsive(false);
+            isset($advancedSettings->simpleHeader) ? $this->setSimpleHeader($advancedSettings->simpleHeader) : $this->setSimpleHeader(false);
+            isset($advancedSettings->stripeTable) ? $this->setStripeTable($advancedSettings->stripeTable) : $this->setStripeTable(false);
+            isset($advancedSettings->cellPadding) ? $this->setCellPadding($advancedSettings->cellPadding) : $this->setCellPadding(10);
+            isset($advancedSettings->verticalScroll) ? $this->setVerticalScroll($advancedSettings->verticalScroll) : $this->setVerticalScroll(false);
+            isset($advancedSettings->verticalScrollHeight) ? $this->setVerticalScrollHeight($advancedSettings->verticalScrollHeight) : $this->setVerticalScrollHeight(600);
         } else {
             $this->setInfoBlock(true);
             $this->setGlobalSearch(true);
             $this->setShowRowsPerPage(true);
             $this->setShowAllRows(false);
+            $this->setSimpleHeader(false);
+            $this->setSimpleResponsive(false);
+            $this->setStripeTable(false);
+            $this->setCellPadding(10);
+            $this->setVerticalScroll(false);
+            $this->setVerticalScrollHeight(600);
         }
 
         if (!empty($columnData['columnOrder'])) {
@@ -3290,7 +3395,8 @@ class WPDataTable {
                             'extend' => 'print',
                             'exportOptions' => array('columns' => ':visible'),
                             'className' => 'DTTT_button DTTT_button_print',
-                            'text' => __('Print', 'wpdatatables')
+                            'text' => __('Print', 'wpdatatables'),
+                            'title' => $wdtExportFileName
                         );
                 }
 
@@ -3358,7 +3464,8 @@ class WPDataTable {
                             'extend' => 'print',
                             'exportOptions' => array('columns' => ':visible'),
                             'className' => 'DTTT_button DTTT_button_print',
-                            'text' => __('Print', 'wpdatatables')
+                            'text' => __('Print', 'wpdatatables'),
+                            'title' => $wdtExportFileName
                         );
                 }
 
@@ -3672,6 +3779,7 @@ class WPDataTable {
 
         $wpdb->delete("{$wpdb->prefix}wpdatatables", array('id' => (int)$tableId));
         $wpdb->delete("{$wpdb->prefix}wpdatatables_columns", array('table_id' => (int)$tableId));
+        $wpdb->delete("{$wpdb->prefix}wpdatatables_rows", array('table_id' => (int)$tableId));
         $wpdb->delete("{$wpdb->prefix}wpdatacharts", array('wpdatatable_id' => (int)$tableId));
 
         return true;
@@ -3685,6 +3793,18 @@ class WPDataTable {
         global $wpdb;
 
         $query = "SELECT id, title, IF(table_type = 'mysql', 'SQL', table_type) AS table_type, connection, server_side FROM {$wpdb->prefix}wpdatatables ORDER BY id";
+
+        $allTables = $wpdb->get_results($query, ARRAY_A);
+        return $allTables;
+    }
+    /**
+     * Get all tables except simple tables
+     * @return array|null|object
+     */
+    public static function getAllTablesExceptSimple() {
+        global $wpdb;
+
+        $query = "SELECT id, title, connection, server_side FROM {$wpdb->prefix}wpdatatables WHERE NOT table_type = 'simple' ORDER BY id";
 
         $allTables = $wpdb->get_results($query, ARRAY_A);
         return $allTables;

@@ -2,8 +2,8 @@
 
 <script type="text/x-template" id="wdt-column-conditional-formatting-template">
 
-    <div class="row wdt-conditional-formatting-rule form-horizontal">
-        <div class="col-sm-2 p-t-5">
+    <div class="row wdt-conditional-formatting-rule">
+        <div class="col-sm-1">
             <label class="control-label"><?php _e('If cell value', 'wpdatatables'); ?></label>
         </div>
         <div class="col-sm-2">
@@ -22,7 +22,7 @@
         </div>
         <div class="col-sm-2">
             <div class="form-group">
-                <input type="text" class="form-control input-sm formatting-rule-cell-value" value="">
+                <input placeholder="<?php _e('Choose criteria', 'wpdatatables'); ?>" type="text" class="form-control input-sm formatting-rule-cell-value" value="">
             </div>
         </div>
         <div class="col-sm-3">
@@ -45,13 +45,13 @@
         </div>
         <div class="col-sm-2">
             <div class="form-group">
-                <input type="text" class="form-control input-sm formatting-rule-set-value cp-inside" value="">
+                <input placeholder="<?php _e('Choose criteria', 'wpdatatables'); ?>"  type="text" class="form-control input-sm formatting-rule-set-value cp-inside" value="">
             </div>
         </div>
-        <div class="col-sm-1">
-            <button class="btn btn-danger btn-icon-text waves-effect waves-circle pull-right wdt-delete-conditional-formatting-rule"
+        <div class="col-sm-2 wdt-last">
+            <button class="btn pull-right wdt-delete-conditional-formatting-rule"
                     title="<?php _e('Remove rule', 'wpdatatables'); ?>" data-toggle="tooltip"><i
-                        class="zmdi zmdi-delete"></i></button>
+                        class="wpdt-icon-trash"></i></button>
         </div>
     </div>
 

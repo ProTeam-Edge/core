@@ -41,7 +41,7 @@
         /**
          * Change URL
          */
-        $('#wdt-input-url').change(function (e) {
+        $('#wdt-input-url').bind('input change', function (e) {
             wpdatatable_config.setContent($(this).val());
         });
 
@@ -64,6 +64,13 @@
          */
         $('#wdt-scrollable').change(function (e) {
             wpdatatable_config.setScrollable($(this).is(':checked') ? 1 : 0);
+        });
+
+        /**
+         * Toggle Vertical scroll
+         */
+        $('#wdt-vertical-scroll').change(function (e) {
+            wpdatatable_config.setVerticalScroll($(this).is(':checked') ? 1 : 0);
         });
 
         /**
@@ -113,6 +120,40 @@
          */
         $('#wdt-info-block').change(function (e) {
             wpdatatable_config.setInfoBlock($(this).is(':checked') ? 1 : 0);
+        });
+        /**
+         * Toggle simple responsive
+         */
+        $('#wdt-simple-responsive').change(function (e) {
+            wpdatatable_config.setSimpleResponsive($(this).is(':checked') ? 1 : 0);
+        });
+
+        /**
+         * Toggle simple header
+         */
+        $('#wdt-simple-header').change(function (e) {
+            wpdatatable_config.setSimpleHeader($(this).is(':checked') ? 1 : 0);
+        });
+
+        /**
+         * Toggle stripe table
+         */
+        $('#wdt-stripe-table').change(function (e) {
+            wpdatatable_config.setStripeTable($(this).is(':checked') ? 1 : 0);
+        });
+
+        /**
+         * Set cell padding for simple table
+         */
+        $('#wdt-cell-padding').change(function (e) {
+            wpdatatable_config.setCellPadding($(this).val());
+        });
+
+        /**
+         * Set cell padding for simple table
+         */
+        $('#wdt-vertical-scroll-height').change(function (e) {
+            wpdatatable_config.setVerticalScrollHeight($(this).val());
         });
 
         /**
@@ -371,11 +412,11 @@
             e.preventDefault();
             e.stopImmediatePropagation();
             if ($(this).hasClass('expanded')) {
-                $(this).find('i').removeClass('zmdi-chevron-up').addClass('zmdi-chevron-down');
+                $(this).find('i').removeClass('wpdt-icon-angle-up').addClass('wpdt-icon-angle-down');
                 $(this).closest('.card').find('div.card-body').slideUp();
                 $(this).removeClass('expanded').addClass('collapsed');
             } else {
-                $(this).find('i').addClass('zmdi-chevron-up').removeClass('zmdi-chevron-down');
+                $(this).find('i').addClass('wpdt-icon-angle-up').removeClass('wpdt-icon-angle-down');
                 $(this).closest('.card').find('div.card-body').slideDown();
                 $(this).addClass('expanded').removeClass('collapsed');
             }
@@ -981,12 +1022,22 @@
         /**
          * Apply all changes on "Apply" click
          */
-        $('button.wdt-apply').click(function (e) {
+        $(document).on('click', 'button.wdt-apply', function () {
+
+            if (wpdatatable_config.table_type == 'gravity' ||
+                wpdatatable_config.table_type == 'formidable' ) return;
+
+            if (wpdatatable_config.table_type == 'gravity' ||
+                wpdatatable_config.table_type == 'formidable') return;
 
             // Validation for valid URL link of Google spreadsheet
             if (wpdatatable_config.table_type == 'google_spreadsheet' && wpdatatable_config.content.indexOf("2PACX") != -1) {
                 $('#wdt-error-modal .modal-body').html('URL from Google spreadsheet publish modal(popup) is not valid for wpDataTables. Please provide a valid URL link that you get from the browser address bar. More info in our documentation on this <a href="https://wpdatatables.com/documentation/creating-wpdatatables/creating-wpdatatables-from-google-spreadsheets/" target="_blank">link</a>.');
                 $('#wdt-error-modal').modal('show');
+                return;
+            }
+            if (!wpdatatable_config.title) {
+                wdtNotify(wpdatatables_edit_strings.error, wpdatatables_edit_strings.tableNameEmpty, 'danger');
                 return;
             }
 
@@ -1290,6 +1341,5 @@
             delimiterRegex: '|',
             tagClass: 'label label-primary'
         });
-
     });
 })(jQuery);

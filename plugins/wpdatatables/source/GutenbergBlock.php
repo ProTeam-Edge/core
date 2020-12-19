@@ -19,8 +19,9 @@ class GutenbergBlock
             ) {
 
                 if (self::isGutenbergActive()) {
+                    /** @var static $class */
                     $class = get_called_class();
-                    add_action('init', function () use ($class) {
+                    add_action( 'enqueue_block_editor_assets', function () use ( $class ) {
                         $class::registerBlockType();
                     });
                 }
@@ -68,11 +69,6 @@ class GutenbergBlock
             return false;
         }
 
-        // Fix for conflict with WP Bakery Page Builder
-        if ( class_exists( 'Vc_Manager' ) && (isset( $_GET['classic-editor'])) || (class_exists( 'Vc_Manager' ) && get_option('wpb_js_gutenberg_disable') == true)){
-            return false;
-        }
-
         return true;
     }
 
@@ -95,6 +91,14 @@ class GutenbergBlock
         }
 
         return false;
+    }
+
+    /**
+     * Register block for gutenberg
+     */
+    public static function registerBlockType()
+    {
+
     }
 
 }

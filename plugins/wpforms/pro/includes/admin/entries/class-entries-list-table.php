@@ -74,6 +74,7 @@ class WPForms_Entries_Table extends WP_List_Table {
 				'singular' => 'entry',
 				'plural'   => 'entries',
 				'ajax'     => false,
+				'screen'   => 'entries',
 			)
 		);
 
@@ -261,7 +262,7 @@ class WPForms_Entries_Table extends WP_List_Table {
 					continue;
 				}
 
-				$columns[ 'wpforms_field_' . $id ] = ! empty( $this->form_data['fields'][ $id ]['label'] ) ? wp_strip_all_tags( $this->form_data['fields'][ $id ]['label'] ) : esc_html__( 'Field', 'wpforms' );
+				$columns[ 'wpforms_field_' . $id ] = isset( $this->form_data['fields'][ $id ]['label'] ) && ! wpforms_is_empty_string( trim( $this->form_data['fields'][ $id ]['label'] ) ) ? wp_strip_all_tags( $this->form_data['fields'][ $id ]['label'] ) : sprintf( /* translators: %d - field ID. */ __( 'Field #%d', 'wpforms' ), absint( $id ) );
 			}
 		} else {
 			/*
@@ -270,7 +271,7 @@ class WPForms_Entries_Table extends WP_List_Table {
 			$x = 0;
 			foreach ( $this->form_data['fields'] as $id => $field ) {
 				if ( ! in_array( $field['type'], self::get_columns_form_disallowed_fields(), true ) && $x < $display ) {
-					$columns[ 'wpforms_field_' . $id ] = ! empty( $field['label'] ) ? wp_strip_all_tags( $field['label'] ) : esc_html__( 'Field', 'wpforms' );
+					$columns[ 'wpforms_field_' . $id ] = isset( $field['label'] ) && ! wpforms_is_empty_string( trim( $field['label'] ) ) ? wp_strip_all_tags( $field['label'] ) : sprintf( /* translators: %d - field ID. */ __( 'Field #%d', 'wpforms' ), absint( $field['id'] ) );
 					$x ++;
 				}
 			}
@@ -426,7 +427,7 @@ class WPForms_Entries_Table extends WP_List_Table {
 				break;
 
 			case 'date':
-				$value = date_i18n( get_option( 'date_format' ), strtotime( $entry->date ) + ( get_option( 'gmt_offset' ) * 3600 ) );
+				$value = wpforms_datetime_format( $entry->date, '', true );
 				break;
 
 			case 'status':
@@ -596,44 +597,6 @@ class WPForms_Entries_Table extends WP_List_Table {
 			</button>
 
 		</div>
-
-		<?php
-		$default_date = 'defaultDate: [],';
-		if ( ! empty( $_GET['date'] ) ) {
-			$dates = explode( ' - ', $_GET['date'] );
-
-			if ( count( $dates ) === 1 ) {
-				$dates[1] = $dates[0];
-			}
-			$default_date = 'defaultDate: [ "' . sanitize_text_field( $dates[0] ) . '", "' . sanitize_text_field( $dates[1] ) . '" ],';
-		}
-		?>
-
-		<script>
-			var wpforms_lang_code = '<?php echo sanitize_key( wpforms_get_language_code() ); ?>',
-				flatpickr_locale = {
-					rangeSeparator: ' - '
-				};
-
-			if (
-				flatpickr !== 'undefined' &&
-				flatpickr.hasOwnProperty( 'l10ns' ) &&
-				flatpickr.l10ns.hasOwnProperty( wpforms_lang_code )
-			) {
-				flatpickr_locale = flatpickr.l10ns[ wpforms_lang_code ];
-				// Rewrite separator for all locales to make filtering work.
-				flatpickr_locale.rangeSeparator = ' - ';
-			}
-
-			jQuery(".wpforms-filter-date-selector").flatpickr({
-				altInput: true,
-				altFormat: "M j, Y",
-				dateFormat: "Y-m-d",
-				locale: flatpickr_locale,
-				mode: "range",
-				<?php echo $default_date; ?>
-			});
-		</script>
 
 		<?php
 	}
@@ -1155,8 +1118,6 @@ class WPForms_Entries_Table extends WP_List_Table {
 	 * @since 1.5.7 Added an `Entry Notes` column support.
 	 */
 	public function prepare_items() {
-
-		$_SERVER['REQUEST_URI'] = remove_query_arg( '_wp_http_referer', $_SERVER['REQUEST_URI'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
 
 		// Retrieve count.
 		$this->get_counts();

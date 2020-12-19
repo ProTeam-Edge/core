@@ -704,7 +704,7 @@ class WDTColumn {
                 $value = str_replace('%CURRENT_USER_LOGIN%', wp_get_current_user()->user_login, $value);
             }// Current post id
             if (strpos($value, '%CURRENT_POST_ID%') !== false) {
-                $value = str_replace('%CURRENT_POST_ID%', get_post()->ID, $value);
+                $value = str_replace('%CURRENT_POST_ID%', get_the_ID(), $value);
             }// Current user first name
             if (strpos($value, '%CURRENT_USER_FIRST_NAME%') !== false) {
                 $value = str_replace('%CURRENT_USER_FIRST_NAME%', wp_get_current_user()->first_name, $value);

@@ -135,18 +135,27 @@ class WPForms_Overview {
 
 			<div class="wpforms-admin-content">
 
-				<?php do_action( 'wpforms_admin_overview_before_table' ); ?>
+				<?php
 
-				<form id="wpforms-overview-table" method="get" action="<?php echo esc_url( admin_url( 'admin.php?page=wpforms-overview' ) ); ?>">
+				if ( empty( $overview_table->items ) ) {
 
-					<input type="hidden" name="post_type" value="wpforms" />
+					// Output no forms screen.
+					echo wpforms_render( 'admin/empty-states/no-forms' ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-					<input type="hidden" name="page" value="wpforms-overview" />
+				} else {
 
-					<?php $overview_table->views(); ?>
-					<?php $overview_table->display(); ?>
+					do_action( 'wpforms_admin_overview_before_table' );
+				?>
+					<form id="wpforms-overview-table" method="get" action="<?php echo esc_url( admin_url( 'admin.php?page=wpforms-overview' ) ); ?>">
 
-				</form>
+						<input type="hidden" name="post_type" value="wpforms" />
+						<input type="hidden" name="page" value="wpforms-overview" />
+
+						<?php $overview_table->views(); ?>
+						<?php $overview_table->display(); ?>
+
+					</form>
+				<?php } ?>
 
 			</div>
 
@@ -202,6 +211,10 @@ class WPForms_Overview {
 
 		$ids    = isset( $_GET['form_id'] ) ? array_map( 'absint', (array) $_GET['form_id'] ) : array(); // phpcs:ignore WordPress.Security.NonceVerification
 		$action = ! empty( $_REQUEST['action'] ) ? sanitize_key( $_REQUEST['action'] ) : false; // phpcs:ignore WordPress.Security.NonceVerification
+
+		if ( $action === '-1' ) {
+			$action = ! empty( $_REQUEST['action2'] ) ? sanitize_key( $_REQUEST['action2'] ) : false; // phpcs:ignore WordPress.Security.NonceVerification
+		}
 
 		// Checking the sortable column link.
 		$is_orderby_link = ! empty( $_REQUEST['orderby'] ) && ! empty( $_REQUEST['order'] );

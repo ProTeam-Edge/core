@@ -63,7 +63,7 @@ function wdtActivationCreateTables() {
 						orig_header varchar(255) NOT NULL,
 						display_header varchar(255) NOT NULL,
 						filter_type enum('none','null_str','text','number','number-range','date-range','datetime-range','time-range','select','multiselect','checkbox') NOT NULL,
-						column_type enum('autodetect','string','int','float','date','link','email','image','formula','datetime','time') NOT NULL,
+						column_type enum('autodetect','string','int','float','date','link','email','image','formula','datetime','time','masterdetail') NOT NULL,
 						input_type enum('none','text','textarea','mce-editor','date','datetime','time','link','email','selectbox','multi-selectbox','attachment') NOT NULL default 'text',
 						input_mandatory tinyint(1) NOT NULL default '0',
                         id_column tinyint(1) NOT NULL default '0',
@@ -97,11 +97,18 @@ function wdtActivationCreateTables() {
                                   json_render_data text NOT NULL,
                                   UNIQUE KEY id (id)
                                 ) DEFAULT CHARSET=utf8 COLLATE utf8_general_ci";
-
+    $rowsTableName = $wpdb->prefix . 'wpdatatables_rows';
+    $rowsSql = "CREATE TABLE {$rowsTableName} (
+                                  id int(11) NOT NULL AUTO_INCREMENT,
+                                  table_id int(11) NOT NULL,
+                                  data TEXT NOT NULL default '',
+                                  UNIQUE KEY id (id)
+                                ) DEFAULT CHARSET=utf8 COLLATE utf8_general_ci";
     require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
     dbDelta($tablesSql);
     dbDelta($columnsSql);
     dbDelta($chartsSql);
+    dbDelta($rowsSql);
     if (!get_option('wdtUseSeparateCon')) {
         update_option('wdtUseSeparateCon', false);
     }
@@ -176,6 +183,12 @@ function wdtActivationCreateTables() {
     }
     if (!get_option('wdtMobileWidth')) {
         update_option('wdtMobileWidth', 480);
+    }
+    if (get_option('wdtGettingStartedPageStatus') === false) {
+        update_option('wdtGettingStartedPageStatus', 0 );
+    }
+    if (get_option('wdtLiteVSPremiumPageStatus') === false) {
+        update_option('wdtLiteVSPremiumPageStatus', 0 );
     }
     if (get_option('wdtIncludeBootstrap') === false) {
         update_option('wdtIncludeBootstrap', true);
@@ -270,6 +283,8 @@ function wdtUninstallDelete() {
         delete_option('wdtSumFunctionsLabel');
         delete_option('wdtRenderFilter');
         delete_option('wdtRenderCharts');
+        delete_option('wdtGettingStartedPageStatus');
+        delete_option('wdtLiteVSPremiumPageStatus');
         delete_option('wdtIncludeBootstrap');
         delete_option('wdtIncludeBootstrapBackEnd');
         delete_option('wdtPreventDeletingTables');
@@ -302,6 +317,7 @@ function wdtUninstallDelete() {
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wpdatatables");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wpdatatables_columns");
         $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wpdatacharts");
+        $wpdb->query("DROP TABLE IF EXISTS {$wpdb->prefix}wpdatatables_rows");
     }
 }
 
@@ -554,39 +570,49 @@ function wdtWpDataTableShortcodeHandler($atts, $content = null) {
     /** @var mixed $export_file_name */
     $wdtExportFileName = $export_file_name !== '%%no_val%%' ? $export_file_name : '';
 
-    do_action('wpdatatables_before_get_table_metadata');
+    do_action('wpdatatables_before_get_table_metadata',$id);
 
-    try{
-        /** @var mixed $table_view */
-        if ($table_view == 'excel') {
-            /** @var WPExcelDataTable $wpDataTable */
-            $wpDataTable = new WPExcelDataTable($tableData->connection);
-        } else {
-            /** @var WPDataTable $wpDataTable */
-            $wpDataTable = new WPDataTable($tableData->connection);
+    if ($tableData->table_type === 'simple'){
+        try {
+            $wpDataTableRows = WPDataTableRows::loadWpDataTableRows($id);
+            $output = $wpDataTableRows->generateTable($id);
+        } catch (Exception $e) {
+            $output = ltrim($e->getMessage(), '<br/><br/>');
         }
-    } catch (Exception $e) {
-        echo WDTTools::wdtShowError($e->getMessage());
-        return;
+    } else {
+        try{
+            /** @var mixed $table_view */
+            if ($table_view == 'excel') {
+                /** @var WPExcelDataTable $wpDataTable */
+                $wpDataTable = new WPExcelDataTable($tableData->connection);
+            } else {
+                /** @var WPDataTable $wpDataTable */
+                $wpDataTable = new WPDataTable($tableData->connection);
+            }
+        } catch (Exception $e) {
+            echo WDTTools::wdtShowError($e->getMessage());
+            return;
+        }
+
+
+        $wpDataTable->setWpId($id);
+
+        $columnDataPrepared = $wpDataTable->prepareColumnData($tableData);
+
+        try {
+            $wpDataTable->fillFromData($tableData, $columnDataPrepared);
+            $wpDataTable = apply_filters('wpdatatables_filter_initial_table_construct', $wpDataTable);
+
+            $output = '';
+            if ($tableData->show_title && $tableData->title) {
+                $output .= apply_filters('wpdatatables_filter_table_title', (empty($tableData->title) ? '' : '<h2 class="wpdt-c" id="wdt-table-title-'. $id .'">' . $tableData->title . '</h2>'), $id);
+            }
+            $output .= $wpDataTable->generateTable($tableData->connection);
+        } catch (Exception $e) {
+            $output = WDTTools::wdtShowError($e->getMessage());
+        }
     }
 
-
-    $wpDataTable->setWpId($id);
-
-    $columnDataPrepared = $wpDataTable->prepareColumnData($tableData);
-
-    try {
-        $wpDataTable->fillFromData($tableData, $columnDataPrepared);
-        $wpDataTable = apply_filters('wpdatatables_filter_initial_table_construct', $wpDataTable);
-
-        $output = '';
-        if ($tableData->show_title && $tableData->title) {
-            $output .= apply_filters('wpdatatables_filter_table_title', (empty($tableData->title) ? '' : '<h2 class="wpdt-c" id="wdt-table-title-'. $id .'">' . $tableData->title . '</h2>'), $id);
-        }
-        $output .= $wpDataTable->generateTable($tableData->connection);
-    } catch (Exception $e) {
-        $output = WDTTools::wdtShowError($e->getMessage());
-    }
     $output = apply_filters('wpdatatables_filter_rendered_table', $output, $id);
 
     return $output;
@@ -672,7 +698,7 @@ function wdtRenderScriptStyleBlock($connection) {
     $wpDataTable = new WPDataTable($connection);
 
     if ($customJs) {
-        $scriptBlockHtml .= '<script type="text/javascript">' . stripslashes_deep($customJs) . '</script>';
+        $scriptBlockHtml .= '<script type="text/javascript">' . stripslashes_deep(html_entity_decode($customJs)) . '</script>';
     }
     $returnHtml = $scriptBlockHtml;
 
@@ -741,6 +767,9 @@ function wdtSanitizeQuery($query) {
     return $query;
 }
 
+/**
+ * Init wpDataTabes block for Gutenberg
+ */
 function initGutenbergBlocks (){
     WpDataTablesGutenbergBlock::init();
     WpDataChartsGutenbergBlock::init();
@@ -749,7 +778,7 @@ function initGutenbergBlocks (){
 add_action('plugins_loaded', 'initGutenbergBlocks');
 
 /**
- * Creating Amelia block category in Gutenberg
+ * Creating wpDataTables block category in Gutenberg
  */
 function addWpDataTablesBlockCategory ($categories, $post) {
     return array_merge(
@@ -950,6 +979,21 @@ function wdtAddMessageOnUpdate($reply, $package, $updater) {
 }
 
 add_filter('upgrader_pre_download', 'wdtAddMessageOnUpdate', 10, 4);
+
+/**
+ * Redirect on Welcome page after activate plugin
+ */
+function welcome_page_activation_redirect( $plugin ) {
+    $filePath = plugin_basename(__FILE__);
+    $filePathArr = explode('/', $filePath);
+    $wdtPluginSlug = $filePathArr[0] . '/wpdatatables.php';
+
+    if( $plugin == plugin_basename( $wdtPluginSlug ) ) {
+        exit( wp_redirect( admin_url( 'admin.php?page=wpdatatables-welcome-page' ) ) );
+    }
+}
+
+add_action( 'activated_plugin', 'welcome_page_activation_redirect' );
 
 /**
  * Optional Visual Composer integration
