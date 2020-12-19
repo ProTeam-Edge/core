@@ -1,0 +1,10 @@
+# BEGIN W3TC Minify cache
+# END W3TC Minify cache
+# BEGIN W3TC Minify core
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /wp-content/cache/minify/
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^(.+\.(css|js))$ /index.php [L]
+</IfModule>
+# END W3TC Minify core
