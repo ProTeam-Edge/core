@@ -1,8 +1,13 @@
 
-wp-content/*
+*
 
-!wp-content/plugins/
-!wp-content/themes/
+!plugins/
+!themes/
 
-wp-content/plugins/*
-!wp-content/plugins/proteamedge/
+plugins/*
+!plugins/proteamedge/
+
+themes/*
+!themes/memberlite-child-master/
+
+themes/memberlite-child-master/vendor
