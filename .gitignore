@@ -1,2 +1,8 @@
 
-themes/memberlite-child-master/vendor/phpseclib/phpseclib
+wp-content/*
+
+!wp-content/plugins/
+!wp-content/themes/
+
+wp-content/plugins/*
+!wp-content/plugins/proteamedge/
