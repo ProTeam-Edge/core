@@ -1,13 +1,10 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
-//
-//$shortUid = pte_get_short_id();
-//pp($shortUid);
-
-//pte_create_default_topics(45);
 
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
+
+pp("IF YOU SEE THIS, PUSH TO ALCT.PRO WORKED");
 
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
