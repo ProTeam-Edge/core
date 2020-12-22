@@ -5,7 +5,46 @@
  * @package Memberlite 2.0
  * @subpackage Memberlite - Child Theme 1.0
  */
-
+ /* Created by Abstain Solutions 22-12-2020 */
+add_shortcode('nonce_test','nonce_test');
+function nonce_test() {
+	if(isset($_POST['logsub']))
+	{
+		if(wp_verify_nonce($_POST['nonce_test'], 'nonce_test')){
+			echo 'matched';
+			echo '<pre>';
+			print_r($_POST);
+			DIE;
+		}
+		else
+		{
+			echo 'not matched';
+			DIE;
+		}
+	}
+	$form_html = '';
+	$form_html .= '
+	<div class="pmpro_message pmpro_default">
+		<div class="tml tml-login">
+			<div class="tml-alerts"></div>
+			<form name="nonce_test" method="post">
+				<div class="tml-field-wrap tml-log-wrap">
+					<label class="tml-label" for="user_login">Email</label>
+					<input name="log" type="text" value="" id="user_login" autocapitalize="off" class="tml-field">
+				</div>
+				<div class="tml-field-wrap tml-pwd-wrap">
+					<label class="tml-label" for="user_pass">Password</label>
+					<input name="pwd" type="password" value="" id="user_pass" class="tml-field">
+				</div>';
+				$form_html .= wp_nonce_field('nonce_test', 'nonce_test');
+				$form_html .= '<div class="tml-field-wrap tml-submit-wrap">
+					<button name="logsub" type="submit" class="tml-button">Log In</button>
+				</div>
+			</form>
+		</div>
+	</div>';
+	return $form_html;
+}
 include('alpn-shortcodes.php');
 include('alpn_common.php');
 include('alpn_data.php');
