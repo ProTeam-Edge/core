@@ -7,10 +7,10 @@
  */
 add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
-	if(isset($_REQUEST['log']))
+	if(isset($_REQUEST['logsub']))
 	{
 		echo '<pre>';
-		print_r($log);
+		print_r($_REQUEST);
 		die;
 	}
 	$form_html = '';
@@ -29,7 +29,7 @@ function nonce_test() {
 				</div>';
 				wp_nonce_field('nonce_test', 'nonce_test');
 				$form_html .= '<div class="tml-field-wrap tml-submit-wrap">
-					<button name="submit" name="log" type="submit" class="tml-button">Log In</button>
+					<button name="submit" name="logsub" type="submit" class="tml-button">Log In</button>
 				</div>
 			</form>
 		</div>
