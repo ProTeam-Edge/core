@@ -1,2 +1,0 @@
-tests\unit\koolreport\querybuilder\QueryTest.php:testCreate
-tests\unit\koolreport\querybuilder\QueryTest.php:testToArray
