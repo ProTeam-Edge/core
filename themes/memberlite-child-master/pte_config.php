@@ -5,6 +5,7 @@ $domainName = (substr($hostName, 0, 16) == "pte-dev-staging-") ? "alct.pro" : "p
 
 define('PTE_STANDARD_COLOR_COUNT', 10);
 
+define('PTE_HOST_DOMAIN_NAME', $domainName);
 define('PTE_ROOT_URL', "https://{$domainName}/wp-content/themes/memberlite-child-master/");
 define('PTE_ROOT_PATH', '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/');
 define('PTE_IMAGES_ROOT_URL', 'https://storage.googleapis.com/pte_media_store_1/');
