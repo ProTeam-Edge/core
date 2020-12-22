@@ -29,7 +29,7 @@ function nonce_test() {
 				</div>';
 				$form_html .= wp_nonce_field('nonce_test', 'nonce_test');
 				$form_html .= '<div class="tml-field-wrap tml-submit-wrap">
-					<button name="submit" name="logsub" type="submit" class="tml-button">Log In</button>
+					<button name="logsub" type="submit" class="tml-button">Log In</button>
 				</div>
 			</form>
 		</div>
