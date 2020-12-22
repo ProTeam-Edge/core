@@ -7,7 +7,37 @@
  */
 add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
-	return 'nonce test';
+	$form_html = '';
+	$form_html .= '<div class="pmpro_message pmpro_default"><div class="tml tml-login">
+<div class="tml-alerts"></div><form name="login" action="https://alct.pro/login/" method="post">
+<div class="tml-field-wrap tml-log-wrap">
+<label class="tml-label" for="user_login">Email</label>
+<input name="log" type="text" value="" id="user_login" autocapitalize="off" class="tml-field">
+</div>
+
+<div class="tml-field-wrap tml-pwd-wrap">
+<label class="tml-label" for="user_pass">Password</label>
+<input name="pwd" type="password" value="" id="user_pass" class="tml-field">
+</div>
+
+
+<div class="tml-field-wrap tml-rememberme-wrap">
+<input name="rememberme" type="checkbox" value="forever" id="rememberme" class="tml-checkbox">
+<label class="tml-label" for="rememberme">Remember Me</label>
+</div>
+
+<div class="tml-field-wrap tml-submit-wrap">
+<button name="submit" type="submit" class="tml-button">Log In</button>
+</div>
+
+<input name="redirect_to" type="hidden" value="https://alct.pro/wp-admin/">
+
+<input name="testcookie" type="hidden" value="1">
+
+</form>
+<ul class="tml-links"><li class="tml-lostpassword-link"><a href="https://alct.pro/lostpassword/">Lost your password?</a></li></ul></div>
+</div>';
+	return $form_html;
 }
 include('alpn-shortcodes.php');
 include('alpn_common.php');
