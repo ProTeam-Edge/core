@@ -7,7 +7,7 @@
  */
 add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
-	if(isset($_REQUEST['logsub']))
+	if(isset($_POST['logsub']))
 	{
 		echo '<pre>';
 		print_r($_REQUEST);
