@@ -9,9 +9,17 @@ add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
 	if(isset($_POST['logsub']))
 	{
-		echo '<pre>';
-		print_r($_REQUEST);
-		die;
+		if(wp_verify_nonce($_REQUEST['nonce_test'], 'nonce_test')){
+			echo 'matched';
+			echo '<pre>';
+			print_r($_POST);
+			DIE;
+		}
+		else
+		{
+			echo 'not matched';
+			DIE;
+		}
 	}
 	$form_html = '';
 	$form_html .= '
