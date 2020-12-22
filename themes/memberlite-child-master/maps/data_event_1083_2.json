@@ -1,0 +1,37 @@
+{
+  "field_map": {
+	 "pte_event_name": "3",
+	 "pte_event_description": "33",
+	 "pte_event_start_date": "34",
+	 "pte_event_start_time": "35",
+	 "pte_event_end_date": "36",
+	 "pte_event_end_time": "37",
+	 "pte_event_event_url": "21",
+	 "pte_event_location_name": "6",
+	 "pte_event_location_address_1": "9",
+	 "pte_event_location_address_2": "10",
+	 "pte_event_location_city": "11",
+	 "pte_event_location_state": "16",
+	 "pte_event_location_postal_code": "17",
+	 "pte_event_location_phone": "7",
+	 "pte_event_target": "39",
+	 "pte_event_objectives": "41",
+	 "pte_event_message": "27",
+	 "pte_event_theme": "40",
+	 "pte_event_notes": "42",
+     "id": "32",
+  },
+  "alpn_name_source": {
+    "0": {
+      "type": "field_if_empty",
+      "value": "pte_event_name"
+    }
+  },
+  "alpn_about_source": {
+    "0": {
+      "type": "field_if_empty",
+      "value": "pte_event_description"
+    }
+  },
+  "alpn_topic_hidden_field_id": "32"
+}

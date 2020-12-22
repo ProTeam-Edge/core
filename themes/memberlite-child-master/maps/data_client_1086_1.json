@@ -1,0 +1,42 @@
+{
+  "field_map": {
+    "id": "32",
+    "alpn_profile_city": "11",
+    "alpn_profile_about": "27",
+    "alpn_profile_state": "16",
+    "alpn_profile_title": "29",
+    "alpn_profile_address_1": "9",
+    "alpn_profile_address_2": "10",
+    "alpn_profile_fax_phone": "8",
+    "alpn_profile_last_name": "4",
+    "alpn_profile_cell_phone": "5",
+    "alpn_profile_desk_phone": "7",
+    "alpn_profile_first_name": "3",
+    "alpn_profile_postalcode": "17",
+    "alpn_profile_website_url": "20",
+    "alpn_profile_linkedin_url": "21",
+    "alpn_profile_business_name": "6",
+    "alpn_profile_business_type": "31"
+  },
+  "alpn_name_source": {
+    "0": {
+      "type": "field",
+      "value": "alpn_profile_last_name"
+    },
+    "1": {
+      "type": "string",
+      "value": ", "
+    },
+    "2": {
+      "type": "field",
+      "value": "alpn_profile_first_name"
+    }
+  },
+  "alpn_about_source": {
+    "0": {
+      "type": "field_if_empty",
+      "value": "alpn_profile_business_name"
+    }
+  },
+  "alpn_topic_hidden_field_id": "32"
+}

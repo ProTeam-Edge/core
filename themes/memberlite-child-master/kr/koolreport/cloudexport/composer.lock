@@ -1,0 +1,59 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "49f4518744eedbb256c31b9196421d3a",
+    "packages": [
+        {
+            "name": "chromeheadlessio/php-client",
+            "version": "0.4.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/chromeheadlessio/php-client.git",
+                "reference": "2d4be99f417735a091673cf6b9c0b9b3c01621b0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/chromeheadlessio/php-client/zipball/2d4be99f417735a091673cf6b9c0b9b3c01621b0",
+                "reference": "2d4be99f417735a091673cf6b9c0b9b3c01621b0",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "chromeheadlessio\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "chromeheadlessio",
+                    "homepage": "https://chromeheadless.io"
+                }
+            ],
+            "description": "An Open Source PHP client to use cloud export service chromeheadless.io",
+            "homepage": "https://chromeheadless.io",
+            "keywords": [
+                "pdf export service",
+                "php client"
+            ],
+            "time": "2019-10-07T05:14:40+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": [],
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": [],
+    "platform-dev": []
+}

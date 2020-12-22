@@ -1,0 +1,22 @@
+{
+  "name": "angular-doka",
+  "version": "0.0.1",
+  "private": true,
+  "peerDependencies": {
+    "@angular/common": "^8.2.3",
+    "@angular/core": "^8.2.3"
+  },
+  "main": "bundles/angular-doka.umd.js",
+  "module": "fesm5/angular-doka.js",
+  "es2015": "fesm2015/angular-doka.js",
+  "esm5": "esm5/angular-doka.js",
+  "esm2015": "esm2015/angular-doka.js",
+  "fesm5": "fesm5/angular-doka.js",
+  "fesm2015": "fesm2015/angular-doka.js",
+  "typings": "angular-doka.d.ts",
+  "metadata": "angular-doka.metadata.json",
+  "sideEffects": false,
+  "dependencies": {
+    "tslib": "^1.9.0"
+  }
+}

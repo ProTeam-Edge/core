@@ -1,0 +1,11 @@
+/**
+ * @fileoverview added by tsickle
+ * @suppress {checkTypes,constantProperty,extraRequire,missingOverride,missingReturn,unusedPrivateMembers,uselessCode} checked by tsc
+ */
+/**
+ * Generated bundle index. Do not edit.
+ */
+export { AngularDokaComponent, AngularDokaModule } from './public-api';
+export { AngularDokaModalComponent as ɵa } from './lib/doka-modal/angular-doka-modal.component';
+export { AngularDokaOverlayComponent as ɵb } from './lib/doka-overlay/angular-doka-overlay.component';
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoiYW5ndWxhci1kb2thLmpzIiwic291cmNlUm9vdCI6Im5nOi8vYW5ndWxhci1kb2thLyIsInNvdXJjZXMiOlsiYW5ndWxhci1kb2thLnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7Ozs7Ozs7QUFJQSx3REFBYyxjQUFjLENBQUM7QUFFN0IsT0FBTyxFQUFDLHlCQUF5QixJQUFJLEVBQUUsRUFBQyxNQUFNLCtDQUErQyxDQUFDO0FBQzlGLE9BQU8sRUFBQywyQkFBMkIsSUFBSSxFQUFFLEVBQUMsTUFBTSxtREFBbUQsQ0FBQyIsInNvdXJjZXNDb250ZW50IjpbIi8qKlxuICogR2VuZXJhdGVkIGJ1bmRsZSBpbmRleC4gRG8gbm90IGVkaXQuXG4gKi9cblxuZXhwb3J0ICogZnJvbSAnLi9wdWJsaWMtYXBpJztcblxuZXhwb3J0IHtBbmd1bGFyRG9rYU1vZGFsQ29tcG9uZW50IGFzIMm1YX0gZnJvbSAnLi9saWIvZG9rYS1tb2RhbC9hbmd1bGFyLWRva2EtbW9kYWwuY29tcG9uZW50JztcbmV4cG9ydCB7QW5ndWxhckRva2FPdmVybGF5Q29tcG9uZW50IGFzIMm1Yn0gZnJvbSAnLi9saWIvZG9rYS1vdmVybGF5L2FuZ3VsYXItZG9rYS1vdmVybGF5LmNvbXBvbmVudCc7Il19

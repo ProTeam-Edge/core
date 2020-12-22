@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Doka ♥ jQuery</title>
+
+    <link href="../../bin/browser/doka.min.css" rel="stylesheet" type="text/css"/>
+
+    <style>
+    html {
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+        font-size: 1em;
+    }
+    
+    body {
+        padding: 2em;
+    }
+
+    img {
+        display:block;
+        max-width: 100%;
+    }
+
+    /**
+        * Generic Doka Styles for Profile Page
+        */
+    .doka {
+        position: relative;
+    }
+
+    .doka > label {
+        visibility: hidden;
+        position: absolute;
+    }
+    
+    .doka > input {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0;
+        z-index: 1;
+        cursor: copy;
+        padding: 0;
+        margin: 0;
+        min-width: auto;
+    }
+
+    .doka > img {
+        display:block;
+        width:100%;
+    }
+
+    .doka .doka--root {
+        position: absolute;
+        left: 0;
+        top: 0;
+    }
+
+    .doka > button {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        font-size: 1.25em;
+        transform: translateX(-50%) translateY(-50%);
+        background: #fff;
+        color: #333;
+        border: none;
+        line-height: 1;
+        cursor: pointer;
+        padding: .25em .75em;
+        border-radius: 9999em;
+        z-index: 2;
+    }
+
+    .doka[data-state='open'] > input,
+    .doka[data-state='open'] > label,
+    .doka[data-state='open'] > button {
+        display: none;
+    }
+
+    /**
+        * Styles for Picture
+        */
+    .profile {
+        transform:translateY(-50%);
+        margin-left:10%;
+        width:20%;
+        border-radius: 9999em;
+        overflow:hidden;
+        z-index: 1;
+    }
+    </style>
+</head>
+<body>
+    
+    <div class="banner doka" id="banner" data-mode="preview" data-aspect-ratio="0.223" data-center="0.5,0.543" data-utils="crop">
+        <img src="./assets/profile-banner-preview.jpeg" data-src="./assets/profile-banner.jpeg"/>
+        <div></div>
+        <button>edit</button>
+    </div>
+    
+    <div class="profile doka" id="profile" data-mode="modal" data-aspect-ratio="1" data-center="0.5378,0.355" data-utils="crop,filter,color">
+        <img src="./assets/profile-picture-preview.jpeg" data-src="./assets/profile-picture.jpeg"/>
+        <button>edit</button>
+    </div>
+
+    <script>
+    [
+        {supported: 'Promise' in window, fill: 'https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js'},
+        {supported: 'fetch' in window, fill: 'https://cdn.jsdelivr.net/npm/fetch-polyfill@0.8.2/fetch.min.js'},
+        {supported: 'CustomEvent' in window && 'log10' in Math && 'sign' in Math &&  'assign' in Object &&  'from' in Array &&
+                    ['find', 'findIndex', 'includes'].reduce(function(previous, prop) { return (prop in Array.prototype) ? previous : false; }, true), fill: '../../bin/polyfill/doka.polyfill.min.js'}
+    ].forEach(function(p) {
+        if (p.supported) return;
+        document.write('<script src="' + p.fill + '"><\/script>');
+    });
+    </script>
+    
+    <script src="jquery.js"></script>
+    <script src="../../bin/jquery/doka.jquery.min.js"></script>
+
+    <script>
+
+        $('.doka').each(createEditor)
+
+        function createEditor(index, element) {
+
+            var $element = $(element);
+
+            // Get reference to editor root (for preview overlay)
+            var $target = $('div', element);
+
+            // Get reference to preview image
+            var $preview = $('img', element);
+
+            // Get initial crop coordinates from dataset
+            var aspectRatio = $element.data('aspectRatio');
+
+            var center = $element.data('center').split(',').reduce(function(prev, curr, index) {
+                var key = index === 0 ? 'x' : 'y';
+                prev[key] = parseFloat(curr);
+                return prev;
+            }, {x: 0, y: 0});
+                        
+            // Create the current editor state, we'll send this to Doka to show the initial crop
+            var state = {
+                src: $preview.data('src'),
+                crop: {
+                    aspectRatio: aspectRatio,
+                    center: center
+                },
+                color: null,
+                filter: null
+            };
+            
+            // Set up file input
+            const $label = $('<label for="file-' + element.id + '">Select file</label>');
+            const $input = $('<input type="file" id="' + element.id + '" accept="image/*"/>')
+            $input.on('change', handleFileInputChange);
+            $element.append($label, $input);
+
+            // Our centered edit button
+            var $editButton = $('button', element);
+            $editButton.on('click', handleButtonEditClick);
+
+
+            // Actions
+            function openEditor(src, options) {
+
+                $element.attr('data-state', 'open');
+
+                const doka = $.fn.doka.create($target.get(0), {
+                    cropAspectRatio: aspectRatio,
+                    utils: $element.data('utils').split(','),
+                    styleLayoutMode: $element.data('mode'),
+                    onclose: handleDokaClose,
+                    outputData: true,
+                    allowAutoDestroy: true
+                });
+
+                doka.edit(src, options)
+                    .then(function(output) {
+                        if (!output) return;
+                        handleDokaConfirm(src, output);
+                    });
+
+            }
+
+            // Event handlers
+            function handleFileInputChange(e) {
+
+                if (!e.target.files.length) return;
+
+                openEditor(e.target.files[0], {
+                    crop: {
+                        aspectRatio: aspectRatio
+                    },
+                    filter: null,
+                    color: null
+                });
+            }
+
+            function handleButtonEditClick() {
+                openEditor(state.src, state);
+            }
+
+            function handleDokaConfirm(input, output) {
+
+                // Update the editor state so when re-opening it shows the correct settings
+                state.src = input;
+                state.crop = output.data.crop;
+                state.color = output.data.color;
+                state.filter = output.data.filter;
+
+                // Update the preview image
+                $preview.attr('src', URL.createObjectURL(output.file));
+            }
+
+            function handleDokaClose() {
+                $element.attr('data-state', 'closed');
+            }
+
+        }
+
+    </script>
+</body>
+</html>

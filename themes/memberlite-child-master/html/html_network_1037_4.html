@@ -1,0 +1,149 @@
+<table class="alpn_fields_table">
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Title
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				{patient.pte.title}
+			</div>
+		</td>
+	</tr>					
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Organization Type
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				{businessTypeFriendly}
+			</div>
+		</td>
+	</tr>							
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Organization Name
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				{organization.name}
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Organization Address
+				<p class="alpn_map_it">
+					<a href="https://maps.google.com/?q={alpn_profile_address_1}, {alpn_profile_address_2}, {alpn_profile_city}, {alpn_profile_state}, {alpn_profile_postalcode}" target="_blank">
+						Map it
+					</a>
+				</p>
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				{organization.address.0.line[0]}
+			</div>
+			<div class="alpn_view_field_value">
+				{organization.address.0.line[1]}
+			</div>
+			<div class="alpn_view_field_value">
+				{organization.address.0.city}
+			</div>
+			<div class="alpn_view_field_value">
+				{organization.address.0.state}
+			</div>
+			<div class="alpn_view_field_value">
+				{organization.address.0.postalCode}
+			</div>
+		</td>							
+	</tr>	
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Organization Website
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				<a href="{alpn_profile_website_url}" target="_blank">
+					{organization.pte.website}
+				</a>
+			</div>
+		</td>
+	</tr>	
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Linked-In
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				<a href="{alpn_profile_linkedin_url}" target="_blank">
+					{patient.pte.linkedin}
+				</a>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Email Address
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				<a href="mailto:{alpn_profile_primary_email}" target="_blank">
+					{patient.telecom.1.value}
+				</a>
+			</div>
+		</td>
+	</tr>
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Mobile Phone
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				<a href="tel:{alpn_profile_cell_phone}">
+					{patient.telecom.0.value}
+				</a>
+			</div>
+		</td>
+	</tr>							
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Organization Phone
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				<a href="tel:{alpn_profile_desk_phone}">
+					{organization.telecom.0.value}
+				</a>
+			</div>
+		</td>
+	</tr>							
+	<tr>
+		<td class="alpn_fields_col_key">
+			<div class="alpn_view_field_name">
+				Fax
+			</div>
+		</td>
+		<td class="alpn_fields_col_value">
+			<div class="alpn_view_field_value">
+				{organization.telecom.1.value}
+			</div>
+		</td>
+	</tr>																		
+</table>					

@@ -1,0 +1,29 @@
+
+Foxit PDF SDK for Web 7.4.0  -- Migration Notices
+
+***** UIExtension*****
+
+1. If your UI uses the UIExtension build-in template, and has a custom <tab>, you should read this change before upgrding. The method for adding custom <tab> was adjusted as follows:
+
+	[{
+		target: 'toolbar-tabs',
+		action: FRAGMENT_ACTION.APPEND,
+		template: '<gtab name="new-tab" group="toolbar-tab" body="new-tab-body">Tab inserted via fragment-configuration</gtab>'
+	}, {
+		target: 'toolbar-tab-bodies',
+		action: FRAGMENT_ACTION.APPEND,
+		template: '<div name="new-tab-body" style="line-height:1"><text>New tab body</text></div>'
+	}];
+	For details, you may check https://webviewer-demo.foxitsoftware.com/docs/developer-guide/ui-extension/components/tab.html#examples
+			
+2. The `<tab>` component was replaced with `<gtab>`. If your UI uses the UIExtension build-in template, the following css should be added: 
+
+   ```css
+   .fv__ui-toolbar .fv__ui-gtab-item {
+        color: #fff;
+    }
+    .fv__ui-toolbar .fv__ui-gtab-item.active {
+        color: #636363;
+        background-color: #fff;
+    }
+   ```

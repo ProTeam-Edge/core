@@ -1,0 +1,12 @@
+{
+  "type": "service_account",
+  "project_id": "proteam-edge",
+  "private_key_id": "cf8495258f58073dbc824c0e8ace45d8aad2b7d1",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDBT+gzZMKg/YPK\nj+tBuPn1K+fyLNTMMbWh3dO0XZ1PG0Nh7FyZEZIrI7RQk5hDek731kEdcPsj5WPo\nym6RC4xCF+6pyIQfTRt2YbXTGunBNGgGDpNi9kzRsWK1rPtonmm+P+i4i/uj5m4w\nnIrAcm/8Fmz0on9F1v3X3+ear/GnxHKpSG8RJxErC5veC7oX5Qqhwv3z6VGHokgU\nKAOZz4ueNxm26nRCwmYnf5P/FzTKHH5zZOJRgH3O/rGOGWQXjhZf59wSnskSrQJx\nAqB64ByIJlMgm0W32uU/7iYkdpyQ8c7fdYq5qWCPVEkLbOhhBEVvNXgEJKTJ6iYx\nrfhisd3PAgMBAAECggEAEGWtxYY7eBpo7mqswuNk2GYEA6fH2RYyWOuPBJKYQFiI\nq6q35Af4hQ4/QkJyvO6H+j/DQDMQKmhPxDQ/krAPEqAjD2XBx0HsHWuGV8TFpSzD\n0he0asWHmJXaUJy+qo4dXBThsZ22F535JMhygIZ0d0aTsWCDOTJWT9RfOeDIt7kt\nEl9SNnu50fxgGu1vLHWB4pYCVk85jWV/PJOMFVYAUZjHax343NT3ilbXXNDgbuO2\nj4CwQwdUSFsDIdhMQXHpL+Dgp7+8rnzMYuYKHZjp4zrKodTZK+40xeINRAuSKQwB\nvF2ArdnlP9uRTEE3eokw9TYUnPTlXHeL3oc+JSuXeQKBgQD8XwvQGBrW1mbBoIv2\n3vaqBorWQz/8tqkPO9pntPPT0cMNvf3zWePA1s8qjyMF4tgNRW94P9Zp3U7Vfcx8\n220ro5PZY5xTOrFib9Q79ncceCvmcIrN6zyIHq+5SybGiVVI1r8nLDufEraiEl4Z\n4x7ZROBVSFM/PIhDt6fKFkBG5QKBgQDEF3hSoOh6Wv1ziBPcAMNZdswq/bnHLfL5\n19pECH+J8y2WXJt0NV53qgLnW5aMlTJqTtPyHjWNrC6GUoxzGt8sI28zyqsggACm\ngwbVc7z5yvY9gJv1KVlM3p2PhWnkRvhzx9Ci214MMY92Ew2fHcGGlJJM0q6c+0Pv\njUS713wyowKBgQCskCD3rUPM2tVwWGLb7yEiqU6Nq3Y5SnzW2cpBV03R7IA/CUZ3\n+2LsHPWS2ETOZYntqSjLRHtL7/NTr6z/QtqnGDakUqQ1lNBtyqGITsKrSNBbxWBj\n5RGC0di+DlD5ODaEk7IpCunJn3YZ5A1MDiyty5bJOacSekWCaDXmzMgusQKBgEwZ\nt66Jl+90RIyDsQFeonGj8xR0J5cvM+7WYHSqv6Rv5a9G/WWaGLFkH4BeQQ0KEejD\n8ukx5CK5Qc0LWEqLkTT2A4AcFVGlm5sDmrFYG2zt4aZ4tQ3uICP++TLr2e6nxGBa\nmZO6gsNEsKJoPo8T4zkxi52Y3f86XGEpeBVWSXL1AoGAMM4CL4V3tsJltFO81RPY\nosBq2qz08D8ONO+KbVun/Nr4ISABFlYJ6Bov2JqVqe8coYOdC5yn8zNsCiTdlCYP\nMho9rfTooCftT3e8w5HtCzIPZnb3WyxmnaABeTnyb2mmYaVoVwVEsBnqCFRQdghv\ndxE5/Qg12rVxrBhBSs73pM4=\n-----END PRIVATE KEY-----\n",
+  "client_email": "filestack-service1@proteam-edge.iam.gserviceaccount.com",
+  "client_id": "101066939463844957581",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/filestack-service1%40proteam-edge.iam.gserviceaccount.com"
+}
