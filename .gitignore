@@ -10,4 +10,4 @@ plugins/*
 themes/*
 !themes/memberlite-child-master/
 
-themes/memberlite-child-master/vendor
+themes/memberlite-child-master/vendor/*
