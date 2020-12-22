@@ -18,7 +18,7 @@ function nonce_test() {
 	<div class="pmpro_message pmpro_default">
 		<div class="tml tml-login">
 			<div class="tml-alerts"></div>
-			<form name="login" method="post">
+			<form name="nonce_test" method="post">
 				<div class="tml-field-wrap tml-log-wrap">
 					<label class="tml-label" for="user_login">Email</label>
 					<input name="log" type="text" value="" id="user_login" autocapitalize="off" class="tml-field">
