@@ -4,8 +4,6 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
-pp('Sup Different But Not Checked in Yet.');
-
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
