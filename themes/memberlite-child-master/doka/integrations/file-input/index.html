@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Doka ♥ HTML</title>
+
+    <link href="../../bin/browser/doka.min.css" rel="stylesheet" type="text/css"/>
+
+    <style>
+    html {
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+        font-size: 1em;
+    }
+    
+    body {
+        padding: 2em;
+    }
+
+    img {
+        display:block;
+        max-width: 100%;
+    }
+    </style>
+</head>
+<body>
+    
+    <p><input type="file" name="file"/></p>
+
+    <script>
+    [
+        {supported: 'Promise' in window, fill: 'https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js'},
+        {supported: 'fetch' in window, fill: 'https://cdn.jsdelivr.net/npm/fetch-polyfill@0.8.2/fetch.min.js'},
+        {supported: 'CustomEvent' in window && 'log10' in Math && 'sign' in Math &&  'assign' in Object &&  'from' in Array &&
+                    ['find', 'findIndex', 'includes'].reduce(function(previous, prop) { return (prop in Array.prototype) ? previous : false; }, true), fill: '../../bin/polyfill/doka.polyfill.min.js'}
+    ].forEach(function(p) {
+        if (p.supported) return;
+        document.write('<script src="' + p.fill + '"><\/script>');
+    });
+    </script>
+    
+    <script src="../../bin/browser/doka.min.js"></script>
+
+    <script>
+
+        var doka = Doka.create({
+            cropAspectRatioOptions: [
+                {
+                    label: 'Free',
+                    value: null
+                },
+                {
+                    label: 'Portrait',
+                    value: 1.25
+                },
+                {
+                    label: 'Square',
+                    value: 1
+                },
+                {
+                    label: 'Landscape',
+                    value: .75
+                }
+            ]
+        });
+
+        document.querySelector('input').addEventListener('change', function(e) {
+            doka.edit(e.target.files[0]).then(function(output) {
+
+                // No output received, cancel button was clicked, stop here
+                if (!output) return;
+
+                // show the file
+                var image = new Image();
+                image.src = URL.createObjectURL(output.file);
+                document.body.appendChild(image);
+
+                // upload the file
+                var formData = new FormData();
+                formData.append(e.target.name, output.file, output.file.name);
+
+                var request = new XMLHttpRequest();
+                request.open('POST', '/post');
+
+                request.onload = function() {
+                    if (request.status >= 200 && request.status < 300) {
+                        // successful file upload
+                    }
+                    else {
+                        // something went wrong
+                    }
+                };
+
+                request.send(formData);
+                
+            });
+        });
+        
+    </script>
+</body>
+</html>

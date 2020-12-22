@@ -1,0 +1,102 @@
+
+
+
+kubectl apply -f '/Users/pvermont 1/proteamedge/kubernetes-engine-samples/wordpress-persistent-disks/wordpress-volumeclaim.yaml'
+
+
+
+
+Topics
+
+MY
+
+Select non-4 and non-5 topics
+where owner_id equals logged in id
+
+UNION - Invited
+
+Topics to which I have been invited
+
+
+UNION - Referred
+
+Topics to which I have been referred
+
+
+
+REFERED v INVITED
+LINKED
+
+Refer: Please take a look and see if you're interested
+
+
+
+Invite: Please join my proteam
+
+
+--Filtering...
+Prospect -> Initial State
+Developing -> User-designated
+Established -> User-designated
+
+Connected Y/N
+Connection = invite, either direction, accepted.
+
+Must be connected to topic and vault link.
+Topic link creates a connection if both are members.  I think so. 
+
+pwd: wp iVKu5Iv&WqhUZ^GfNGdM6wUA
+
+Hosted MySQL: Af8InonaIbBngBCC, root
+wordpress: Af8InoPrOtEaMbBngBCC
+
+
+https://phpmyadmin-dot-[YOUR_APP_ID].appspot.com
+
+
+Vault Entries
+
+LINKED -- see OWNER topic with all LINKED content -- DO WE NEED to allow the viewing of all topic info? Copying? For now, linked topics do not show up in the topic list.
+
+Select topics where id in [should not have to worry about 4/5]
+	Select linked_id where proteam = logged_in_user
+	
+	
+	
+Connection enables collaboration in PTE.
+Connected Members: internal notifications with external forwarding of received notifications to a variety of notification mechanisms. 
+Non-connected members -- receive notifications and documents through email and fax, where applicable.
+
+
+
+	
+	
+	
+	
+Vault Rights
+Handled in UI with server side check rights step before allowing the action.
+
+
+
+
+Send Invites when added to ProTeam
+
+Workflows
+
+INVITE
+
+1) Refer/Invite person to topic -- consider notification templates as the means to specialize the type of invite.
+
+
+States of a proteam
+10: Added
+20: Notified
+30: Active
+40: Topic Linked
+
+File Levels
+10: Proteam
+20: Sensitive
+30: Special Permissions
+40: Private
+

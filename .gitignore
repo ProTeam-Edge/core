@@ -1,0 +1,7 @@
+uploads/*
+upgrades/*
+cache/*
+themes/memberlite/*
+themes/memberlite-child-master/vendor/*
+plugins/*
+!plugins/proteamedge

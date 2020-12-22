@@ -1,0 +1,8 @@
+{
+    "contextmenu": {
+        "properties": "Properties",
+        "set-to-front": "Set To Front",
+        "set-to-back": "Set To Back",
+        "delete": "Delete"
+    }
+}

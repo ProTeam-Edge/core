@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <title>Doka ♥ jQuery</title>
+
+    <link href="../../bin/browser/doka.min.css" rel="stylesheet" type="text/css"/>
+
+    <style>
+    html {
+        font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+        font-size: 1em;
+    }
+    
+    body {
+        padding: 2em;
+    }
+
+    img {
+        display:block;
+        max-width: 100%;
+    }
+
+    /* Position child elements relative to the `.panel` container */
+    .doka-container {
+        position: relative;
+    }
+
+    /* Scale the image to be the same size as the `.panel` container */
+    .doka-container > img {
+        display: block;
+        width: 100%;
+    }
+
+    /* Draw the Doka editor on top of the image. */
+    .doka-container .doka--root {
+        position:absolute;
+        left: 0;
+        top: 0;
+    }
+    </style>
+</head>
+<body>
+    
+    <p><button>Edit</button></p>
+
+    <div class="doka-container">
+        <img src="./assets/photo-preview.jpeg"/>
+        <div></div>
+    </div>
+
+    <script>
+    [
+        {supported: 'Promise' in window, fill: 'https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js'},
+        {supported: 'fetch' in window, fill: 'https://cdn.jsdelivr.net/npm/fetch-polyfill@0.8.2/fetch.min.js'},
+        {supported: 'CustomEvent' in window && 'log10' in Math && 'sign' in Math &&  'assign' in Object &&  'from' in Array &&
+                    ['find', 'findIndex', 'includes'].reduce(function(previous, prop) { return (prop in Array.prototype) ? previous : false; }, true), fill: '../../bin/polyfill/doka.polyfill.min.js'}
+    ].forEach(function(p) {
+        if (p.supported) return;
+        document.write('<script src="' + p.fill + '"><\/script>');
+    });
+    </script>
+    
+    <script src="jquery.js"></script>
+    <script src="../../bin/jquery/doka.jquery.min.js"></script>
+
+    <script>
+
+        // This element hold the current image crop preview
+        var imagePreview = $('img');
+
+        // This is the crop information that resulted in the current image preview
+        var cropData = {
+            aspectRatio: .5,
+            rotation: -1.5707963268
+        };
+
+        // Let's listen for clicks on the button element and open the editor when it's clicked
+        $('button').on('click', function() {
+
+            // Create the editor at the inner div of the Doka container
+            $('.doka-container > div').doka({
+                utils: ['crop'],
+                
+                styleLayoutMode: 'preview',
+                outputData: true,
+                allowAutoDestroy: true,
+
+                // The original image to edit
+                src: './assets/photo.jpeg',
+
+                // The crop data that resulted in the preview image
+                crop: cropData,
+
+                // Done editing, let's update the crop data and preview image
+                onconfirm: function(output) {
+                    
+                    // Remember crop information for next edit
+                    cropData = output.data.crop;
+
+                    // Update preview image
+                    imagePreview.attr('src', URL.createObjectURL(output.file));
+                },
+                oncancel: function() {
+                    // Close and wait for next edit
+                }
+            });
+
+        });
+
+
+    </script>
+</body>
+</html>
