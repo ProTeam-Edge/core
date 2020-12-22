@@ -7,33 +7,33 @@
  */
 add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
+	if(isset($_REQUEST['log']))
+	{
+		echo '<pre>';
+		print_r($log);
+		die;
+	}
 	$form_html = '';
-	$form_html .= '<div class="pmpro_message pmpro_default"><div class="tml tml-login">
-<div class="tml-alerts"></div><form name="login" action="https://alct.pro/login/" method="post">
-<div class="tml-field-wrap tml-log-wrap">
-<label class="tml-label" for="user_login">Email</label>
-<input name="log" type="text" value="" id="user_login" autocapitalize="off" class="tml-field">
-</div>
-
-<div class="tml-field-wrap tml-pwd-wrap">
-<label class="tml-label" for="user_pass">Password</label>
-<input name="pwd" type="password" value="" id="user_pass" class="tml-field">
-</div>
-
-
-
-
-<div class="tml-field-wrap tml-submit-wrap">
-<button name="submit" type="submit" class="tml-button">Log In</button>
-</div>
-
-<input name="redirect_to" type="hidden" value="https://alct.pro/wp-admin/">
-
-<input name="testcookie" type="hidden" value="1">
-
-</form>
-</div>
-</div>';
+	$form_html .= '
+	<div class="pmpro_message pmpro_default">
+		<div class="tml tml-login">
+			<div class="tml-alerts"></div>
+			<form name="login" method="post">
+				<div class="tml-field-wrap tml-log-wrap">
+					<label class="tml-label" for="user_login">Email</label>
+					<input name="log" type="text" value="" id="user_login" autocapitalize="off" class="tml-field">
+				</div>
+				<div class="tml-field-wrap tml-pwd-wrap">
+					<label class="tml-label" for="user_pass">Password</label>
+					<input name="pwd" type="password" value="" id="user_pass" class="tml-field">
+				</div>';
+				wp_nonce_field('nonce_test', 'nonce_test');
+				$form_html .= '<div class="tml-field-wrap tml-submit-wrap">
+					<button name="submit" name="log" type="submit" class="tml-button">Log In</button>
+				</div>
+			</form>
+		</div>
+	</div>';
 	return $form_html;
 }
 include('alpn-shortcodes.php');
