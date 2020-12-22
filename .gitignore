@@ -2,7 +2,8 @@ uploads/*
 upgrades/*
 cache/*
 w3tc-config/*
-themes/memberlite/*
+themes/*
+!themes/memberlite-child-master
 themes/memberlite-child-master/vendor/*
 plugins/*
 !plugins/proteamedge
