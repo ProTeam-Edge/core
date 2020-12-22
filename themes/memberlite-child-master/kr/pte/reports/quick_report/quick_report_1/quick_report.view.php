@@ -2,6 +2,8 @@
 
 use \koolreport\widgets\koolphp\Table;
 
+$hostDomainName = PTE_HOST_DOMAIN_NAME;
+
 $objSettings = $this->reportSettings;
 $reportSettings = $this->params;
 
@@ -18,8 +20,8 @@ $oldSubjectToken = '';
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" href="https://proteamedge.com/wp-content/themes/memberlite-child-master/kr/pte/assets/bs3/bootstrap.min.css" />
-    <link rel="stylesheet" href="https://proteamedge.com/wp-content/themes/memberlite-child-master/kr/pte/assets/bs3/bootstrap-theme.min.css" />
+		<link rel="stylesheet" href="https://<?php echo $hostDomainName ?>/wp-content/themes/memberlite-child-master/kr/pte/assets/bs3/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://<?php echo $hostDomainName ?>/wp-content/themes/memberlite-child-master/kr/pte/assets/bs3/bootstrap-theme.min.css" />
 		<style>
 
 			@media print {
