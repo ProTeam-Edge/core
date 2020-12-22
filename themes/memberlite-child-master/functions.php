@@ -21,10 +21,7 @@ function nonce_test() {
 </div>
 
 
-<div class="tml-field-wrap tml-rememberme-wrap">
-<input name="rememberme" type="checkbox" value="forever" id="rememberme" class="tml-checkbox">
-<label class="tml-label" for="rememberme">Remember Me</label>
-</div>
+
 
 <div class="tml-field-wrap tml-submit-wrap">
 <button name="submit" type="submit" class="tml-button">Log In</button>
@@ -35,7 +32,7 @@ function nonce_test() {
 <input name="testcookie" type="hidden" value="1">
 
 </form>
-<ul class="tml-links"><li class="tml-lostpassword-link"><a href="https://alct.pro/lostpassword/">Lost your password?</a></li></ul></div>
+</div>
 </div>';
 	return $form_html;
 }
