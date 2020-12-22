@@ -1,8 +1,0 @@
-uploads/*
-upgrades/*
-cache/*
-w3tc-config/*
-themes/memberlite/*
-themes/memberlite-child-master/vendor/*
-plugins/*
-!plugins/proteamedge
