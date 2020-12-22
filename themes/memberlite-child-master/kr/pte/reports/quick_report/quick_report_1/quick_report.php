@@ -17,6 +17,10 @@ class quick_report extends \koolreport\KoolReport
 
 	 function settings() {
 		$hostDomainName = PTE_HOST_DOMAIN_NAME;
+
+		alpn_log('HOST DOMAIN NAME');
+		alpn_log($hostDomainName);
+
 		return [
            "assets" =>
 						 	array(
