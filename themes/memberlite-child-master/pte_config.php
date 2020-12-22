@@ -1,8 +1,12 @@
 <?php
 
+$hostName = gethostname();
+$domainName = (substr($hostName, 0, 16) == "pte-dev-staging-") ? "alct.pro" : "proteamedge.com";
+
 define('PTE_STANDARD_COLOR_COUNT', 10);
 
-define('PTE_ROOT_URL', 'https://proteamedge.com/wp-content/themes/memberlite-child-master/');
+define('PTE_HOST_DOMAIN_NAME', $domainName);
+define('PTE_ROOT_URL', "https://{$domainName}/wp-content/themes/memberlite-child-master/");
 define('PTE_ROOT_PATH', '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/');
 define('PTE_IMAGES_ROOT_URL', 'https://storage.googleapis.com/pte_media_store_1/');
 
@@ -38,8 +42,7 @@ define('CHATSERVICESID', 'ISd4ca1551946f4360a7dfb215ad84e1d0');
 define('SYNCSERVICEID', 'ISa94e325859c77093fdf5d805d8d3d1fa');
 define('CHANNELSSID', 'CHb368c3a4f22548b2966c7333adf45dc1');
 define('MESSAGINGSERVICEID', 'MG5aa06d950ae9fd9fba6ed78abd176007');
-define('CALLURL', 'https://proteamedge.com/wp-content/themes/memberlite-child-master/pte_chat');
-
+define('CALLURL', "https://{$domainName}/wp-content/themes/memberlite-child-master/pte_chat");
 
 define('FAX_DOCUMO_API_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxYzA3MDUxMS04NDcxLTQ5ZDItOWVmYS0yOTdmMWNjY2QwMDQiLCJpYXQiOjE1OTYwNjExNzR9.LjQuTk6iEL0oh6989vKNNoJZQLXfxT3O5EQA69IMzEU');
 define('FAX_DOCUMO_ACCOUNT_ID', '7f2e187d-252d-4ada-8611-35933ac2923d');

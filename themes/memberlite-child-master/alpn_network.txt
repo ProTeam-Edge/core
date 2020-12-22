@@ -1,6 +1,13 @@
+pte_push.sh "Commit Test 1" themes/memberlite-child-master/alpn_handle_topic_select.php
+
+
+Active Files
+themes/memberlite-child-master/alpn_handle_topic_select.php
+
+
+
 
 [pmpro_advanced_levels levels="1,2,3,5,4" back_link="0" compare="Two months free,0,0,1,0,1;Topics,1,1,1,1,1;Topic Maps,1,1,1,1,1;Topic Links,1,1,1,1,1;Topic Types,7,Unlimited,Unlimited,Unlimited,Unlimited;Customize Topic Types,0,1,1,1,1;Reports,1,1,1,1,1;Teams,1,1,1,1,1;Interactions,1,1,1,1,1;Insights and Analytics,Basic,Advanced,Advanced,Advanced,Advanced;Text Chat Rooms,1,1,1,1,1;Audio Conference Rooms,0,1,1,1,1;Secure File Vault,1,1,1,1,1;Secure Vault File URLs: Passcode - Expiration - View - Print - Download - Copy,1,1,1,1,1;Send File URL by SMS,1,1,1,1,1;Send File URL by Email,1,1,1,1,1;Inbound Email Routing,1,1,1,1,1;Fax Line,,,,1,1;Send Faxes,0,0,0,1,1;Inbound Fax Routing,0,0,0,1,1;Fax Pages Included,,,,300/mo,300/mo;Extra Fax Routing Lines,,,,$50/line/yr,$50/line/yr;Fax Pack - 1000 Pages,,,,$60,$60;Fax Pack - 5000 Pages,,,,$250,$250;HIPAA Secure,1,1,1,1,1;Storage GB,5,50,50,250,250;Support,Knowledgebase - Community,Chat - Email - Knowledgebase - Community,Chat - Email - Knowledgebase - Community,Chat - Email - Knowledgebase - Community,Chat - Email - Knowledgebase - Community;" layout="compare_table" expiration="false"  description="false"]
-
 
 
 
