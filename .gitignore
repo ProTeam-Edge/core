@@ -6,6 +6,9 @@ w3tc-config/*
 themes/*
 !themes/memberlite-child-master
 themes/memberlite-child-master/vendor/*
+themes/memberlite-child-master/tmp/*
+themes/memberlite-child-master/quick_report_tmp/*
+themes/memberlite-child-master/logs/*
 plugins/*
 !plugins/proteamedge
 mu-plugins/*
