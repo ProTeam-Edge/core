@@ -7,7 +7,7 @@
  * @package Memberlite
  */
 ?><!DOCTYPE html>
-Changed done by yashpro team 
+
 <html <?php language_attributes(); ?>>
 <head>
 	<!-- Google Tag Manager -->
