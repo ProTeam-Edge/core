@@ -7,7 +7,7 @@
  * @package Memberlite
  */
 ?><!DOCTYPE html>
-Test
+Tested 
 <html <?php language_attributes(); ?>>
 <head>
 	<!-- Google Tag Manager -->
