@@ -8,3 +8,4 @@ themes/*
 themes/memberlite-child-master/vendor/*
 plugins/*
 !plugins/proteamedge
+mu-plugins/*
