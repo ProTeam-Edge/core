@@ -135,7 +135,6 @@ function draw_page(){
           </style>
           <script>
             var alpn_templatedir = '{$rootUrl}';
-
             function pte_get_part(type){
               var fieldContents = jQuery('#pte_topic_part_text_input').val();
               //console.log(fieldContents)
@@ -191,7 +190,6 @@ function draw_page(){
     else {
         error_log("JSON Decode Failed.", 0);
     }
-
     */
     //echo jsonToDebug($json);
     //echo gettype($data);
