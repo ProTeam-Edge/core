@@ -51,9 +51,6 @@ function pteCreateTopicQuickReport($reportSettings){
 			$pdfKey = $reportSettings['dom_id'] . ".pdf";
 			$pdf = "{$templateDirectory}-child-master/quick_report_tmp/{$pdfKey}";
 
-			alpn_log($pdf);
-			alpn_log($reportSettings);
-
 			$report = new quick_report($reportSettings);
 			$report->run()
 			->export('quick_report')

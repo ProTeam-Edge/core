@@ -17,12 +17,9 @@ class quick_report extends \koolreport\KoolReport
 
 	 function settings() {
 		$hostDomainName = PTE_HOST_DOMAIN_NAME;
-
-		alpn_log('HOST DOMAIN NAME');
-		alpn_log($hostDomainName);
-
 		return [
-           "assets" =>
+					 "phantomjs"=>"/usr/local/bin/phantomjs",
+					 "assets" =>
 						 	array(
 	                "path"=>"../../../../assets",
 	                "url"=>"https://{$hostDomainName}/wp-content/themes/memberlite-child-master/kr/assets"
