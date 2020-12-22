@@ -5,7 +5,10 @@
  * @package Memberlite 2.0
  * @subpackage Memberlite - Child Theme 1.0
  */
-
+add_shortcode('nonce_test','nonce_test');
+function nonce_test() {
+	return 'nonce test';
+}
 include('alpn-shortcodes.php');
 include('alpn_common.php');
 include('alpn_data.php');
