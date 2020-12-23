@@ -18,7 +18,6 @@ class quick_report extends \koolreport\KoolReport
 	 function settings() {
 		$hostDomainName = PTE_HOST_DOMAIN_NAME;
 		return [
-					 "phantomjs"=>"/usr/local/bin/phantomjs",
 					 "assets" =>
 						 	array(
 	                "path"=>"../../../../assets",
