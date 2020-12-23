@@ -55,7 +55,7 @@ function pteCreateTopicQuickReport($reportSettings){
 			$report->run()
 			->export('quick_report')
 			->settings(array(
-    			"phantomjs"=>"/path/to/phantomjs"
+    			"phantomjs"=>"/usr/bin/phantomjs"
 			))
 			->pdf(array(
 			      "format"=>$reportSettings['page_size'],
