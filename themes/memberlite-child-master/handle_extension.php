@@ -8,6 +8,15 @@
 	<head>
 		<meta charset="utf-8" />
 		<title></title>
+		<style>
+			html {
+				font-family: "Lato", sans-serif;
+			}
+			.pte_dialog_title {
+				font-size: 14px;
+				font-weight: bold;
+			}
+		</style>
 	</head>
 
 	<body>
