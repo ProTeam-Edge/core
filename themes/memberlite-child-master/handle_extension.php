@@ -10,6 +10,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 		<meta charset="utf-8" />
 		<title></title>
 		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Lato&display=swap');
 			html {
 				font-family: "Lato", sans-serif;
 			}
