@@ -257,6 +257,23 @@ add_filter( 'gettext', 'my_gettext_membership', 10, 3 );
 
 
 */
+function ptc_pmpro_email_filter($email) {
+
+		alpn_log("ptc_pmpro_email_filter");
+    $emailTemplateName = PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
+    $emailTemplateHtml = file_get_contents($emailTemplateName);
+
+    $replaceStrings["-{pte_email_body}-"] = $email->body;
+    $replaceStrings["-{pte_link_id}-"] = "";
+    $replaceStrings["-{pte_email_file_details}-"] = "";
+    $emailTemplateHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $emailTemplateHtml);
+
+    $email->body = $emailTemplateHtml;
+
+    return $email;
+}
+add_filter("pmpro_email_filter", "ptc_pmpro_email_filter");
+
 
 // Use the email address as username with PMPro checkout. Also hide fields where necessary
 function my_init_email_as_username()
