@@ -258,8 +258,6 @@ add_filter( 'gettext', 'my_gettext_membership', 10, 3 );
 
 */
 
-
-
 // Use the email address as username with PMPro checkout. Also hide fields where necessary
 function my_init_email_as_username()
 {
