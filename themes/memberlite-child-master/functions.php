@@ -265,7 +265,8 @@ function ptc_pmpro_email_filter($email) {
 
     $replaceStrings["-{pte_email_body}-"] = $email->body;
     $replaceStrings["-{pte_link_id}-"] = "";
-    $replaceStrings["-{pte_email_file_details}-"] = "";
+		$replaceStrings["-{pte_email_file_details}-"] = "";
+    $replaceStrings["-{pte_email_signature}-"] = "";
     $emailTemplateHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $emailTemplateHtml);
 
     $email->body = $emailTemplateHtml;
