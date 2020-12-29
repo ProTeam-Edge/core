@@ -6,6 +6,7 @@
  * @subpackage Memberlite - Child Theme 1.0
  */
  /* Created by Abstain Solutions 22-12-2020 */
+echo 'reached here';
 add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
 	if(isset($_POST['logsub']))
