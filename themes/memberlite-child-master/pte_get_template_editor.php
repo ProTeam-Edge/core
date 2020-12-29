@@ -14,7 +14,7 @@ $userID = $userInfo->data->ID;
 
 $results = array();
 $replaceStrings = array();
-$editorMode = "document";
+$editorMode = "message";
 
 if ($formId) {
 
@@ -43,14 +43,12 @@ if ($formId) {
 
 		 		$availableTopicFields = pte_get_available_topic_fields($formId);
 
-
 		 		$templateTypeSelector = "
 		 			<select id='alpn_select2_template_type' class=''>
 		 				<option value='message'>Messages</option>
 		 				<option value='document'>Documents</option>
 		 			</select>
 		 		";
-
 
 				$hideShowMessageTitle = "none";
 				$savedString = "Saved Documents for {$topicName}";
@@ -115,6 +113,7 @@ if ($formId) {
 		 			statusbar: false,
 		 			max_height: 550,
 		 			min_height: 300,
+					width: `80%`,
 		 			noneditable_noneditable_class: 'pte_field_token',
 		 			setup: (editor) => {
 		 					editor.ui.registry.addMenuButton('tokens', {
