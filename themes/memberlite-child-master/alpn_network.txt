@@ -1,4 +1,4 @@
-pte_push.sh "Commit Test 1" themes/memberlite-child-master/alpn_handle_topic_select.php
+pte_push.sh "Commit Test 1" themes/memberlite-child-master/functions.php
 
 
 Active Files
