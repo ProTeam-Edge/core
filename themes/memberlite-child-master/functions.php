@@ -6,26 +6,6 @@
  * @subpackage Memberlite - Child Theme 1.0
  */
  /* Created by Abstain Solutions 22-12-2020 */
- 
- 
- function wpb_custom_logo() {
-echo '
-<style type="text/css">
-#wpadminbar #wp-admin-bar-wp-logo > .ab-item .ab-icon:before {
-background-image: url(https://storage.googleapis.com/pte_media_store_1/2020/03/3ecdd0c9-cropped-02b15248-globe512.png) !important;
-background-position: 0 0;
-color:rgba(0, 0, 0, 0);
-}
-#wpadminbar #wp-admin-bar-wp-logo.hover > .ab-item .ab-icon {
-background-position: 0 0;
-}
-</style>
-';
-}
- 
-//hook into the administrative header output
-add_action('wp_before_admin_bar_render', 'wpb_custom_logo');
- 
 add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
 	if(isset($_POST['logsub']))
