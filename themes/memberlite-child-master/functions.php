@@ -6,7 +6,52 @@
  * @subpackage Memberlite - Child Theme 1.0
  */
  /* Created by Abstain Solutions 22-12-2020 */
-add_shortcode('nonce_test','nonce_test');
+ 
+ 
+ add_action( 'admin_bar_menu', 'customize_my_wp_admin_bar', 80 );
+function customize_my_wp_admin_bar( $wp_admin_bar ) {
+
+    //Get a reference to the new-content node to modify.
+    $new_content_node = $wp_admin_bar->get_node('new-content');
+
+    // Parent Properties for new-content node:
+        //$new_content_node->id     // 'new-content'
+        //$new_content_node->title  // '<span class="ab-icon"></span><span class="ab-label">New</span>'
+        //$new_content_node->parent // false
+        //$new_content_node->href   // 'http://www.somedomain.com/wp-admin/post-new.php'
+        //$new_content_node->group  // false
+        //$new_content_node->meta['title']   // 'Add New'
+
+    //Change href
+    $new_content_node->href = '#';
+
+    //Update Node.
+    $wp_admin_bar->add_node($new_content_node);
+
+    //Remove an existing menu item.
+    $wp_admin_bar->remove_menu('new-post');
+
+    // Properties for new-post node:
+        //$new_content_node->id     // 'new-post'
+        //$new_content_node->title  // 'Post'
+        //$new_content_node->parent // 'new-content'
+        //$new_content_node->href   // 'http://www.somedomain.com/wp-admin/post-new.php'
+        //$new_content_node->group  // false
+        //$new_content_node->meta   // array()
+
+
+    // Adding a new custom menu item that did not previously exist.
+    $wp_admin_bar->add_menu( array(
+               'id'    => 'new-custom-menu',
+               'title' => 'Custom Menu',
+               'parent'=> 'new-content',
+               'href'  => '#custom-menu-link',)
+            );
+
+}
+ 
+ 
+/* add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
 	if(isset($_POST['logsub']))
 	{
@@ -44,7 +89,7 @@ function nonce_test() {
 		</div>
 	</div>';
 	return $form_html;
-}
+} */
 include('alpn-shortcodes.php');
 include('alpn_common.php');
 include('alpn_data.php');
