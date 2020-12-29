@@ -86,7 +86,7 @@ function alpn_select2_enqueue_styles() {
     wp_enqueue_style( 'alpn_uppy', 'https://transloadit.edgly.net/releases/uppy/v1.18.0/uppy.min.css' );
     wp_enqueue_style( 'pte_doka', get_template_directory_uri() . '-child-master/doka/bin/browser/doka.min.css');
     wp_enqueue_style( 'alpn_select2', get_template_directory_uri() . '-child-master/dist/css/select2.min.css' );
-    wp_enqueue_style( 'alpn_select2_bootstrap', get_template_directory_uri() . '-child-master/dist/css/select2-bootstrap.css' );
+		wp_enqueue_style( 'alpn_select2_bootstrap', get_template_directory_uri() . '-child-master/dist/css/select2-bootstrap.css' );
 }
 add_action( 'wp_enqueue_scripts', 'alpn_select2_enqueue_styles' );
 
@@ -166,11 +166,11 @@ function alpn_load_script(){
     wp_enqueue_script( 'alpn_doka' );
 
     wp_register_script(
-        'alpn_cloud_sponge',
-        'https://api.cloudsponge.com/widget/3hpw5Va8RoQVbrAimOVwwg.js',
+        'alpn_tinymce_editor',
+				get_template_directory_uri() . '/../memberlite-child-master/dist/js/tinymce/tinymce.min.js',
         array( 'jquery' )
     );
-    wp_enqueue_script( 'alpn_cloud_sponge' );
+    wp_enqueue_script( 'alpn_tinymce_editor' );
 
     if (!is_admin()) {
 
@@ -257,7 +257,7 @@ add_filter( 'gettext', 'my_gettext_membership', 10, 3 );
 
 
 */
-function ptc_pmpro_email_filter($email) {
+function ptc_pmpro_email_filter($email) {  //Adds our template around email content.
 
 		alpn_log("ptc_pmpro_email_filter");
     $emailTemplateName = PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
