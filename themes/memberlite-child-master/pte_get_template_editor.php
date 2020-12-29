@@ -113,7 +113,7 @@ if ($formId) {
 		 			statusbar: false,
 		 			max_height: 550,
 		 			min_height: 300,
-					width: `80%`,
+					width: `75%`,
 		 			noneditable_noneditable_class: 'pte_field_token',
 		 			setup: (editor) => {
 		 					editor.ui.registry.addMenuButton('tokens', {
