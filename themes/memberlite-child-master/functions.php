@@ -35,7 +35,7 @@ function nonce_test() {
 				</div>
 				<div class="tml-field-wrap tml-pwd-wrap">
 					<label class="tml-label" for="user_pass">Password</label>
-					<input name="pwd" type="password" value="" id="user_pass" class="tml-field">
+					<input name="pwd" type="password" value="" id="user_pass" autocomplete="off" class="tml-field">
 				</div>';
 				$form_html .= wp_nonce_field('nonce_test', 'nonce_test');
 				$form_html .= '<div class="tml-field-wrap tml-submit-wrap">
