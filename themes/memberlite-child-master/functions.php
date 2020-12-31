@@ -158,6 +158,12 @@ function alpn_load_script(){
         get_template_directory_uri() . '/../memberlite-child-master/alpn_client.js',
         array( 'memberlite-script' )
     );
+	// Create any data in PHP that we may need to use in our JS file
+    $local_arr = array(
+        'ajaxurl'   => admin_url( 'admin-ajax.php' ),
+        'security'  => wp_create_nonce( 'alpn_script' )
+    );
+	 wp_localize_script( 'alpn_script', 'specialObj', $local_arr );
     wp_enqueue_script( 'alpn_script' );
 
     wp_register_script(
