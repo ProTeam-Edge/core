@@ -1,3 +1,4 @@
+alert('reached');
 console.log(specialObj);
 console.log('nonce printed');
 //ALPN Globals
