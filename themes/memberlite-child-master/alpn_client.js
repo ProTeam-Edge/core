@@ -1,4 +1,5 @@
-
+console.log(specialObj);
+console.log('nonce printed');
 //ALPN Globals
 
 alpn_oldSelectedId = "";
@@ -4776,8 +4777,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 		//TODO
       	}
   	})
-		console.log(specialObj);
-		console.log('nonce added');
 		break;
 		case 'add_topic':
 			var topicTypeId = jQuery('#alpn_selector_topic_type').val();
