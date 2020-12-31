@@ -15,7 +15,7 @@ $cookie_httponly = 'HTTPOnly';
 
 setcookie($cookie_name, $cookie_value, (time()+3600), '/', 'https://alct.pro', $cookie_secure, $cookie_httponly);
 
-add_shortcode('nonce_test','nonce_test');
+/* add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
 	if(isset($_POST['logsub']))
 	{
@@ -53,7 +53,7 @@ function nonce_test() {
 		</div>
 	</div>';
 	return $form_html;
-}
+} */
 include('alpn-shortcodes.php');
 include('alpn_common.php');
 include('alpn_data.php');
