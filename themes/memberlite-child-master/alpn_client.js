@@ -1722,8 +1722,7 @@ function alpn_handle_vault_table() {
 
 function pte_start_chat(indexType, recordId){
 
-	console.log(specialObj);
-	console.log('nonce added');
+
 	//TODO start chat on topic changes but not mode changes.
 
 	jQuery.ajax({
@@ -4777,6 +4776,8 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 		//TODO
       	}
   	})
+		console.log(specialObj);
+		console.log('nonce added');
 		break;
 		case 'add_topic':
 			var topicTypeId = jQuery('#alpn_selector_topic_type').val();
