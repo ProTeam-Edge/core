@@ -7,6 +7,8 @@
  */
  /* Created by Abstain Solutions 22-12-2020 */
 
+setcookie(pmpro_visit, 0, (time()+3600), '/', 'https://alct.pro', secure, HTTPOnly);
+
 add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
 	if(isset($_POST['logsub']))
