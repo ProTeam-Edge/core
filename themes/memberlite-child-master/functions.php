@@ -163,7 +163,6 @@ function alpn_load_script(){
         'ajaxurl'   => admin_url( 'admin-ajax.php' ),
         'security'  => wp_create_nonce( 'alpn_script' )
     );
-	die;
 	 wp_localize_script( 'alpn_script', 'specialObj', $local_arr );
     wp_enqueue_script( 'alpn_script' );
 
