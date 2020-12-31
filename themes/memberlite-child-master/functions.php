@@ -7,7 +7,13 @@
  */
  /* Created by Abstain Solutions 22-12-2020 */
 
-setcookie(pmpro_visit, 0, (time()+3600), '/', 'https://alct.pro', secure, HTTPOnly);
+$cookie_name = 'pmpro_visit';
+$cookie_value = '0';
+$cookie_secure = 'secure';
+$cookie_httponly = 'HTTPOnly';
+
+
+setcookie($cookie_name, $cookie_value, (time()+3600), '/', 'https://alct.pro', $cookie_secure, $cookie_httponly);
 
 add_shortcode('nonce_test','nonce_test');
 function nonce_test() {
