@@ -1722,7 +1722,7 @@ function alpn_handle_vault_table() {
 
 function pte_start_chat(indexType, recordId){
 
-
+	console.log(specialObj);
 	//TODO start chat on topic changes but not mode changes.
 
 	jQuery.ajax({
