@@ -7,7 +7,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
-
+echo $verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
 $recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 $ppCdnBase = PTE_IMAGES_ROOT_URL;
 

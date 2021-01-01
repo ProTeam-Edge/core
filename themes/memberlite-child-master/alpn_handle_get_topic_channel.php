@@ -8,7 +8,7 @@ include('../../../wp-blog-header.php');
 
 $channelId = "";
 $qVars = $_GET;
-echo $verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+
 $recordId = isset($qVars['record_id']) ? $qVars['record_id'] : '';
 $indexType = isset($qVars['index_type']) ? $qVars['index_type'] : '';
 
