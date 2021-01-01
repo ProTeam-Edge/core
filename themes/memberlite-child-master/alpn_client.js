@@ -1,4 +1,4 @@
-alert("test");
+console.log(specialObj);
 //ALPN Globals
 
 //TEST CHANGE!!
