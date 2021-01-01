@@ -4,6 +4,8 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 $siteUrl = get_site_url();
 
 $qVars = $_POST;
+echo $verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+die;
 $topicTypeId = isset($qVars['topicTypeId']) ? $qVars['topicTypeId'] : '';
 $topicTypeSpecial = isset($qVars['topicTypeSpecial']) ? $qVars['topicTypeSpecial'] : '';
 $topicDomId = isset($qVars['previous_topic']) ? $qVars['previous_topic'] : '';
