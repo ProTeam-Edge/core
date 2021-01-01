@@ -6,7 +6,7 @@ $siteUrl = get_site_url();
 $qVars = $_POST;
 $html = "";
 // verifying nonce
-$verifiy = 0;
+$verify = 0;
 if(isset($qVars['security']) && !empty($qVars['security']))
 	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
 if($verify==1) {

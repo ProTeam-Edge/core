@@ -2,12 +2,17 @@
 include('../../../wp-blog-header.php');
 
 $siteUrl = get_site_url();
-
+$html="";
 $qVars = $_POST;
+$verify = 0;
+if(isset($qVars['security']) && !empty($qVars['security']))
+	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+
+if($verify==1) {
 $uniqueRecId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 $returnDetails = isset($qVars['return_details']) ? json_decode(stripslashes($qVars['return_details']), true) : array();
 
-$html="";
+
 
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
@@ -112,7 +117,11 @@ $html .= "
 							</div>
 						 </div>
 						";
-
+}
+else
+{
+	$html = 'Not a valid request';
+}
 echo $html;
 
 ?>
