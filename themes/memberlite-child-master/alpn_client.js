@@ -54,6 +54,7 @@ pte_timezone_offset = pte_local_date.getTimezoneOffset();
 
 pte_chrome_extension = (typeof pte_chrome_extension != "undefined" && pte_chrome_extension) ? pte_chrome_extension : false;
 pte_topic_manager_loaded = (typeof pte_topic_manager_loaded != "undefined" && pte_topic_manager_loaded) ? pte_topic_manager_loaded : false;
+pte_template_editor_loaded = (typeof pte_template_editor_loaded != "undefined" && pte_template_editor_loaded) ? pte_template_editor_loaded : false;
 
 ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
@@ -1543,6 +1544,26 @@ function pte_interactions_table() {
 	}
 }
 
+function pte_handle_select_template (formId, editorMode) {
+	jQuery.ajax({
+		url: alpn_templatedir + 'pte_get_template_editor.php',
+		type: 'POST',
+		data: {
+			form_id: formId,
+			editor_mode: editorMode
+		},
+		dataType: "html",
+		success: function(html) {
+			console.log('Successfully got template editor...');
+			jQuery('#template_editor_container').html(html);
+		},
+		error: function() {
+			console.log('Error getting template editor...');
+		//TODO
+		}
+	});
+}
+
 function pte_handle_select_topic_type (formId) {
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_get_topic_type_manager.php',
@@ -1563,6 +1584,7 @@ function pte_handle_select_topic_type (formId) {
 }
 
 function alpn_handle_topic_type_row_selected(formId) {
+	pte_selected_report_template = "";
 	if (pte_oldTopicTypeSelectedId) {
 		var theOldRow =  jQuery("div.alpn_topic_type_cell[data-uid=" + pte_oldTopicTypeSelectedId + "]").closest('tr');
 		jQuery(theOldRow).children().attr("style", "background-color: white !important;");
@@ -1571,7 +1593,17 @@ function alpn_handle_topic_type_row_selected(formId) {
 		var theNewRow =  jQuery("div.alpn_topic_type_cell[data-uid=" + formId + "]").closest('tr');
 		if (theNewRow.length) {
 			theNewRow.children().attr("style", "background-color: #D8D8D8 !important;");
-			pte_handle_select_topic_type(formId);
+			if (typeof pte_template_editor_loaded != "undefined" && pte_template_editor_loaded) {
+					var templateEditorMode = 'message';
+					var templateEditorModeData = jQuery('#alpn_select2_template_type').select2('data');
+					if (typeof templateEditorModeData != "undefined") {
+						var templateEditorMode = templateEditorModeData[0].id;
+					}
+					pte_handle_select_template(formId, templateEditorMode);
+			}
+			if (typeof pte_topic_manager_loaded != "undefined" && pte_topic_manager_loaded) {
+				pte_handle_select_topic_type(formId);
+			}
 			pte_oldTopicTypeSelectedId =	formId;
 		}
 	} else {
@@ -1721,8 +1753,6 @@ function alpn_handle_vault_table() {
 }
 
 function pte_start_chat(indexType, recordId){
-
-
 	//TODO start chat on topic changes but not mode changes.
 
 	jQuery.ajax({
@@ -1907,7 +1937,7 @@ function iformat(icon) {
 
 jQuery( document ).ready( function(){
 
-	pte_external =  pte_chrome_extension || pte_topic_manager_loaded;
+	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 
 	if (history.scrollRestoration) {
 	  history.scrollRestoration = 'manual';
@@ -2045,7 +2075,6 @@ jQuery( document ).ready( function(){
 						console.log("Error Loading Network Table..."); //TODO Handle Error
 					});
 
-
 				alpn_wait_for_ready(10000, 250,  //Topic Table
 					function(){
 						if (pte_external == false  && wpDataTables.table_topic !== "undefined") {
@@ -2135,11 +2164,39 @@ jQuery( document ).ready( function(){
 					  });
 			}
 
-			// Start of Topic Manager
+			// Initialize Topic Manager
+			if (typeof pte_template_editor_loaded != "undefined" && pte_template_editor_loaded) {
 
+					console.log("Starting to Initialize Topic Types..."); //TODO Handle Error
+					alpn_wait_for_ready(10000, 250,  //Topic Table
+						function(){
+							if (wpDataTables.table_topic_types !== "undefined") {
+								return true;
+							}
+							return false;
+						},
+						function(){
+							console.log(wpDataTables.table_topic_types); //TODO Handle Error
+							wpDataTables.table_topic_types.addOnDrawCallback( function(){
+								alpn_handle_topic_type_table();
+							})
+							alpn_handle_topic_type_table();
+							alpn_prepare_search_field("#table_topic_types_filter");
+							wpDataTables.table_topic_types.fnSettings().oLanguage.sZeroRecords = 'No Topic Types';
+							wpDataTables.table_topic_types.fnSettings().oLanguage.sEmptyTable = 'No Topic Types';
+						},
+						function(){ //Handle Error
+							console.log("Error Initializing Topic Type Table..."); //TODO Handle Error
+						});
+
+
+
+			}
+
+			//Initialize Topic  Editor
 			if (typeof pte_topic_manager_loaded != "undefined" && pte_topic_manager_loaded) {
 
-				console.log("Starting to Initialize Topic Type Table..."); //TODO Handle Error
+				console.log("Starting to Initialize Topic Types..."); //TODO Handle Error
 				alpn_wait_for_ready(10000, 250,  //Topic Table
 					function(){
 						if (wpDataTables.table_topic_types !== "undefined") {
@@ -2751,7 +2808,8 @@ if (pte_external == false) {
 				return {
 					params: {
  				    auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
- 				    template_id: '3b83f38410d744caa3060af90cd64bc0'
+						template_id: 'b51ccbe1760d410c8cf9b409228e6139'   //DEV TEMPLATE
+ 				    //template_id: '3b83f38410d744caa3060af90cd64bc0'  //PROD TEMPLATE TODO-PICK BASED ON ACTUAL
  		  		},
 					fields: {
 						pte_uid: file.meta.pte_uid,
@@ -4411,6 +4469,22 @@ function pte_edit_topic_link(topicToken) {
 	alpn_mission_control('edit_topic', selectedRowUid, topicToken);
 }
 
+function pte_change_template_type(data){
+
+	console.log("pte_change_template_type");
+
+	var metaObj = jQuery('#pte_selected_template_meta');
+	var topicTypeFormId = metaObj.data('ttfid');
+
+	var templateEditorMode = data.id;
+	pte_handle_select_template(topicTypeFormId, templateEditorMode)
+
+	console.log(topicTypeFormId);
+	console.log(templateEditorMode);
+
+
+}
+
 function pte_set_report_data(domId) { //Must always create the get version
 	console.log("pte_apply_report_settings", domId);
 	var sections, sectionList, sectionId, topicKey, topicValue, topicJson;
@@ -4530,6 +4604,29 @@ function alpn_handle_reports_table(){
 	pte_manage_report_table_select(pte_selected_report_template);
 }
 
+function pte_set_template_data(domId){
+	console.log('Setting Template Data...');
+
+	//TODO check for dirty if (tinymce.activeEditor.isDirty())
+
+	if (domId) {
+
+		var trObj =  jQuery('#alpn_field_' + domId).closest('tr');
+		var templateRowData = wpDataTables.table_reports.fnGetData(trObj);
+		if (typeof templateRowData != "undefined" && templateRowData != null && typeof templateRowData[3] != "undefined") {
+			var templateJson = JSON.parse(templateRowData[3].replace(/\\(.)/mg, "$1"));  //stripslashes and parse json
+
+			console.log(templateJson);
+
+			jQuery("#pte_template_name_field").val(templateJson.template_name);
+			jQuery("#pte_template_title_field").val(templateJson.template_title);
+			tinymce.get("template_editor").setContent(templateJson.template_body);
+
+		}
+
+	}
+}
+
 function pte_manage_report_table_select(domId){
 	console.log("pte_manage_report_table_select");
 	if (pte_selected_report_template) {
@@ -4549,7 +4646,11 @@ function pte_manage_report_table_select(domId){
 		pte_selected_report_template = domId;
 		jQuery("#pte_report_button_clone").removeClass('pte_extra_button_disabled').addClass('pte_extra_button_enabled');
 		jQuery("#pte_report_button_delete").removeClass('pte_extra_button_disabled').addClass('pte_extra_button_enabled');
-		pte_set_report_data(domId);
+		if (pte_template_editor_loaded) {
+			pte_set_template_data(domId);
+		} else {
+			pte_set_report_data(domId);
+		}
 	}
 }
 
@@ -4570,19 +4671,119 @@ function pte_handle_delete_report(userResponse, parms){
 				jQuery("#pte_report_button_clone").removeClass('pte_extra_button_enabled').addClass('pte_extra_button_disabled');
 				jQuery("#pte_report_button_delete").removeClass('pte_extra_button_enabled').addClass('pte_extra_button_disabled');
 				wpDataTables.table_reports.fnFilterClear(); //TODO do the paging thing.
-				jQuery('#pte_report_name_field').val('');
+				if (pte_template_editor_loaded) {
+					jQuery('#pte_template_name_field').val('');
+					jQuery("#pte_template_title_field").val('');
+					tinymce.get("template_editor").setContent('');
+				} else {
+					jQuery('#pte_report_name_field').val('');
+				}
 			},
 			error: function() {
 				console.log('pte_handle_report_delete - FAIL');
 			}
 	});
+}
+pte_clear_message();
+}
+
+function pte_handle_template_operation(operation) {
+
+	console.log('pte_handle_template_operation...');
+	console.log(operation);
+
+	var metaObj = jQuery('#pte_selected_template_meta');
+	var topicTypeKey = metaObj.data('ttkey');
+	var topicTypeFormId = metaObj.data('ttfid');
+
+	console.log(topicTypeKey);
+	console.log(topicTypeFormId);
+	console.log(pte_selected_report_template);
+
+	switch(operation) {
+		case 'save':
+			console.log('Handling Save...');
+			var fieldObj = jQuery('#pte_template_name_field');
+			var fieldName = fieldObj.val();
+			if (!fieldName) { //check for name
+				fieldObj.attr('placeholder', "Name Required...");
+				return;
+			}
+			var templateEditorModeData = jQuery('#alpn_select2_template_type').select2('data');
+			var templateEditorMode = templateEditorModeData[0].id;
+
+			var templateTitle = jQuery("#pte_template_title_field").val();
+			var templateBody = tinymce.get("template_editor").getContent();
+
+			if (!templateTitle && !templateBody) {  //check for a minimum of data
+				jQuery("#pte_template_title_field").attr('placeholder', "Title and/or Body Required...");
+				return;
+			}
+
+			var allData = {};
+			allData.template_name = fieldName;
+			allData.template_type = templateEditorMode;
+			allData.template_title = templateTitle;
+			allData.template_body = templateBody;
+			allData.template_dom_id = pte_selected_report_template;
+
+			allData.topic_type_key = topicTypeKey;
+			allData.topic_type_form_id = topicTypeFormId;
+
+			jQuery.ajax({
+				url: alpn_templatedir + 'alpn_handle_save_template.php',
+				type: 'POST',
+				data: {
+					template_data: JSON.stringify(allData)
+				},
+				dataType: "json",
+				success: function(json) {
+					console.log('pte_handle_save_template - SUCCESS');
+					console.log(json);
+					pte_selected_report_template = json.dom_id;  //report and template are interchangeable. TODO Unify into generalized handling of templates
+					wpDataTables.table_reports.fnFilterClear();  //TODO handle paging to the proper page
+				},
+				error: function() {
+					console.log('pte_handle_save_template - FAIL');
+
+				}
+		})
+
+		break;
+		case 'delete':
+			console.log('Handling Delete...');
+			var parms = {'report_id': pte_selected_report_template};
+			pte_show_message('yellow_question', 'confirm', 'Please confirm delete:', 'pte_handle_delete_report', JSON.stringify(parms))
+		break;
+
+
+		case 'clone':
+			console.log('Handling Clone...');
+			jQuery.ajax({
+				url: alpn_templatedir + 'alpn_handle_clone_report.php',
+				type: 'POST',
+				data: {
+					report_dom_id: pte_selected_report_template
+				},
+				dataType: "json",
+				success: function(json) {
+					console.log('pte_handle_report_clone - SUCCESS');
+					console.log(json);
+					var templateDomId = json.dom_id;
+					pte_selected_report_template = templateDomId;
+					wpDataTables.table_reports.fnFilterClear();
+				},
+				error: function() {
+					console.log('pte_handle_report_clone - FAIL');
+				}
+		});
+		break;
 	}
 }
 
 function pte_handle_report_settings(operation) {
 
 	console.log('pte_handle_report_settings...');
-
 	var metaObj = jQuery('#pte_selected_topic_meta');
 	var topicDomId = metaObj.data('tdid');
 	var topicId = metaObj.data('tid');
@@ -4592,15 +4793,11 @@ function pte_handle_report_settings(operation) {
 	var mapData = pte_make_map_data(topicDomId, topicId, topicTypeId, 0, topicTypeSpecial);
 
 	switch(operation) {
-
 		case 'refresh':
-
 			jQuery('#pte_refresh_report_loading').show();
 			jQuery('#alpn_vault_copy').removeClass('pte_extra_button_enabled').addClass('pte_extra_button_disabled');
 			jQuery('#alpn_vault_copy_go').removeClass('pte_extra_button_enabled').addClass('pte_extra_button_disabled');
-
 			var allData = pte_get_report_data(mapData);
-
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_report_change.php',
 				type: 'POST',
@@ -4610,7 +4807,6 @@ function pte_handle_report_settings(operation) {
 				dataType: "json",
 				success: function(json) {
 					console.log('pte_handle_report_change - SUCCESS');
-
 					var filename = "placeholder.pdf";
 					var srcFile = alpn_templatedir + "quick_report_tmp/" + json.pdf_key;
 					// wait
@@ -4625,20 +4821,15 @@ function pte_handle_report_settings(operation) {
 					});
 				},
 				error: function() {
-
 					console.log('pte_handle_report_change - FAIL');
-
 				}
 		})
-
 		break;
-
 		case 'delete':
 			console.log('Handling Delete...');
 			var parms = {'report_id': pte_selected_report_template};
 			pte_show_message('yellow_question', 'confirm', 'Please confirm delete:', 'pte_handle_delete_report', JSON.stringify(parms));
 		break;
-
 		case 'clone':
 			console.log('Handling Clone...');
 			jQuery.ajax({
@@ -4660,24 +4851,19 @@ function pte_handle_report_settings(operation) {
 				}
 		});
 		break;
-
 		case 'save':
 			console.log('Handling Save...');
 			var fieldObj = jQuery('#pte_report_name_field');
 			var fieldName = fieldObj.val();
-
 			if (!fieldName) {
 				fieldObj.attr('placeholder', "Name Required...");
 				return;
 			}
-
 			var allData = pte_get_report_data(mapData);
-
 			allData.report_name = fieldName;
 			allData.template_type = 'report';
 			allData.topic_type_key = topicTypeKey;
 			allData.report_template_dom_id = pte_selected_report_template;
-
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_save_report.php',
 				type: 'POST',
@@ -4692,17 +4878,11 @@ function pte_handle_report_settings(operation) {
 					wpDataTables.table_reports.fnFilterClear(); //TODO do the paging thing.
 				},
 				error: function() {
-
 					console.log('pte_handle_save_report - FAIL');
-
 				}
 		})
-
 		break;
 	}
-
-
- //The difference between report and vault/topic handlers is that this needed the latest meta for rerpot change purposes regardless.
 }
 
 function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
@@ -4764,8 +4944,8 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 					wdtRenderDataTable(jQuery('#table_reports'), alpn_report_table_settings);
 					alpn_prepare_search_field('#table_reports_filter');
 					jQuery(nameFieldHtml).insertBefore('#table_reports_filter');
-					wpDataTables.table_reports.fnSettings().oLanguage.sZeroRecords = 'No Templates for this Topic Type';
-					wpDataTables.table_reports.fnSettings().oLanguage.sEmptyTable = 'No Templates for this Topic Type';
+					wpDataTables.table_reports.fnSettings().oLanguage.sZeroRecords = 'No Saved Reports';
+					wpDataTables.table_reports.fnSettings().oLanguage.sEmptyTable = 'No Saved Reports';
 					wpDataTables.table_reports.addOnDrawCallback( function(){
 						alpn_handle_reports_table();
 					})
