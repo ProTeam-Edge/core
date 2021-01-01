@@ -7,7 +7,7 @@ $qVars = $_POST;
 $verify = 0;
 if(isset($qVars['security']) && !empty($qVars['security']))
 	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
-echo $verify;
+echo $verify.'dsf';
 die;
 if($verify==1) {
 $uniqueRecId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
