@@ -1,4 +1,5 @@
-alert("test");
+console.log(specialObj);
+console.log('reached nonce');
 //ALPN Globals
 
 //TEST CHANGE!!
