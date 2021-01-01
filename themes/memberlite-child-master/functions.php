@@ -6,7 +6,19 @@
  * @subpackage Memberlite - Child Theme 1.0
  */
  /* Created by Abstain Solutions 22-12-2020 */
-
+function wpf_dev_process_before( $entry, $form_data ) {
+ 
+    // Only run on my form with ID = 5
+    if ( absint( $form_data['id'] ) !== 2718 ) {
+		echo '<pre>';
+		print_r($entry);
+		die;
+        return;
+    } 
+ 
+    // run code
+}
+add_action( 'wpforms_process_before', 'wpf_dev_process_before', 10, 2 );
 $cookie_name = 'pmpro_visit';
 $cookie_value = '0';
 $cookie_secure = 'secure';
