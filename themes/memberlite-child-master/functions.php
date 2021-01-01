@@ -8,13 +8,9 @@
  /* Created by Abstain Solutions 22-12-2020 */
 function wpf_dev_process_before( $entry, $form_data ) {
  
-    // Only run on my form with ID = 5
-    if ( absint( $form_data['id'] ) !== 2718 ) {
-		echo '<pre>';
+    echo '<pre>';
 		print_r($entry);
 		die;
-        return;
-    } 
  
     // run code
 }
