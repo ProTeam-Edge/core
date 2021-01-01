@@ -5047,6 +5047,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 		case 'select_topic':
 			pte_active_tabs = []; //reset all row-selected state for tabs
+			var security = specialObj.security;
 
 			pte_selected_report_template = '';  //TODO unless switching between types
 
@@ -5057,7 +5058,8 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				url: alpn_templatedir + 'alpn_handle_topic_select.php',
 				type: 'POST',
 				data: {
-					uniqueRecId: uniqueRecId
+					uniqueRecId: uniqueRecId,
+					security: security,
 				},
 				dataType: "html",
 				success: function(html) {
