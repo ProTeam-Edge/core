@@ -2,8 +2,6 @@ console.log(specialObj);
 console.log('reached nonce');
 //ALPN Globals
 
-//TEST CHANGE!!
-
 alpn_oldSelectedId = "";
 alpn_oldVaultSelectedId = "";
 alpn_oldFormSelectedRow = {};
@@ -5052,7 +5050,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 		case 'select_topic':
 			pte_active_tabs = []; //reset all row-selected state for tabs
-		
+
 
 			pte_selected_report_template = '';  //TODO unless switching between types
 
