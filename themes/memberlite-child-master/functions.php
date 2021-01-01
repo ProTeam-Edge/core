@@ -6,14 +6,14 @@
  * @subpackage Memberlite - Child Theme 1.0
  */
  /* Created by Abstain Solutions 22-12-2020 */
-function wpf_dev_process_before( $entry, $form_data ) {
+/* function wpf_dev_process_before( $entry, $form_data ) {
  
     echo '<pre>';
 		print_r($entry);
 		die;
  
     // run code
-}
+} */
 add_action( 'wpforms_process_before', 'wpf_dev_process_before', 10, 2 );
 $cookie_name = 'pmpro_visit';
 $cookie_value = '0';
