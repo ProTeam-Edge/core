@@ -4993,6 +4993,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
   	})
 		break;
 		case 'edit_topic':
+		var security = specialObj.security;
 			var alpn_selected_type = alpn_select_type(uniqueRecId);
 			if (overRideTopic != '') {alpn_selected_type = overRideTopic};
 			jQuery.ajax({
@@ -5001,6 +5002,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				data: {
 					uniqueRecId: uniqueRecId,
 					alpn_selected_type: alpn_selected_type,
+					security: security,
 					return_details: JSON.stringify(returnDetails)
 			},
 				dataType: "html",
