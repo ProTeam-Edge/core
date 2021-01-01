@@ -209,13 +209,14 @@ function pte_add_link_to_topic(data) {
 }
 
 function pte_get_form_for_link(tabId, dom_id) {
-	alert("reached places section");
+	var security = specialObj.security;
 	if (dom_id) {
 		jQuery.ajax({
 			url: alpn_templatedir + 'pte_get_form_for_link.php',
 			type: 'POST',
 			data: {
-				'dom_id': dom_id
+				'dom_id': dom_id,
+				'security': security,
 			},
 			dataType: "html",
 			success: function(html) {
