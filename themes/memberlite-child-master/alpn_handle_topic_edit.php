@@ -7,7 +7,8 @@ $qVars = $_POST;
 $verify = 0;
 if(isset($qVars['security']) && !empty($qVars['security']))
 	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
-
+echo $verify;
+die;
 if($verify==1) {
 $uniqueRecId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 $returnDetails = isset($qVars['return_details']) ? json_decode(stripslashes($qVars['return_details']), true) : array();
