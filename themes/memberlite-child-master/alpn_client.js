@@ -4869,7 +4869,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 		break;
 
 		case 'select_topic':
-			var security = specialObj.security;
 			pte_active_tabs = []; //reset all row-selected state for tabs
 
 
@@ -4883,7 +4882,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				type: 'POST',
 				data: {
 					uniqueRecId: uniqueRecId,
-					security: security,
 				},
 				dataType: "html",
 				success: function(html) {
