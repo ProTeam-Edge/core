@@ -1,4 +1,5 @@
-
+console.log(specialObj);
+console.log('reached nonce');
 //ALPN Globals
 
 alpn_oldSelectedId = "";
@@ -205,13 +206,14 @@ function pte_add_link_to_topic(data) {
 }
 
 function pte_get_form_for_link(tabId, dom_id) {
-
+	var security = specialObj.security;
 	if (dom_id) {
 		jQuery.ajax({
 			url: alpn_templatedir + 'pte_get_form_for_link.php',
 			type: 'POST',
 			data: {
-				'dom_id': dom_id
+				'dom_id': dom_id,
+				'security': security,
 			},
 			dataType: "html",
 			success: function(html) {
@@ -4778,6 +4780,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
   	})
 		break;
 		case 'add_topic':
+		var security = specialObj.security;
 			var topicTypeId = jQuery('#alpn_selector_topic_type').val();
 			if (overRideTopic != '') {topicTypeId = overRideTopic};
 			jQuery.ajax({
@@ -4787,6 +4790,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 					topicTypeId: topicTypeId,
 					topicTypeSpecial: topicTypeSpecial,
 					previous_topic: alpn_oldSelectedId,
+					security: security,
 					return_details: JSON.stringify(returnDetails)
 				},
 				dataType: "html",
@@ -4808,6 +4812,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
   	})
 		break;
 		case 'edit_topic':
+		var security = specialObj.security;
 			var alpn_selected_type = alpn_select_type(uniqueRecId);
 			if (overRideTopic != '') {alpn_selected_type = overRideTopic};
 			jQuery.ajax({
@@ -4816,6 +4821,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				data: {
 					uniqueRecId: uniqueRecId,
 					alpn_selected_type: alpn_selected_type,
+					security: security,
 					return_details: JSON.stringify(returnDetails)
 			},
 				dataType: "html",
@@ -4865,6 +4871,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 		case 'select_topic':
 			pte_active_tabs = []; //reset all row-selected state for tabs
 
+
 			pte_selected_report_template = '';  //TODO unless switching between types
 
 			alpn_handle_select(uniqueRecId);
@@ -4874,7 +4881,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				url: alpn_templatedir + 'alpn_handle_topic_select.php',
 				type: 'POST',
 				data: {
-					uniqueRecId: uniqueRecId
+					uniqueRecId: uniqueRecId,
 				},
 				dataType: "html",
 				success: function(html) {
@@ -5025,7 +5032,7 @@ function bindWpformsAjaxFailed (table_profile_id, callBackFunc) {
 function alpn_handle_topic_done(formId){
 
 	console.log('alpn_handle_topic_done - Form Id', formId);
-
+	var security = specialObj.security;
 	var topicDomId = '';
 	var topicTypeSpecial = '';
 	var topicTypeId = 0;
@@ -5062,7 +5069,8 @@ function alpn_handle_topic_done(formId){
 					url: alpn_templatedir + 'alpn_handle_topic_select.php',
 					type: 'POST',
 					data: {
-						uniqueRecId: returnHandler ? topicReturnTo.topic_dom_id : topic.dom_id
+						uniqueRecId: returnHandler ? topicReturnTo.topic_dom_id : topic.dom_id,
+						security:security
 					},
 					dataType: "html",
 					success: function(html) {
