@@ -5106,12 +5106,13 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 			alpn_handle_select(uniqueRecId);
 			pte_start_chat("unique_record_id", uniqueRecId);
-
+			var security = specialObj.security;
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_topic_select.php',
 				type: 'POST',
 				data: {
 					uniqueRecId: uniqueRecId,
+					security: security,
 				},
 				dataType: "html",
 				success: function(html) {
@@ -5300,7 +5301,7 @@ function alpn_handle_topic_done(formId){
 					type: 'POST',
 					data: {
 						uniqueRecId: returnHandler ? topicReturnTo.topic_dom_id : topic.dom_id,
-						security:security
+						security:security,
 					},
 					dataType: "html",
 					success: function(html) {
