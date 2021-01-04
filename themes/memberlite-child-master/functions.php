@@ -14,6 +14,7 @@
  
     // run code
 } */
+// verify added nonce before submission for wpforms
 function wpf_dev_process_before( $entry, $form_data ) {
  
 	$passed = 0;
@@ -37,6 +38,7 @@ function wpf_dev_process_before( $entry, $form_data ) {
 		return;
    
 }
+// add nonce field before submit button for all wpforms
 add_action( 'wpforms_process_before', 'wpf_dev_process_before', 10, 2 );
 function wpf_dev_display_submit_before( $form_data ) {
   
