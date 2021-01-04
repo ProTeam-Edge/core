@@ -14,6 +14,12 @@
  
     // run code
 } */
+function wpf_dev_display_submit_before( $form_data ) {
+  
+    echo 'tedst';
+}
+add_action( 'wpforms_display_submit_before', 'wpf_dev_display_submit_before', 10, 1 );
+
 add_action( 'wpforms_process_before', 'wpf_dev_process_before', 10, 2 );
 $cookie_name = 'pmpro_visit';
 $cookie_value = '0';
