@@ -11,6 +11,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+.pte_default_topic{
+	margin-left: 5px;
+}
+
 .pte_fax_defaults_title{
 	padding: 0 10px 0 10px;
 	font-size: 12px;
@@ -831,7 +835,7 @@ ul#pte_topic_type_properties_list li {
 }
 
 .pte_topic_links_list{
-	margin-left: 12px;
+	margin-left: 0px;
 }
 .pte_tab_table_wrapper{
 	margin-bottom: 20px;
@@ -856,6 +860,7 @@ ul#pte_topic_type_properties_list li {
 	vertical-align: text-bottom;
 	margin-left: 5px;
 }
+
 .pte_extra_filter_container{
 	display: inline-block;
 }
