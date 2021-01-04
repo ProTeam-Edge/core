@@ -4596,6 +4596,9 @@ table#table_network.wpDataTable td {
 .pmpro_invoice thead th, .pmpro_invoice tbody td{
     white-space: nowrap;
 }
-#pmpro-approvals-log pre{
-    white-space: break-spaces;
+.tml-profile table{
+	display: block;
+	width: 100%;
+	overflow-x: auto;
+	-webkit-overflow-scrolling: touch;
 }
