@@ -28,8 +28,8 @@ function wpf_dev_process_before( $entry, $form_data ) {
 	}
 	if($passed==0)
 	{
-		echo '<script>Not a valid request.</script>';
-		die('error');
+
+		die('Not a valid request');
 		/* wp_redirect(site_url().'/invalid-request');
 		exit; */
 	}
