@@ -16,9 +16,21 @@
 } */
 function wpf_dev_process_before( $entry, $form_data ) {
  
-    echo '<pre>';
-	print_r($_POST);
-	DIE;
+	$passed = 0;
+	$nonce = '';
+	if(isset($_POST['wp_form_nonce']) && !empty($_POST['wp_form_nonce']))
+	{
+		$nonce = $_POST['wp_form_nonce'];
+		$verify = wp_verify_nonce($nonce, 'wp_form_nonce' );
+		if($verify==1) {
+			$passed = 1;
+		}
+	}
+	if($passed==0)
+		return wp_redirect(site_url().'/invalid-request');
+	else 
+		return;
+   
 }
 add_action( 'wpforms_process_before', 'wpf_dev_process_before', 10, 2 );
 function wpf_dev_display_submit_before( $form_data ) {
