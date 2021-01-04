@@ -271,6 +271,7 @@ function pte_extra_control_table(domId){
 	  handleButtonState('enabled', tabId, 'pte_extra_unlink_button');
 		handleButtonState('enabled', tabId, 'pte_extra_edit_topic_button');
 		handleButtonState('enabled', tabId, 'pte_extra_delete_topic_button');
+		handleButtonState('enabled', tabId, 'pte_extra_default_topic_button');
   	pte_get_form_for_link(tabId, uid);
 }
 
@@ -296,6 +297,7 @@ function pte_unlink_selected_topic(){
 				handleButtonState('disabled', selectedTab, 'pte_extra_unlink_button');
 				handleButtonState('disabled', selectedTab, 'pte_extra_edit_topic_button');
 				handleButtonState('disabled', selectedTab, 'pte_extra_delete_topic_button');
+				handleButtonState('disabled', selectedTab, 'pte_extra_default_topic_button');
 			},
 			error: function() {
 				console.log('problem handling unlink');
@@ -327,8 +329,10 @@ function alpn_handle_extra_table(extraKey) {
 	var connectedTopicTypeId;
 	var connectedTopicSpecial;
 	var connectedTopicClass;
+	var linkId;
+	var defaultTopic;
 
-//	console.log(tableData);
+	// console.log(tableData);
 
 	for (i=0; i< tableData.length; i++) {
 		rowData = tableData[i];
@@ -341,18 +345,27 @@ function alpn_handle_extra_table(extraKey) {
 		connectedTopicSpecial = rowData[13];
 		connectedTopicClass = rowData[14];
 
+		linkId = rowData[12];
+		defaultTopic = rowData[15] ? rowData[15] : 'no';
+
+		if (defaultTopic == 'yes') {
+			var defaultTopicIcon = "<i class='far fa-check-circle pte_default_topic' title='Default Topic'></i>";
+		} else {
+			var defaultTopicIcon = "";
+		}
+
 		pte_topic_link_id = 'pte_topic_links_title_link_' + i;
 		cellId = "div#tabcontent_" + extraKey + " #alpn_field_" + rowData[4];
 
 		if (connectedTopicClass == 'LINKYES') {
-			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold'>" + itemName + "</div>";
+			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold' data-link-id='" + linkId + "'>" + itemName + defaultTopicIcon + "</div>";
 		} else {
-			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "'>" + itemName + "</div>";
+			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "' data-link-id='" + linkId + "'>" + itemName + defaultTopicIcon + "</div>";
 			if (connectedTopicSpecial == 'contact') {
-				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "'>" + itemName + "</div>";
+				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "'>" + itemName + defaultTopicIcon + "</div>";
 			}
 			if (connectedTopicSpecial == 'user') {
-				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "'>" + itemName + "</div>";
+				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "'>" + itemName + defaultTopicIcon + "</div>";
 			}
 		}
 
@@ -392,10 +405,12 @@ function alpn_handle_extra_table(extraKey) {
 		handleButtonState('enabled', extraKey, 'pte_extra_unlink_button');
 		handleButtonState('enabled', extraKey, 'pte_extra_edit_topic_button');
 		handleButtonState('enabled', extraKey, 'pte_extra_delete_topic_button');
+		handleButtonState('enabled', extraKey, 'pte_extra_default_topic_button');
 	} else {
 		handleButtonState('disabled', extraKey, 'pte_extra_unlink_button');
 		handleButtonState('disabled', extraKey, 'pte_extra_edit_topic_button');
 		handleButtonState('disabled', extraKey, 'pte_extra_delete_topic_button');
+		handleButtonState('disabled', extraKey, 'pte_extra_default_topic_button');
 		pte_get_form_for_link(extraKey, '');
 	}
 }
@@ -4470,6 +4485,14 @@ function pte_new_topic_link(topicToken) {
 	alpn_mission_control('add_topic', "", topicToken);
 }
 
+function pte_default_topic_link (topicToken) {
+	var selectedTab = jQuery("button.tablinks.pte_tab_button_active").data('tab-id');
+	var tableId = 'table_tab_' + selectedTab;
+	var recordDomId = jQuery('#tabcontent_' + selectedTab + ' #pte_tab_record_wrapper').data('dom_id');
+	var selectedRowUid = recordDomId ? recordDomId : pte_active_tabs[selectedTab];  //Account for record versus row in table
+	alpn_mission_control('make_default_topic', selectedRowUid, topicToken);
+}
+
 function pte_edit_topic_link(topicToken) {
 	var selectedTab = jQuery("button.tablinks.pte_tab_button_active").data('tab-id');
 	var tableId = 'table_tab_' + selectedTab;
@@ -4915,6 +4938,26 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 	};
 
 	switch(operation) {
+		case 'make_default_topic':
+		console.log('make_default_topic...');
+		console.log(uniqueRecId);
+
+			jQuery.ajax({
+				url: alpn_templatedir + 'alpn_make_default_topic.php',
+				type: 'POST',
+				data: {
+					uniqueRecId: uniqueRecId
+				},
+				dataType: "json",
+				success: function(json) {
+
+				},
+				error: function() {
+		//TODO
+				}
+		})
+		break;
+
 		case 'pdf_topic':
 		console.log('PDF TOPIC...');
 			jQuery.ajax({
@@ -5216,7 +5259,7 @@ function bindWpformsAjaxFailed (table_profile_id, callBackFunc) {
 }
 
 
-function alpn_handle_topic_done(formId){ 
+function alpn_handle_topic_done(formId){
 
 	console.log('alpn_handle_topic_done - Form Id', formId);
 	var security = specialObj.security;

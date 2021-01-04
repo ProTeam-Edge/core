@@ -418,7 +418,6 @@ if ($topicBelongsToUser) {
 	);
 
 	if ($topicHasTeamMembers) {
-
 		$linkId++;
 		$topicTabs[] = array(
 			'type' => 'linked',
@@ -447,9 +446,6 @@ if (count($topicLinkKeys)) {
 		 $usedTopicTypes[$typeKey] = $value->topic_class;
 	 }
 }
-
-//pp($usedTopicTypes);
-//pp($topicTabs);
 
 $tableCounter = 1; //wpforms numbers tables odd numbers
 foreach ($topicTabs as $key => $value) {
@@ -496,11 +492,13 @@ foreach ($topicTabs as $key => $value) {
 			$tabSelector = "table_tab_{$key}";
 			$uniqueFieldId = 0;
 			$localFilterId = "alpn_local_selector_topic_filter_{$key}";
+			$topicFiler = "<div class='pte_extra_filter_container pte_link_table_filter'><select id='{$localFilterId}' class='alpn_selector'><option></option></select></div>";
 			$unlinkButton = $topicClass != 'list' ? "<i id='pte_extra_unlink_button' class='far fa-unlink pte_extra_button pte_extra_button_disabled' title='Unlink Topic' onclick='pte_unlink_selected_topic();'></i>" : '';
 			$editButton = $newTypeKey ? "<i id='pte_extra_edit_topic_button' class='far fa-pencil-alt pte_extra_button pte_extra_button_disabled' title='Edit Topic' onclick='pte_edit_topic_link(\"{$newTypeKey}\");'></i>" : "";
 			$addButton =  $newTypeKey ? "<i id='pte_extra_add_topic_button' class='far fa-plus-circle pte_extra_button' title='Create and Link to New {$friendlyName}' onclick='pte_new_topic_link(\"{$newTypeKey}\");'></i>" : "";
 			$deleteButton =  $newTypeKey ? "<i id='pte_extra_delete_topic_button' class='far fa-trash-alt pte_extra_button pte_extra_button_disabled' title='Delete Topic {$friendlyName}' onclick='pte_delete_topic_link(\"{$newTypeKey}\");'></i>" : "";
-			$editUnlink =  json_encode("<div class='pte_extra_crud_buttons'><div class='pte_extra_filter_container pte_link_table_filter'><select id='{$localFilterId}' class='alpn_selector'><option></option></select></div>{$unlinkButton}{$deleteButton}{$editButton}{$addButton}<div class='pte_extra_filter_container pte_topic_links_list'>{$topicList}</div></div>");
+			$makeDefaultButton =  $newTypeKey ? "<i id='pte_extra_default_topic_button' class='far fa-check-circle pte_extra_button pte_extra_button_disabled' title='Make this the Default Topic' onclick='pte_default_topic_link(\"{$newTypeKey}\");'></i>" : "";
+			$editUnlink =  json_encode("<div class='pte_extra_crud_buttons'><div class='pte_extra_filter_container pte_topic_links_list'>{$topicList}</div>{$unlinkButton}{$deleteButton}{$editButton}{$makeDefaultButton}{$addButton}</div>");
 
 			$initializeTable = "
 				<script>
@@ -521,7 +519,7 @@ foreach ($topicTabs as $key => $value) {
 					jQuery('#{$topicSelectId}').select2({
 						theme: 'bootstrap',
 						placeholder: '{$coreTopicInfo}',
-						width: '140px',
+						width: '175px',
 						allowClear: true,
 						closeOnSelect: false
 					});
@@ -536,12 +534,6 @@ foreach ($topicTabs as $key => $value) {
 						data.pte_owner_id = '{$userID}';
 						data.pte_tab_id = '{$tabId}';
 						pte_add_link_to_topic(data);
-					});
-					jQuery('#{$localFilterId}').select2({
-						theme: 'bootstrap',
-						allowClear: false,
-						placeholder: 'Filter...',
-						width: '140px'
 					});
 				</script>
 			";
