@@ -4582,7 +4582,7 @@ table#table_network.wpDataTable td {
 	width: 100%;
 	height: 100%;
 }
-.entry-content table{
+.entry-content{
 	display: block;
 	width: 100%;
 	overflow-x: auto;
