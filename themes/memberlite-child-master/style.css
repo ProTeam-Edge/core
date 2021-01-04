@@ -4585,7 +4585,7 @@ table#table_network.wpDataTable td {
 .entry-content table{
 	display: block;
 	width: 100%;
-	overflow-x: auto !important;
+	overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
 }
 @media only screen and (min-width: 40.063em){
