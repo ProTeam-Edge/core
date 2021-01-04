@@ -5216,10 +5216,10 @@ function bindWpformsAjaxFailed (table_profile_id, callBackFunc) {
 }
 
 
-function alpn_handle_topic_done(formId){
+function alpn_handle_topic_done(formId){ 
 
 	console.log('alpn_handle_topic_done - Form Id', formId);
-
+	var security = specialObj.security;
 	var topicDomId = '';
 	var topicTypeSpecial = '';
 	var topicTypeId = 0;
@@ -5256,7 +5256,8 @@ function alpn_handle_topic_done(formId){
 					url: alpn_templatedir + 'alpn_handle_topic_select.php',
 					type: 'POST',
 					data: {
-						uniqueRecId: returnHandler ? topicReturnTo.topic_dom_id : topic.dom_id
+						uniqueRecId: returnHandler ? topicReturnTo.topic_dom_id : topic.dom_id,
+						security:security
 					},
 					dataType: "html",
 					success: function(html) {
