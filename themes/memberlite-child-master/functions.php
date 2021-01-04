@@ -16,7 +16,7 @@
 } */
 function wpf_dev_display_submit_before( $form_data ) {
   
-    echo 'tedst';
+    return wp_nonce_field( 'name_of_my_action', 'name_of_nonce_field' );
 }
 add_action( 'wpforms_display_submit_before', 'wpf_dev_display_submit_before', 10, 1 );
 
