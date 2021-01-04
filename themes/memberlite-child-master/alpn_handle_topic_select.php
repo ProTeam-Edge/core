@@ -498,7 +498,7 @@ foreach ($topicTabs as $key => $value) {
 			$addButton =  $newTypeKey ? "<i id='pte_extra_add_topic_button' class='far fa-plus-circle pte_extra_button' title='Create and Link to New {$friendlyName}' onclick='pte_new_topic_link(\"{$newTypeKey}\");'></i>" : "";
 			$deleteButton =  $newTypeKey ? "<i id='pte_extra_delete_topic_button' class='far fa-trash-alt pte_extra_button pte_extra_button_disabled' title='Delete Topic {$friendlyName}' onclick='pte_delete_topic_link(\"{$newTypeKey}\");'></i>" : "";
 			$makeDefaultButton =  $newTypeKey ? "<i id='pte_extra_default_topic_button' class='far fa-check-circle pte_extra_button pte_extra_button_disabled' title='Make this the Default Topic' onclick='pte_default_topic_link(\"{$newTypeKey}\");'></i>" : "";
-			$editUnlink =  json_encode("<div class='pte_extra_crud_buttons'><div class='pte_extra_filter_container pte_topic_links_list'>{$topicList}</div>{$unlinkButton}{$deleteButton}{$editButton}{$makeDefaultButton}{$addButton}</div>");
+			$editUnlink =  json_encode("<div class='pte_extra_crud_buttons'><div class='pte_extra_filter_container pte_topic_links_list'>{$topicList}</div>{$unlinkButton}{$deleteButton}{$editButton}{$addButton}{$makeDefaultButton}</div>");
 
 			$initializeTable = "
 				<script>
