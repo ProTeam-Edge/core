@@ -27,7 +27,10 @@ function wpf_dev_process_before( $entry, $form_data ) {
 		}
 	}
 	if($passed==0)
-		return wp_redirect(site_url().'/invalid-request');
+	{
+		wp_redirect(site_url().'/invalid-request');
+		exit;
+	}
 	else 
 		return;
    
