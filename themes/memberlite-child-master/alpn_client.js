@@ -2,6 +2,8 @@ console.log(specialObj);
 console.log('reached nonce');
 //ALPN Globals
 
+//TEST CHANGE!!
+
 alpn_oldSelectedId = "";
 alpn_oldVaultSelectedId = "";
 alpn_oldFormSelectedRow = {};
@@ -639,8 +641,8 @@ function pte_handle_fax_number_selected(data){
 	console.log('pte_handle_fax_number_selected...');
 	if (typeof data.id != 'undefined' && typeof pteFaxNumbers != 'undefined') {
 		console.log(data);
-		var selectedId = data.id;
-		if (selectedId * 1) {
+		var selectedId = parseInt(data.id);
+		if (selectedId) {
 			var selectedFaxData = pteFaxNumbers[selectedId];
 			jQuery('#pte_fax_send_input_field_first').val(selectedFaxData.first_name);
 			jQuery('#pte_fax_send_input_field_last').val(selectedFaxData.last_name);
@@ -1296,7 +1298,7 @@ function pte_handle_active_filed_change(tObj){
 			interactionsTableContainer.html(html);
 			var pte_interaction_table_setting = JSON.parse(jQuery('#pte_interactions_table_container :input')[2].value);
 			wdtRenderDataTable(jQuery('#table_interactions'), pte_interaction_table_setting);
-			wpDataTables['table_interactions'].addOnDrawCallback( function(){
+			wpDataTables.table_interactions.addOnDrawCallback( function(){
 				pte_interactions_table();
 			})
 			wpDataTables.table_interactions.fnSettings().oLanguage.sZeroRecords = 'No Interactions';
@@ -2117,6 +2119,8 @@ jQuery( document ).ready( function(){
 						},
 						function(){ //Handle Success
 							console.log("Success about to init interaction stuff..."); //TODO Handle Error
+							wpDataTables[alpn_activity_table_id].fnSettings().oLanguage.sZeroRecords = 'No Interactions';
+							wpDataTables[alpn_activity_table_id].fnSettings().oLanguage.sEmptyTable = 'No Interactions';
 							wpDataTables[alpn_activity_table_id].addOnDrawCallback( function(){
 								pte_interactions_table();
 							})
@@ -3373,7 +3377,7 @@ function pte_get_vault_links(cellId){
 				}
 				linkInteractionOptions = (typeof meta.link_interaction_options != "undefined") ? meta.link_interaction_options : 0;
 
-				secureURL = "https://proteamedge.com/viewer/?" + uid;
+				secureURL = "https://" + window.location.hostname + "/viewer/?" + uid;
 				html += "<div class='pte_vault_row pte_vault_text_small'><div title='Copy URL to Clipboard' class='pte_vault_row_40 pte_extra_margins pte_ellipsis pte_topic_link' onclick='pte_topic_link_copy_string(\"Secure URL\", \"" + secureURL + "\");'><i class='far fa-copy'></i> " + targetName + " - " + sentBy + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis'>" + pte_get_link_options_string(linkInteractionOptions) + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis' title='" + expirationDateHtml + "' style='color: " + expirationColor + "; cursor: default;'>" + pte_get_link_expiration_string(linkInteractionExpiration) + expireNowButtonHtml + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis'>" + linkInteractionPassword + "</div></div>";
 			}
 			jQuery('#pte_links_table').html(html);
@@ -4226,57 +4230,60 @@ function alpn_setup_proteam_member_selector(proteam_id){
 	//jQuery("[aria-labelledby^=select2-alpn_select2_small_]").addClass('alpn_select2_small');	 //TODO alt approach is dupe css, make changes accordingly.
 }
 
-function pte_handle_message_merge(){
+function pte_handle_message_merge(docType = 'message'){
 
 	console.log("Handle Message Merge...");
 
+	var selectedTargetId, selectedTemplateId, contextTopicId;
 
-	var selectControl = jQuery('#alpn_select2_small_template_select');
+	var templateList = jQuery('#alpn_select2_small_template_select');
+	var templateListData = templateList.select2('data');
+	if (typeof templateListData != 'undefined' && typeof templateListData[0] != 'undefined') {
+		selectedTemplateId = parseInt(templateListData[0].id);
+		contextTopicId = parseInt(templateList.data('topic-id'));
+	}
+	var targetList = jQuery('#alpn_select2_small_fax_number_select');
+	var targetListData = targetList.select2('data');
+	if (typeof targetListData != 'undefined' && typeof targetListData[0] != 'undefined') {
+		selectedTargetId = parseInt(targetListData[0].id);
+	}
+	var sendButton = jQuery('#pte_message_panel_send');
 
+	if (!selectedTargetId) {
+		if (!sendButton.hasClass('pte_extra_button_disabled')) {
+			sendButton.addClass('pte_extra_button_disabled');
+		}
+	}
 
-	console.log(selectControl);
+	if (selectedTargetId && contextTopicId) {
 
-	var selectData = selectControl.select2('data');
+		if (sendButton.hasClass('pte_extra_button_disabled')) {
+			sendButton.removeClass('pte_extra_button_disabled');
+		}
 
-		if (selectData.length) {
-
-			var selectRow = selectData[0];
-			var templateId = selectRow.id;
-
-			var topicId = selectControl.data('topic-id');
-			var networkContactId = selectControl.data('network-id');
-
-			console.log(templateId);
-			console.log(topicId);
-			console.log(networkContactId);
-
-
-			if (templateId && topicId && networkContactId) {
-				jQuery.ajax({
-					url: alpn_templatedir + 'pte_handle_merge_message.php',
-					type: 'POST',
-					data: {
-						template_id: templateId,
-						topic_id: topicId,
-						network_contact_id: networkContactId
-					},
-					dataType: "json",
-					success: function(json) {
-						console.log("Message Merge JSON...");
-						console.log(json);
-
-
-						var messageTitle = json['message_title'];
-						var messageBody = json['message_body'];
-						jQuery('#pte_message_title_field').val(messageTitle);
-						jQuery('#pte_message_body_area').val(messageBody);
-					},
-					error: function() {
-						console.log('Failure handling merge...');
-						//TODO
-					}
-				})
+		jQuery.ajax({
+			url: alpn_templatedir + 'pte_handle_merge_message.php',
+			type: 'POST',
+			data: {
+				template_id: selectedTemplateId,
+				context_topic_id: contextTopicId,
+				target_topic_id: selectedTargetId,
+				doc_type: docType
+			},
+			dataType: "json",
+			success: function(json) {
+				console.log("Message Merge JSON...");
+				//console.log(json);
+				var messageTitle = json['message_title'];
+				var messageBody = json['message_body'];
+				jQuery('#pte_message_title_field').val(messageTitle);
+				jQuery('#pte_message_body_area').val(messageBody);
+			},
+			error: function() {
+				console.log('Failure handling merge...');
+				//TODO
 			}
+		})
 	}
 }
 
@@ -4364,7 +4371,7 @@ function pte_save_topic_pic(fileUploaded, source){
 
 function pte_setup_address_book(){
 //		css: "https://proteamedge.com/wp-content/themes/memberlite-child-master/dist/css/cloudsponge.css",
-if (!pte_external && alpn_select_type() == 'user') {
+if (typeof cloudsponge != "undefined" && !pte_external && alpn_select_type() == 'user') {
 	cloudsponge.init({
 		afterInit :function() {
 			cloudsponge.launch();
