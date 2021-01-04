@@ -11,6 +11,97 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+.pte_fax_defaults_title{
+	padding: 0 10px 0 10px;
+	font-size: 12px;
+	line-height: 18px;
+	font-weight: bold;
+}
+
+.pte_template_editor_message_area{
+	height: 36px;
+}
+
+
+.pte_vault_padding_left{
+	padding-left: 40px;
+}
+
+.tox-toolbar{
+	background-color: #F0F0F0 !important;
+}
+.tox .tox-toolbar__group:last-child {
+    margin-left: auto !important;
+}
+
+.pte_template_editor_container{
+}
+
+#pte_template_title_field:active,
+#pte_template_title_field:focus,
+#pte_template_title_field:focus-within,
+#pte_template_title_field:hover,
+#pte_template_title_field{
+	color: rgb(34, 47, 62) !important;
+	height: 32px !important;
+	width: 100%;
+	padding: 0 16px;
+	margin: 0 0 10px 0;
+	font-size: 16px;
+	line-height: 22px;
+	border-radius: 0px;
+	box-shadow: none !important
+}
+
+.pte_topic_manager_editor_title{
+	font-size: 14px;
+	line-height: 18px;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.pte_saved_reports_min_height {
+	min-height: 50px;
+}
+
+.pte_template_editor_list {
+	margin: 3px 0 30px 0;
+}
+
+.pte_template_list{
+	margin-top: 3px;
+	margin-bottom: 30px;
+}
+
+.pte_topic_manager_subtitle{
+	font-size: 16px;
+	line-height: 32px;
+}
+
+#template_toolbar_container{
+}
+
+#template_editor_container button{
+		transform: none !important;
+		box-shadow: none !important;
+}
+#template_editor_container .ql-picker-label {
+		line-height: normal !important;
+		vertical-align: text-bottom !important;
+}
+
+#template_editor_container {
+	margin-top: 18px;
+	min-height: 500px;
+	max-height: 800px;
+}
+
+#template_editor{
+	margin-top: 5px;
+	border: solid 1px rgb(196, 196, 196) !important;
+	border-radius: 2px !important;
+}
 
 div#pte_editor_container[data-personal-topic="true"] div.wpforms-field-email {
 	opacity: 0.6 !important;
@@ -208,6 +299,21 @@ table#table_reports td.column-draw_id {
 
 div#table_reports_filter {margin: 0 0 3px !important;}
 
+#pte_template_name_field:active,
+#pte_template_name_field:focus,
+#pte_template_name_field:focus-within,
+#pte_template_name_field:hover,
+#pte_template_name_field{
+	height: 24px !important;
+	width: 175px;
+	padding: 0 5px;
+	margin: 0 0 3px 0;
+	font-size: 12px;
+	line-height: 17px;
+	border-radius: 0px;
+	box-shadow: none !important
+}
+
 #pte_report_name_field:active,
 #pte_report_name_field:focus,
 #pte_report_name_field:focus-within,
@@ -283,6 +389,14 @@ div#table_reports_filter {margin: 0 0 3px !important;}
 .pte_refresh_report_loading{
 	vertical-align: middle;
 	display: inline;
+}
+
+.pte_max_width_75{
+	max-width: 75%;
+}
+
+.pte_max_width_25{
+	max-width: 25%;
 }
 
 .pte_max_width_50{
@@ -611,11 +725,11 @@ ul#pte_topic_type_properties_list li {
 }
 
 #pte_topic_manager_container{
-	padding-left: 20px;
+	padding-left: 40px;
 }
 
 #pte_topic_manager_inner{
-	padding-left: 20px;
+	margin-top: 18px;
 }
 
 .pte_topic_manager_outer{
@@ -624,7 +738,7 @@ ul#pte_topic_type_properties_list li {
 
 .pte_editor_title {
 	font-size: 18px;
-	line-height: 28px;
+	line-height: 24px;
 	font-weight: bold;
 	display: flex;
 	flex-wrap: wrap;
@@ -1180,7 +1294,7 @@ ul#menu-member-menu li a {
 	text-overflow: ellipsis;}
 
 #pte_email_ux_container{
-	padding: 5px 10px;
+	padding: 5px 10px 10px 10px;
 	border: solid 1px rgb(224, 224, 224);
 }
 
@@ -2224,7 +2338,6 @@ button[aria-label="Crop portrait (9:16)"]
 }
 
 #pte_fax_numbers_assigned{
-
 	height: 83px;
 }
 
@@ -2424,11 +2537,11 @@ input[type=range]:focus::-webkit-slider-runnable-track {
 }
 
 ul.pte_important_topic_scrolling_list {
-	height:124px;
+	height:119px;
 	width:100%;
 	overflow: hidden;
 	overflow-y: scroll;
-	padding: 5px 10px;
+	padding: 5px 10px 10px 10px;
 	margin: 5px 0 0 0;
 	border-top: 0;
 	border: 1px solid rgb(224, 224, 224);
@@ -2623,7 +2736,7 @@ table#table_interactions td.column-draw_id {
 }
 
 #pte_interaction_information_title{
-	z-index: auto;
+	z-index: 100;
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -2694,11 +2807,13 @@ table#table_interactions td.column-draw_id {
 }
 
 .pte_interaction_message_body {
-		height: 50px  !important;
+		height: 75px  !important;
 		border: solid 1px #ccc !important;
 		padding: 3px 5px !important;
 		border-radius: 0 !important;
 		width: 100% !important;
+		font-size: 12px !important;
+		line-height: 18px !important;
 }
 
 
@@ -2798,6 +2913,9 @@ table#table_interactions td.column-draw_id {
 	font-size: 12px !important;
 	margin: 2px 0 2px 0px !important;
 	cursor: pointer;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 #pte_interaction_information_panel{
@@ -4042,17 +4160,19 @@ table#table_network.wpDataTable td {
 	margin: 0px;
 }
 
+
+
 #pte_message_body_area:active,
 #pte_message_body_area:focus,
 #pte_message_body_area:focus-within,
 #pte_message_body_area:hover,
 #pte_message_body_area{
 	width: 100%;
-	height: 50px;
+	height: 75px;
 	margin-top: 3px;
 	padding: 5px 5px;
 	font-size: 12px;
-	line-height: 15px;
+	line-height: 18px;
 	border-radius: 0px;
 	box-shadow: none !important
 }
@@ -4141,6 +4261,10 @@ table#table_network.wpDataTable td {
 }
 
 .pmpro_level-expiration {
+}
+
+.site-footer {
+	margin-top: 100px;
 }
 
 .site-footer .widget-title {

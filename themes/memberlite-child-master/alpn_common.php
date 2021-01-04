@@ -54,6 +54,83 @@ function pte_add_quotes($str) {
     return sprintf("'%s'", $str);
 }
 
+function pte_get_available_topic_fields($formId, $editorMode) {
+
+  global $wpdb;
+
+  $userInfo = wp_get_current_user();
+  $userID = $userInfo->data->ID;
+
+  $topicTypeMap = array();
+  $tokens = array();
+  alpn_log("pte_get_available_topic_fields");
+  //Get the desired topic
+  $results = $wpdb->get_results($wpdb->prepare("SELECT id, name, type_key, schema_key, topic_type_meta, special FROM alpn_topic_types WHERE form_id = %d",	$formId));
+  if (isset($results[0])) {
+  	$ttData = $results[0];
+  	$ttMeta = isset($ttData->topic_type_meta) ? json_decode($ttData->topic_type_meta, true) : array();
+  	$fieldmap = isset($ttMeta['field_map']) ? $ttMeta['field_map'] : array();
+    $schemaKey = $ttData->schema_key;
+    $topicTypeId = $ttData->id;
+    $ttIdEncoded = base_convert($topicTypeId, 10, 36);
+    $ttName = $ttData->name ? $ttData->name : $schemaKey;
+    $ttSpecial = $ttData->special;
+    foreach ($fieldmap as $key => $value) {
+      if (isset($value['type']) && substr($value['type'], 0, 5) == "core_") {
+        if ($editorMode != "message") {  //messages can't travel links. TODO: Maybe one day but will require adding filtering to Interactions. Probably interesting.
+          $topicTypeMap[$value['type']] = $value['type'];
+        }
+  		} else {
+        $hiddenPrint = isset($value['hidden_print']) && $value['hidden_print'] == 'true' ? true : false;
+        if ($key && !$hiddenPrint && $value['id'] != "0"){
+          $fieldId = $value['id'];
+          $fieldFriendlyName = isset($value['friendly']) && $value['friendly'] ? $value['friendly'] : "NA";
+          $friendlyKey = "{$ttName} | {$fieldFriendlyName}";
+          $tokens[] = array(
+            "text" => $friendlyKey,
+            "topic_type_id" => $ttIdEncoded,
+            "field_name" => $key
+          );
+        }
+      }
+    }
+
+  $recipientTypeKey = '';
+  if ($editorMode == "message") { //add recipient (based on core_person) But only on messages since this will come from the interaction.
+      $recipientTypeKey = "core_person";
+      $topicTypeMap[$recipientTypeKey] = '';
+  }
+  //Get linked topic fields, if any
+  if (count($topicTypeMap)) {
+    $topicListString = "('" . implode("','", array_keys($topicTypeMap)) . "')";
+    $results = $wpdb->get_results("SELECT id, name, type_key, schema_key, topic_type_meta FROM alpn_topic_types WHERE type_key IN {$topicListString}");
+    foreach ($results as $key => $value) {
+    	$ttMeta = isset($value->topic_type_meta) ? json_decode($value->topic_type_meta, true) : array();
+    	$fieldmap = isset($ttMeta['field_map']) ? $ttMeta['field_map'] : array();
+      $schemaKey = $value->schema_key;
+      $topicTypeId = $value->id;
+      $ttIdEncoded = base_convert($topicTypeId, 10, 36);
+      $ttName = $recipientTypeKey ? "Recipient" : $value->name;
+      foreach ($fieldmap as $key1 => $value1) {
+        $hiddenPrint = isset($value1['hidden_print']) && $value1['hidden_print'] == 'true' ? true : false;
+        if (!$hiddenPrint && $key1 && $value1['id'] != "0" && (isset($value1['type']) && substr($value1['type'], 0, 5) != "core_")) {
+          $fieldId = $value1['id'];
+          $fieldFriendlyName = $value1['friendly'];
+          $friendlyKey = "{$ttName} | {$fieldFriendlyName}";
+          $tokens[] = array(
+            "text" => $friendlyKey,
+            "topic_type_id" => $ttIdEncoded,
+            "field_name" => $key1
+          );
+        }
+      }
+    }
+  }
+  }
+  sort($tokens);
+  return json_encode($tokens, true);
+}
+
 function pte_name_extract($theMap){
   $extractedNames = array();
   foreach ($theMap as $key => $value) {    //TODO find the right function
@@ -101,7 +178,8 @@ function pte_async_job_old ($url, $params) {
 }
 
 function pte_sync_curl($endPoint, $postRequest) {
-  $baseUrl = 'https://proteamedge.com/wp-content/themes/memberlite-child-master/jonathan_dev/';
+  $domainName = PTE_HOST_DOMAIN_NAME;
+  $baseUrl = "https://{$domainName}/wp-content/themes/memberlite-child-master/jonathan_dev/";
   $fullUrl = "{$baseUrl}{$endPoint}.php";
   $headers[] = "Accept: application/json";
   $options = array(
@@ -122,6 +200,17 @@ function pte_sync_curl($endPoint, $postRequest) {
    $response = curl_exec($ch);
    curl_close($ch);
    return $response;
+}
+
+
+function pte_send_wp_mail($data){
+
+  $toEmail = $data['to_email'];
+  $toName =  $data['to_name'];
+  $friendlyToEmail = "{$toName} <{$toEmail}>";
+
+  wp_mail( $friendlyToEmail, $data['subject_text'], "<div>HTML HERE!</div>" . $data['body_text'] );
+
 }
 
 function pte_send_mail ($data) {
@@ -157,9 +246,6 @@ function pte_send_mail ($data) {
 
   try {
       $response = $sendgrid->send($email);
-      alpn_log($response->statusCode());
-      alpn_log ($response->headers());
-      alpn_log ($response->body());
   } catch (Exception $e) {
       alpn_log ('Caught exception: '. $e->getMessage());
   }
@@ -170,12 +256,13 @@ function pte_send_sms($data){
 
   alpn_log("pte_send twilio SMS...");
   global $wpdb;
+  $domainName = PTE_HOST_DOMAIN_NAME;
 
   $fromName = isset($data['from_name']) ? $data['from_name'] : 'Error';
   $sendMobileNumber = isset($data['send_mobile_number']) ? "+1" . preg_replace('/\D/', '', $data['send_mobile_number'])  : '';
   $subject = isset($data['subject_text']) ? $data['subject_text'] : 'File Received';
   $body = isset($data['body_text']) ? $data['body_text'] : '';
-  $link = isset($data['link_id']) ? "https://proteamedge.com/viewer/?" . $data['link_id'] : '';
+  $link = isset($data['link_id']) ? "https://{$domainName}/viewer/?" . $data['link_id'] : '';
   $fileName = isset($data['vault_file_name']) ? $data['vault_file_name'] : '';
 
   $body = "Secure Link From {$fromName} (using proteamedge.com) - {$subject} - {$body} - $fileName - {$link}";
@@ -556,6 +643,7 @@ function pte_get_topic_manager($topicManagerSettings){
         {$topicTable}
       </div>
       <div id='pte_topic_manager_container' class='pte_vault_row_75'>
+        <div id='alpn_message_area' class='pte_template_editor_message_area'></div>
         <div id='pte_topic_manager_inner' class=''>
           &nbsp;
         </div>
@@ -599,7 +687,40 @@ function pte_get_topic_manager($topicManagerSettings){
 return $html;
 }
 
+function pte_get_template_editor($editorSettings) {
+  //$sidebarState = isset($topicManagerSettings['sidebar_state']) ? $topicManagerSettings['sidebar_state'] : 'closed';
+  $topicTable = do_shortcode("[wpdatatable id=9]");
+  $topicTable = str_replace('table_1', 'table_topic_types', $topicTable);
+  $topicTable = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $topicTable);
 
+  //pte_topic_manager_inner is the container to switch between add/edit
+  $html = "";
+  $html .= "
+    <div class='pte_vault_row pte_topic_manager_outer'>
+      <div class='pte_vault_row_25 pte_max_width_25'>
+      <div class='pte_editor_title'>
+        <div class='pte_vault_row_75'>
+          <div>Templates</div>
+        </div>
+        <div class='pte_vault_row_25 pte_vault_right'>
+          &nbsp;
+        </div>
+      </div>
+        {$topicTable}
+      </div>
+      <div id='pte_topic_manager_container' class='pte_vault_row_75 pte_max_width_75'>
+      <div id='alpn_message_area' class='pte_template_editor_message_area'></div>
+      <div id='template_editor_container'>
+        &nbsp;
+      </div>
+      </div>
+    </div>
+  <script>
+      pte_template_editor_loaded = true;
+  </script>
+  ";
+return $html;
+}
 
 function pte_get_viewer($viewerSettings){
 
@@ -1458,11 +1579,12 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
       );
       $id = 'pte_important_network_topic_list';
       break;
-      case "topics":
+      case "topics":    //Primary only
         $results = $wpdb_readonly->get_results(
           $wpdb_readonly->prepare(
-            "SELECT id, name FROM alpn_topics WHERE owner_id = %d AND special = 'topic' ORDER BY name ASC;", $userID)
+            "SELECT t.id, t.name FROM alpn_topics t RIGHT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id AND tt.topic_class = 'topic' AND tt.special = 'topic' WHERE t.owner_id = '%s' ORDER BY name ASC;", $userID)
         );
+        alpn_log($results);
         $id = 'pte_important_topic_list';
         break;
         case "single_schema_type":

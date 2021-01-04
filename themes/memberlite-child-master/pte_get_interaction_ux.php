@@ -228,7 +228,8 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$sendKey = isset($uxMeta['fax_key']) ? 'send_fax' : 'send';
 			$sendKey = isset($uxMeta['email_key']) ? 'send_email' : 'send';
 			$sendKey = isset($uxMeta['sms_key']) ? 'send_sms' : 'send';
-			$selectPanel = "<select id='alpn_select2_small_template_select' class='' data-topic-id='{$topicId}' data-network-id='{$networkId}'>";
+			$selectPanel = "<select id='alpn_select2_small_template_select' class='' data-topic-id='{$topicId}'>";
+			$selectPanel .= "<option value='0'>Select Template...</option>";
 			foreach ($templates as $key => $value){
 				$id = $value['id'];
 				$description = $value['short_description'];
@@ -242,7 +243,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 						<div style='width: 100%; margin-bottom: 0px;'>{$selectPanel}</div>
 					</div>
 					<div style='float: right; width: 50px; text-align: right; font-size: 20px; color: rgb(0, 116, 187); margin: 0;'>
-						<button data-pteop='{$sendKey}' id='pte_message_panel_send' class='btn btn-danger btn-sm' onclick='pte_handle_send_interaction(this);' style='margin-right: 0; width: 45px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Send</button>
+						<button data-pteop='{$sendKey}' id='pte_message_panel_send' class='btn btn-danger btn-sm pte_extra_button_disabled' onclick='pte_handle_send_interaction(this);' style='margin-right: 0; width: 45px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Send</button>
 					</div>
 					<div style='clear: both;'></div>
 			";
@@ -266,7 +267,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 		break;
 		case 'select_topics_with_mobile_numbers':
 			$mobileNumbers  = isset($uxMeta['mobile_numbers']) ? $uxMeta['mobile_numbers'] : array();
-			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}' data-network-id='{$networkId}'>";
+			$selectPanel = "<select id='alpn_select2_small_fax_number_select' data-topic-id='{$topicId}'>";
 			$selectPanel .= "<option value='0'>Select Recipient...</option>";
 			foreach ($mobileNumbers as $key => $value){
 				$tId = $value['id'];
@@ -289,7 +290,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 
 		case 'select_topics_with_email_addresses':
 			$emailAddresses  = isset($uxMeta['email_addresses']) ? $uxMeta['email_addresses'] : array();
-			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}' data-network-id='{$networkId}'>";
+			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}'>";
 			$selectPanel .= "<option value='0'>Select Recipient...</option>";
 			foreach ($emailAddresses as $key => $value){
 				$tId = $value['id'];
@@ -313,17 +314,17 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$networkContacts = $topicContacts = '';
 			$faxNumbers  = isset($uxMeta['fax_numbers']) ? $uxMeta['fax_numbers'] : array();
 			$faxNumbersById = array();
-			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}' data-network-id='{$networkId}'>";
+			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}'>";
 			$selectPanel .= "<option value='0'>Enter Recipient Information...</option>";
 			foreach ($faxNumbers as $key => $value){
 				$id = $value['id'];
 				$name = $value['name'];
-				$selectPanel .= "<option value='{$id}'>{$name}</option>";
 				$topicContent = $value['topic_content'];
 				$firstName = isset($topicContent['person_givenname']) ? $topicContent['person_givenname'] : '';
 				$lastName = isset($topicContent['person_familyname']) ? $topicContent['person_familyname'] : '';
 				$companyName = isset($topicContent['organization_name']) ? $topicContent['organization_name'] : '';
 				$faxNumber = isset($topicContent['person_faxnumber']) ? $topicContent['person_faxnumber'] : $topicContent['organization_faxnumber'];
+				$selectPanel .= "<option value='{$id}'>{$name} - {$faxNumber}</option>";
 				$faxNumbersById[$id]  = array(
 					'first_name' => $firstName,
 					'last_name' => $lastName,
@@ -354,6 +355,8 @@ function pte_make_button_line($lineType, $uxMeta) {
 
 function pte_make_interaction_link($linkType, $uxMeta) {
 
+	$currentDomain = PTE_HOST_DOMAIN_NAME;
+
 	$networkId = 	isset($uxMeta['network_id']) ? $uxMeta['network_id'] : "";
 	$networkName = 	isset($uxMeta['network_name']) ? $uxMeta['network_name'] : "";
 	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : "";
@@ -377,7 +380,7 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 	$linkInteractionPassword = 	isset($uxMeta['link_interaction_password']) && $uxMeta['link_interaction_password'] ? "Set" : "None";
 	$linkInteractionExpiration = 	isset($uxMeta['link_interaction_expiration']) ? pte_get_link_expiration_string($uxMeta['link_interaction_expiration']) : 'Error';
 	$linkInteractionOptions = 	isset($uxMeta['link_interaction_options']) ? pte_get_link_options_string($uxMeta['link_interaction_options']) : 'Error';
-	$secureURL = 	isset($uxMeta['link_id']) ? "https://proteamedge.com/viewer/?" . $uxMeta['link_id'] : 'Error';
+	$secureURL = 	isset($uxMeta['link_id']) ? "https://{$currentDomain}/viewer/?" . $uxMeta['link_id'] : 'Error';
 
 	$viewString = $vaultFileName ? $vaultFileName : $viewLinkFileType;
 
@@ -743,12 +746,12 @@ function pte_make_message_panel($uxMeta) {
     			theme: 'bootstrap',
     			width: '100%',
 					allowClear: false,
-					minimumResultsForSearch: -1
+					minimumResultsForSearch: -1,
     		});
 				jQuery('#alpn_select2_small_template_select').on('select2:select', function (e) {
-					pte_handle_message_merge();
+					pte_handle_message_merge('message');
 				});
-				pte_handle_message_merge();
+				pte_handle_message_merge('message');
     </script>
 		";
 	return $html;
@@ -765,33 +768,39 @@ function pte_make_send_url_panel($uxMeta) {
 
 	$widgetTypeId  = isset($uxMeta['widget_type_id']) ? $uxMeta['widget_type_id'] : '';
 	//Lookup templates for this user for this template type
+
 	$templateData = $wpdb->get_results(
-		$wpdb->prepare("SELECT id, short_description, default_item FROM alpn_message_templates WHERE message_type_id = %s AND owner_id = %s;", $messageTypeId, $ownerId)
+		$wpdb->prepare("SELECT tt.type_key, tm.id, tm.name FROM alpn_topic_types tt JOIN alpn_templates tm ON tm.type_key = tt.type_key AND tm.template_type = 'message' WHERE tt.owner_id = %d AND tt.id = %d;",$ownerId, $uxMeta['topic_type_id'])
 	);
+
 	$templates = array();
 	foreach ($templateData as $key => $value) {
-		$templates[] = array("id" => $value->id, "short_description" => $value->short_description, "default_item" => $value->default_item);
+		$templates[] = array("id" => $value->id, "short_description" => $value->name, "default_item" => 0);
 	}
 	$uxMeta['templates'] = $templates;
 
 	if ($widgetTypeId == "email_send") {
 		//get topics with ids
 		$results = $wpdb->get_results(
-			$wpdb->prepare("SELECT t.*, p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle, t2.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special = 'user' WHERE JSON_EXTRACT(t.topic_content, '$.person_email') != '' AND t.special != 'user' AND t.owner_id = %s ORDER BY NAME ASC", $ownerId)
+			$wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE JSON_EXTRACT(t.topic_content, '$.person_email') != '' AND t.owner_id = %s AND tt.schema_key = 'Person' AND t.special != 'user' ORDER BY NAME ASC", $ownerId)
 		 );
 
 		$emailAddresses = array();
 		foreach ($results as $key => $value) {   //If connected with someone, use their data.
 			$tId =  $value->id;
-			$tTypeId =  $value->topic_type_id;
 			$tTypeSpecial =  $value->special;
 			$tConnectedId = $value->connected_id;
-			$tContent = $value->topic_content;
+			$tContent = json_decode($value->topic_content, true);
+
 			if ($tTypeSpecial == 'contact' && $tConnectedId) {
-				$tContent = $value->connected_topic_content;
+				$tConnectedContent = json_decode($value->connected_topic_content);
 			}
-			$tContent = json_decode($tContent, true);
-			$emailAddress = $tContent['person_email'];
+
+			if (isset($tConnectedContent['person_email'])) {
+				$emailAddress = $tConnectedContent['person_email'];
+			} else {
+				$emailAddress = $tContent['person_email'];
+			}
 			$emailAddresses[] = array("id" => $tId, "text" => "{$value->name}&nbsp;&nbsp;({$emailAddress})");
 		}
 		$uxMeta['email_addresses'] = $emailAddresses;
@@ -837,9 +846,6 @@ function pte_make_send_url_panel($uxMeta) {
 	$linkSettings = pte_make_button_line('link_settings', $uxMeta);
 
 	$linkPanel = pte_make_interaction_link('topic_panel', $uxMeta);
-	if ($topicTypeId == 5) {
-		$linkPanel = pte_make_interaction_link('personal_panel', $uxMeta);
-	}
 
 	$html .= "
 	<div class='pte_interaction_information_panel'>
@@ -861,15 +867,17 @@ function pte_make_send_url_panel($uxMeta) {
 					minimumResultsForSearch: -1
 				});
 				jQuery('#alpn_select2_small_template_select').on('select2:select', function (e) {
-					pte_handle_message_merge();
+					pte_handle_message_merge('message');
 				});
-				pte_handle_message_merge();
-
     		jQuery('#alpn_select2_small_fax_number_select').select2( {
     			theme: 'bootstrap',
     			width: '100%',
 					allowClear: false
     		});
+				jQuery('#alpn_select2_small_fax_number_select').on('select2:select', function (e) {
+					pte_handle_message_merge('message');
+				});
+			//	pte_handle_message_merge('message');
     </script>
 		";
 	return $html;
@@ -885,15 +893,14 @@ function pte_make_fax_panel($uxMeta) {
 
 	//Lookup templates for this user for this template typed
 	$templateData = $wpdb->get_results(
-		$wpdb->prepare("SELECT id, short_description, default_item FROM alpn_message_templates WHERE message_type_id = %s AND owner_id = %s;", $messageTypeId, $ownerId)
+		$wpdb->prepare("SELECT tt.type_key, tm.id, tm.name FROM alpn_topic_types tt JOIN alpn_templates tm ON tm.type_key = tt.type_key AND tm.template_type = 'message' WHERE tt.owner_id = %d AND tt.id = %d;",$ownerId, $uxMeta['topic_type_id'])
 	);
+
 	$templates = array();
 	foreach ($templateData as $key => $value) {
-		$templates[] = array("id" => $value->id, "short_description" => $value->short_description, "default_item" => $value->default_item);
+		$templates[] = array("id" => $value->id, "short_description" => $value->name, "default_item" => 0);
 	}
 	$uxMeta['templates'] = $templates;
-
-	//get topics with fax numbers
 
 	$faxData = $wpdb->get_results( //all my topics that have fax numbers but not me
 		$wpdb->prepare("SELECT id, name, topic_content, topic_type_id FROM alpn_topics WHERE special != 'user' AND owner_id = %s AND (JSON_EXTRACT(topic_content, '$.organization_faxnumber') != '' OR JSON_EXTRACT(topic_content, '$.person_faxnumber') != '') ORDER BY NAME ASC", $ownerId)
@@ -939,18 +946,18 @@ function pte_make_fax_panel($uxMeta) {
 					minimumResultsForSearch: -1
 				});
 				jQuery('#alpn_select2_small_template_select').on('select2:select', function (e) {
-					pte_handle_message_merge();
+					pte_handle_message_merge('message');
 				});
-				pte_handle_message_merge();
 
-    		jQuery('#alpn_select2_small_fax_number_select').select2( {
+				jQuery('#alpn_select2_small_fax_number_select').select2( {
     			theme: 'bootstrap',
     			width: '100%',
 					allowClear: false
     		});
 				jQuery('#alpn_select2_small_fax_number_select').on('select2:select', function (e) {
-				var data = e.params.data;
-				pte_handle_fax_number_selected(data);
+					var data = e.params.data;
+					pte_handle_fax_number_selected(data);
+					pte_handle_message_merge('message');
 				});
     </script>
 		";

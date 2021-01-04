@@ -254,8 +254,8 @@ if ($topicEmailRoute || $topicFaxRoute) {
 $friendlyLogoNameHtml = isset($friendlyLogoName) && $friendlyLogoName ? $friendlyLogoName : "Image/Logo";
 
 $imageTitle = ($showLogoAccordion == 'block' || $showIconAccordian == 'block') ? "<div class='pte_accordion_section_title'>Topic Images</div>" : "";
-$interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>Interaction Importance</div>" : "";
-$inboundRoutingTitle = ($showEmailAccordian == 'block' || $showFaxAccordian == 'block') ? "<div class='pte_accordion_section_title'>Inbound Routing</div>" : "";
+$interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>Interaction Priority</div>" : "";
+$inboundRoutingTitle = ($showEmailAccordian == 'block' || $showFaxAccordian == 'block') ? "<div class='pte_accordion_section_title'>Inbound File Routing</div>" : "";
 $importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte_accordion_section_title'>Contacts</div>" : "";
 
 $settingsAccordion = "
@@ -290,11 +290,11 @@ $settingsAccordion = "
 		{$interactionTypeSliders}
 	</div>
 	{$inboundRoutingTitle}
-	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showEmailAccordian};' title='Manage Email Routes'>Receive Files by Email</button>
+	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showEmailAccordian};' title='Manage Email Routes'>Email</button>
 	<div class='pte_panel' style='display: {$showEmailAccordian};' data-height='203px'>
 		{$emailUx}
 	</div>
-	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showFaxAccordian};' title='Manage Fax Routes'>Receive Faxes</button>
+	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showFaxAccordian};' title='Manage Fax Routes'>Fax</button>
 	<div class='pte_panel pte_extra_margin_after' style='display: {$showFaxAccordian};' data-height='175px'>
 		{$faxUx}
 	</div>
