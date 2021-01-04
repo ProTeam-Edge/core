@@ -4588,8 +4588,3 @@ table#table_network.wpDataTable td {
 	overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
 }
-@media only screen and (min-width: 40.063em){
-	.medium-8 {
-	    width: 100%;
-	}
-}
