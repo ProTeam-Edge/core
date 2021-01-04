@@ -4602,3 +4602,6 @@ table#table_network.wpDataTable td {
 iframe#webWidget{
     height: 94% !important;
 }
+#primary .tml input[type="text"], #primary .tml input[type="email"], #primary .tml input[type="url"], #primary .tml input[type="password"], #primary .tml textarea, #primary .tml select{
+	max-width: 255px !important;
+}
