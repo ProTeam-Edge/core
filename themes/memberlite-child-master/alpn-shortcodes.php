@@ -126,6 +126,40 @@ function usernetwork_shortcode($attr) {
 				$html .= pte_get_viewer($viewerSettings);
 			break;
 
+			case 'template_editor':
+			 $topicManagerSettings = array(
+				 'setting_1' => 'open'
+			 );
+				$html .= pte_get_template_editor($topicManagerSettings);
+
+				if ($userID) {
+					$html .= "
+					<script>
+						alpn_user_id = {$userID};
+						alpn_sync_id = '{$syncId}';
+						alpn_user_topic_id = {$userTopicId};
+						alpn_user_topic_type_id = {$userTopicTypeId};
+						alpn_contact_topic_type_id = {$contactTopicTypeId};
+						alpn_user_displayname = '{$userDisplayName}';
+						alpn_user_email = '{$userEmail}';
+						alpn_avatar_baseurl = '{$avatarUrl}';
+						alpn_avatar_handle = '{$userImageHandle}';
+						alpn_avatar_url = '{$fullAvatarUrl}';
+						alpn_templatedir = '{$templateDirectory}-child-master/';
+						pte_standard_color_count = $standardColorCount;
+					</script>
+					";
+				} else {
+					$html .= "
+					<script>
+						alpn_user_id = 0;
+					</script>
+					";
+				}
+
+			break;
+
+
 			case 'chrome':
 
 			$results = $wpdb_readonly->get_results(
@@ -321,13 +355,14 @@ function usernetwork_shortcode($attr) {
 		// <i class='far fa-repeat-alt' style='color: #3172B6; margin-right: 5px;'></i>18
 		// <i class='far fa-pause-circle' style='color: #3172B6; margin-left: 15px;'></i>
 
+		// <div class='alpn_title_bar' style='background-color: transparent; margin-bottom: 5px;'>
+		// 	<div class='alpn_section_head_left'></div>
+		// 	<div class='alpn_section_head_right'></div>
+	 // </div>
+
 			$html = "";
 			$html .= "<div id='alpn_section_alert'>
-								<div class='alpn_title_bar' style='background-color: transparent; margin-bottom: 5px;'>
-									<div class='alpn_section_head_left'>Interactions</div>
-									<div class='alpn_section_head_right'>
-									</div>
-							 </div>
+
 							 <div id='pte_interaction_outer_container'>
 							 <div id='pte_interaction_current'>
 		 					 </div>
