@@ -7,6 +7,11 @@ $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
 $qVars = $_POST;
+$verify = 0;
+if(isset($qVars['security']) && !empty($qVars['security']))
+	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+	
+	if($verify==1) {
 $templateData = isset($qVars['template_data']) ? json_decode(stripslashes($qVars['template_data']), true) : array();
 $templateName = pte_filename_sanitizer($templateData['template_name']);
 
@@ -46,6 +51,14 @@ if ($templateData && $userID) {
 			alpn_log($e);
 			exit;
 	}
+	
 }
+	}
+	else
+	{
+		echo $html = 'Not a valid request please hard refresh and try again.';
+		alpn_log($html);
+		exit;
+	}
 
 ?>

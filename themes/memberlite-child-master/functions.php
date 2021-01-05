@@ -14,6 +14,8 @@
  
     // run code
 } */
+include_once('pte_config.php');
+$domainName = PTE_HOST_DOMAIN_NAME;
 // verify added nonce before submission for wpforms
 function wpf_dev_process_before( $entry, $form_data ) {
  
@@ -53,7 +55,7 @@ $cookie_secure = 'secure';
 $cookie_httponly = 'HTTPOnly';
 
 
-setcookie($cookie_name, $cookie_value, (time()+3600), '/', 'https://alct.pro', $cookie_secure, $cookie_httponly);
+setcookie($cookie_name, $cookie_value, (time()+3600), '/',$domainName, $cookie_secure, $cookie_httponly);
 
 include('alpn-shortcodes.php');
 include('alpn_common.php');

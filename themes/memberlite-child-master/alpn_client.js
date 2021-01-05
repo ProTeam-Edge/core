@@ -1564,11 +1564,13 @@ function pte_interactions_table() {
 }
 
 function pte_handle_select_template (formId, editorMode) {
+	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_get_template_editor.php',
 		type: 'POST',
 		data: {
 			form_id: formId,
+			security: security,
 			editor_mode: editorMode
 		},
 		dataType: "html",
@@ -4688,13 +4690,15 @@ function pte_manage_report_table_select(domId){
 
 function pte_handle_delete_report(userResponse, parms){
 	console.log('pte_handle_delete_report...');
+	var security = specialObj.security;
 	var reportDomId = parms.report_id;
 	if (userResponse == 'yes' && reportDomId) {
 		jQuery.ajax({
 			url: alpn_templatedir + 'alpn_handle_delete_report.php',
 			type: 'POST',
 			data: {
-				report_dom_id: reportDomId
+				report_dom_id: reportDomId,
+				security: security,
 			},
 			dataType: "json",
 			success: function(json) {
@@ -4761,12 +4765,13 @@ function pte_handle_template_operation(operation) {
 
 			allData.topic_type_key = topicTypeKey;
 			allData.topic_type_form_id = topicTypeFormId;
-
+			var security = specialObj.security;	
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_save_template.php',
 				type: 'POST',
 				data: {
-					template_data: JSON.stringify(allData)
+					template_data: JSON.stringify(allData),
+					security: security,
 				},
 				dataType: "json",
 				success: function(json) {
@@ -4790,12 +4795,14 @@ function pte_handle_template_operation(operation) {
 
 
 		case 'clone':
+		var security = specialObj.security;
 			console.log('Handling Clone...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_clone_report.php',
 				type: 'POST',
 				data: {
-					report_dom_id: pte_selected_report_template
+					report_dom_id: pte_selected_report_template,
+					security: security,
 				},
 				dataType: "json",
 				success: function(json) {
@@ -4863,6 +4870,7 @@ function pte_handle_report_settings(operation) {
 			pte_show_message('yellow_question', 'confirm', 'Please confirm delete:', 'pte_handle_delete_report', JSON.stringify(parms));
 		break;
 		case 'clone':
+		
 			console.log('Handling Clone...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_clone_report.php',
