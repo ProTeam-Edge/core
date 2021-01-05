@@ -8,8 +8,8 @@ $ppCdnBase = PTE_IMAGES_ROOT_URL;
 $html = "";
 $pVars = $_POST;
 $verify = 0;
-if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+if(isset($pVars['security']) && !empty($pVars['security']))
+	$verify = wp_verify_nonce( $pVars['security'], 'alpn_script' );
 if($verify==1) {
 $formId = isset($pVars['form_id']) ? $pVars['form_id'] : 0;
 $editorMode = isset($pVars['editor_mode']) ? $pVars['editor_mode'] : 'message';
