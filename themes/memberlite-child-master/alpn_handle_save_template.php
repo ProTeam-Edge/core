@@ -56,7 +56,7 @@ if ($templateData && $userID) {
 	}
 	else
 	{
-		$html = 'Not a valid request please hard refresh and try again.';
+		echo $html = 'Not a valid request please hard refresh and try again.';
 		alpn_log($html);
 		exit;
 	}
