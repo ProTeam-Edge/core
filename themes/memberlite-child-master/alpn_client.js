@@ -4791,13 +4791,14 @@ function pte_handle_template_operation(operation) {
 
 
 		case 'clone':
-		alert("reached here 1")
+		var security = specialObj.security;
 			console.log('Handling Clone...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_clone_report.php',
 				type: 'POST',
 				data: {
-					report_dom_id: pte_selected_report_template
+					report_dom_id: pte_selected_report_template,
+					security: security,
 				},
 				dataType: "json",
 				success: function(json) {
@@ -4865,7 +4866,7 @@ function pte_handle_report_settings(operation) {
 			pte_show_message('yellow_question', 'confirm', 'Please confirm delete:', 'pte_handle_delete_report', JSON.stringify(parms));
 		break;
 		case 'clone':
-		alert("reached here 2")
+		
 			console.log('Handling Clone...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_clone_report.php',
