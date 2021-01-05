@@ -7,17 +7,25 @@ require ('/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-ma
 use Google\Cloud\Storage\StorageClient;
 
 $qVars = $_POST;
-$sendData = isset($qVars['data']) ? json_decode(stripslashes($qVars['data']), true) : array();
+$sendData = isset($qVars['data']) ? json_decode(stripslashes($qVars['data']), true) : array();    //"owner_network_id" => 11, "process_id" => "test", "owner_id" => 40, "topic_id" => 11
+
+alpn_log('Start pte_handle_fax_send...');
+alpn_log($sendData);
 
 if ($sendData) {
-
-	alpn_log('Start pte_handle_fax_send...');
-	//alpn_log($sendData);
 
 	$processId = $sendData['process_id'];
 
 	$topicContent = array();
+	$ownerNetworkId = $sendData['owner_network_id'];   //11 not 40
+	$ownerTopicId1 = $ownerNetworkId;
+	$ownerId = $sendData['owner_id'];   //40 not 11
+
+	//TODO combine into single query
+
+	$topicContent = array();
 	$ownerNetworkId = $sendData['owner_network_id'];
+
 	$results = $wpdb->get_results(
 		 $wpdb->prepare("SELECT logo_handle, topic_content FROM alpn_topics WHERE id = %s", $ownerNetworkId)
 	 );
@@ -29,6 +37,30 @@ if ($sendData) {
 	} else {
 		$topicContent['logo_url'] = '';
 	}
+
+//Lookup default place data
+ $results = $wpdb->get_results(
+	$wpdb->prepare("SELECT l.id, t.topic_content FROM alpn_topic_links l LEFT JOIN alpn_topics t ON t.id = l.owner_topic_id_2 WHERE l.owner_id_1 = %d AND l.owner_topic_id_1 = %d AND l.subject_token = %s AND l.list_default = 'yes'", $ownerId, $ownerTopicId1, 'pte_place')
+	);
+ $placeLinkId = '';
+ if (isset($results[0])) {
+	 $placeLinkId = $results[0]->id;
+	 $placeTopicContent = json_decode($results[0]->topic_content, true);
+	 unset($placeTopicContent['pte_meta']);
+	 $topicContent = array_merge($topicContent, $placeTopicContent);
+ }
+
+ //lookup default org data
+ $results = $wpdb->get_results(
+	$wpdb->prepare("SELECT l.id, t.topic_content FROM alpn_topic_links l LEFT JOIN alpn_topics t ON t.id = l.owner_topic_id_2 WHERE l.owner_id_1 = %d AND l.owner_topic_id_1 = %d AND l.subject_token = %s AND l.list_default = 'yes'", $ownerId, $ownerTopicId1, 'pte_organization')
+	);
+ $organizationLinkId = '';
+ if (isset($results[0])) {
+	 $organizationLinkId = $results[0]->id;
+	 $organizationTopicContent = json_decode($results[0]->topic_content, true);
+	 unset($organizationTopicContent['pte_meta']);
+	 $topicContent = array_merge($topicContent, $organizationTopicContent);
+ }
 
 	$objectName = $sendData['vault_pdf_key'] ? $sendData['vault_pdf_key'] : $sendData['vault_file_key'];
 	$localStoreName = PTE_ROOT_PATH;
@@ -66,6 +98,7 @@ if ($sendData) {
 			'topic_content' => $topicContent
 		);
 		$coverSheetPath = pteCreateFaxCoverSheetPdf ($reportSettings);
+
 	} catch (\Exception $e) {
 			alpn_log($e);
 			exit;
