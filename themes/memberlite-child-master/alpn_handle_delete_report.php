@@ -8,7 +8,10 @@ $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
 $qVars = $_POST;
 $reportDomId = isset($qVars['report_dom_id']) ? $qVars['report_dom_id'] : '';
-
+$verify = 0;
+if(isset($qVars['security']) && !empty($qVars['security']))
+	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+if($verify==1) {
 if ($reportDomId) {
 	try {
 			$whereClause = array(
@@ -21,7 +24,12 @@ if ($reportDomId) {
 			exit;
 	}
 }
-
-
+}
+else
+{
+	echo $html = 'Not a valid request please hard refresh and try again.';
+	alpn_log($html);
+	exit;
+}
 
 ?>
