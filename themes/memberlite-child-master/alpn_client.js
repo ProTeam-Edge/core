@@ -4688,13 +4688,15 @@ function pte_manage_report_table_select(domId){
 
 function pte_handle_delete_report(userResponse, parms){
 	console.log('pte_handle_delete_report...');
+	var security = specialObj.security;
 	var reportDomId = parms.report_id;
 	if (userResponse == 'yes' && reportDomId) {
 		jQuery.ajax({
 			url: alpn_templatedir + 'alpn_handle_delete_report.php',
 			type: 'POST',
 			data: {
-				report_dom_id: reportDomId
+				report_dom_id: reportDomId,
+				security: security,
 			},
 			dataType: "json",
 			success: function(json) {
