@@ -1564,11 +1564,13 @@ function pte_interactions_table() {
 }
 
 function pte_handle_select_template (formId, editorMode) {
+	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_get_template_editor.php',
 		type: 'POST',
 		data: {
 			form_id: formId,
+			security: security,
 			editor_mode: editorMode
 		},
 		dataType: "html",
