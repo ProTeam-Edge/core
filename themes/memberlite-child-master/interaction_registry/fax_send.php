@@ -48,6 +48,7 @@ function pte_get_fax_send_registry() {
                   'network_contact_name' => $requestData['fax_field_first'] . " " . $requestData['fax_field_last'],
                   'owner_id' => $requestData['owner_id'],
                   'owner_network_id' => $requestData['owner_network_id'],
+                  'topic_id' => $requestData['topic_id'],
                   'vault_id' => $requestData['vault_id'],
                   'vault_pdf_key' => $requestData['vault_pdf_key'],
                   'vault_file_key' => $requestData['vault_file_key'],

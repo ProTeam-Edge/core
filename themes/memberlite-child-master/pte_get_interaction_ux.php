@@ -315,7 +315,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$faxNumbers  = isset($uxMeta['fax_numbers']) ? $uxMeta['fax_numbers'] : array();
 			$faxNumbersById = array();
 			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}'>";
-			$selectPanel .= "<option value='0'>Enter Recipient Information...</option>";
+			$selectPanel .= "<option value='0'>Select or Enter Recipient Information...</option>";
 			foreach ($faxNumbers as $key => $value){
 				$id = $value['id'];
 				$name = $value['name'];
@@ -335,7 +335,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$selectPanel .= '</select>';
 			$faxNumbersByIdEnc = json_encode($faxNumbersById);
 			$html .= "
-			<div style='width: 100%; padding-top: 5px;'>
+			<div style='width: 100%; padding-top: 5px; margin-bottom: 5px;'>
 				<div style='float: left; width: 35px; margin: 0; font-weight: bold; height: 18px; line-height: 18px;'>
 					To
 				</div>
@@ -509,16 +509,16 @@ function pte_make_message_line ($lineType, $uxMeta) {
 		case 'message_editable_new':
 		$buttonLineHtml = pte_make_button_line('select_send', $uxMeta);
 			$html = 	"{$buttonLineHtml}
-								 <input type='text' id='pte_message_title_field'></input>
-								 <textarea id='pte_message_body_area'></textarea>
+								 <input type='text' id='pte_message_title_field' placeholder='Message Title...'></input>
+								 <textarea id='pte_message_body_area' placeholder='Message Body...'></textarea>
 						";
 		break;
 
 		case 'message_editable_update':
 		$buttonLineHtml = pte_make_button_line('update', $uxMeta);
 		$html = 	"{$buttonLineHtml}
-							 <input type='text' id='pte_message_title_field' value='{$messageTitle}'></input>
-							 <textarea id='pte_message_body_area'>{$messageBody}</textarea>
+							 <input type='text' id='pte_message_title_field' value='{$messageTitle}' placeholder='Message Title...></input>
+							 <textarea id='pte_message_body_area' placeholder='Message Body...'>{$messageBody}</textarea>
 					";
 	break;
 

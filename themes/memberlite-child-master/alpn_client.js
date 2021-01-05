@@ -358,14 +358,14 @@ function alpn_handle_extra_table(extraKey) {
 		cellId = "div#tabcontent_" + extraKey + " #alpn_field_" + rowData[4];
 
 		if (connectedTopicClass == 'LINKYES') {
-			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold' data-link-id='" + linkId + "'>" + itemName + defaultTopicIcon + "</div>";
+			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>";
 		} else {
-			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "' data-link-id='" + linkId + "'>" + itemName + defaultTopicIcon + "</div>";
+			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>";
 			if (connectedTopicSpecial == 'contact') {
-				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "'>" + itemName + defaultTopicIcon + "</div>";
+				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>";
 			}
 			if (connectedTopicSpecial == 'user') {
-				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "'>" + itemName + defaultTopicIcon + "</div>";
+				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>";
 			}
 		}
 
@@ -4490,7 +4490,7 @@ function pte_default_topic_link (topicToken) {
 	var tableId = 'table_tab_' + selectedTab;
 	var recordDomId = jQuery('#tabcontent_' + selectedTab + ' #pte_tab_record_wrapper').data('dom_id');
 	var selectedRowUid = recordDomId ? recordDomId : pte_active_tabs[selectedTab];  //Account for record versus row in table
-	alpn_mission_control('make_default_topic', selectedRowUid, topicToken);
+	alpn_mission_control('make_default_topic', selectedRowUid);
 }
 
 function pte_edit_topic_link(topicToken) {
@@ -4938,24 +4938,47 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 	};
 
 	switch(operation) {
+
 		case 'make_default_topic':
 		console.log('make_default_topic...');
-		console.log(uniqueRecId);
+
+		var tableId = "table_tab_" + tabId;
+		var trObj =  jQuery('#alpn_main_container #alpn_field_' + uniqueRecId).closest('tr');
+		var vaultRowData = wpDataTables[tableId].fnGetData(trObj);
+
+		if (vaultRowData.length) {
+
+			var newLinkId = vaultRowData[12];
+			var ownerTopicId1 = vaultRowData[0];
+			var topicSubjectToken = subjectToken;
 
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_make_default_topic.php',
 				type: 'POST',
 				data: {
-					uniqueRecId: uniqueRecId
+					unique_record_id: uniqueRecId,
+					new_link_id: newLinkId,
+					owner_topic_id_1: ownerTopicId1,
+					topic_subject_token: topicSubjectToken,
 				},
 				dataType: "json",
 				success: function(json) {
-
+					console.log('make_default_topic SUCCESS');
+					console.log(json);
+					var oldDefaultTopic = json.old_link_id;
+					if (oldDefaultTopic) {
+						var oldTitleDom = jQuery("div.pte_topic_links_title[data-link-id=" + oldDefaultTopic + "]");
+						oldTitleDom.find('i.pte_default_topic').remove();
+					}
+					var newTitleDom = jQuery("div.pte_topic_links_title[data-link-id=" + newLinkId + "]");
+					var defaultTopicHtml = "<i class='far fa-check-circle pte_default_topic' title='Default Topic'></i>";
+					newTitleDom.append(defaultTopicHtml);
 				},
 				error: function() {
-		//TODO
+					console.log('make_default_topic ERROR');
 				}
-		})
+			})
+		}
 		break;
 
 		case 'pdf_topic':
