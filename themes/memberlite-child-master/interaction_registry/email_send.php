@@ -106,7 +106,7 @@ function pte_get_email_send_registry() {
                     "vault_file_name" => $requestData['vault_file_name'],
                     "vault_id" => $requestData['vault_id'],
                   	"subject_text" => $requestData['message_title'] ? $requestData['message_title'] : "File Received",
-                  	"body_text" => $requestData['message_body'] ? $requestData['message_body'] : "No Message."
+                  	"body_text" => $requestData['message_body'] ? nl2br($requestData['message_body']) : "No Message."
                   );
                 pte_send_mail($emailData);
               }
