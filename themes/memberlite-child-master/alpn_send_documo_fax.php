@@ -13,7 +13,6 @@ alpn_log('Start pte_handle_fax_send...');
 alpn_log($sendData);
 
 if ($sendData) {
-
 	$processId = $sendData['process_id'];
 
 	$topicContent = array();
