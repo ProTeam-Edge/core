@@ -4761,12 +4761,13 @@ function pte_handle_template_operation(operation) {
 
 			allData.topic_type_key = topicTypeKey;
 			allData.topic_type_form_id = topicTypeFormId;
-
+			var security = specialObj.security;	
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_save_template.php',
 				type: 'POST',
 				data: {
-					template_data: JSON.stringify(allData)
+					template_data: JSON.stringify(allData),
+					security: security,
 				},
 				dataType: "json",
 				success: function(json) {
