@@ -4791,6 +4791,7 @@ function pte_handle_template_operation(operation) {
 
 
 		case 'clone':
+		alert("reached here 1")
 			console.log('Handling Clone...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_clone_report.php',
@@ -4864,6 +4865,7 @@ function pte_handle_report_settings(operation) {
 			pte_show_message('yellow_question', 'confirm', 'Please confirm delete:', 'pte_handle_delete_report', JSON.stringify(parms));
 		break;
 		case 'clone':
+		alert("reached here 2")
 			console.log('Handling Clone...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_clone_report.php',
