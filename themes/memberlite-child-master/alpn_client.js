@@ -349,7 +349,7 @@ function alpn_handle_extra_table(extraKey) {
 		defaultTopic = rowData[15] ? rowData[15] : 'no';
 
 		if (defaultTopic == 'yes') {
-			var defaultTopicIcon = "<i class='far fa-check-circle pte_default_topic' title='Default Topic'></i>";
+			var defaultTopicIcon = "<i class='far fa-check-circle pte_default_topic' title='Default Topic Link'></i>";
 		} else {
 			var defaultTopicIcon = "";
 		}
