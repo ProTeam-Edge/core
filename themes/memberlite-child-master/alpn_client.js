@@ -3875,6 +3875,16 @@ function alpn_vault_control(operation) {
 		}
 	}
 	switch(operation) {
+		case 'download_original':
+			console.log('Downloading Original...');
+			var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=original&v_id=' + vaultId;
+			window.location = srcFile;
+		break;
+		case 'download_pdf':
+			console.log('Downloading PDF...');
+			var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId;
+			window.location = srcFile;
+		break;
 		case 'print':
 			pdfui.getPDFViewer().then(function(pdfviewer){
 				var pdfdoc = pdfviewer.getCurrentPDFDoc();

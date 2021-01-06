@@ -59,8 +59,9 @@ function pte_get_sms_send_registry() {
                     $requestData['network_id'] = $mobileContactTopicId;
                     $requestData['connected_network_dom_id'] = $mobileContactData->email_contact_dom_id;
                   } else { //A topic that is a Person that has an email address -- they all should since required.  TODO can non-person's have email address?
-                    $requestData['topic_id'] = $mobileContactTopicId;
-                    $requestData['topic_dom_id'] = $mobileContactData->email_contact_dom_id;
+                    //TODO same as email send. Why is this hear. Fixes bug
+                    //$requestData['topic_id'] = $mobileContactTopicId;
+                    //$requestData['topic_dom_id'] = $mobileContactData->email_contact_dom_id;
                   }
 
                   $mobileNumber = $tContent['person_telephone'];
