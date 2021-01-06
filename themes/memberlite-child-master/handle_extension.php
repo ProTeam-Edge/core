@@ -1,6 +1,7 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
+pp($wpdb);
 
 ?>
 
