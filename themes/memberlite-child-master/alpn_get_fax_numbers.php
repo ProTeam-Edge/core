@@ -1,7 +1,6 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
-echo  $_SERVER['HTTP_X_REQUESTED_WITH'];
-die;
+
 $qVars = $_POST;
 $areaCode = isset($qVars['area_code']) ? $qVars['area_code'] : '';
 
