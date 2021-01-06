@@ -120,7 +120,7 @@ $html .= "
 }
 else
 {
-	$html = 'Not a valid request please hard refresh and try again.';
+	$html = 'Not a valid request.';
 }
 echo $html;
 
