@@ -1613,13 +1613,13 @@ function pte_handle_select_template (formId, editorMode) {
 }
 
 function pte_handle_select_topic_type (formId) {
-	var security = specialObj.security; 
+
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_get_topic_type_manager.php',
 		type: 'POST',
 		data: {
 			form_id: formId,
-			security: security,
+	
 		},
 		dataType: "html",
 		success: function(html) {
