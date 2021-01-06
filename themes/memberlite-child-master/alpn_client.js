@@ -740,6 +740,33 @@ function pte_update_fax_route_topic(phoneNumber, data){  //TODO update Personal 
 		})
 }
 
+function pte_handle_release_fax_number(domEl){
+
+	console.log('pte_handle_release_fax_number');
+	var selectedLi = jQuery(domEl).closest('li');
+	var pstnNumberSelected = selectedLi.find('select').data('ptrid');
+	var security = specialObj.security;
+	jQuery(domEl).addClass('pte_extra_button_disabled');
+
+	jQuery.ajax({    //TODO When adding a new user on registration. Need to add them to all the Twilio Channels where they have been added to Topics system wide. Should be in proteam records. Then deleted
+		url: alpn_templatedir + 'alpn_release_pstn_number.php',
+		type: 'POST',
+		data: {
+			"phone_number": pstnNumberSelected,
+			"security": security
+		},
+		dataType: "json",
+		success: function(json) {
+			console.log('Success pte_handle_release_fax_number...');
+			selectedLi.remove();  //TODO solves the problem of waiting for mfax but if it fails, need to put it back.
+
+		},
+		error: function() {
+			console.log('Failure pte_handle_release_fax_number...');
+		}
+		})
+}
+
 function pte_pstn_handle_use_number() {
 
 		var html = topicList = '';
@@ -751,7 +778,7 @@ function pte_pstn_handle_use_number() {
 		pte_pstn_handle_next_number();
 
 		var phoneNumber = selectedNumber.number;
-		var formattedNumber = pte_make_formatted_number(phoneNumber) + "<i class='fas fa-arrow-alt-right pte_pstn_route_arrow'></i>";
+		var formattedNumber = pte_make_formatted_number(phoneNumber);
 		var phoneNumberKey = phoneNumber.substr(1);
 
 		html = "<li id='alpn_replace_me_pstn_number_" + 	phoneNumberKey + "'><img src='" + alpn_templatedir + "ellipsisindicator.gif'></li>";
@@ -769,8 +796,8 @@ function pte_pstn_handle_use_number() {
 				topicList = json.topic_list;
 				html = '';
 				html += "<li class='pte_important_topic_scrolling_list_item'>";
-				html += "<div class='pte_scrolling_item_left'><div class='pte_pstn_number_list'>" + formattedNumber  + "</div><div class='pte_pstn_topic_list'>" + topicList  + "</div></div>";
-				html += "<div class='pte_scrolling_item_right'><i class='far fa-minus-circle pte_scrolling_list_remove' title='Release Fax Number' onclick='pte_handle_release_fax_number(this);'></i></div>";
+				html += "<div class='pte_scrolling_item_left'><div class='pte_pstn_topic_list'>" + topicList  + "</div><div class='pte_pstn_number_list'>" + formattedNumber  + "</div></div>";
+	      html += "<div class='pte_scrolling_item_right'><i class='far fa-minus-circle pte_scrolling_list_remove' title='Release Fax Number' onclick='pte_handle_release_fax_number(this);'></i></div>";
 				html += "<div style='clear: both;'>";
 				html += "</div>";
 				html += "</li>";
@@ -3624,6 +3651,8 @@ function pte_setup_pdf_viewer(viewerSettings) {
 						].concat(UIExtension.PDFViewCtrl.DeviceInfo.isMobile ? [] : alpn_templatedir + 'foxitpdf/lib/uix-addons/text-object')
 				});
 
+				pdfui.setEnableJS(false);
+
 				pdfui.addUIEventListener('fullscreenchange', function(isFullscreen) {
 						if(isFullscreen) {
 								document.body.classList.add('fv__pdfui-fullscreen-mode');
@@ -3645,6 +3674,8 @@ function pte_setup_pdf_viewer(viewerSettings) {
 				}
 
 				});
+
+
 
 				window.addEventListener('scroll',(event) => {
 						pdfui.redraw();
@@ -4765,7 +4796,7 @@ function pte_handle_template_operation(operation) {
 
 			allData.topic_type_key = topicTypeKey;
 			allData.topic_type_form_id = topicTypeFormId;
-			var security = specialObj.security;	
+			var security = specialObj.security;
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_save_template.php',
 				type: 'POST',
@@ -4870,7 +4901,7 @@ function pte_handle_report_settings(operation) {
 			pte_show_message('yellow_question', 'confirm', 'Please confirm delete:', 'pte_handle_delete_report', JSON.stringify(parms));
 		break;
 		case 'clone':
-		
+
 			console.log('Handling Clone...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_clone_report.php',

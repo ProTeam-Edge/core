@@ -811,7 +811,6 @@ function pte_make_send_url_panel($uxMeta) {
 	if ($widgetTypeId == "sms_send") {
 
 //only difference in queries is which field we're checking for not empty in json. And have to check network contact
-
 		$results = $wpdb->get_results(
 			$wpdb->prepare("SELECT t.*, p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle, t2.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special = 'user' WHERE JSON_EXTRACT(t.topic_content, '$.person_telephone') != '' AND t.special != 'user' AND t.owner_id = %s ORDER BY NAME ASC", $ownerId)
 		 );
@@ -844,7 +843,6 @@ function pte_make_send_url_panel($uxMeta) {
 	$messageLineHtml = pte_make_message_line('message_editable_new', $uxMeta);
 	$vaultItemHTML = pte_make_interaction_link('vault_item', $uxMeta);
 	$linkSettings = pte_make_button_line('link_settings', $uxMeta);
-
 	$linkPanel = pte_make_interaction_link('topic_panel', $uxMeta);
 
 	$html .= "
