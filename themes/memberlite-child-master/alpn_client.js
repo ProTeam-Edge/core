@@ -1613,7 +1613,6 @@ function pte_handle_select_template (formId, editorMode) {
 }
 
 function pte_handle_select_topic_type (formId) {
-	alert("reached in function");
 	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_get_topic_type_manager.php',
@@ -5723,7 +5722,7 @@ function pte_save_topic_type_meta(skipRefresh = false) {
 	console.log('pte_save_topic_type_meta...');
 	console.log(pte_selected_topic_type_object);
 
-
+	alert('reached pte_save_topic_type_meta');
 
 	var formId = jQuery('#pte_topic_type_property_editor').data('pttfid');
 	jQuery.ajax({
