@@ -5721,7 +5721,7 @@ function pte_change_topic_visibility(data){
 function pte_save_topic_type_meta(skipRefresh = false) {
 	console.log('pte_save_topic_type_meta...');
 	console.log(pte_selected_topic_type_object);
-
+  
 	alert('reached pte_save_topic_type_meta');
 
 	var formId = jQuery('#pte_topic_type_property_editor').data('pttfid');
