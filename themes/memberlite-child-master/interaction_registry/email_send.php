@@ -44,6 +44,9 @@ function pte_get_email_send_registry() {
               	$wpdb->prepare("SELECT t.special, t.topic_type_id, t.connected_id, t.topic_content, t.dom_id AS email_contact_dom_id,  p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle, t2.topic_content AS connected_topic_content, t2.id AS connected_topic_id, t2.dom_id AS connected_topic_dom_id FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special= 'user' WHERE t.id = %s", $emailContactTopicId)
                );
                if (count($results)) {
+
+                 $originalTopicId =
+
                   $emailContactData = $results[0];
                   $tTypeId =  $emailContactData->topic_type_id;
                   $tTypeSpecial =  $emailContactData->special;
@@ -62,8 +65,10 @@ function pte_get_email_send_registry() {
                     $requestData['network_id'] = $emailContactTopicId;
                     $requestData['connected_network_dom_id'] = $emailContactData->email_contact_dom_id;
                   } else { //A topic that is a Person that has an email address -- they all should since required.  TODO can non-person's have email address?
-                    $requestData['topic_id'] = $emailContactTopicId;
-                    $requestData['topic_dom_id'] = $emailContactData->email_contact_dom_id;
+
+                    //TODO I did this for a reason but it showed up wront last step. PTE-68
+                    //$requestData['topic_id'] = $emailContactTopicId;
+                    //$requestData['topic_dom_id'] = $emailContactData->email_contact_dom_id;
                   }
 
                   $emailAddress = $tContent['person_email'];

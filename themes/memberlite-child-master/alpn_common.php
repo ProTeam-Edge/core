@@ -988,18 +988,22 @@ function get_user_fax_numbers() {
   $ownerNetworkId = get_user_meta( $ownerId, 'pte_user_network_id', true );
   $resultsNumbers = $wpdb_readonly->get_results(
     $wpdb_readonly->prepare(
-      "SELECT p.id, p.pstn_number, p.topic_id FROM alpn_pstn_numbers p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE p.owner_id = '%s' ORDER BY t.name ASC;", $ownerId)
+      "SELECT p.id, p.pstn_number, p.topic_id FROM alpn_pstn_numbers p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE p.owner_id = %s AND ISNULL(release_date) ORDER BY t.name ASC;", $ownerId)
   );
   if (isset($resultsNumbers[0])) {
+
     $resultsTopics = $wpdb_readonly->get_results(
-      $wpdb_readonly->prepare("SELECT id, name FROM alpn_topics WHERE owner_id = '%s' AND special = 'topic' ORDER BY name ASC;", $ownerId)
+      $wpdb_readonly->prepare("SELECT t.id, t.name FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = %d AND t.special = 'topic' AND t.name != '' AND (tt.topic_class = 'topic' OR tt.topic_class = 'link') ORDER BY name ASC", $ownerId)
     );
+
     foreach ($resultsNumbers as $key => $value) {
       $topicList = '';
       $phoneNumber = $value->pstn_number;
       $formattedNumber = pte_format_pstn_number($phoneNumber);
       $topicId = $value->topic_id;
     	$phoneNumberKey = substr($phoneNumber, 1);
+
+
     	$topicList .= "<select id='alpn_select2_small_{$phoneNumberKey}' data-ptrid='{$phoneNumber}'>";
     	$topicList .= "<option value='{$ownerNetworkId}'>Personal</option>";
     	foreach ($resultsTopics as $key1 => $value1) {
@@ -1114,9 +1118,9 @@ function pte_get_email_ux() {
 
   $results = $wpdb_readonly->get_results(
     $wpdb_readonly->prepare(
-      "SELECT id, name, '0' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND special = 'user' UNION
-       SELECT id, name, '1' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND special = 'contact' UNION
-       SELECT id, name, '2' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND special = 'topic'
+      "SELECT id, name, '0' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND special = 'user' AND name != '' UNION
+       SELECT id, name, '1' AS row_type FROM alpn_topics WHERE owner_id = '%s' AND special = 'contact' AND name != '' UNION
+       SELECT t.id, t.name, '2' AS row_type FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = '%s' AND t.special = 'topic' AND t.name != '' AND (tt.topic_class = 'topic' OR tt.topic_class = 'link')
        ORDER BY row_type ASC, name ASC;",
        $ownerId, $ownerId, $ownerId)
   );
@@ -1128,7 +1132,7 @@ function pte_get_email_ux() {
       <optgroup label='Personal'>
       <option value='{$results[0]->id}'>{$results[0]->name}</option>
       </optgroup>
-      <optgroup label='Network'>
+      <optgroup label='Contacts'>
     ";
 
     foreach ($results as $key => $value) {
@@ -1165,7 +1169,7 @@ function pte_get_email_ux() {
     <div id='pte_email_ux_container'>
       <div id='pte_email_ux_container_inner'>
         <div class='pte_fax_words'>
-          Email attachments route securely to the designated Topic Vault. Click on the Topic Name to copy the email address to the clipoard.
+          Email attachments securely route to the designated Topic Vault. Click on the Topic Name to copy the email address to the clipoard.
         </div>
         <div class='pte_email_address_selector_outer'><div class='pte_email_address_selector_left'></div><div class='pte_email_address_selector_right'>{$topicList}</div></div>
         <ul id='pte_emails_assigned' class='pte_important_topic_scrolling_list'>{$emailAddresses}</ul>
@@ -1206,7 +1210,7 @@ function pte_get_fax_ux() {
           </div>
           <div style='clear: both;'></div>
         </div>
-        <div class='pte_fax_words'>Faxes route securely to the selected Topic Vault in PDF format.</div>
+        <div class='pte_fax_words'>Faxes securely route to the selected Topic Vault in PDF format.</div>
         <ul id='pte_fax_numbers_assigned' class='pte_important_topic_scrolling_list' style='padding: 5px;'>{$faxNumbers}</ul>
       </div>
     </div>
@@ -1247,26 +1251,17 @@ function pte_call_documo($type, $data){
       $query = http_build_query($data);
     break;
     case "send_fax":
-
-    alpn_log("Sending Fax...");
-    alpn_log($data);
-
-      $endPoint = 'faxes';
-      $headers[] = "Content-Type: multipart/form-data";
-      $pstnNumber = $data['pstn_number'];
-
-      $attachmentPath = $data['attachment_path'];
-      $coverSheetPath = $data['cover_sheet_path'];
-
+    $endPoint = 'faxes';
+    $headers[] = "Content-Type: multipart/form-data";
+    $pstnNumber = $data['pstn_number'];
+    $attachmentPath = $data['attachment_path'];
+    $coverSheetPath = $data['cover_sheet_path'];
      $body = array(
        "attachments['file1']" => new CURLFile($coverSheetPath, 'application/pdf', 'cover_sheet'),
        "attachments['file2']" => new CURLFile($attachmentPath, 'application/pdf', 'attachment'),
        "faxNumber" => $pstnNumber,
        "coverPage" => "false"
      );
-
-      //alpn_log($body);
-
       $options[CURLOPT_POST] = true;
       $options[CURLOPT_CUSTOMREQUEST] = "POST";
       $options[CURLOPT_POSTFIELDS] = $body;
@@ -1277,6 +1272,7 @@ function pte_call_documo($type, $data){
       $query = http_build_query($data);
     break;
     case "setup_webhook":
+      $hostDomain = PTE_HOST_DOMAIN_NAME;
       $endPoint = 'webhooks';
       $headers[] = "Content-Type: application/x-www-form-urlencoded";
       $urlbase = 'https://api.documo.com/';
@@ -1284,7 +1280,7 @@ function pte_call_documo($type, $data){
       $pstnNumber = $data['pstn_number'];
       $body = array(
         'name' => "For: {$pstnNumber}",
-        'url' => 'https://proteamedge.com/wp-content/themes/memberlite-child-master/pte_fax_in_out.php',
+        'url' => "https://{$hostDomain}/wp-content/themes/memberlite-child-master/pte_fax_in_out.php",
         'events' => '{"fax.inbound":true}',
         'numberId' => $pstnUuid,
         'attachmentEnabled' => true
@@ -1308,6 +1304,11 @@ function pte_call_documo($type, $data){
       $options[CURLOPT_POST] = true;
       $options[CURLOPT_CUSTOMREQUEST] = "POST";
       $options[CURLOPT_POSTFIELDS] = http_build_query($body);
+    break;
+    case "number_release":
+      $uuidPhoneNumber = isset($data['pstn_uuid']) ? $data['pstn_uuid'] : "";
+      $endPoint = "numbers/{$uuidPhoneNumber}/release";
+      $options[CURLOPT_CUSTOMREQUEST] = "DELETE";
     break;
   }
   $options[CURLOPT_URL] = "{$urlbase}{$endPoint}?{$query}";

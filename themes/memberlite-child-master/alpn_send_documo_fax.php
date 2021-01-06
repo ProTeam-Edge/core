@@ -10,7 +10,7 @@ $qVars = $_POST;
 $sendData = isset($qVars['data']) ? json_decode(stripslashes($qVars['data']), true) : array();    //"owner_network_id" => 11, "process_id" => "test", "owner_id" => 40, "topic_id" => 11
 
 alpn_log('Start pte_handle_fax_send...');
-alpn_log($sendData);
+//alpn_log($sendData);
 
 if ($sendData) {
 	$processId = $sendData['process_id'];
@@ -93,7 +93,7 @@ if ($sendData) {
 			'company_name' => $sendData['company_name'],
 			'template_name' => $sendData['template_name'],
 			'message_title' => $sendData['message_title'],
-			'message_body' => $sendData['message_body'],
+			'message_body' => nl2br($sendData['message_body']),
 			'topic_content' => $topicContent
 		);
 		$coverSheetPath = pteCreateFaxCoverSheetPdf ($reportSettings);
