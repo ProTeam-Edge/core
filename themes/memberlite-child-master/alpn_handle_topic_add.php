@@ -1,6 +1,6 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
-
+echo  $_SERVER['HTTP_X_REQUESTED_WITH'];
 $siteUrl = get_site_url();
 
 $qVars = $_POST;
@@ -87,7 +87,7 @@ if($verify==1) {
 	}
 }
 else {
-	$html = 'Not a valid request please hard refresh and try again.';
+	$html = 'Not a valid request.';
 }
 echo $html;
 
