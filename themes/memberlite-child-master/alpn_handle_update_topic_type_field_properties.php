@@ -3,6 +3,13 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 $results = array();
 $qVars = $_POST;
+
+
+$verify = 0;
+if(isset($qVars['security']) && !empty($qVars['security']))
+	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+if($verify==1) {
+
 $formId = isset($qVars['form_id']) ? $qVars['form_id'] : '';
 $topicTypeObject = isset($qVars['topic_type_object']) ? $qVars['topic_type_object'] : "";
 
@@ -69,4 +76,9 @@ if ($formId && $topicTypeObject && $ownerId) {
 }
 
 pte_json_out(array("status" => "ok", "ttarray" => $topicTypeArray));
+}else
+{
+	echo $html = 'Not a valid request.';
+	die;
+}
 ?>
