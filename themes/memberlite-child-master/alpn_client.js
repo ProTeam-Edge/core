@@ -5733,8 +5733,8 @@ function pte_change_topic_visibility(data){
 function pte_save_topic_type_meta(skipRefresh = false) {
 	console.log('pte_save_topic_type_meta...');
 	console.log(pte_selected_topic_type_object);
+	alert("test");
 
-	var security = specialObj.security;
 
 	var formId = jQuery('#pte_topic_type_property_editor').data('pttfid');
 	jQuery.ajax({
@@ -5751,8 +5751,7 @@ function pte_save_topic_type_meta(skipRefresh = false) {
 				var pageData = {
 					'table_type': 'table_topic_types',
 					'topic_type_form_id': formId,
-					'owner_id': alpn_user_id,
-					'security': security,
+					'owner_id': alpn_user_id
 				}
 				pte_set_table_page(pageData);
 			}
