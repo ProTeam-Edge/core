@@ -12,6 +12,9 @@ function pteCreateFaxCoverSheetPdf($reportSettings){
 			$report = new faxcoversheet($reportSettings);
 			$report->run()
 			->export('faxcoversheet')
+			->settings(array(
+					"phantomjs"=>"/usr/local/bin/phantomjs"
+			))
 			->pdf(array(
 			      "format"=>$reportSettings['page_size'],
 			      "orientation"=>$reportSettings['orientation'],
