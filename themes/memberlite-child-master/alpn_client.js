@@ -5733,7 +5733,7 @@ function pte_change_topic_visibility(data){
 function pte_save_topic_type_meta(skipRefresh = false) {
 	console.log('pte_save_topic_type_meta...');
 	console.log(pte_selected_topic_type_object);
-	alert("test");
+	var security = specialObj.security;
 
 
 	var formId = jQuery('#pte_topic_type_property_editor').data('pttfid');
@@ -5742,7 +5742,8 @@ function pte_save_topic_type_meta(skipRefresh = false) {
 		type: 'POST',
 		data: {
 			form_id: formId,
-			topic_type_object: JSON.stringify(pte_selected_topic_type_object)
+			topic_type_object: JSON.stringify(pte_selected_topic_type_object),
+			security: security,
 		},
 		dataType: "json",
 		success: function(json) {
