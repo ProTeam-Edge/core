@@ -12,7 +12,10 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
-
+$verify = 0;
+if(isset($qVars['security']) && !empty($qVars['security']))
+	$verify = wp_verify_nonce( $pVars['security'], 'alpn_script' );
+if($verify==1) {
 $recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 $ppCdnBase = PTE_IMAGES_ROOT_URL;
 
@@ -636,7 +639,11 @@ $html .= "
 							</div>
 						 </div>
 						";
-
+}
+else
+{
+	$html='Not a valid request.';
+}
 echo $html;
 
 ?>

@@ -4995,7 +4995,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 		case 'make_default_topic':
 		console.log('make_default_topic...');
-
+		var security = specialObj.security;
 		var tableId = "table_tab_" + tabId;
 		var trObj =  jQuery('#alpn_main_container #alpn_field_' + uniqueRecId).closest('tr');
 		var vaultRowData = wpDataTables[tableId].fnGetData(trObj);
@@ -5189,6 +5189,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				type: 'POST',
 				data: {
 					uniqueRecId: uniqueRecId,
+					security: security,
 				},
 				dataType: "html",
 				success: function(html) {
