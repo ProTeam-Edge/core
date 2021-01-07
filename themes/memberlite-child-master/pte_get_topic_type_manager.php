@@ -5,6 +5,13 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 $html="";
 $pVars = $_POST;
+
+$verify = 0;
+if(isset($pVars['security']) && !empty($pVars['security']))
+	$verify = wp_verify_nonce( $pVars['security'], 'alpn_script' );
+if($verify==1) {
+
+
 $formId = isset($pVars['form_id']) ? $pVars['form_id'] : 0;
 
 $userInfo = wp_get_current_user();
@@ -210,6 +217,11 @@ if ($formId) {
 	}
 
 }
+}
+else {
+	$html = 'Not a valid request.';
+}
+
 echo $html;
 
 ?>
