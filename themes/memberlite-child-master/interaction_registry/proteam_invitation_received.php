@@ -5,7 +5,6 @@ use Formapro\Pvm\Token;
 use Formapro\Pvm\ProcessBuilder;
 use Formapro\Pvm\Exception\WaitExecutionException;
 
-
 function pte_setup_proteam_invitation_received_process() {
 
     $process = (new ProcessBuilder())

@@ -4298,6 +4298,7 @@ function pte_handle_message_merge(docType = 'message'){
 
 	var templateList = jQuery('#alpn_select2_small_template_select');
 	var templateListData = templateList.select2('data');
+
 	if (typeof templateListData != 'undefined' && typeof templateListData[0] != 'undefined') {
 		selectedTemplateId = parseInt(templateListData[0].id);
 		contextTopicId = parseInt(templateList.data('topic-id'));
@@ -4306,6 +4307,8 @@ function pte_handle_message_merge(docType = 'message'){
 	var targetListData = targetList.select2('data');
 	if (typeof targetListData != 'undefined' && typeof targetListData[0] != 'undefined') {
 		selectedTargetId = parseInt(targetListData[0].id);
+	} else {
+		selectedTargetId = jQuery('#pte_to_line').data('cid');
 	}
 	var sendButton = jQuery('#pte_message_panel_send');
 
@@ -4316,7 +4319,6 @@ function pte_handle_message_merge(docType = 'message'){
 	}
 
 	if (selectedTargetId && contextTopicId) {
-
 		if (sendButton.hasClass('pte_extra_button_disabled')) {
 			sendButton.removeClass('pte_extra_button_disabled');
 		}

@@ -61,6 +61,7 @@ function pte_get_proteam_invitation_registry() {
             	);
             	$requestData['interacts_with_id'] = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
               $token->setValue("process_context", $requestData);
+              
             return; //if successful TODO: is this always successful?
             }
             $requestData['widget_type_id'] = "message_send";
