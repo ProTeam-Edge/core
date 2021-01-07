@@ -6,6 +6,10 @@ include('../../../wp-blog-header.php');
 $siteUrl = get_site_url();
 
 $qVars = $_GET;
+$verify = 0;
+if(isset($qVars['security']) && !empty($qVars['security']))
+	$verify = wp_verify_nonce( $pVars['security'], 'alpn_script' );
+if($verify==1) {
 $proTeamId = isset($qVars['proTeamId']) ? $qVars['proTeamId'] : '';
 $proTeamValue = isset($qVars['proTeamValue']) ? $qVars['proTeamValue'] : '';
 
@@ -19,5 +23,10 @@ if ($proTeamId && $userID) {
 }
 
 header('Content-Type: application/json');
+}
+else
+{
+	$results='Not a valid request.';
+}
 echo json_encode($results);
 ?>

@@ -4164,7 +4164,7 @@ function pte_rights_access_level(proTeamId, theSelection){
 
 	console.log("Rights Access Level...");
 	console.log(proTeamId);
-
+	var security = specialObj.security;
 	var jObj = jQuery(theSelection);
 	var proTeamValue = jObj.attr('id');
 	var proTeamText = jObj.attr('text');
@@ -4174,6 +4174,7 @@ function pte_rights_access_level(proTeamId, theSelection){
 		type: 'GET',
 		data: {
 			'proTeamId': proTeamId,
+			'security': security,
 			'proTeamValue' : proTeamValue
 		},
 		dataType: "json",
