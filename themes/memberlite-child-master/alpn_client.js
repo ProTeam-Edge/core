@@ -5635,14 +5635,15 @@ function pte_handle_remove_topic_link_field() {
 function pte_add_a_new_topic_type (data){   //Logged In
 	console.log("pte_add_a_new_topic_type");
 	console.log(data);
-
+	var security = specialObj.security;
 	var sourceTopicTypeId = data.id;  //This means the source for the new topic not the id of the new one
 
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_add_new_topic_type.php',
 		type: 'POST',
 		data: {
-			source_topic_type_id: sourceTopicTypeId
+			source_topic_type_id: sourceTopicTypeId,
+			security: security,
 		},
 		dataType: "json",
 		success: function(json) {
