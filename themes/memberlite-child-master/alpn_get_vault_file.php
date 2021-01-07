@@ -24,12 +24,17 @@ $results = $wpdb->get_results(
 if (array_key_exists('0', $results)) {
 	$mimeType = $results[0]->mime_type;
 	$fileName = $results[0]->file_name;
-	$currentExt = substr($fileName, -4);
+	$fileNameExtension = pathinfo($fileName, PATHINFO_EXTENSION);
+
+	if (!$fileNameExtension) {
+		$originalExtension = pathinfo($results[0]->file_key, PATHINFO_EXTENSION);
+		$fileName = "{$fileName}.{$originalExtension}";
+	}
 
 	if ($whichFile == 'pdf') {
 		$objectName = $results[0]->pdf_key ? $results[0]->pdf_key : $results[0]->file_key;
 		$mimeType = "application/pdf";
-		$fileName = $results[0]->pdf_key;
+		$fileName = ($fileNameExtension == "pdf") ? $results[0]->file_name : $results[0]->file_name . ".pdf";
 	} else {
 		$objectName = $results[0]->file_key;
 	}

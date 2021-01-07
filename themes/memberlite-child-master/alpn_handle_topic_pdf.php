@@ -354,7 +354,7 @@ $buttons = "
 			<div id='pte_report_saved_list_container'>
 				<div id='pte_report_saved_list_container_inner'>
 					<div class='pte_quick_report_widget_row'>
-						<div id='pte_section_name' class='pte_vault_row_35 pte_vault_bold'>Templates</div>
+						<div id='pte_section_name' class='pte_vault_row_35 pte_vault_bold'>Saved Reports</div>
 						<div class='pte_vault_row_65 pte_max_width_65 pte_vault_right'>
 						<img id='pte_refresh_report_loading' class='pte_refresh_report_loading' src='{$rootUrl}pdf/web/images/loading-icon.gif'>
 							<i class='far fa-sync-alt quick_report_button' title='Refresh Report Using Changed Settings' onclick='pte_handle_report_settings(\"refresh\");'></i>

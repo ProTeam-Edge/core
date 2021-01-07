@@ -243,7 +243,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 						<div style='width: 100%; margin-bottom: 0px;'>{$selectPanel}</div>
 					</div>
 					<div style='float: right; width: 50px; text-align: right; font-size: 20px; color: rgb(0, 116, 187); margin: 0;'>
-						<button data-pteop='{$sendKey}' id='pte_message_panel_send' class='btn btn-danger btn-sm pte_extra_button_disabled' onclick='pte_handle_send_interaction(this);' style='margin-right: 0; width: 45px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Send</button>
+						<button data-pteop='{$sendKey}' id='pte_message_panel_send' class='btn btn-danger btn-sm pte_always_enabled' onclick='pte_handle_send_interaction(this);' style='margin-right: 0; width: 45px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Send</button>
 					</div>
 					<div style='clear: both;'></div>
 			";
@@ -350,6 +350,12 @@ function pte_make_button_line($lineType, $uxMeta) {
 			";
 		break;
 	}
+
+
+
+
+
+
 	return $html;
 }
 
@@ -460,7 +466,7 @@ function pte_make_data_line ($lineType, $uxMeta) {
 
 	switch ($lineType) {
 		case 'to_from_line':
-			$html = "<div class='pte_data_line_title'>{$toFrom}</div><div class='pte_data_line_value'>{$networkName}</div>";
+			$html = "<div class='pte_data_line_title'>{$toFrom}</div><div id='pte_to_line' class='pte_data_line_value' data-cid='{$networkId}'>{$networkName}</div>";
 		break;
 		case 'to_from_line_static':
 			$html = "<div class='pte_data_line_title'>{$toFrom}</div><div class='pte_data_line_value'>{$staticName}</div>";
@@ -517,7 +523,7 @@ function pte_make_message_line ($lineType, $uxMeta) {
 		case 'message_editable_update':
 		$buttonLineHtml = pte_make_button_line('update', $uxMeta);
 		$html = 	"{$buttonLineHtml}
-							 <input type='text' id='pte_message_title_field' value='{$messageTitle}' placeholder='Message Title...></input>
+							 <input type='text' id='pte_message_title_field' value='{$messageTitle}' placeholder='Message Title...'></input>
 							 <textarea id='pte_message_body_area' placeholder='Message Body...'>{$messageBody}</textarea>
 					";
 	break;
@@ -702,24 +708,28 @@ function pte_make_message_panel($uxMeta) {
 
 	global $wpdb;
 
+	$showExpiration = false; //TODO Implement Revisit.
+
 	$userInfo = wp_get_current_user();
 	$ownerId = $userInfo->data->ID;
 	$messageTypeId = $uxMeta['template_type_id'];
 	//Lookup templates for this user for this template typed
-	$results = $wpdb->get_results(
-		$wpdb->prepare("SELECT id, short_description, default_item FROM alpn_message_templates WHERE message_type_id = %s AND owner_id = %s;", $messageTypeId, $ownerId)
+	$templateData = $wpdb->get_results(
+		$wpdb->prepare("SELECT tt.type_key, tm.id, tm.name FROM alpn_topic_types tt JOIN alpn_templates tm ON tm.type_key = tt.type_key AND tm.template_type = 'message' WHERE tt.owner_id = %d AND tt.id = %d;",$ownerId, $uxMeta['topic_type_id'])
 	);
+
 	$templates = array();
-	foreach ($results as $key => $value) {
-		$templates[] = array("id" => $value->id, "short_description" => $value->short_description, "default_item" => $value->default_item);
+	foreach ($templateData as $key => $value) {
+		$templates[] = array("id" => $value->id, "short_description" => $value->name, "default_item" => 0);
 	}
 	$uxMeta['templates'] = $templates;
+
 	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : "";
 	$topicName = 	isset($uxMeta['topic_name']) ? $uxMeta['topic_name'] : "";
 	$topicDomId = 	isset($uxMeta['topic_dom_id']) ? $uxMeta['topic_dom_id'] : "";
 	$html = "";
 	$sendType = "<span class='pte_internal_link' data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-operation='topic_info' onclick='pte_handle_interaction_link_object(this);'>{$topicName}</span>"; //TODO this needs to change based on type
-	$expirationLineHtml = pte_make_expiration_html();
+	$expirationLineHtml = $showExpiration ? pte_make_expiration_html() : "";
 	$toFromLineHtml = pte_make_data_line('to_from_line', $uxMeta);
 	$regardingLineHtml = pte_make_data_line('regarding_line', $uxMeta);
 	$messageLineHtml = pte_make_message_line('message_editable_new', $uxMeta);
@@ -751,7 +761,6 @@ function pte_make_message_panel($uxMeta) {
 				jQuery('#alpn_select2_small_template_select').on('select2:select', function (e) {
 					pte_handle_message_merge('message');
 				});
-				pte_handle_message_merge('message');
     </script>
 		";
 	return $html;
@@ -811,9 +820,13 @@ function pte_make_send_url_panel($uxMeta) {
 	if ($widgetTypeId == "sms_send") {
 
 //only difference in queries is which field we're checking for not empty in json. And have to check network contact
-		$results = $wpdb->get_results(
-			$wpdb->prepare("SELECT t.*, p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle, t2.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special = 'user' WHERE JSON_EXTRACT(t.topic_content, '$.person_telephone') != '' AND t.special != 'user' AND t.owner_id = %s ORDER BY NAME ASC", $ownerId)
-		 );
+		// $results = $wpdb->get_results(
+		// 	$wpdb->prepare("SELECT t.*, p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle, t2.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special = 'user' WHERE JSON_EXTRACT(t.topic_content, '$.person_telephone') != '' AND t.special != 'user' AND t.owner_id = %s ORDER BY NAME ASC", $ownerId)
+		//  );
+
+		 $results = $wpdb->get_results(
+			 $wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE (JSON_EXTRACT(t.topic_content, '$.person_telephone') != '' OR (JSON_EXTRACT(ct.topic_content, '$.person_telephone') != '')) AND t.owner_id = %s AND tt.schema_key = 'Person' AND t.special != 'user' ORDER BY NAME ASC", $ownerId)
+		);
 
 		$mobileNumbers = array();
  		foreach ($results as $key => $value) {   //If connected with someone, use their data.

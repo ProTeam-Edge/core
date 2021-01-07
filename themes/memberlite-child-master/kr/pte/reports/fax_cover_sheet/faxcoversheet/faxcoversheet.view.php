@@ -1,5 +1,7 @@
 <?php
 
+$hostDomainName = PTE_HOST_DOMAIN_NAME;
+
 $reportSettings = $this->params;
 $highlightColor = $reportSettings['highlight_color'];
 $topicContent = $reportSettings['topic_content'];
@@ -7,8 +9,8 @@ $topicContent = $reportSettings['topic_content'];
 ?>
 <html>
 	<head>
-		<link rel="stylesheet" href="https://proteamedge.com/wp-content/themes/memberlite-child-master/kr/pte/assets/bs3/bootstrap.min.css" />
-        <link rel="stylesheet" href="https://proteamedge.com/wp-content/themes/memberlite-child-master/kr/pte/assets/bs3/bootstrap-theme.min.css" />
+		<link rel="stylesheet" href="https://<?php echo $hostDomainName ?>/wp-content/themes/memberlite-child-master/kr/pte/assets/bs3/bootstrap.min.css" />
+        <link rel="stylesheet" href="https://<?php echo $hostDomainName ?>/wp-content/themes/memberlite-child-master/kr/pte/assets/bs3/bootstrap-theme.min.css" />
 	</head>
     <body style='margin 0; padding: 0;'>
 		<?php include "/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/kr/pte/parts/header_fax_cover_sheet.php"; ?>

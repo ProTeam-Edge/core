@@ -700,7 +700,7 @@ function pte_get_template_editor($editorSettings) {
       <div class='pte_vault_row_25 pte_max_width_25'>
       <div class='pte_editor_title'>
         <div class='pte_vault_row_75'>
-          <div>Templates</div>
+          <div>Template</div>
         </div>
         <div class='pte_vault_row_25 pte_vault_right'>
           &nbsp;
@@ -1054,7 +1054,7 @@ function get_network_contact_topics($networkContactId) {
 
   if (isset($resultTopics[0])) {
 
-    $contactTopics .= "<div class='pte_route_container_title'>Team Member of</div>";
+    $contactTopics .= "<div class='pte_route_container_title'>Teams</div>";
     $contactTopics .= "<div id='pte_contacts_topics_container'>";
     foreach ($resultTopics as $key => $value) {
       $topicList = '';
@@ -1067,7 +1067,7 @@ function get_network_contact_topics($networkContactId) {
       $topicAll = "{$topicName} - {$topicAbout}";
 
       $contactTopics .= "<li class='pte_important_topic_scrolling_list_item'>";
-      $contactTopics .= "<div class='pte_scrolling_item_full' title='Link to this topic'><div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-operation='topic_info' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);' style='text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>{$topicAll}</div></div></div>";
+      $contactTopics .= "<div class='pte_scrolling_item_full' title='Link to this topic'><div class='pte_link_bar_link_contacts'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-operation='topic_info' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);' style='text-align: left; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>{$topicAll}</div></div></div>";
       $contactTopics .= "</li>";
   }
   $contactTopics .= "</div>";

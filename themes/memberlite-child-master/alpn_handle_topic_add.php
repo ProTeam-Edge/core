@@ -11,7 +11,7 @@ if(isset($qVars['security']) && !empty($qVars['security']))
 	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
 if($verify==1) {
 	// nonce verfied do your action here
-	
+
 	$topicTypeId = isset($qVars['topicTypeId']) ? $qVars['topicTypeId'] : '';
 	$topicTypeSpecial = isset($qVars['topicTypeSpecial']) ? $qVars['topicTypeSpecial'] : '';
 	$topicDomId = isset($qVars['previous_topic']) ? $qVars['previous_topic'] : '';
@@ -41,7 +41,7 @@ if($verify==1) {
 		$name = $topicType->name;
 		$icon = $topicType->icon;
 
-	
+
 
 	$topicItemMeta = array(
 		"row_id" => "",

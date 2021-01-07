@@ -24,12 +24,16 @@ if ($ownerId && $phoneNumber) {
 					"owner_id" => $ownerId,
 					"owner_network_id" => $ownerNetworkId,
 					"pstn_number" => $phoneNumber,
-					"pstn_uuid" => $numberUuid
+					"pstn_uuid" => $numberUuid,
+					"topic_id" => $ownerNetworkId
 				);
 				$wpdb->insert( 'alpn_pstn_numbers', $numberData );
+
+				//TODO merge with alpn_common get_user_fax_numbers
 				$results = $wpdb_readonly->get_results(
-					$wpdb_readonly->prepare("SELECT id, name FROM alpn_topics WHERE owner_id = '%s' AND topic_type_id NOT IN ('4', '5') ORDER BY name ASC;", $ownerId)
+					$wpdb_readonly->prepare("SELECT t.id, t.name FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = %d AND t.special = 'topic' AND t.name != '' AND (tt.topic_class = 'topic' OR tt.topic_class = 'link') ORDER BY name ASC", $ownerId)
 				);
+
 				$phoneNumberKey = substr($phoneNumber, 1);
 				$topicList .= "<select id='alpn_select2_small_{$phoneNumberKey}' data-ptrid='{$phoneNumber}'>";
 				$topicList .= "<option value='{$ownerNetworkId}'>Personal</option>";
@@ -41,10 +45,10 @@ if ($ownerId && $phoneNumber) {
 				$topicList .= "</select>";
 
 			} else {
-				//TODO unable to create webhook
+				//TODO
 			}
 		} else {
-				//TODO unable to provision number
+				//TODO
 
 		}
 		$results['topic_list'] = $topicList;
