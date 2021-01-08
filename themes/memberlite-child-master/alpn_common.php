@@ -2257,6 +2257,13 @@ function  pte_make_rights_panel_view($panelData) {
     $restrictedChecked = "SELECTED";
   }
 
+  $connectedContactStatusIcon = "<i class='far fa-user-slash' title='Not a Member'></i>";
+  if ($connectedContactStatus == 'not_connected_member') {
+    $connectedContactStatusIcon = "<i class='far fa-user' title='Member, Not Connected'></i>";
+  } else if ($connectedContactStatus == 'connected_member') {
+    $connectedContactStatusIcon = "<i class='far fa-user-friends' title='Member, Connected'></i>";
+  }
+
   $permissions = "
     <select id='alpn_select2_small_{$proTeamRowId}' class='alpn_select2_small' data-ptrid='{$proTeamRowId}'>
       <option value='10' {$generalChecked}>General</option>
@@ -2275,9 +2282,9 @@ function  pte_make_rights_panel_view($panelData) {
   if ($connectedContactStatus == 'not_connected_not_member') {
     $html = "
   		<div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
-  			<div class='proTeamPanelUserOuter'>
+        <div class='proTeamPanelUserOuter'>
           <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
-  				<div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]}</div>
+  				<div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]} &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
           <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
   			</div>
   			<div class='proTeamPanelSettings'>
@@ -2291,7 +2298,7 @@ function  pte_make_rights_panel_view($panelData) {
       <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
         <div class='proTeamPanelUserOuter'>
           <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
-          <div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]}</div>
+          <div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]} &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
           <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
         </div>
         <div class='proTeamPanelSettings'>
@@ -2314,9 +2321,7 @@ function  pte_make_rights_panel_view($panelData) {
       </div>
       ";
   }
-
 	return $html;
-
 }
 
 
