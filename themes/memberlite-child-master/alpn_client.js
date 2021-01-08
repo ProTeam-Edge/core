@@ -4376,6 +4376,7 @@ function alpn_setup_proteam_selector(uniqueRecId){
 }
 
 function pte_save_topic_pic(fileUploaded, source){
+	var security = specialObj.security;
 		if (fileUploaded.id) {
 			var fileHandle = fileUploaded.id + "." + fileUploaded.ext;
 			var currentSelection = alpn_select_type();
@@ -4404,6 +4405,7 @@ function pte_save_topic_pic(fileUploaded, source){
 					source: source,
 					handle: fileHandle,
 					topic_id: topicId,
+					security: security,
 					topic_special: topicSpecial
 				},
 				dataType: "json",
