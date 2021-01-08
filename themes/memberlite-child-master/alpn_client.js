@@ -889,7 +889,7 @@ function pte_set_table_page(data){
 
 	console.log('pte_set_table_page');
 	console.log(data);
-
+	var security = specialObj.security;
 	var tableType = data['table_type'];
 	var domId = data['dom_id'];
 	var ownerId = data['owner_id'];
@@ -900,7 +900,8 @@ function pte_set_table_page(data){
 		url: alpn_templatedir + 'pte_get_topic_page.php',
 		type: 'POST',
 		data: {
-			"data": data
+			"data": data,
+			"security": security,
 		},
 		dataType: "json",
 		success: function(json) {
