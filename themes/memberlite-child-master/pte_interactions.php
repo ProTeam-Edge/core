@@ -198,6 +198,17 @@ function pte_get_process_context($processData) { //TODO make this work for all i
         $topicData = isset($results[0]) ? $results[0] : (object)array();
     }
 
+    $userData = (object)array();
+    $friendlyName = 'Member';
+    if ($ownerNetworkId) {
+        $results = $wpdb->get_results(
+         $wpdb->prepare("SELECT topic_content from alpn_topics WHERE id = %s", $ownerNetworkId)
+         );
+         $userData = isset($results[0]) ? $results[0] : (object)array();
+         $topicContent = json_decode($userData->topic_content, true);
+         $friendlyName = $topicContent['person_givenname'] . " " . $topicContent['person_familyname'];
+     }
+
     $now = date ("Y-m-d H:i:s", time());
     $processContext = array(
       'vault_id' => $vaultId,
@@ -209,6 +220,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
       "created_date" =>   $now,
       'owner_network_id' => $ownerNetworkId,
       'owner_id' => $ownerId,
+      'owner_friendly_name' => $friendlyName,
       'network_id' => $interactionNetworkId,
       'connected_id' => isset($networkData->connected_id) ? $networkData->connected_id : 0,
       'connected_network_id' => isset($networkData->connected_network_id) ? $networkData->connected_network_id : 0,
@@ -318,6 +330,21 @@ function pte_manage_interaction_proper($data) {
     }
     $processId = $process->getId();
     $processContext['process_id'] = $processId;
+
+    //update contact status evertime interaction is run. TODO What happens when
+    $processContext['connected_contact_status'] = 'not_connected_not_member';
+    if (!$processContext['connected_id']) { //If not connected, see if member from email alt_id
+      if ($processContext['alt_id']) {  //is actually a user based on email so let's engage that way-- create inviation received
+        $connectedUserData = get_user_by('email', $processContext['alt_id']);
+        if (isset($connectedUserData->data->ID) && $connectedUserData->data->ID) {
+          $processContext['connected_contact_status'] = 'not_connected_member';
+          $processContext['connected_contact_id_alt'] = $connectedUserData->data->ID;
+          $processContext['connected_contact_topic_id_alt'] = get_user_meta( $connectedUserData->data->ID, 'pte_user_network_id', true );
+        }
+      }
+    } else {
+      $processContext['connected_contact_status'] = 'connected_member';
+    }
 
     $token->setValue("process_context", $processContext);  //store context with new data with each token
     try {

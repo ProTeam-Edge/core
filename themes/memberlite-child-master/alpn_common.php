@@ -220,7 +220,7 @@ function pte_send_wp_mail($data){
 function pte_send_mail ($data) {
   $email = new \SendGrid\Mail\Mail();
   $sendGridKey = SENDGRID_KEY;
-  $emailTemplateName = PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
+  $emailTemplateName =  isset($data['email_template_name']) && $data['email_template_name'] ? PTE_ROOT_PATH . "email_templates/{$data['email_template_name']}" : PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
   $emailTemplateHtml = file_get_contents($emailTemplateName);
   $fromName =  $data['from_name'];
   $fromEmail =  $data['from_email'];

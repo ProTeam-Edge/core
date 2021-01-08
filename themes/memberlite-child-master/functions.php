@@ -54,8 +54,9 @@ $cookie_value = '0';
 $cookie_secure = 'secure';
 $cookie_httponly = 'HTTPOnly';
 
-
 setcookie($cookie_name, $cookie_value, (time()+3600), '/',$domainName, $cookie_secure, $cookie_httponly);
+
+add_filter( 'nonce_life', function () { return 2 * HOUR_IN_SECONDS; } );  //1 - 2 hours. Default is 24 hours
 
 include('alpn-shortcodes.php');
 include('alpn_common.php');
@@ -516,7 +517,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
             $data['topic_id'] = $row_id;
             $data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
             pte_manage_cc_groups("add_user", $data);
-            update_user_meta( $userId, "pte_user_network_id",  $row_id);
+						update_user_meta( $userId, "pte_user_network_id",  $row_id);
             $data = array(
               "sync_type" => "return_create_sync_id",
               "sync_user_id" => $userId,

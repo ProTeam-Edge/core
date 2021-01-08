@@ -3742,13 +3742,12 @@ function pte_check_viewer_password(tObj){
 function pte_view_document(vaultId, formId, filename = "pte_file.pdf") {
 	var security = specialObj.security;
 	console.log('Viewing Document...');
-	console.log(vaultId);
-	var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId;
+	//console.log(vaultId);
+	var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId + '&security=' + security;
 
 	pdfui.openPDFByHttpRangeRequest({
 		range: {
-			url: srcFile,
-			security: security,
+			url: srcFile
 		}
 	}, {
 		fileName: filename
@@ -3888,12 +3887,14 @@ function alpn_vault_control(operation) {
 	switch(operation) {
 		case 'download_original':
 			console.log('Downloading Original...');
-			var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=original&v_id=' + vaultId;
+			var security = specialObj.security;
+			var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=original&v_id=' + vaultId + '&security=' + security;
 			window.location = srcFile;
 		break;
 		case 'download_pdf':
 			console.log('Downloading PDF...');
-			var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId;
+			var security = specialObj.security;
+			var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId + '&security=' + security;
 			window.location = srcFile;
 		break;
 		case 'print':

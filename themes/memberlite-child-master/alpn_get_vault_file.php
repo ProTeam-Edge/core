@@ -6,9 +6,6 @@ require 'vendor/autoload.php';
 use Google\Cloud\Storage\StorageClient;
 
 //TODO RUGGEDIZE -- queries, exceptions, size of files??, logs SECURITY!!!, pass in id and check for match. nonce thing maybe?
-//alpn_log("after db..." . pte_time_elapsed(microtime() - $nowtime));
-//$nowtime = microtime();
-
 //TODO do not check over and over in failure situations.
 
 //$siteUrl = get_site_url();
@@ -20,6 +17,8 @@ if(isset($qVars['security']) && !empty($qVars['security']))
 if($verify==1) {
 $vId = isset($qVars['v_id']) ? $qVars['v_id'] : '';
 $whichFile = isset($qVars['which_file']) ? $qVars['which_file'] : 'original';
+
+//TODO implement has rights to. Must be logged in and has rights to. Has rights to topic. Has rights to vault File. 
 
 $results = $wpdb->get_results(
 	$wpdb->prepare("SELECT mime_type, file_name, pdf_key, file_key FROM alpn_vault WHERE id = %s", $vId)   //TODO check for logged in.

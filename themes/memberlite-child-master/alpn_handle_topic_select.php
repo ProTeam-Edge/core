@@ -26,6 +26,8 @@ $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
+//pp($userInfo->data);
+
 if (!$userID) {
 	$html = "
 	<div class='pte_topic_error_message'>
@@ -257,7 +259,7 @@ if ($topicEmailRoute || $topicFaxRoute) {
 	$faxHtml = $topicFaxRoute ? "<div title='Copy Fax Number Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Fax Number\", \"{$topicFaxRoute}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Fax: {$topicFaxRouteFormatted}</div>" : "";
 	$routes = "
 			<div class='pte_route_container'>
-				<div class='pte_route_container_title'>Receive Files to this Topic by</div>
+				<div class='pte_route_container_title'>Receive Files to this Topic</div>
 				{$emailRouteHtml}
 				{$faxHtml}
 			</div>

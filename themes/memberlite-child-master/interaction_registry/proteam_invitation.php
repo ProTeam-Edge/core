@@ -34,32 +34,13 @@ function pte_get_proteam_invitation_registry() {
             $requestData['interaction_vault_link'] = "";
             $requestData['to_from'] = 'To';
 
-            $connectedUserID = $connectedUserTopicId = $connectedUserEmail = '';
-            if (!$requestData['connected_id']) { //If not connected, see if member from email alt_id
-              $connectedUserEmail = $requestData['alt_id'];   //Should be email here.
-              if ($connectedUserEmail) {  //is actually a user based on email so let's engage that way-- create inviation received
-                $connectedUserData = get_user_by('email', $connectedUserEmail);
-                if (isset($connectedUserData->data->ID) && $connectedUserData->data->ID) {
-                  $connectedUserID = $connectedUserData->data->ID;
-                  $connectedUserTopicId = get_user_meta( $connectedUserID, 'pte_user_network_id', true );
-                }
-              }
-            }
-            if ($requestData['connected_id']) {
-              $requestData['connected_contact_status'] = 'connected_member';
-            } else if ($connectedUserID) {
-              $requestData['connected_contact_status'] = 'not_connected_member';
-            } else {
-              $requestData['connected_contact_status'] = 'not_connected_not_member';
-            }
-
             if ($token->getValue("message_title")) { //As long as there is a title, we can send.
 
               $newRequestData = array( //start a proteam_invitation_received process for network contact
                 'template_id' => $requestData["template_id"],
                 'template_name' => $requestData["template_name"],
                 'message_title' => $requestData["message_title"],
-                'message_body' => $requestData["message_body"],
+                'message_body' => nl2br($requestData["message_body"]),
                 'expiration_minutes' => $requestData["expiration_minutes"],
                 'interacts_with_id' => $requestData["process_id"],
                 'process_id' => '',
@@ -70,16 +51,34 @@ function pte_get_proteam_invitation_registry() {
                 'alt_id' => $requestData['alt_id']
               );
 
-              if ($requestData['connected_id'] || $connectedUserID) { //connected -- create inviation received
+              if ($requestData['connected_id'] || $requestData['connected_contact_id_alt']) { //connected -- create inviation received
                 $data = array(
               		'process_id' => "",
               		'process_type_id' => "proteam_invitation_received",
-                  'owner_network_id' => $requestData['connected_network_id'] ? $requestData['connected_network_id'] : $connectedUserTopicId,
-              		'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $connectedUserID,
+                  'owner_network_id' => $requestData['connected_network_id'] ? $requestData['connected_network_id'] : $requestData['connected_contact_topic_id_alt'],
+              		'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $requestData['connected_contact_id_alt'],
               		'process_data' => $newRequestData
               	);
               	$requestData['interacts_with_id'] = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
+              } else {
+                  alpn_log('Send an Email instead...');
 
+                  $userInfo = get_user_by('id', $requestData['owner_id']);
+                  if (isset($userInfo->data)) {
+                    $data = array(
+                      'from_name' => $requestData['owner_friendly_name'],
+                      'from_email' => $userInfo->data->user_email,
+                      'to_email' => $requestData['alt_id'] ,
+                      'to_name' => $requestData['network_name'],
+                      'link_type' => "",
+                      'vault_file_name' => "",
+                      'subject_text' => $requestData['message_title'],
+                      'body_text' => nl2br($requestData['message_body']),
+                      'link_id' => ""
+                    );
+                    alpn_log($data);
+                    pte_send_mail ($data);
+                  }
               }
             $token->setValue("process_context", $requestData);
 
@@ -133,13 +132,7 @@ function pte_get_proteam_invitation_registry() {
               "message_editable_update"
             );
 
-            alpn_log('Connected Contact Status');
-            alpn_log($requestData);
-
-          $connectedContactStatus = $requestData['connected_contact_status'];
-
-          if ($connectedContactStatus == "not_connected_not_member") {
-
+          if ($requestData['connected_contact_status'] == "not_connected_not_member") {
             $requestData['interaction_type_status'] = "Complete";
             $requestData['interaction_complete'] = true;
             $requestData['message_lines'] =  array(
