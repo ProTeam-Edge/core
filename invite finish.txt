@@ -1,0 +1,34 @@
+
+Team Member of xxx only after the other person accepts. Showing on contact topic select.
+
+Connected, member
+  TI-Received + notification rule
+Not connected, member
+  TI-Recieved + notification. Indicator.
+
+Not connected, Not member
+   Email
+
+Buttons need to handle internal, external differently.
+
+External. Team does not require the other side.
+
+Don't need a template id to move forward. But do need at least a title and or Body
+
+What happens if the person who is invited is not a user with the interaction received interactions?
+
+invitation received should determine
+
+Implement
+Recall
+Update
+SmartFile
+
+Handle People leaving teams
+Handle connecting topics
+handle enforcing permissions into UI and back end.
+
+Added -- Waiting
+
+Re-invite.
+Disconnect of Topic Team
