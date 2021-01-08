@@ -1374,12 +1374,13 @@ function pte_handle_file_away(tObj){
 	console.log('pte_handle_file_away...');
 	var jObj = jQuery(tObj);
 	var processId = jObj.data('pid');
-
+	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_file_interaction_away.php',
 		type: 'POST',
 		data: {
-			process_id: processId
+			process_id: processId,
+			security: security,
 		},
 		dataType: "json",
 		success: function(json) {
