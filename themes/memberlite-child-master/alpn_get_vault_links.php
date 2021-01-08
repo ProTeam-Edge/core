@@ -3,6 +3,10 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 include(PTE_ROOT_PATH . 'pte_get_interaction_ux.php');
 
 $qVars = $_POST;
+$verify = 0;
+if(isset($qVars['security']) && !empty($qVars['security']))
+	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+if($verify==1) {
 $cellId = isset($qVars['cell_id']) ? $qVars['cell_id'] : '';
 
 $userInfo = wp_get_current_user();
@@ -47,5 +51,11 @@ $returnArray = array(
 );
 
 	pte_json_out($returnArray);
-
+} 
+else
+{
+	$html = 'Not a valid request.';
+	echo $html;
+	die;
+}
 ?>

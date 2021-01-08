@@ -3363,7 +3363,7 @@ function pte_expire_url_now(linkId) {
 
 function pte_get_vault_links(cellId){
 	console.log("pte_get_vault_links...");
-
+	var security = specialObj.security;
 	if (!cellId) {
 		cellId = alpn_oldVaultSelectedId;
 	}
@@ -3390,7 +3390,8 @@ function pte_get_vault_links(cellId){
 		url: alpn_templatedir + 'alpn_get_vault_links.php',
 		type: 'POST',
 		data: {
-			"cell_id": cellId
+			"cell_id": cellId,
+			"security": security,
 		},
 		dataType: "json",
 		success: function(json) {
