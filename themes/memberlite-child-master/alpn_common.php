@@ -1058,7 +1058,7 @@ function get_network_contact_topics($networkContactId) {
 
   if (isset($resultTopics[0])) {
 
-    $contactTopics .= "<div class='pte_route_container_title'>Teams</div>";
+    $contactTopics .= "<div class='pte_route_container_title'>Topic Teams</div>";
     $contactTopics .= "<div id='pte_contacts_topics_container'>";
     foreach ($resultTopics as $key => $value) {
       $topicList = '';
