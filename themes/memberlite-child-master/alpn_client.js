@@ -3733,6 +3733,7 @@ function pte_check_viewer_password(tObj){
 }
 
 function pte_view_document(vaultId, formId, filename = "pte_file.pdf") {
+	var security = specialObj.security;
 	console.log('Viewing Document...');
 	console.log(vaultId);
 	var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId;
@@ -3740,6 +3741,7 @@ function pte_view_document(vaultId, formId, filename = "pte_file.pdf") {
 	pdfui.openPDFByHttpRangeRequest({
 		range: {
 			url: srcFile,
+			security: security,
 		}
 	}, {
 		fileName: filename
