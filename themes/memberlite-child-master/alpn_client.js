@@ -4357,7 +4357,7 @@ function alpn_setup_proteam_selector(uniqueRecId){
 			width: '100%',
 			allowClear: true,
 			closeOnSelect: false,
-			placeholder: "Invite with Interaction..."
+			placeholder: "Send an Invitation..."
 		});
 		jQuery('#alpn_proteam_selector').on('select2:select', function (e) {
 			var data = e.params.data;
@@ -4980,6 +4980,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 	var topicId = jQuery('#pte_selected_topic_meta').data('tid');
 	var topicTypeId = jQuery('#pte_selected_topic_meta').data('ttid');
 	var topicTypeSpecial = jQuery('#pte_selected_topic_meta').data('special');
+	var security = specialObj.security;
 
 	var returnDetails = {
 		"return_to": overRideTopic,
@@ -4995,7 +4996,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 		case 'make_default_topic':
 		console.log('make_default_topic...');
-		var security = specialObj.security;
 		var tableId = "table_tab_" + tabId;
 		var trObj =  jQuery('#alpn_main_container #alpn_field_' + uniqueRecId).closest('tr');
 		var vaultRowData = wpDataTables[tableId].fnGetData(trObj);
@@ -5189,7 +5189,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				type: 'POST',
 				data: {
 					uniqueRecId: uniqueRecId,
-					security: security,
+					security: security
 				},
 				dataType: "html",
 				success: function(html) {

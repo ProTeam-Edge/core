@@ -182,7 +182,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
      }
   }
 
-  $networkData = (object)array();
+  $networkData = (object)array();   //contact
   if ($interactionNetworkId) {
     $results = $wpdb->get_results(
       $wpdb->prepare("SELECT t.name, t.image_handle, t.dom_id, t.alt_id, t.connected_id, t.connected_network_id, u.id AS important_id FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.list_key = 'pte_important_network' AND u.owner_network_id = %s WHERE t.id = %s", $ownerNetworkId, $interactionNetworkId)

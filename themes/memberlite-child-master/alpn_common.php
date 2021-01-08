@@ -7,7 +7,11 @@ require 'vendor/autoload.php';
 use Google\Cloud\Storage\StorageClient;
 use Twilio\Rest\Client;
 use PascalDeVink\ShortUuid\ShortUuid;
+
+
 //TODO centralize this with report usages on ZIP
+
+
 function storePdf($pdfSettings){
   alpn_log('STORING PDF');
   $pdfKey = $pdfSettings["pdf_key"];
@@ -2231,12 +2235,16 @@ function get_custom_post_items($post_type, $order){
 
 function  pte_make_rights_panel_view($panelData) {
 
+  alpn_log("pte_make_rights_panel_view");
+  alpn_log($panelData);
+
 	$topicStates = array('10' => "Added", '20' => "Notified", '30' => "Active", '40' => "Topic Linked");
 
 	$proTeamRowId = $panelData['proTeamRowId'];
   $topicNetworkId = $panelData['topicNetworkId'];
 	$topicDomId = $panelData['topicDomId'];
-	$topicNetworkName = $panelData['topicNetworkName'];
+  $topicNetworkName = $panelData['topicNetworkName'];
+	$connectedContactStatus = $panelData['connected_contact_status'];
 	$topicAccessLevel = $panelData['topicAccessLevel'];
 	$topicState = $panelData['state'];
 	$checked = $panelData['checked'];
@@ -2264,32 +2272,48 @@ function  pte_make_rights_panel_view($panelData) {
 
   $print = (isset($checked['print']) && $checked['print']) ? "<div id='proteam_print' data-item='print' pte-state='set' data-ptid='{$proTeamRowId}' class='proteam_rights_check' onclick='alpn_rights_check(this);'><div class='pte_panel_check'><i class='fa fa-check' style='font-size: 0.9em; color: #4499d7;'></i></div>Print</div>" : "<div id='proteam_print' data-item='print' pte-state='' data-ptid='{$proTeamRowId}' class='proteam_rights_check' onclick='alpn_rights_check(this);'><div class='pte_panel_check'></div>Print</div>";
 
-	$html = "
-		<div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
-			<div class='proTeamPanelUserOuter'>
-        <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
-				<div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]}</div>
-        <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
-			</div>
-			<div class='proTeamPanelSettings'>
-				<div id='pte_proteam_controls' class='pte_proteam_controls' data-id='{$topicNetworkId}'>
-					<table class='pte_proteam_rights_table' data-pte-proteam-id='{$proTeamRowId}'>
-						<tr class='pte_proteam_row'>
-							<td class='pte_proteam_cell_left'>
-                <div style='display: inline-block; vertical-align: middle; margin-left: 0px; margin-right: 5px; margin-bottom: 3px; font-weight: bold;'>Access:</div><div style='display: inline-block; vertical-align: middle; margin-bottom: 3px; height: 16px;'>{$permissions}</div>
-                <div class='pte_proteam_row_rights'>
-                  <div class='pte_proteam_cell_rights_left'>{$print}</div><div class='pte_proteam_cell_rights_right'>$share</div>
-                </div>
-                <div class='pte_proteam_row_rights'>
-                  <div class='pte_proteam_cell_rights_left'>{$download}</div><div class='pte_proteam_cell_rights_right'></div>
-                </div>
-              </td>
-						</tr>
-					</table>
-				</div>
-			</div>
-		</div>
-		";
+  if ($connectedContactStatus == 'not_connected_not_member') {
+    $html = "
+  		<div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
+  			<div class='proTeamPanelUserOuter'>
+          <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
+  				<div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]}</div>
+          <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
+  			</div>
+  			<div class='proTeamPanelSettings'>
+        Non-Member UX
+  			</div>
+  		</div>
+  		";
+
+  } else {
+    $html = "
+      <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
+        <div class='proTeamPanelUserOuter'>
+          <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
+          <div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]}</div>
+          <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
+        </div>
+        <div class='proTeamPanelSettings'>
+          <div id='pte_proteam_controls' class='pte_proteam_controls' data-id='{$topicNetworkId}'>
+            <table class='pte_proteam_rights_table' data-pte-proteam-id='{$proTeamRowId}'>
+              <tr class='pte_proteam_row'>
+                <td class='pte_proteam_cell_left'>
+                  <div style='display: inline-block; vertical-align: middle; margin-left: 0px; margin-right: 5px; margin-bottom: 3px; font-weight: bold;'>Access:</div><div style='display: inline-block; vertical-align: middle; margin-bottom: 3px; height: 16px;'>{$permissions}</div>
+                  <div class='pte_proteam_row_rights'>
+                    <div class='pte_proteam_cell_rights_left'>{$print}</div><div class='pte_proteam_cell_rights_right'>$share</div>
+                  </div>
+                  <div class='pte_proteam_row_rights'>
+                    <div class='pte_proteam_cell_rights_left'>{$download}</div><div class='pte_proteam_cell_rights_right'></div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      ";
+  }
 
 	return $html;
 

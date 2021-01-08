@@ -7,18 +7,18 @@
  */
  /* Created by Abstain Solutions 22-12-2020 */
 /* function wpf_dev_process_before( $entry, $form_data ) {
- 
+
     echo '<pre>';
 		print_r($entry);
 		die;
- 
+
     // run code
 } */
 include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 // verify added nonce before submission for wpforms
 function wpf_dev_process_before( $entry, $form_data ) {
- 
+
 	$passed = 0;
 	$nonce = '';
 	if(isset($_POST['wp_form_nonce']) && !empty($_POST['wp_form_nonce']))
@@ -36,14 +36,14 @@ function wpf_dev_process_before( $entry, $form_data ) {
 		/* wp_redirect(site_url().'/invalid-request');
 		exit; */
 	}
-	else 
+	else
 		return;
-   
+
 }
 // add nonce field before submit button for all wpforms
 add_action( 'wpforms_process_before', 'wpf_dev_process_before', 10, 2 );
 function wpf_dev_display_submit_before( $form_data ) {
-  
+
    return wp_nonce_field( 'wp_form_nonce', 'wp_form_nonce' );
 }
 add_action( 'wpforms_display_submit_before', 'wpf_dev_display_submit_before', 10, 1 );
@@ -358,7 +358,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
   $returnDetails = array();
 
   alpn_log("alpn_handle_topic_add_edit");
-  alpn_log($fields);
+//  alpn_log($fields);
 
   $fieldsAll = $fields;
   $row_id = $userEmail = '';
@@ -366,9 +366,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 	$formId = $entry['id'];
   $fields = $entry['fields'];
 
-  alpn_log($fields);
-
-
+  //alpn_log($fields);
   //alpn_log('alpn_handle_topic_add_edit_TEXTAREAFIELDS');
   //alpn_log($fieldsAll);
 
@@ -431,9 +429,11 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 				$last_record_id = array();
 				$topicMeta = array();
 
-				if ($topicTypeSpecial == 'contact') { //Network
+				if (isset($mappedFields['person_email']) && $mappedFields['person_email']) {
           $altId = $mappedFields['person_email'];  //Email
-				} else if ($topicTypeSpecial == 'user') { //User
+				}
+
+        if ($topicTypeSpecial == 'user') { //User
 					$mappedFields['person_email'] = $userEmail;  //sets user profile email to WP email
 				}
 

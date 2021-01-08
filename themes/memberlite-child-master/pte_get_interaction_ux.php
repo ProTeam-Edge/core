@@ -365,6 +365,7 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 
 	$networkId = 	isset($uxMeta['network_id']) ? $uxMeta['network_id'] : "";
 	$networkName = 	isset($uxMeta['network_name']) ? $uxMeta['network_name'] : "";
+	$connectedContactStatus =	isset($uxMeta['connected_contact_status']) ? $uxMeta['connected_contact_status'] : "";
 	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : "";
 	$topicTypeId = 	isset($uxMeta['topic_type_id']) ? $uxMeta['topic_type_id'] : "";
 	$topicTypeSpecial = 	isset($uxMeta['topic_special']) ? $uxMeta['topic_special'] : "topic";
@@ -432,17 +433,36 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 					";
 		break;
 		case 'network_panel':
+			if ($connectedContactStatus == 'not_connected_not_member') {
+				$commFeaturesLink = "
+					<div class='pte_link_bar_link'></div>
+					<div class='pte_link_bar_link'></div>
+				";
+				$status = "<i class='far fa-user-slash' title='Not a Member'></i>";
+			} else if ($connectedContactStatus == 'not_connected_member'){
+				$commFeaturesLink = "
+				<div class='pte_link_bar_link'></div>
+				<div class='pte_link_bar_link'></div>
+				";
+				$status = "<i class='far fa-user' title='Member, Not Connected'></i>";
+			} else {
+				$commFeaturesLink = "
+				<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_chat' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
+				<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_audio' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-microphone'></i></div>Audio</div></div>
+				";
+				$status = "<i class='far fa-user-friends' title='Member, Connected'></i>";
+			}
 			$html .= "
 					<div class='pte_outer_link_bar_container'>
-						<div class='pte_link_bar_title'>{$networkName}</div>
+						<div class='pte_link_bar_title'>{$networkName} {$status}</div>
 						<div class='pte_outer_link_bar_links'>
 							<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_info' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
 							<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_vault' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>
-							<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_chat' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
-							<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_audio' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-microphone'></i></div>Audio</div></div>
+							{$commFeaturesLink}
 						</div>
 					</div>
 					";
+
 		break;
 		case 'vault_item':
 				$html .= "<div data-vault-id='{$vaultId}' data-vault-dom-id='{$vaultDomId}' data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='vault_item' class='interaction_panel_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-file-pdf'></i></div>View - {$viewString}</div>";

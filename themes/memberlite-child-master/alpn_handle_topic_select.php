@@ -12,10 +12,13 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
+
 $verify = 0;
 if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = wp_verify_nonce( $pVars['security'], 'alpn_script' );
+	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+
 if($verify==1) {
+
 $recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 $ppCdnBase = PTE_IMAGES_ROOT_URL;
 
@@ -367,13 +370,12 @@ if ($topicBelongsToUser) {
 }
 
 $proteam = $wpdb->get_results(  //get proteam
-	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
+	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id, t.alt_id, t.connected_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
  );
 
 $proTeamMembers = "";
 $topicHasTeamMembers = count($proteam) ? true : false;
 $proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title'>Topic Team</div>" : "";
-
 
 foreach ($proteam as $key => $value) {
 	if ($topicBelongsToUser) {
@@ -381,6 +383,15 @@ foreach ($proteam as $key => $value) {
 		$topicDomIdProTeam = $value->dom_id;
 		$topicNetworkName = $value->name;
 		$topicAccessLevel= $value->access_level;
+		$connectedContactStatus = 'not_connected_not_member';
+		if ($value->connected_id) {
+			$connectedContactStatus = 'connected_member';
+		} else if ($value->alt_id) {
+			 $userData = get_user_by('email', $value->alt_id);
+			 if (isset($userData->data->ID) && $userData->data->ID) {
+				 $connectedContactStatus = 'not_connected_member';
+			 }
+		}
 		$topicNetworkRights = json_decode($value->member_rights, true);
 		$checked = array();
 		foreach ($topicNetworkRights as $key2 => $value2) {
@@ -393,7 +404,8 @@ foreach ($proteam as $key => $value) {
 			'topicNetworkName' => $value->name,
 			'topicAccessLevel' => $topicAccessLevel,
 			'state' => $value->state,
-			'checked' => $checked
+			'checked' => $checked,
+			'connected_contact_status' => $connectedContactStatus
 		);
 		$proTeamMembers .= pte_make_rights_panel_view($topicPanelData);
 	} else {

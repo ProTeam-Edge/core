@@ -82,6 +82,7 @@ function pte_get_proteam_invitation_received_registry() {
           $requestData = $token->getValue("process_context");
           $requestData['interaction_type_status'] = "Complete";
 
+          
           $requestData['interaction_complete'] = true;
           $requestData['widget_type_id'] = "information";
           $requestData['information_title'] = "Invitation |style_1b|Complete|style_1e|";

@@ -32,11 +32,28 @@ function pte_get_proteam_invitation_registry() {
             $requestData['interaction_to_from_name'] = $requestData['network_name'];
             $requestData['interaction_regarding'] = $requestData['topic_name'];
             $requestData['interaction_vault_link'] = "";
-
-
             $requestData['to_from'] = 'To';
 
-            if ($token->getValue("template_id")) {
+            $connectedUserID = $connectedUserTopicId = $connectedUserEmail = '';
+            if (!$requestData['connected_id']) { //If not connected, see if member from email alt_id
+              $connectedUserEmail = $requestData['alt_id'];   //Should be email here.
+              if ($connectedUserEmail) {  //is actually a user based on email so let's engage that way-- create inviation received
+                $connectedUserData = get_user_by('email', $connectedUserEmail);
+                if (isset($connectedUserData->data->ID) && $connectedUserData->data->ID) {
+                  $connectedUserID = $connectedUserData->data->ID;
+                  $connectedUserTopicId = get_user_meta( $connectedUserID, 'pte_user_network_id', true );
+                }
+              }
+            }
+            if ($requestData['connected_id']) {
+              $requestData['connected_contact_status'] = 'connected_member';
+            } else if ($connectedUserID) {
+              $requestData['connected_contact_status'] = 'not_connected_member';
+            } else {
+              $requestData['connected_contact_status'] = 'not_connected_not_member';
+            }
+
+            if ($token->getValue("message_title")) { //As long as there is a title, we can send.
 
               $newRequestData = array( //start a proteam_invitation_received process for network contact
                 'template_id' => $requestData["template_id"],
@@ -49,21 +66,26 @@ function pte_get_proteam_invitation_registry() {
                 'process_type_id' => '',
                 'interaction_network_id' => $requestData['owner_network_id'],
                 'get_network_topic_id' => true,
-                'topic_id' => $requestData['topic_id']
+                'topic_id' => $requestData['topic_id'],
+                'alt_id' => $requestData['alt_id']
               );
 
-              $data = array(
-            		'process_id' => "",
-            		'process_type_id' => "proteam_invitation_received",
-                'owner_network_id' => $requestData['connected_network_id'],
-            		'owner_id' => $requestData['connected_id'],
-            		'process_data' => $newRequestData
-            	);
-            	$requestData['interacts_with_id'] = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
-              $token->setValue("process_context", $requestData);
-              
+              if ($requestData['connected_id'] || $connectedUserID) { //connected -- create inviation received
+                $data = array(
+              		'process_id' => "",
+              		'process_type_id' => "proteam_invitation_received",
+                  'owner_network_id' => $requestData['connected_network_id'] ? $requestData['connected_network_id'] : $connectedUserTopicId,
+              		'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $connectedUserID,
+              		'process_data' => $newRequestData
+              	);
+              	$requestData['interacts_with_id'] = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
+
+              }
+            $token->setValue("process_context", $requestData);
+
             return; //if successful TODO: is this always successful?
             }
+
             $requestData['widget_type_id'] = "message_send";
             $requestData['information_title'] = "Send Invitation";
             $requestData['buttons'] =  array(
@@ -81,13 +103,7 @@ function pte_get_proteam_invitation_registry() {
 
           $requestData = $token->getValue("process_context");
 
-          $requestData['interaction_template_name'] = $requestData["template_name"];
-          $requestData['interaction_type_status'] = "Waiting...";
-          $requestData['interaction_to_from_name'] = $requestData["network_name"];
-
           $buttonOperation = $token->getValue("button_operation");
-
-          alpn_log('Handling Accept/Decline...');
 
           if ($buttonOperation == 'accept') {
             alpn_log('Handling Accept...');
@@ -104,16 +120,11 @@ function pte_get_proteam_invitation_registry() {
 
             return; //still successful, just not what you wanted to hear
           }
-          $requestData['widget_type_id'] = "information";
-          $requestData['information_title'] = "Waiting for Response...";
-          $requestData['buttons'] =  array(
-            "file" => true
-            );
-            $requestData['data_lines'] =  array(
-                "to_from_line",
-                "regarding_line",
-                "type_line"
-              );
+
+          $requestData['interaction_template_name'] = $requestData["template_name"];
+          $requestData['interaction_type_status'] = "Waiting...";
+          $requestData['interaction_to_from_name'] = $requestData["network_name"];
+
           $requestData['content_lines'] =  array(
               "network_panel",
               "topic_panel"
@@ -122,8 +133,36 @@ function pte_get_proteam_invitation_registry() {
               "message_editable_update"
             );
 
+            alpn_log('Connected Contact Status');
+            alpn_log($requestData);
+
+          $connectedContactStatus = $requestData['connected_contact_status'];
+
+          if ($connectedContactStatus == "not_connected_not_member") {
+
+            $requestData['interaction_type_status'] = "Complete";
+            $requestData['interaction_complete'] = true;
+            $requestData['message_lines'] =  array(
+                "message_view_only"
+              );
+          }
+
+          $requestData['widget_type_id'] = "information";
+          $requestData['buttons'] =  array(
+              "file" => true
+          );
+          $requestData['data_lines'] =  array(
+              "to_from_line",
+              "regarding_line",
+              "type_line"
+          );
+          $requestData['content_lines'] =  array(
+              "network_panel",
+              "topic_panel"
+          );
           $requestData['sync'] = true;
           $requestData['requires_user_attention'] = false;
+
           $token->setValue("process_context", $requestData);
           throw new WaitExecutionException();
 
