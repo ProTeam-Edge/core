@@ -276,6 +276,7 @@ function pte_extra_control_table(domId){
 }
 
 function pte_unlink_selected_topic(){
+	var security = specialObj.security;
 	var selectedTab = jQuery("button.tablinks.pte_tab_button_active").data('tab-id');
 	var tableId = 'table_tab_' + selectedTab;
 	var selectedRowUid = pte_active_tabs[selectedTab];
@@ -288,7 +289,8 @@ function pte_unlink_selected_topic(){
 			url: alpn_templatedir + 'pte_handle_unlink_topic.php',
 			type: 'POST',
 			data: {
-				link_id: linkId
+				link_id: linkId,
+				security: security,
 			},
 			dataType: "json",
 			success: function(json) { //UI udates handled vaia sync
