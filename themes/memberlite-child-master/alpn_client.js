@@ -1317,7 +1317,7 @@ function pte_handle_interaction_selected(processId) {
 
 
 function pte_handle_active_filed_change(tObj){
-
+	var security = specialObj.security;
 	var jObj = jQuery(tObj);
 	var checkedState = jObj.prop('checked');
 	if (checkedState == true) {  //checked
@@ -1329,7 +1329,8 @@ function pte_handle_active_filed_change(tObj){
 		url: alpn_templatedir + 'pte_get_interaction_table.php',
 		type: 'POST',
 		data: {
-			show_type: showType
+			show_type: showType,
+			security: security,
 		},
 		dataType: "json",
 		success: function(json) {

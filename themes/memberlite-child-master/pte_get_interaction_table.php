@@ -2,6 +2,13 @@
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 $qVars = $_POST;
+$html ='';
+$verify = 0;
+if(isset($qVars['security']) && !empty($qVars['security']))
+	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
+if($verify==1) {
+
+
 $showType = isset($qVars['show_type']) ? $qVars['show_type'] : '';
 
 
@@ -37,5 +44,10 @@ $results = array(
 );
 
 pte_json_out($results);
-
+}
+else{
+	$html = 'Not a valid request.';
+	echo $html;
+	die;
+}
 ?>
