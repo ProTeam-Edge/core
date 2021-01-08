@@ -558,7 +558,7 @@ function pte_handle_topic_link_container_click(topicLinkContainerId){
 function pte_handle_widget_interaction(interactionData){ //run the process
 
 	console.log("pte_handle_widget_interaction...");
-
+	var security = specialObj.security;
 	interactionData.message_title = jQuery('#pte_message_title_field').val();
 	interactionData.message_body = jQuery('#pte_message_body_area').val();
 	interactionData.message_response = jQuery('#pte_message_body_area_response').val();
@@ -618,7 +618,8 @@ function pte_handle_widget_interaction(interactionData){ //run the process
 		url: alpn_templatedir + 'pte_handle_widget_interaction.php',
 		type: 'POST',
 		data: {
-			interaction_data: JSON.stringify(interactionData)
+			interaction_data: JSON.stringify(interactionData),
+			security: security,
 		},
 		dataType: "json",
 		success: function(json) { //UI udates handled vaia sync
