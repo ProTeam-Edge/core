@@ -218,6 +218,7 @@ function pte_send_wp_mail($data){
 }
 
 function pte_send_mail ($data) {
+  $siteDomain = PTE_HOST_DOMAIN_NAME;
   $email = new \SendGrid\Mail\Mail();
   $sendGridKey = SENDGRID_KEY;
   $emailTemplateName =  isset($data['email_template_name']) && $data['email_template_name'] ? PTE_ROOT_PATH . "email_templates/{$data['email_template_name']}" : PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
@@ -227,12 +228,14 @@ function pte_send_mail ($data) {
   $toEmail = $data['to_email'];
   $toName =  $data['to_name'];
   $linkType =  $data['link_type'];
-  $fileName = $data['vault_file_name'];
+  $fileName = isset($data['vault_file_name']) && $data['vault_file_name'] ? "File Name: " . $data['vault_file_name'] : "";
   $subject =  $data['subject_text'];
 
+  $replaceStrings["-{pte_site_domain}-"] = $siteDomain;
   $replaceStrings["-{pte_email_body}-"] = $data['body_text'];
-  $replaceStrings["-{pte_link_id}-"] = $data['link_id'];
-  $replaceStrings["-{pte_email_file_details}-"] = "File Details: " . $fileName;
+  $replaceStrings["-{pte_link_button}-"] = isset($data['link_id']) && $data['link_id'] ? "<div class='pte_button'><a class='pte_button_link' href='https://{$siteDomain}/viewer/?{$data['link_id']}'>View File</a></div>" : "" ;
+  $replaceStrings["-{pte_email_file_details}-"] = $fileName;
+  $replaceStrings["-{pte_email_signature}-"] = isset($data['email_signature']) && $data['email_signature'] ? $data['email_signature'] : "" ;
   //TODO Pick template based on link type or conditional.
 
   $emailTemplateHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $emailTemplateHtml);

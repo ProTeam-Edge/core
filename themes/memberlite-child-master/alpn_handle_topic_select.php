@@ -356,7 +356,7 @@ if ($topicBelongsToUser) {
 	$network = array();
 	$options = "";
 	$network = $wpdb->get_results( //for select box
-		$wpdb->prepare("SELECT id, name, connected_id, dom_id FROM alpn_topics WHERE owner_id = '%s' AND special = 'contact' ORDER BY name ASC", $userID)
+		$wpdb->prepare("SELECT t.id, t.name, t.connected_id, t.dom_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = %d AND tt.schema_key = 'Person' AND t.special != 'user' ORDER BY name ASC", $userID)
 	 );
 	foreach ($network as $key => $value){
 		$options .= "<option data-dom-id='{$value->dom_id}' data-wp-id='{$value->connected_id}' value='{$value->id}'>{$value->name}</option>";
