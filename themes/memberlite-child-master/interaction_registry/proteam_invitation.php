@@ -61,6 +61,7 @@ function pte_get_proteam_invitation_registry() {
               	);
               	$requestData['interacts_with_id'] = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
               } else {
+
                   alpn_log('Send an Email instead...');
 
                   $userInfo = get_user_by('id', $requestData['owner_id']);
@@ -80,6 +81,7 @@ function pte_get_proteam_invitation_registry() {
                     pte_send_mail ($data);
                   }
               }
+
             $token->setValue("process_context", $requestData);
 
             return; //if successful TODO: is this always successful?
@@ -104,20 +106,31 @@ function pte_get_proteam_invitation_registry() {
 
           $buttonOperation = $token->getValue("button_operation");
 
-          if ($buttonOperation == 'accept') {
-            alpn_log('Handling Accept...');
-
-            //TODO it is easier, and makes for fewer back and forths if we handle all party's db changes and system syncs at one time here. Originally, I wanted an interaction only to manipulate ones own stuff. But they are related on the same system so....
-
-
-            return; //if successful
+          switch ($buttonOperation) {
+            case 'accept':
+              alpn_log('Handling Accept...');
 
 
-          } else if ($buttonOperation == 'decline') {
+              return;
+            break;
+            case 'decline':
+              alpn_log('Handling Decline...');
 
-            alpn_log('Handling Decline...');
 
-            return; //still successful, just not what you wanted to hear
+              return;
+            break;
+            case 'update':
+              alpn_log('Handling Update...');
+
+
+              return;
+            break;
+            case 'recall':
+              alpn_log('Handling Recall...');
+
+
+              return;
+            break;
           }
 
           $requestData['interaction_template_name'] = $requestData["template_name"];
@@ -132,14 +145,13 @@ function pte_get_proteam_invitation_registry() {
               "message_editable_update"
             );
 
-          if ($requestData['connected_contact_status'] == "not_connected_not_member") {
+          if ($requestData['connected_contact_status'] == "not_connected_not_member") {  //Non member
             $requestData['interaction_type_status'] = "Complete";
             $requestData['interaction_complete'] = true;
             $requestData['message_lines'] =  array(
                 "message_view_only"
               );
           }
-
           $requestData['widget_type_id'] = "information";
           $requestData['buttons'] =  array(
               "file" => true

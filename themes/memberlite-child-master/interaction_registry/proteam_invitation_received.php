@@ -49,7 +49,7 @@ function pte_get_proteam_invitation_received_registry() {
               'message_response' =>  $requestData["message_response"]
             );
 
-            $data = array(
+            $data = array(  //call originating process with new data (accept/decline)
               'process_id' => $requestData['interacts_with_id'],
               'process_type_id' => "proteam_invitation",
               'owner_network_id' => $requestData['connected_network_id'],
@@ -57,8 +57,6 @@ function pte_get_proteam_invitation_received_registry() {
               'process_data' => $updateRequestData
             );
             $response = pte_manage_interaction_proper($data);   //TODO WHEN this is ASYNC, drawing fails. What is being done here that needs to be syncronous?
-
-            //TODO make this return an error so we can handle it or?
 
             $token->setValue("process_context", $requestData);
             return; //if successful
@@ -82,7 +80,7 @@ function pte_get_proteam_invitation_received_registry() {
           $requestData = $token->getValue("process_context");
           $requestData['interaction_type_status'] = "Complete";
 
-          
+
           $requestData['interaction_complete'] = true;
           $requestData['widget_type_id'] = "information";
           $requestData['information_title'] = "Invitation |style_1b|Complete|style_1e|";

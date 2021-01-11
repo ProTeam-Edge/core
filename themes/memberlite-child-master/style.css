@@ -1007,8 +1007,7 @@ input.wpforms-field-large {
 	display: inline-block;
 	background-color: #005587;
 	border: solid 1px #005587;
-	min-width: 125px;
-	max-width: 250px;
+	width: 200px;
 	vertical-align: middle;
 }
 
