@@ -3,9 +3,16 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 $qVars = $_POST;
 $verify = 0;
-if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
-if($verify==1) {
+
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
+
 $processId = isset($qVars['process_id']) ? $qVars['process_id'] : '';
 
 $userInfo = wp_get_current_user();
@@ -23,11 +30,5 @@ $whereClause['process_id'] = $processId;
 $wpdb->update( 'alpn_interactions', $interactionData, $whereClause );
 
 pte_json_out($whereClause);
-}
-else
-{
-	$html = 'Not a valid request.';
-	echo $html;
-	die;
-}
+
 ?>
