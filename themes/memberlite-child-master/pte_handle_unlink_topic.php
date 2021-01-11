@@ -5,13 +5,18 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 //TODO store HTML in MySql using htmlspecialchars()
 
 $html="";
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $requestData = array();
 
 $pVars = $_POST;
-$verify = 0;
-if(isset($pVars['security']) && !empty($pVars['security']))
-	$verify = wp_verify_nonce( $pVars['security'], 'alpn_script' );
-if($verify==1) {
+
 $linkId = isset($pVars['link_id']) ? $pVars['link_id'] : 0;
 
 $userInfo = wp_get_current_user();
@@ -25,11 +30,5 @@ if ($linkId) {
 	pte_manage_topic_link('delete_topic_bidirectional_link', $requestData);
 }
 pte_json_out($requestData);
-}
-else
-{
-	$html = 'Not a valid request.';
-	echo $html;
-	die;
-}
+
 ?>
