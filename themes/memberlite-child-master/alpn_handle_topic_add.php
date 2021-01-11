@@ -8,12 +8,7 @@ $html = "";
 // verifying nonce
 $verify = 0;
 if(isset($qVars['security']) && !empty($qVars['security']))
-	echo $verify = check_ajax_referer( 'alpn_script',$qVars['security'] );
-	
-
-
-	
-	
+	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
 if($verify==1) {
 	// nonce verfied do your action here
 
