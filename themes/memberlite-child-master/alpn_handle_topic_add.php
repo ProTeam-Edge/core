@@ -9,8 +9,9 @@ $html = "";
 
 
 
-if(!check_ajax_referer('alpn_script', 'nonce')) {
-   
+if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
+   echo 'ended via check_ajax_referer';
+   die;
 }
 
 $verify = 0;
