@@ -1,8 +1,7 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 $current_user = wp_get_current_user();
-echo '<pre>';
-print_r($current_user);
+
 
 $siteUrl = get_site_url();
 
@@ -11,8 +10,11 @@ $html = "";
 // verifying nonce
 
 
-
-if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
+if($current_user->ID==0) {
+	echo 'Not a valid request by user checking';
+	die;
+}
+{if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
    echo 'ended via check_ajax_referer';
    die;
 }
