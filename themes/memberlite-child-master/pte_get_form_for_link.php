@@ -6,11 +6,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 $html="";
 $pVars = $_POST;
-$verify = 0;
-if(isset($pVars['security']) && !empty($pVars['security']))
-	$verify = wp_verify_nonce( $pVars['security'], 'alpn_script' );
 
-if($verify==1) {
 $domId = isset($pVars['dom_id']) ? $pVars['dom_id'] : '';
 
 $userInfo = wp_get_current_user();
@@ -21,10 +17,8 @@ if ($domId) {
 
 }
 //pte_json_out($topicMeta);
-}
-else {
-	$html = 'Not a valid request please hard refresh and try again.';
-}
+
+
 echo $html;
 
 
