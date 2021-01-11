@@ -5107,7 +5107,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				type: 'POST',
 				data: {
 					
-					nonce:security,
+					//nonce:security,
 					topicTypeId: topicTypeId,
 					topicTypeSpecial: topicTypeSpecial,
 					previous_topic: alpn_oldSelectedId,
