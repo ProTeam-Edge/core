@@ -1,5 +1,8 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
+$current_user = wp_get_current_user();
+echo '<pre>';
+print_r($current_user);
 
 $siteUrl = get_site_url();
 
