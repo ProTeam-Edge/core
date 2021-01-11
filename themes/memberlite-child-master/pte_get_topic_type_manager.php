@@ -6,11 +6,14 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 $html="";
 $pVars = $_POST;
 
-$verify = 0;
-if(isset($pVars['security']) && !empty($pVars['security']))
-	$verify = wp_verify_nonce( $pVars['security'], 'alpn_script' );
-if($verify==1) {
-
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die();
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die();
+}
 
 $formId = isset($pVars['form_id']) ? $pVars['form_id'] : 0;
 
@@ -217,10 +220,7 @@ if ($formId) {
 	}
 
 }
-}
-else {
-	$html = 'Not a valid request.';
-}
+
 
 echo $html;
 
