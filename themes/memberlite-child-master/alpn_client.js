@@ -5106,10 +5106,12 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				url: alpn_templatedir + 'alpn_handle_topic_add.php',
 				type: 'POST',
 				data: {
+					action:'add_topic',
+					nonce:security,
 					topicTypeId: topicTypeId,
 					topicTypeSpecial: topicTypeSpecial,
 					previous_topic: alpn_oldSelectedId,
-					security: security,
+					//security: security,
 					return_details: JSON.stringify(returnDetails)
 				},
 				dataType: "html",

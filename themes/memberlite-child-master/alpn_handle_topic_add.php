@@ -6,6 +6,13 @@ $siteUrl = get_site_url();
 $qVars = $_POST;
 $html = "";
 // verifying nonce
+
+
+
+if(!check_ajax_referer('add_topic', 'nonce')) {
+    echo 'reached';
+}
+
 $verify = 0;
 if(isset($qVars['security']) && !empty($qVars['security']))
 	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
