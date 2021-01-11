@@ -11,10 +11,16 @@ use Google\Cloud\Storage\StorageClient;
 //$siteUrl = get_site_url();
 
 $qVars = $_GET;
-$verify = 0;
-if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
-if($verify==1) {
+
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
+
 $vId = isset($qVars['v_id']) ? $qVars['v_id'] : '';
 $whichFile = isset($qVars['which_file']) ? $qVars['which_file'] : 'original';
 
@@ -62,10 +68,6 @@ try {
 		pp($pte_response);
 		exit;
 }
-}
-else
-{
-	$html = 'Not a valid request.';
-}
+
 echo $html;
 ?>

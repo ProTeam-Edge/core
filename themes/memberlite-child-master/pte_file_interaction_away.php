@@ -2,7 +2,7 @@
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 $qVars = $_POST;
-$verify = 0;
+
 
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
