@@ -9,8 +9,9 @@ $html = "";
 
 
 
-if(!check_ajax_referer('add_topic', 'nonce')) {
+if(!check_ajax_referer('add_topic', 'nonce',FALSE)) {
     echo 'reached';
+	 wp_die();
 }
 
 $verify = 0;
