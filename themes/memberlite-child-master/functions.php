@@ -56,7 +56,7 @@ $cookie_httponly = 'HTTPOnly';
 
 setcookie($cookie_name, $cookie_value, (time()+3600), '/',$domainName, $cookie_secure, $cookie_httponly);
 
-add_filter( 'nonce_life', function () { return 48 * 3600; } );  //4 - 8 hours. Default is 24 hours
+add_filter( 'nonce_life', function () { return 48 * 3600 } );  //4 - 8 hours. Default is 24 hours
 
 include('alpn-shortcodes.php');
 include('alpn_common.php');
