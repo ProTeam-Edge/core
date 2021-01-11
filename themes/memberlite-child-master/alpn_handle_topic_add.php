@@ -9,9 +9,8 @@ $html = "";
 
 
 
-if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
-    echo 'reached';
-	 wp_die();
+if(!check_ajax_referer('alpn_script', 'nonce')) {
+   
 }
 
 $verify = 0;
