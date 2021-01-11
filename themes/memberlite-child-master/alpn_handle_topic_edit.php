@@ -4,11 +4,15 @@ include('../../../wp-blog-header.php');
 $siteUrl = get_site_url();
 $html="";
 $qVars = $_POST;
-$verify = 0;
-if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
 
-if($verify==1) {
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $uniqueRecId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 $returnDetails = isset($qVars['return_details']) ? json_decode(stripslashes($qVars['return_details']), true) : array();
 
@@ -118,10 +122,7 @@ $html .= "
 						 </div>
 						";
 }
-else
-{
-	$html = 'Not a valid request.';
-}
+
 echo $html;
 
 ?>
