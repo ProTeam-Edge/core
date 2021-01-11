@@ -14,10 +14,7 @@ if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
    die;
 }
 
-$verify = 0;
-if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
-if($verify==1) {
+
 	// nonce verfied do your action here
 
 	$topicTypeId = isset($qVars['topicTypeId']) ? $qVars['topicTypeId'] : '';
@@ -94,9 +91,7 @@ if($verify==1) {
 		$html = "<div>Error</div>";
 	}
 }
-else {
-	$html = 'Not a valid request.';
-}
+
 echo $html;
 
 ?>
