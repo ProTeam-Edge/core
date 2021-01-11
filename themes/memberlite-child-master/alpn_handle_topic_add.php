@@ -9,7 +9,7 @@ $html = "";
 
 
 
-if(!check_ajax_referer('add_topic', 'nonce',FALSE)) {
+if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
     echo 'reached';
 	 wp_die();
 }
