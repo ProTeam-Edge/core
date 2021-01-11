@@ -58,7 +58,7 @@ setcookie($cookie_name, $cookie_value, (time()+3600), '/',$domainName, $cookie_s
 
 add_filter( 'nonce_life','modify_timeslot' );  //4 - 8 hours. Default is 24 hours
 function modify_timeslot () { 
-return 4 * 3600;
+return 48 * 3600;
 }
 
 include('alpn-shortcodes.php');
