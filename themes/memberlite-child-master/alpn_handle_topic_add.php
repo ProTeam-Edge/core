@@ -8,10 +8,10 @@ $html = "";
 // verifying nonce
 $verify = 0;
 if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = check_ajax_referer( 'alpn_script',$qVars['security'] );
+	echo $verify = check_ajax_referer( 'alpn_script',$qVars['security'] );
 	
-	echo $verify;
-	die;
+
+
 	
 	
 if($verify==1) {
