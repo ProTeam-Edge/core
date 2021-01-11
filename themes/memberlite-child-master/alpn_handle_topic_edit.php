@@ -121,7 +121,7 @@ $html .= "
 							</div>
 						 </div>
 						";
-}
+
 
 echo $html;
 
