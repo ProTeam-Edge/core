@@ -10,7 +10,7 @@ $html = "";
 // verifying nonce
 
 
-if($current_user->ID==0) {
+if($current_user->data->ID==0) {
 	echo 'Not a valid request by user checking';
 	die;
 }
