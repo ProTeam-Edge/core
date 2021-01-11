@@ -90,7 +90,7 @@ if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
 	} else {
 		$html = "<div>Error</div>";
 	}
-}
+
 
 echo $html;
 
