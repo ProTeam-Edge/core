@@ -1,6 +1,6 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
-$current_user = wp_get_current_user();
+
 
 
 $siteUrl = get_site_url();
@@ -10,7 +10,7 @@ $html = "";
 // verifying nonce
 
 
-if($current_user->data->ID==0) {
+if(!is_user_logged_in() ) {
 	echo 'Not a valid request by user checking';
 	die;
 }
