@@ -6,13 +6,14 @@ include('../../../wp-blog-header.php');
 $siteUrl = get_site_url();
 
 $qVars = $_GET;
+
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
-	die;
+	die();
 }
 if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    echo 'Not a valid request.';
-   die;
+   die();
 }
 
 $proTeamId = isset($qVars['proTeamId']) ? $qVars['proTeamId'] : '';
@@ -30,4 +31,5 @@ if ($proTeamId && $userID) {
 header('Content-Type: application/json');
 
 echo json_encode($results);
+
 ?>
