@@ -10,8 +10,11 @@ $html = "";
 // verifying nonce
 
 
-
-{if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request by user checking';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'nonce',FALSE)) {
    echo 'ended via check_ajax_referer';
    die;
 }
