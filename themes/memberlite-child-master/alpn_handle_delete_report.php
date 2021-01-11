@@ -8,10 +8,16 @@ $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
 $qVars = $_POST;
 $reportDomId = isset($qVars['report_dom_id']) ? $qVars['report_dom_id'] : '';
-$verify = 0;
-if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
-if($verify==1) {
+
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
+
 if ($reportDomId) {
 	try {
 			$whereClause = array(
@@ -24,12 +30,6 @@ if ($reportDomId) {
 			exit;
 	}
 }
-}
-else
-{
-	echo $html = 'Not a valid request.';
-	alpn_log($html);
-	exit;
-}
+
 
 ?>
