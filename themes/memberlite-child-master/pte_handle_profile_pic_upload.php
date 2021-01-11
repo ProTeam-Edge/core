@@ -2,10 +2,16 @@
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 $qVars = $_POST;
-$verify = 0;
-if(isset($qVars['security']) && !empty($qVars['security']))
-	$verify = wp_verify_nonce( $qVars['security'], 'alpn_script' );
-if($verify==1) {
+
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die();
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die();
+}
+
 $source = isset($qVars['source']) ? $qVars['source'] : '';
 $handle = isset($qVars['handle']) ? $qVars['handle'] : '';
 $topicId = isset($qVars['topic_id']) ? $qVars['topic_id'] : 0;
@@ -50,13 +56,7 @@ if ($userID && $handle && $topicId) {
 }
 
 header('Content-Type: application/json');
-}
-else
-{
-	$pte_response = 'Not a valid request.';
 
-	header('Content-Type: application/json');
-}
 echo json_encode($pte_response);
 
 ?>
