@@ -4481,7 +4481,9 @@ if (typeof cloudsponge != "undefined" && !pte_external && alpn_select_type() == 
 				url: alpn_templatedir + 'pte_handle_add_to_network.php',
 				type: 'POST',
 				data: {
+					security: security,
 					contacts: contacts
+					
 				},
 				dataType: "json",
 				success: function(json) {
