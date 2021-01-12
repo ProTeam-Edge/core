@@ -4462,6 +4462,7 @@ function pte_save_topic_pic(fileUploaded, source){
 }
 
 function pte_setup_address_book(){
+	var security = specialObj.security;
 //		css: "https://proteamedge.com/wp-content/themes/memberlite-child-master/dist/css/cloudsponge.css",
 if (typeof cloudsponge != "undefined" && !pte_external && alpn_select_type() == 'user') {
 	cloudsponge.init({
