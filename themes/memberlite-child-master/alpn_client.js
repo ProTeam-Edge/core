@@ -709,11 +709,13 @@ var security = specialObj.security;
 
 function pte_update_email_route(data){ //TODO update Personal Page
 	var topicId = data.id;
+	var security = specialObj.security;
 		jQuery.ajax({
 			url: alpn_templatedir + 'alpn_handle_update_email_address.php',
 			type: 'POST',
 			data: {
-				"topic_id": topicId
+				"topic_id": topicId,
+				"security": security,
 			},
 			dataType: "html",
 			success: function(html) {
@@ -727,13 +729,15 @@ function pte_update_email_route(data){ //TODO update Personal Page
 
 function pte_update_fax_route_topic(phoneNumber, data){  //TODO update Personal Page
 	console.log("Handling pte_update_fax_route_topic...");
+	var security = specialObj.security;
 	var topicId = data.id;
 	jQuery.ajax({    //TODO When adding a new user on registration. Need to add them to all the Twilio Channels where they have been added to Topics system wide. Should be in proteam records. Then deleted
 		url: alpn_templatedir + 'alpn_handle_update_pstn_number.php',
 		type: 'POST',
 		data: {
 			"phone_number": phoneNumber,
-			"topic_id": topicId
+			"topic_id": topicId,
+			"security": security,
 		},
 		dataType: "json",
 		success: function(json) {
