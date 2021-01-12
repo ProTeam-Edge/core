@@ -5066,12 +5066,14 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 		break;
 
 		case 'pdf_topic':
+		var security = specialObj.security;
 		console.log('PDF TOPIC...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_topic_pdf.php',
 				type: 'POST',
 				data: {
 					uniqueRecId: uniqueRecId,
+					security: security,
 					return_details: JSON.stringify(returnDetails)
 				},
 				dataType: "html",
