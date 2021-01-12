@@ -2,7 +2,14 @@
 include('../../../wp-blog-header.php');
 
 //TODO Check logged in, etc. Good Request. User-ID in all mysql
-
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $qVars = $_GET;
 $vaultId = isset($qVars['vault_id']) ? $qVars['vault_id'] : '';
 

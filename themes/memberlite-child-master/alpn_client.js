@@ -3178,14 +3178,15 @@ function alpn_close_vault_work_area(){
 }
 
 function pte_handle_delete_response(response, theObject) {
-
+var security = specialObj.security;
 if (response == 'yes' && typeof theObject !== "undefined") {
 	var vaultId = theObject['vault_id'];
 	jQuery.ajax({
 		url: alpn_templatedir + 'alpn_handle_vault_delete_row.php',
 		type: 'GET',
 		data: {
-			vault_id: vaultId
+			vault_id: vaultId,
+			security: security,
 		},
 		dataType: "json",
 		success: function(json) {
