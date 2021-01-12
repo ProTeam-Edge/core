@@ -689,11 +689,13 @@ function pte_topic_link_copy_string(subject, copyString){
 }
 
 function pte_handle_release_email_route(topicId){  //TODO update Personal Page
+var security = specialObj.security;
 		jQuery.ajax({
 			url: alpn_templatedir + 'alpn_handle_remove_email_address.php',
 			type: 'POST',
 			data: {
-				"topic_id": topicId
+				"topic_id": topicId,
+				"security": security,
 			},
 			dataType: "html",
 			success: function(html) {   //TODO update Personal Topic Page
