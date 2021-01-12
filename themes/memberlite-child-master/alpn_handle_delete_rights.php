@@ -5,7 +5,14 @@ $siteUrl = get_site_url();
 $userId = get_current_user_id();
 
 //TODO check logged in. query
-
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $qVars = $_POST;
 $rowToDelete = isset($qVars['rowToDelete']) ? $qVars['rowToDelete'] : '';
 

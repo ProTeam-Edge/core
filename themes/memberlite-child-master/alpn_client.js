@@ -4127,14 +4127,15 @@ function alpn_vault_control(operation) {
 }
 
 function alpn_proteam_member_delete(proTeamRowId) {
-
+	var security = specialObj.security;
 	var html = "<div id='alpn_replace_me_" + proTeamRowId + "' style='text-align: center; height: 40px;'><img src='" + alpn_templatedir + "pdf/web/images/loading-icon.gif'></div>";
 	jQuery('#pte_proteam_item_' + proTeamRowId).replaceWith(html);
 	jQuery.ajax({
 		url: alpn_templatedir + 'alpn_handle_delete_rights.php',
 		type: 'POST',
 		data: {
-			"rowToDelete": proTeamRowId
+			"rowToDelete": proTeamRowId,
+			"security": security,
 		},
 		dataType: "json",
 		success: function(json) {
