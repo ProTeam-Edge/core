@@ -2,7 +2,14 @@
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 //TODO Check logged in, etc
-
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $siteUrl = get_site_url();
 $ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 

@@ -5266,6 +5266,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 		break;
 
 		case 'vault':
+		var security = specialObj.security;
 			console.log("Selecting Vault...");
 			pte_handle_active_toolbar('none');  //Resets active toolbar if needed
 
@@ -5281,6 +5282,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 				type: 'POST',
 				data: {
 					uniqueRecId: uniqueRecId,
+					security: security,
 					alpn_selected_type: alpn_selected_type
 				},
 				dataType: "html",
