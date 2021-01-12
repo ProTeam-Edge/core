@@ -2,7 +2,14 @@
 include('../../../wp-blog-header.php');
 
 //TODO add sharing and other met
-
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $qVars = $_POST;
 $vault_id = isset($qVars['vault_id']) ? $qVars['vault_id'] : '';
 $description = isset($qVars['description']) ? $qVars['description'] : '';

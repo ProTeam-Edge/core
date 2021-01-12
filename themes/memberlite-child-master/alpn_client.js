@@ -5827,7 +5827,7 @@ function pte_save_vault_meta(){
 		// console.log(fieldName);
 		// console.log(description);
 		// console.log(permissionValue);
-
+	var security = specialObj.security;
 		jQuery.ajax({
 			url: alpn_templatedir + 'alpn_handle_update_vault_meta.php',
 			type: 'POST',
@@ -5835,6 +5835,7 @@ function pte_save_vault_meta(){
 				vault_id: vaultId,
 				field_name: fieldName,
 				description: description,
+				security: security,
 				permission_value: permissionValue
 			},
 			dataType: "json",
