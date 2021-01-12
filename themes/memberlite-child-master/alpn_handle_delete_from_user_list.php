@@ -1,7 +1,14 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
-
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $qVars = $_POST;
 $listKey = isset($qVars['list_key']) ? $qVars['list_key'] : '';
 $itemId	 = isset($qVars['item_id']) ? $qVars['item_id'] : '';

@@ -1235,6 +1235,7 @@ function pte_show_process_ux(processId) {
 }
 
 function pte_handle_remove_list_item(item) {
+	var security = specialObj.security;
 	var selectedItem = jQuery(item);
 	var selectedBox = selectedItem.closest('ul');
 	var selectedBoxId = selectedBox.attr('id');
@@ -1247,7 +1248,8 @@ function pte_handle_remove_list_item(item) {
 			type: 'POST',
 			data: {
 				"list_key": selectedBoxId,
-				"item_id": selectedItemItemId
+				"item_id": selectedItemItemId,
+				"security": security,
 			},
 			dataType: "json",
 			success: function(json) {
