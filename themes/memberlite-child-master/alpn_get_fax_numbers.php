@@ -1,5 +1,13 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 
 $qVars = $_POST;
 $areaCode = isset($qVars['area_code']) ? $qVars['area_code'] : '';

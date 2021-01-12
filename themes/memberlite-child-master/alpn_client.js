@@ -865,7 +865,7 @@ function pte_start_pst_number_rotator(json) {
 }
 
 function pte_pstn_widget_lookup(){
-
+	var security = specialObj.security;
 	const regex = RegExp("^[0-9]{3}$");
 	var areaCode = jQuery('#pte_pstn_widget_area_code').val();
 	if (regex.test(areaCode)) {
@@ -876,7 +876,8 @@ function pte_pstn_widget_lookup(){
 			url: alpn_templatedir + 'alpn_get_fax_numbers.php',
 			type: 'POST',
 			data: {
-				area_code: areaCode
+				area_code: areaCode,
+				security: security,
 			},
 			dataType: "json",
 			success: function(json) { //UI udates handled vaia sync
@@ -1198,12 +1199,15 @@ function pte_handle_interaction_link(mapData){
 
 
 function pte_show_process_ux(processId) {
+	var security = specialObj.security;
 	if (processId) {
 		jQuery.ajax({
 			url: alpn_templatedir + 'pte_get_interaction_ux.php',
 			type: 'POST',
 			data: {
-				process_id: processId
+				process_id: processId,
+				security: security,
+				
 			},
 			dataType: "html",
 			success: function(html) {

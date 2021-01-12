@@ -3,6 +3,14 @@ require 'vendor/autoload.php';
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 use Bueltge\Marksimple\Marksimple;
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 
 $siteUrl = get_site_url();
 
