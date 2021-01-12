@@ -4,7 +4,14 @@ include('../../../wp-blog-header.php');
 global $wpdb;
 
 //TODO Check logged in, etc. Good Request. User-ID in all mysql
-
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $qVars = $_POST;
 $topicId = isset($qVars['topicId']) ? $qVars['topicId'] : '';
 $description = isset($qVars['description']) ? $qVars['description'] : '';

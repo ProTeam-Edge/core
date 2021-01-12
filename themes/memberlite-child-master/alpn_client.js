@@ -2358,7 +2358,7 @@ function pte_register_uploads(pteUploads){
 		 	topicId = selectedItem[0].value;
 		}
 	}
-
+	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'alpn_handle_vault_files_start.php',
 		type: 'POST',
@@ -2366,6 +2366,7 @@ function pte_register_uploads(pteUploads){
 			topicId: topicId,
 			description: description,
 			permissionValue: permissionValue,
+			security: security,
 			pte_file_data: pte_file_data
 		},
 		dataType: "json",
