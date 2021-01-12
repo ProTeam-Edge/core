@@ -3833,7 +3833,7 @@ return description.slice(0, -2);  //remove trailing
 function pte_copy_report_to_vault(actionOnReturn){
 
 		jQuery('#alpn_vault_copy').css('color', 'rgb(0, 132, 238)');
-
+		var security = specialObj.security;
 		var topicId = jQuery("#pte_selected_topic_meta").data('topic-id');
 		var topicDomId = jQuery("#pte_selected_topic_meta").data('tdid');
 		var topicName = jQuery("#pte_topic_name").html();
@@ -3847,6 +3847,7 @@ function pte_copy_report_to_vault(actionOnReturn){
 			data: {
 				"topic_id": topicId,
 				"topic_name": topicName,
+				"security": security,
 				"topic_dom_id": topicDomId,
 				"topic_description": topicDescription
 			},

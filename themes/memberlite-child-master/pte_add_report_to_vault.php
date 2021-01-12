@@ -7,7 +7,14 @@ use Google\Cloud\Storage\StorageClient;
 //TODO Check logged in, etc. Good Request. User-ID in all mysql
 
 alpn_log('ADD REPORT');
-
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $qVars = $_POST;
 $topicId = isset($qVars['topic_id']) ? $qVars['topic_id'] : '';
 $topicName = isset($qVars['topic_name']) ? $qVars['topic_name'] : '';
