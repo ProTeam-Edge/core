@@ -5478,11 +5478,12 @@ function alpn_handle_topic_done(formId){
 function pte_new_topic_type () {
 
 	var topicArea = jQuery("#pte_topic_manager_inner");
-
+	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'alpn_get_new_topic_ux.php',
 		type: 'POST',
 		data: {
+			security:security,
 		},
 		dataType: "html",
 		success: function(html) {
