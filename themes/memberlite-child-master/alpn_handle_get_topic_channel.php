@@ -6,6 +6,14 @@ include('../../../wp-blog-header.php');
 //TODO Can we cache more of this stuff?
 
 
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
 $channelId = "";
 $qVars = $_GET;
 $recordId = isset($qVars['record_id']) ? $qVars['record_id'] : '';
