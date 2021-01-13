@@ -9,6 +9,17 @@ $templateHtml = '';
 $templateTitle = '';
 
 $qVars = $_POST;
+
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
+
+
 $templateId = isset($qVars['template_id']) ? $qVars['template_id'] : 0;
 $contextTopicId = isset($qVars['context_topic_id']) ? $qVars['context_topic_id'] : 0;
 $targetTopicId = isset($qVars['target_topic_id']) ? $qVars['target_topic_id'] : 0;
