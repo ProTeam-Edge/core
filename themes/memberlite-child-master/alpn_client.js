@@ -4318,6 +4318,7 @@ function alpn_setup_proteam_member_selector(proteam_id){
 
 function pte_handle_message_merge(docType = 'message'){
 
+    var security = specialObj.security;
 	console.log("Handle Message Merge...");
 
 	var selectedTargetId, selectedTemplateId, contextTopicId;
@@ -4356,6 +4357,7 @@ function pte_handle_message_merge(docType = 'message'){
 				template_id: selectedTemplateId,
 				context_topic_id: contextTopicId,
 				target_topic_id: selectedTargetId,
+				"security": security,
 				doc_type: docType
 			},
 			dataType: "json",
