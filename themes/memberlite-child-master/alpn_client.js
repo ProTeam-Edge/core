@@ -4357,7 +4357,7 @@ function pte_handle_message_merge(docType = 'message'){
 				template_id: selectedTemplateId,
 				context_topic_id: contextTopicId,
 				target_topic_id: selectedTargetId,
-				"security": security,
+				security: security,
 				doc_type: docType
 			},
 			dataType: "json",
