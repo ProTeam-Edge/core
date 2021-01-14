@@ -161,6 +161,7 @@ function pte_UUID() { // Public Domain/MIT
 }
 
 function pte_add_link_to_topic(data) {
+	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_add_topic_link.php',
 		type: 'POST',
@@ -169,6 +170,7 @@ function pte_add_link_to_topic(data) {
 			'owner_topic_id_1': data.pte_topic_id,
 			'owner_id_2': data.pte_owner_id,
 			'owner_topic_id_2': data.id,
+			'security': security,
 			'subject_token': data.pte_subject_token
 		},
 		dataType: "json",

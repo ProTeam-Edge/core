@@ -6,6 +6,16 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 $html="";
 $pVars = $_POST;
+
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
+if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+   echo 'Not a valid request.';
+   die;
+}
+
 $ownerId1 = isset($pVars['owner_id_1']) ? $pVars['owner_id_1'] : 0;
 $ownerTopicId1 = isset($pVars['owner_topic_id_1']) ? $pVars['owner_topic_id_1'] : 0;
 $ownerId2 = isset($pVars['owner_id_2']) ? $pVars['owner_id_2'] : 0;
@@ -21,4 +31,5 @@ $requestData = array(
 	'connection_link_topic_id' => $ownerTopicId2
 );
 pte_json_out(pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData, $subjectToken));
+
 ?>
