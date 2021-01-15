@@ -1564,6 +1564,10 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
   $userInfo = wp_get_current_user();
   $userID = $userInfo->data->ID;
   $userNetworkId = get_user_meta( $userID, 'pte_user_network_id', true );
+
+  alpn_log('pte_get_topic_list');
+  alpn_log($topicTypeId);
+
   if ($userID && $listType) {
     switch ($listType) {
       case "linked_topics":
@@ -1571,6 +1575,11 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
         $wpdb_readonly->prepare(
           "SELECT connected_topic_id as id, name FROM alpn_topics_linked_view WHERE owner_topic_id = %d AND subject_token = %s AND owner_id = %d ORDER BY name ASC", $topicTypeId, $typeKey, $userID)
       );
+      alpn_log('pte_get_topic_list - RESULTS');
+      alpn_log($wpdb_readonly->last_query);
+      alpn_log($wpdb_readonly->last_error);
+      alpn_log($results);
+
       $id = $uniqueId ? $uniqueId : 'pte_by_type_key';
       break;
       case "type_key":
@@ -2282,7 +2291,8 @@ function  pte_make_rights_panel_view($panelData) {
 
   $print = (isset($checked['print']) && $checked['print']) ? "<div id='proteam_print' data-item='print' pte-state='set' data-ptid='{$proTeamRowId}' class='proteam_rights_check' onclick='alpn_rights_check(this);'><div class='pte_panel_check'><i class='fa fa-check' style='font-size: 0.9em; color: #4499d7;'></i></div>Print</div>" : "<div id='proteam_print' data-item='print' pte-state='' data-ptid='{$proTeamRowId}' class='proteam_rights_check' onclick='alpn_rights_check(this);'><div class='pte_panel_check'></div>Print</div>";
 
-  if ($connectedContactStatus == 'not_connected_not_member') {
+  //if ($connectedContactStatus == 'not_connected_not_member') {
+  if (false) {
     $html = "
   		<div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
         <div class='proTeamPanelUserOuter'>
@@ -2291,7 +2301,7 @@ function  pte_make_rights_panel_view($panelData) {
           <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
   			</div>
   			<div class='proTeamPanelSettings'>
-        Non-Member UX
+        External
   			</div>
   		</div>
   		";

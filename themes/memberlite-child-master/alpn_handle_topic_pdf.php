@@ -22,7 +22,15 @@ $recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : 0;
 
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
+
+//update_user_meta( $userID, "pte_user_network_id",  11);
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
+
+// pp($userID);
+// pp($userMeta);
+
+
+
 
 $html = '';
 $script = "<script>
@@ -71,6 +79,7 @@ if (!isset($results[0])) {
 	$fullMap = $topicMeta['field_map'];
 	$topicTabs = array();
 
+	alpn_log('Topic PDF');
 
 	$user = $wpdb->get_results(
 		$wpdb->prepare("SELECT t.*, tt.id AS topic_type_id, tt.special, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id WHERE t.owner_id = %d AND t.special = 'user'", $userID)

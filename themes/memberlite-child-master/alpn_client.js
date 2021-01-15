@@ -1207,7 +1207,7 @@ function pte_show_process_ux(processId) {
 			data: {
 				process_id: processId,
 				security: security,
-				
+
 			},
 			dataType: "html",
 			success: function(html) {
@@ -4485,7 +4485,7 @@ if (typeof cloudsponge != "undefined" && !pte_external && alpn_select_type() == 
 				data: {
 					security: security,
 					contacts: contacts
-					
+
 				},
 				dataType: "json",
 				success: function(json) {
@@ -4928,7 +4928,7 @@ function pte_handle_report_settings(operation) {
 					console.log('pte_handle_report_change - SUCCESS');
 					var filename = "placeholder.pdf";
 					var srcFile = alpn_templatedir + "quick_report_tmp/" + json.pdf_key;
-					// wait
+					// wait TODO first time fails. Put in timer?
 					pdfui.openPDFByHttpRangeRequest({
 						range: {
 							url: srcFile,

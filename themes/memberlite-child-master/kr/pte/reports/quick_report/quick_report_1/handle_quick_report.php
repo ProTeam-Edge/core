@@ -45,6 +45,8 @@ function pteCreateTopicQuickReport($reportSettings){
 
 	alpn_log("starting pteCreateTopicQuickReport...");
 
+	alpn_log($reportSettings);
+
 
 	try {
 			$templateDirectory = get_template_directory();
