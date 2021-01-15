@@ -148,14 +148,14 @@ function alpn_load_script(){
 
 	wp_register_script(
   	'alpn_date',
-  	'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.1/dayjs.min.js',
+  	'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.3/dayjs.min.js',
   	array( 'jquery' )
     );
     wp_enqueue_script( 'alpn_date' );
 
     wp_register_script(
     	'alpn_date_utc',
-    	'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.9.1/plugin/utc.min.js',
+    	'https://cdnjs.cloudflare.com/ajax/libs/dayjs/1.10.3/plugin/utc.min.js',
     	array( 'alpn_date' )
       );
       wp_enqueue_script( 'alpn_date_utc' );
