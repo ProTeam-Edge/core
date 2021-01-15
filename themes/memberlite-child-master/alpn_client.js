@@ -5395,6 +5395,9 @@ function alpn_handle_topic_done(formId){
 		url: alpn_templatedir + 'alpn_topic_latest.php',
 		type: 'GET',
 		dataType: "json",
+		data: {
+					security:security
+					},
 		success: function(topic) {
 
 			console.log(topic);
