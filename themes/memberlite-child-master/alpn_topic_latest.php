@@ -2,8 +2,9 @@
 include('../../../wp-blog-header.php');
 
 $userId = get_current_user_id();
-
-
+ 
+echo "Testing...";
+die();
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die();
