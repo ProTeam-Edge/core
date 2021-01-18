@@ -3508,6 +3508,8 @@ dt{
 
 	 #site-navigation {
 	border: 0 !important;
+	background-color: transparent !important;
+
 }
 
 .site-title {
