@@ -1,5 +1,9 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
+if(!is_user_logged_in() ) {
+	echo 'Not a valid request.';
+	die;
+}
 $passed = 0;
 $nonce  = $_POST["security"];
 $verify = wp_verify_nonce($nonce, 'form-generate' );
@@ -12,10 +16,7 @@ if($passed==0)
 	echo 'Not a valid request.';
 	die;
 }
-if(!is_user_logged_in() ) {
-	echo 'Not a valid request.';
-	die;
-}
+
 $topicVar = isset($_GET["topic"]) ? $_GET["topic"] : false;
 $topicPost = isset($_POST["payload"]) ? $_POST["payload"] : false;
 
