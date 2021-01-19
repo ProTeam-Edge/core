@@ -1,14 +1,6 @@
 <?php
   // Get data from POST
-  $passed = 0;
-$nonce  = $_POST["security"];
-$verify = wp_verify_nonce($nonce, 'admin_test' );
-if($verify==1) 
-{
-	$passed = 1;
-}
-if($passed==0)
-{
+if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
 }
