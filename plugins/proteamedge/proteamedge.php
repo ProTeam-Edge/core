@@ -92,6 +92,7 @@ function test_plugin_setup_menu(){
 
 // Create the ProTeam Edge Settings admin page HTML
 function draw_page(){
+$nonce = wp_create_nonce( 'form-generate' );
 
 $site_url = site_url();
     $rootUrl = "".$site_url."/wp-content/themes/memberlite-child-master/";
@@ -143,7 +144,8 @@ $site_url = site_url();
             		url: alpn_templatedir + 'jonathan_dev/' + endPoint,
             		type: 'POST',
             		data: {
-            			payload: fieldContents
+            			payload: fieldContents,
+            			security: ".$nonce.",
             		},
             		dataType: 'html',
             		success: function(html) {
