@@ -1,5 +1,16 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
+$passed = 0;
+$verify = wp_verify_nonce($nonce, 'security' );
+if($verify==1) 
+{
+	$passed = 1;
+}
+if($passed==0)
+{
+	echo 'Not a valid request.';
+	die;
+}
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
