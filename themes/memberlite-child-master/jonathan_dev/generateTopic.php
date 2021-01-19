@@ -7,7 +7,7 @@
 	echo 'Not a valid request.';
 	die;
 }
-$passed = 0;
+/* $passed = 0;
 $nonce  = $_POST["security"];
 $verify = wp_verify_nonce($nonce, 'admin_test' );
 if($verify==1) 
@@ -19,7 +19,7 @@ if($passed==0)
 	echo 'Not a valid request.';
 	die;
 }
-  
+   */
   $post_data = json_decode(stripslashes($_POST['data']));
 
   //$topicName = $post_data["topic_name"];
