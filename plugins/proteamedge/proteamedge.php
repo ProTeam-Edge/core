@@ -93,8 +93,8 @@ function test_plugin_setup_menu(){
 // Create the ProTeam Edge Settings admin page HTML
 function draw_page(){
 
-
-    $rootUrl = "https://proteamedge.com/wp-content/themes/memberlite-child-master/";
+$site_url = site_url();
+    $rootUrl = "".$site_url."/wp-content/themes/memberlite-child-master/";
     echo "<h1>ProTeam Edge Topic Parts</h1>";
     $html = "";
     $html .= "
