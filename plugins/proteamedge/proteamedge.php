@@ -145,7 +145,7 @@ $site_url = site_url();
             		type: 'POST',
             		data: {
             			payload: fieldContents,
-            			security: ".$nonce.",
+            			security: '".$nonce."',
             		},
             		dataType: 'html',
             		success: function(html) {
