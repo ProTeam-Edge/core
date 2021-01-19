@@ -2,7 +2,7 @@
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 $passed = 0;
 $nonce  = $_POST["security"];
-$verify = wp_verify_nonce($nonce, 'security' );
+$verify = wp_verify_nonce($nonce, 'form-generate' );
 if($verify==1) 
 {
 	$passed = 1;
