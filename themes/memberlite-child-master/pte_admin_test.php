@@ -257,7 +257,7 @@ $url = '';
 if(isset($_POST['SubmitButton'])){ //check if form was submitted
   $url = $_POST['URL']; //get input text
 }
-
+$site_url = site_url();
 ?>
 
 <html>
@@ -274,12 +274,12 @@ if(isset($_POST['SubmitButton'])){ //check if form was submitted
       @accent:#27ae60;
       @borderRadius:4px;
       td.details-control, td.addProperty {
-          background: url('https://proteamedge.com/wp-content/themes/memberlite-child-master/fa/svgs/light/plus-circle.svg') no-repeat center center;
+          background: url('<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/fa/svgs/light/plus-circle.svg') no-repeat center center;
           background-size: 16px 16px;
           cursor: pointer;
       }
       tr.details td.details-control {
-          background: url('https://proteamedge.com/wp-content/themes/memberlite-child-master/fa/svgs/light/minus-circle.svg') no-repeat center center;
+          background: url('<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/fa/svgs/light/minus-circle.svg') no-repeat center center;
           background-size: 16px 16px;
       }
       #save_linked_topics {
@@ -287,21 +287,21 @@ if(isset($_POST['SubmitButton'])){ //check if form was submitted
       }
       div.typeIsLinked {
           float:right;
-          background: url('https://proteamedge.com/wp-content/themes/memberlite-child-master/fa/svgs/light/link.svg') no-repeat center center;
+          background: url('<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/fa/svgs/light/link.svg') no-repeat center center;
           background-size: 12px 12px;
           height: 12px;
           width: 12px;
       }
       div.typeIsDataType {
           float:right;
-          background: url('https://proteamedge.com/wp-content/themes/memberlite-child-master/fa/svgs/light/shapes.svg') no-repeat center center;
+          background: url('<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/fa/svgs/light/shapes.svg') no-repeat center center;
           background-size: 12px 12px;
           height: 12px;
           width: 12px;
       }
       div.typeIsHidden {
           float:right;
-          background: url('https://proteamedge.com/wp-content/themes/memberlite-child-master/fa/svgs/light/eye-slash.svg') no-repeat center center;
+          background: url('<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/fa/svgs/light/eye-slash.svg') no-repeat center center;
           background-size: 12px 12px;
           height: 12px;
           width: 12px;
