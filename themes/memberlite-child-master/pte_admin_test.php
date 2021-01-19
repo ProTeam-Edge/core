@@ -258,6 +258,7 @@ if(isset($_POST['SubmitButton'])){ //check if form was submitted
   $url = $_POST['URL']; //get input text
 }
 $site_url = site_url();
+$nonce = wp_create_nonce( 'admin_test');
 ?>
 
 <html>
@@ -877,7 +878,7 @@ $site_url = site_url();
           $.ajax({
             url: url,
             type: "POST",
-            data: {data : jsonString},
+            data: {data : jsonString,security:"<?php echo $nonce ?>"},
             dataType: "json",
             complete: function(){
               // Save Hidden Topics
