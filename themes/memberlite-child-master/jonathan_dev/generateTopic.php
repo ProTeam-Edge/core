@@ -1,25 +1,6 @@
 <?php
   // Get data from POST
   //$post_data = json_decode($_POST['data']);
-  
-  
-  if(!is_user_logged_in() ) {
-	echo 'Not a valid request.';
-	die;
-}
-/* $passed = 0;
-$nonce  = $_POST["security"];
-$verify = wp_verify_nonce($nonce, 'admin_test' );
-if($verify==1) 
-{
-	$passed = 1;
-}
-if($passed==0)
-{
-	echo 'Not a valid request.';
-	die;
-}
-   */
   $post_data = json_decode(stripslashes($_POST['data']));
 
   //$topicName = $post_data["topic_name"];
