@@ -8,7 +8,9 @@
  * Author:            Jonathan Manni
  * Author URI:        https://www.jonathanmanni.com
  */
-
+use Brick\StructuredData\Reader\RdfaLiteReader;
+use Brick\StructuredData\HTMLReader;
+use Brick\StructuredData\Item;
 function download_schema_types() {
     // Initialize a file URL to the variable
     $url = 'https://schema.org/version/latest/schemaorg-current-http.jsonld';
