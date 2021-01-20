@@ -886,7 +886,7 @@ $nonce = wp_create_nonce( 'admin_test');
               $.ajax({
                 url: url,
                 type: "POST",
-                data: {data : hiddenJSONString},
+                data: {data : hiddenJSONString,security:"<?php echo $nonce ?>"},
                 dataType: "json",
                 complete: function(){
                   var url = "/wp-content/themes/memberlite-child-master/jonathan_dev/savePteScopeTopics.php";
