@@ -109,6 +109,15 @@ if ($data = json_decode($json, true)) {
 else {
     error_log("JSON Decode Failed.", 0);
 }
+$microdataReader = new RdfaLiteReader();
+
+// Wrap into HTMLReader to be able to read HTML strings or files directly,
+// i.e. without manually converting them to DOMDocument instances first
+$htmlReader = new HTMLReader($microdataReader);
+
+// Replace this URL with that of a website you know is using Microdata
+$url = 'https://schema.org/Person';
+$html = file_get_contents($url);
 }
 function generate_topic_parts() {
 $nonce = wp_create_nonce( 'form-generate' );
