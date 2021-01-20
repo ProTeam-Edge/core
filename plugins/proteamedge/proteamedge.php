@@ -141,7 +141,7 @@ $site_url = site_url();
               //console.log(fieldContents)
               var endPoint = (type == 'html') ? 'generateHTML.php' : 'generateForm.php';
               jQuery.ajax({
-            		url: alpn_templatedir + 'jonathan_dev/' + endPoint,
+            		url: alpn_templatedir + 'topics/' + endPoint,
             		type: 'POST',
             		data: {
             			payload: fieldContents,
