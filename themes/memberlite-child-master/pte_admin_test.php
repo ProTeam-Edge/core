@@ -878,7 +878,7 @@ $nonce = wp_create_nonce( 'admin_test');
           $.ajax({
             url: url,
             type: "POST",
-            data: {data : jsonString},
+            data: {data : jsonString,security:"<?php echo $nonce ?>"},
             dataType: "json",
             complete: function(){
               // Save Hidden Topics
