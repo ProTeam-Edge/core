@@ -200,9 +200,12 @@ $site_url = site_url();
 
 add_action('admin_menu', 'my_menu_pages');
 function my_menu_pages(){
-    add_menu_page('ProTeam Edge', 'ProTeam Edge', 'manage_options', 'proteam-edge-parent', 'proteam-edge-parent' );
+    add_menu_page('ProTeam Edge', 'ProTeam Edge', 'manage_options', 'proteam-edge-parent', 'proteam_edge_parent' );
     add_submenu_page('proteam-edge-parent', 'Manage Topic Types', 'Manage Topic Types', 'manage_options', 'proteam-edge-parent' );
     add_submenu_page('proteam-edge-parent', 'Generate Topic Parts', 'Generate Topic Parts', 'manage_options', 'generate-topic-parts' );
 }
-
+function proteam_edge_parent() {
+echo 'parent';
+die;
+}
 ?>
