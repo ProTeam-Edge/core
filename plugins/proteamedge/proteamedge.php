@@ -209,5 +209,7 @@ echo 'manage_topic_types';
 die;
 }
 function generate_topic_parts() {
+echo 'generate_topic_parts';
+die;	
 }
 ?>
