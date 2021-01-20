@@ -27,7 +27,7 @@ if (!$topicVar && !$topicPost) {
 }
 
 if ($topicVar) {
-  $topicFile = WP_CONTENT_DIR . "/themes/memberlite-child-master/jonathan_dev/generatedTopics/" . $topicVar . "_main.json"; //Person_main.json";
+  $topicFile = WP_CONTENT_DIR . "/themes/memberlite-child-master/topics/generatedTopics/" . $topicVar . "_main.json"; //Person_main.json";
   if ($json = file_get_contents($topicFile)) {
       error_log("Got contents successfully.", 0);
       if ($data = json_decode($json, true)) {

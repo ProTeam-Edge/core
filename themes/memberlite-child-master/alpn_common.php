@@ -183,7 +183,7 @@ function pte_async_job_old ($url, $params) {
 
 function pte_sync_curl($endPoint, $postRequest) {
   $domainName = PTE_HOST_DOMAIN_NAME;
-  $baseUrl = "https://{$domainName}/wp-content/themes/memberlite-child-master/jonathan_dev/";
+  $baseUrl = "https://{$domainName}/wp-content/themes/memberlite-child-master/topics/";
   $fullUrl = "{$baseUrl}{$endPoint}.php";
   $headers[] = "Accept: application/json";
   $options = array(
