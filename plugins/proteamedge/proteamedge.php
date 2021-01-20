@@ -95,6 +95,18 @@ function my_menu_pages(){
 }
 function manage_topic_types() {
 $schema_master_file = WP_CONTENT_DIR . "/plugins/proteamedge/schema.jsonId";
+if ($json = file_get_contents($schema_master_file)) {
+    error_log("Got contents successfully.", 0);
+}
+else {
+    error_log("JSON Get Contents Failed.", 0);
+}
+if ($data = json_decode($json, true)) {
+    error_log("JSON Decode Successful.", 0);
+}
+else {
+    error_log("JSON Decode Failed.", 0);
+}
 }
 function generate_topic_parts() {
 $nonce = wp_create_nonce( 'form-generate' );
