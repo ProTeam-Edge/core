@@ -94,9 +94,8 @@ function my_menu_pages(){
     add_submenu_page('manage-topic-types', 'Generate Topic Parts', 'Generate Topic Parts', 'manage_options', 'generate-topic-parts','generate_topic_parts' );
 }
 function manage_topic_types() {
-use Brick\StructuredData\Reader\RdfaLiteReader;
-use Brick\StructuredData\HTMLReader;
-use Brick\StructuredData\Item;
+echo 'manage_topic_types';
+die;
 }
 function generate_topic_parts() {
 $nonce = wp_create_nonce( 'form-generate' );
