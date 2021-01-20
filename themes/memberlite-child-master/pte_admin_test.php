@@ -893,7 +893,7 @@ $nonce = wp_create_nonce( 'admin_test');
                   $.ajax({
                     url: url,
                     type: "POST",
-                    data: {data : pteScopePairsString},
+                    data: {data : pteScopePairsString,security:"<?php echo $nonce ?>"},
                     dataType: "json",
                     complete: function(){
                       saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
