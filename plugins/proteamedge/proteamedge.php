@@ -85,13 +85,19 @@ add_action('admin_menu', 'test_plugin_setup_menu');
 //     return $str;
 // }
 
-// Add ProTeam Edge sidebar menu
-function test_plugin_setup_menu(){
-    add_menu_page( 'ProTeam Edge Plugin Settings', 'ProTeam Edge', 'manage_options', 'proteamedge', 'draw_page' );
-}
 
-// Create the ProTeam Edge Settings admin page HTML
-function draw_page(){
+
+add_action('admin_menu', 'my_menu_pages');
+function my_menu_pages(){
+    add_menu_page('ProTeam Edge', 'ProTeam Edge', 'manage_options', 'manage-topic-types', 'manage_topic_types' );
+    add_submenu_page('manage-topic-types', 'Manage Topic Types', 'Manage Topic Types', 'manage_options', 'manage-topic-types' );
+    add_submenu_page('manage-topic-types', 'Generate Topic Parts', 'Generate Topic Parts', 'manage_options', 'generate-topic-parts','generate_topic_parts' );
+}
+function manage_topic_types() {
+echo 'manage_topic_types';
+die;
+}
+function generate_topic_parts() {
 $nonce = wp_create_nonce( 'form-generate' );
 
 $site_url = site_url();
@@ -196,20 +202,5 @@ $site_url = site_url();
     //echo jsonToDebug($json);
     //echo gettype($data);
     //echo "<h6>" . $data . "</h6>";
-}
-
-add_action('admin_menu', 'my_menu_pages');
-function my_menu_pages(){
-    add_menu_page('ProTeam Edge', 'ProTeam Edge', 'manage_options', 'manage-topic-types', 'manage_topic_types' );
-    add_submenu_page('manage-topic-types', 'Manage Topic Types', 'Manage Topic Types', 'manage_options', 'manage-topic-types' );
-    add_submenu_page('manage-topic-types', 'Generate Topic Parts', 'Generate Topic Parts', 'manage_options', 'generate-topic-parts','generate_topic_parts' );
-}
-function manage_topic_types() {
-echo 'manage_topic_types';
-die;
-}
-function generate_topic_parts() {
-echo 'generate_topic_parts';
-die;	
 }
 ?>
