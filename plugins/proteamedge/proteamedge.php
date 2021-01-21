@@ -205,6 +205,7 @@ $nonce = wp_create_nonce( 'admin_test');
     </style>
   </head>
   <body>
+   <h1>Manage Topic Types</h1>
     <div style="overflow:hidden"><button class="button" id="save_linked_topics">Save Topic-level Config</button></div>
     <br>
     <table id="classes" class="display" style="width:100%">
