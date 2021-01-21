@@ -1254,6 +1254,39 @@ $nonce = wp_create_nonce( 'admin_test');
 
 <?php
 }
+function getExpectedTypes($url)
+{
+  // Let's read Rdfa here
+  $rdfaReader = new RdfaLiteReader();
+  // Wrap into HTMLReader to be able to read HTML strings or files directly,
+  // i.e. without manually converting them to DOMDocument instances first
+  $htmlReader = new HTMLReader($rdfaReader);
+  // Read $url
+  $html = file_get_contents($url);
+
+  // Read the document and return the top-level items found
+  // Note: the URL is only required to resolve relative URLs; no attempt will be made to connect to it
+  $items = $htmlReader->read($html, $url);
+
+  for ($i = 0; $i < count($items); $i++) {;
+    //echo count($items[$i]->getProperties()) . " items in ITEM" . strval($i) .". <br>";
+    //echo "Types include: " . implode(',', $items[$i]->getTypes()) . "<br>" . PHP_EOL;
+    foreach ($items[$i]->getProperties() as $name => $values) {
+      if ($name == 'http://schema.org/rangeIncludes') {
+        $output = array();
+        foreach ($values as $value) {
+          if ($value instanceof Item) {
+              // We're only displaying the class name in this example; you would typically
+              // recurse through nested Items to get the information you need
+              $value = '(' . implode(', ', $value->getTypes()) . ')';
+          }
+          array_push($output, $value);
+        }
+        return implode(', ', $output);
+      }
+    }
+  }
+}
 function getSchemaProperties($url)
 {
   // Let's read Rdfa here
