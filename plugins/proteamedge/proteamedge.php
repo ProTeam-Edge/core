@@ -121,9 +121,14 @@ $html = file_get_contents($url);
 // Read the document and return the top-level items found
 // Note: the URL is only required to resolve relative URLs; no attempt will be made to connect to it
 $items = $htmlReader->read($html, $url);
-echo '<pre>';
-print_r($items);
-die;
+$data = getSchemaProperties($url);
+
+$url = '';
+if(isset($_POST['SubmitButton'])){ //check if form was submitted
+  $url = $_POST['URL']; //get input text
+}
+$site_url = site_url();
+$nonce = wp_create_nonce( 'admin_test');
 }
 function generate_topic_parts() {
 $nonce = wp_create_nonce( 'form-generate' );
