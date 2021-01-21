@@ -86,7 +86,9 @@ $html = file_get_contents($url);
 // Read the document and return the top-level items found
 // Note: the URL is only required to resolve relative URLs; no attempt will be made to connect to it
 $items = $htmlReader->read($html, $url);
-
+echo '<pre>';
+print_r($items);
+die;
 //echo "There were " . count($items) . " items read from the HTML.";
 
 //echo gettype($items);
