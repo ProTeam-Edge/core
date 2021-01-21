@@ -27,7 +27,7 @@ if($passed==0)
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
 
-$root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/';
+$root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
  // file_put_contents('generatedTopics/'.$topicFriendlyName.'_main.json', json_encode($post_data));
   file_put_contents($root.$topicFriendlyName.'_main.json', json_encode($post_data));
