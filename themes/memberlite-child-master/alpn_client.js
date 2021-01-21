@@ -560,7 +560,9 @@ function pte_handle_topic_link_container_click(topicLinkContainerId){
 function pte_handle_widget_interaction(interactionData){ //run the process
 
 	console.log("pte_handle_widget_interaction...");
+
 	var security = specialObj.security;
+
 	interactionData.message_title = jQuery('#pte_message_title_field').val();
 	interactionData.message_body = jQuery('#pte_message_body_area').val();
 	interactionData.message_response = jQuery('#pte_message_body_area_response').val();
@@ -3897,7 +3899,7 @@ function alpn_vault_control(operation) {
 			fileSource = rowData[15];
 			mimeType = rowData[9];
 			permissionValue = rowData[2];
-			topicId = rowData[13];
+			topicId = rowData[13].replace(/\D/g,'');
 		}
 	}
 	switch(operation) {

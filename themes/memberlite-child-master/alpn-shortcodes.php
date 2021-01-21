@@ -19,7 +19,7 @@ function usernetwork_shortcode($attr) {
 		$ownerNetworkId = get_user_meta( $userID, 'pte_user_network_id', true ); //Owners Topic ID
 		$specialType = 'user';
 		$results = $wpdb->get_results(
-			$wpdb->prepare("SELECT concat(JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_givenname')), ' ', JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_familyname'))) AS owner_nice_name, t.dom_id, t.id, t.image_handle, t.name, t.sync_id, t.topic_type_id AS user_topic_type_id, tt.id AS contact_topic_type_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = '%s' AND t.special = '%s';", $userID, $specialType)
+			$wpdb->prepare("SELECT concat(JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_givenname')), ' ', JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_familyname'))) AS owner_nice_name, t.dom_id, t.id, t.image_handle, t.name, t.sync_id, t.topic_type_id AS user_topic_type_id, tt.id AS contact_topic_type_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.owner_id = %d AND tt.special = 'contact' WHERE t.owner_id = %d AND t.special = 'user';", $userID, $userID)
 		);
 		if (isset($results[0])) {
 			$userTopicId = $results[0]->id;

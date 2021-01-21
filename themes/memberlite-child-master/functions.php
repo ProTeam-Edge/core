@@ -57,7 +57,7 @@ $cookie_httponly = 'HTTPOnly';
 setcookie($cookie_name, $cookie_value, (time()+3600), '/',$domainName, $cookie_secure, $cookie_httponly);
 
 add_filter( 'nonce_life','modify_timeslot' );  //4 - 8 hours. Default is 24 hours
-function modify_timeslot () { 
+function modify_timeslot () {
 return 48 * 3600;
 }
 
@@ -351,7 +351,54 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 
 }
 add_action('user_register', 'sync_alpn_user_info_on_register');
+
+
 //add_action('profile_update', 'sync_alpn_user_info_on_register');
+
+
+
+
+function cleanup_pte_user_on_delete( $user_id ) {
+	//TODO WHAT ABOUT ARCHIVING INTERATIONS, Files, ETC?
+	//pte_manage_cc_groups
+	//pte_manage_user_connection -- Need to disconnect everywhere
+	//cloud files
+	//images
+	// MORE check
+	//WP Forms definitions in Posts
+
+	global $wpdb;
+
+	alpn_log('cleanup_pte_user_on_delete_start - ' . $user_id);
+
+	$whereclause = array('owner_id' => $user_id);
+	$wpdb->delete( "alpn_topics", $whereclause );
+	$wpdb->delete( "alpn_topic_types", $whereclause );
+	$wpdb->delete( "alpn_vault", $whereclause );
+	$wpdb->delete( "alpn_templates", $whereclause );
+	$wpdb->delete( "alpn_links", $whereclause );
+
+	$whereclause = array('id' => $user_id);
+	$wpdb->delete( "alpn_user_metadata", $whereclause );
+
+	$whereclause = array('owner_id_1' => $user_id);
+	$wpdb->delete( "alpn_topic_links", $whereclause );
+
+	$whereclause = array('owner_id_2' => $user_id);
+	$wpdb->delete( "alpn_topic_links", $whereclause );
+
+	$ownerNetworkId = get_user_meta( $user_id, 'pte_user_network_id', true );
+	$whereclause = array('owner_network_id' => $ownerNetworkId);
+	$wpdb->delete( "alpn_interactions", $whereclause );
+
+	delete_user_meta( $user_id, "pte_user_network_id");
+
+	$whereclause = array('connected_id' => $user_id);
+	$topicData = array('connected_id' => NULL);
+	$wpdb->update( "alpn_topics", $topicData, $whereclause );
+
+}
+add_action( 'delete_user', 'cleanup_pte_user_on_delete', 10 );
 
 //Database
 

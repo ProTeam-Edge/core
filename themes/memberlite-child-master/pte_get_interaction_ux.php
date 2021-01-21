@@ -369,12 +369,15 @@ function pte_make_button_line($lineType, $uxMeta) {
 
 function pte_make_interaction_link($linkType, $uxMeta) {
 
+	alpn_log('pte_make_interaction_link');
+	alpn_log($uxMeta);
+
 	$currentDomain = PTE_HOST_DOMAIN_NAME;
 
 	$networkId = 	isset($uxMeta['network_id']) ? $uxMeta['network_id'] : "";
 	$networkName = 	isset($uxMeta['network_name']) ? $uxMeta['network_name'] : "";
 	$connectedContactStatus =	isset($uxMeta['connected_contact_status']) ? $uxMeta['connected_contact_status'] : "";
-	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : "";
+	$topicId = 	isset($uxMeta['topic_id']) ? preg_replace('/\D/', '', $uxMeta['topic_id']) : 0;   //TODO there were commas
 	$topicTypeId = 	isset($uxMeta['topic_type_id']) ? $uxMeta['topic_type_id'] : "";
 	$topicTypeSpecial = 	isset($uxMeta['topic_special']) ? $uxMeta['topic_special'] : "topic";
 	$viewLinkFileType =	isset($uxMeta['view_link_file_type']) ? $uxMeta['view_link_file_type'] : "";
