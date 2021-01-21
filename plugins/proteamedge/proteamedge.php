@@ -123,8 +123,12 @@ $html = file_get_contents($url);
 $items = $htmlReader->read($html, $url);
 $data = getSchemaProperties($url);
 
-echo '<pre>';
-print_r($data);
+$url = '';
+if(isset($_POST['SubmitButton'])){ //check if form was submitted
+  $url = $_POST['URL']; //get input text
+}
+$site_url = site_url();
+$nonce = wp_create_nonce( 'admin_test');
 }
 function getSchemaProperties($url)
 {
