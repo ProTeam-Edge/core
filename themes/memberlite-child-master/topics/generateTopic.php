@@ -27,11 +27,10 @@ if($passed==0)
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
 
-echo '<pre>';
-print_r($_SERVER);
-DIE;
+$root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/';
   // Save list of linked topics to server
-  file_put_contents('generatedTopics/'.$topicFriendlyName.'_main.json', json_encode($post_data));
+ // file_put_contents('generatedTopics/'.$topicFriendlyName.'_main.json', json_encode($post_data));
+  file_put_contents($root.$topicFriendlyName.'_main.json', json_encode($post_data));
   //file_put_contents('generatedTopics/tester.txt',$topicName);
   echo 'yay';
 ?>
