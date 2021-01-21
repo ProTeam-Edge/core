@@ -123,7 +123,8 @@ $html = file_get_contents($url);
 $items = $htmlReader->read($html, $url);
 $data = getSchemaProperties($url);
 
-
+echo '<pre>';
+print_r($data);
 }
 function getSchemaProperties($url)
 {
