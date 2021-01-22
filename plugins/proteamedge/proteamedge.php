@@ -482,7 +482,7 @@ $nonce = wp_create_nonce( 'admin_test');
             // Get an array of expected types (for use later if there are multiple)
             var expectedTypes = item["ExpectedTypes"].split(', ');
 
-				
+            if (true) {
               if (expectedTypes.length > 1) {
                 // Multiple types for a given property
                 $.each(expectedTypes, function(index, type) {
@@ -561,7 +561,7 @@ $nonce = wp_create_nonce( 'admin_test');
                   //out += "<tr><td class='propertyTable'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td><td><input type='text' class='friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td><td>" + type + "<div class='typeIsLinked'></div></td></tr>";
                 }
               }
-           
+            }
         }
 
         // If we have some additional property rows, add those here
