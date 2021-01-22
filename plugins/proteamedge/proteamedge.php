@@ -599,7 +599,7 @@ $nonce = wp_create_nonce( 'admin_test');
 		{
 			alert("Please save Topic-level Config and try again.");
 			return false;
-		}
+		} 
         var d = row.data();
         // Make ajax request to php to get properties for this class
         var output;
