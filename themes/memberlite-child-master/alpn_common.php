@@ -1758,8 +1758,8 @@ function pte_manage_user_connection($data){
   //If I add you to my network and you add me to your network than we're connected... We then show connected demographics....
   //TODO Handle exceptions, etc.
 
-  //alpn_log('pte_manage_user_connection...');
-  //alpn_log($data);
+  alpn_log('pte_manage_user_connection...');
+  alpn_log($data);
 
   global $wpdb;
 
@@ -1770,20 +1770,24 @@ function pte_manage_user_connection($data){
   if (isset($contactInfo->ID)) {
 
     $contactId = $contactInfo->ID;
-    $contactNetworkId = get_user_meta( $contactId, 'pte_user_network_id', true ); //Owners Topic ID
+    $contactNetworkId = get_user_meta( $contactId, 'pte_user_network_id', true ); //Contact Topic ID
     $userId = isset($data['owner_wp_id']) ? $data['owner_wp_id'] : '';
     $userInfo = get_user_by('id', $userId);
     $userEmail =  $userInfo->data->user_email;
     $userNetworkId = get_user_meta( $userId, 'pte_user_network_id', true ); //Owners Topic ID
+
+    //go find ME in contact's contacts by email.
+
     $results = $wpdb->get_results(
     	$wpdb->prepare("SELECT id, owner_id, connected_id FROM alpn_topics WHERE owner_id = %s AND special = 'contact' AND alt_id = %s", $contactId, $userEmail)
      );
+
      if (isset($results[0])) {
        $contactId = $results[0]->owner_id;
        $connectedId = $results[0]->connected_id;
        $connectedTopicId = $results[0]->id;
        if (!$connectedId) {
-
+         //Now go find contact in my Topics by email.
           $user = $wpdb->get_results(
           	$wpdb->prepare("SELECT id FROM alpn_topics WHERE owner_id = %s AND special = 'contact' AND alt_id = %s", $userId, $contactEmail)
            );
@@ -1937,7 +1941,7 @@ function pte_manage_cc_groups($operation, $data) {
 
     case "add_member":
 
-      $channelId = pte_manage_cc_groups("get_create_channel", $data);
+      $channelId = pte_manage_cc_groups("get_create_channel", $data);   //get or create for the first time.
 
       if ($channelId) {
         try {
@@ -1948,6 +1952,7 @@ function pte_manage_cc_groups($operation, $data) {
             ->create($userId);
 
           alpn_log("Added Member..." . $userId);
+
         } catch (Exception $e) {
             $response = array(
                 'message' =>  $e->getMessage(),

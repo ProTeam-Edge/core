@@ -239,7 +239,7 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 		$proTeamTitle = "";
 		$profilePicTitle = "Icon";
 		$showMessageAccordion = "block";
-		$showAddressBookAccordion = "block";
+		$showAddressBookAccordion = "none";   //TODO Turn this back to block to turn it on.
 		$showImportanceAccordions = "block";
 		$showFaxAccordian = "block";
 		$showEmailAccordian = "block";

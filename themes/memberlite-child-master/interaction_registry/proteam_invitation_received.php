@@ -39,6 +39,8 @@ function pte_get_proteam_invitation_received_registry() {
 
           if ($buttonOperation == 'accept' || $buttonOperation == 'decline') {
 
+            //TODO do the contact side: setup topic, connections, etc.
+
             $updateRequestData = array( //The ol swaparoo
               'process_id' => $requestData['interacts_with_id'],
               'process_type_id' => "proteam_invitation",
