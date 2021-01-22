@@ -464,7 +464,9 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
-		
+			alert(output);
+
+				return false ;
         var d = row.data();
 
         var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
@@ -529,9 +531,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			
                 var typeName = item["ExpectedTypes"].slice(18);
                 var type = item["ExpectedTypes"];
-	alert(type);
-	alert('else alert');
-				return false ;
+
                 var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+typeName);
                 var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+typeName);
 
