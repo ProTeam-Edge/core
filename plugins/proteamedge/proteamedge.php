@@ -481,8 +481,7 @@ $nonce = wp_create_nonce( 'admin_test');
             }
             // Get an array of expected types (for use later if there are multiple)
             var expectedTypes = item["ExpectedTypes"].split(', ');
-			alert(expectedTypes);
-			return false;
+		
             if (true) {
               if (expectedTypes.length > 1) {
 				
@@ -527,7 +526,8 @@ $nonce = wp_create_nonce( 'admin_test');
 
               } else { // We only have one type
 			  
-			  return false;
+				alert(item["ExpectedTypes"]);
+				return false ;
                 var typeName = item["ExpectedTypes"].slice(18);
                 var type = item["ExpectedTypes"];
 
