@@ -24,6 +24,8 @@ function pte_get_proteam_invitation_registry() {
   $registryArray = array(
       'request_sent' => function(Token $token) {  //Node 1 - waiting for send
 
+          global $wpdb;
+
             $requestData = $token->getValue("process_context");
             $requestData['interaction_type_name'] = "Team Invite";
             $requestData['interaction_template_name'] = "";
@@ -67,6 +69,8 @@ function pte_get_proteam_invitation_registry() {
                   alpn_log('Send an Email instead...');
 
                   $userInfo = get_user_by('id', $requestData['owner_id']);
+                  alpn_log('Got User Info...');
+
                   if (isset($userInfo->data)) {
                     $data = array(
                       'from_name' => $requestData['owner_friendly_name'],
@@ -81,6 +85,22 @@ function pte_get_proteam_invitation_registry() {
                     );
                     alpn_log($data);
                     pte_send_mail ($data);
+                    alpn_log('Email Sent...');
+
+                    //Update ProTeam state and type
+                    $proTeamData = array(
+                      "connected_type" => 'external',
+                      "state" => 80
+                    );
+                    $whereClause = array(
+                      "id" => $requestData['proteam_row_id']
+                    );
+                    $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
+
+                    alpn_log('ProTeams Updated...');
+
+                    //TODO send a client message to update this ProTeam Card
+
                   }
               }
 
@@ -114,7 +134,6 @@ function pte_get_proteam_invitation_registry() {
             case 'accept':
               alpn_log('Handling Accept...');
               //alpn_log($requestData);
-
               if ($requestData['connected_contact_status'] = 'not_connected_member') {
                 // if member but not connected, connect them, handle as connected.
                 alpn_log('Making connection to not_connected_member...');
@@ -129,7 +148,7 @@ function pte_get_proteam_invitation_registry() {
                 $requestData['connected_network_id'] = $requestData['connected_contact_topic_id_alt'];
               }
 
-              //add user to chat group if they are a member
+              //add user to chat group if they are a member. For the Topic.
               if ($requestData['connected_contact_status'] == 'connected_member') {   //add them as long as they are members.
                 $data = array(
                   'owner_wp_id' => $requestData['owner_id'],
@@ -139,19 +158,16 @@ function pte_get_proteam_invitation_registry() {
                 pte_manage_cc_groups("add_member", $data);
               }
 
-              //creates a link between this topic and the connected user topic.
+              //creates a link between this topic and the connected user topic if link type.
+
               $connectedType = "join";
               if ($requestData['connection_link_type'] == 1) {  //Link type
                 pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData);
                 $connectedType = "link";
               }
-
               //Update ProTeam with Join/Link type and Status.
-
               if (isset($requestData['proteam_row_id']) && $requestData['proteam_row_id']) {
-
                 alpn_log('Handling ProTeam Update...');
-
                 $proTeamData = array(
                   "connected_type" => $connectedType,
                   "state" => 20
@@ -160,15 +176,25 @@ function pte_get_proteam_invitation_registry() {
                   "id" => $requestData['proteam_row_id']
                 );
                 $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
+
+                //TODO send a client message to update this ProTeam Card
               }
-
-              //TODO Feedback on ProTeam Card IRT Linked, Joined, Connected Topic?
-
-
               return;
             break;
             case 'decline':
               alpn_log('Handling Decline...');
+
+              //Update proTeam
+              $proTeamData = array(
+                "connected_type" => 'none',
+                "state" => 90
+              );
+              $whereClause = array(
+                "id" => $requestData['proteam_row_id']
+              );
+              $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
+
+              //TODO send a client message to update this ProTeam Card
 
 
               return;
@@ -177,13 +203,15 @@ function pte_get_proteam_invitation_registry() {
               alpn_log('Handling Update...');
 
 
-              return;
+              $token->setValue("process_context", $requestData);
+              throw new WaitExecutionException();
             break;
             case 'recall':
               alpn_log('Handling Recall...');
 
 
-              return;
+              $token->setValue("process_context", $requestData);
+              throw new WaitExecutionException();
             break;
           }
 
@@ -206,6 +234,11 @@ function pte_get_proteam_invitation_registry() {
                 "message_view_only"
               );
           }
+
+
+          //TODO Show button pressed and response message at Top
+
+
           $requestData['widget_type_id'] = "information";
           $requestData['buttons'] =  array(
               "file" => true

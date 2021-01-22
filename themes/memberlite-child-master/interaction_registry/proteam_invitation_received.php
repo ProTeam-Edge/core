@@ -39,7 +39,15 @@ function pte_get_proteam_invitation_received_registry() {
 
           if ($buttonOperation == 'accept' || $buttonOperation == 'decline') {
 
-            //TODO do the contact side: setup topic, connections, etc.
+            //TODO do the contact side: setup topic, connections, etc. Or should the other side do it? It feels like it should be here.
+
+            // Create New Topic, if needed
+            // Create ProTeam Entry for the Topic to my Connection with proper state and Link type (only)
+            // Add ProTeam Card
+            // Create topic Link.
+            // Client Side Updates?
+
+            //TODO only do this stuff if all the setup worked for this guy above?
 
             $updateRequestData = array( //The ol swaparoo
               'process_id' => $requestData['interacts_with_id'],
@@ -50,6 +58,7 @@ function pte_get_proteam_invitation_received_registry() {
               'button_operation' =>  $buttonOperation,
               'message_response' =>  $requestData["message_response"]
             );
+
 
             $data = array(  //call originating process with new data (accept/decline)
               'process_id' => $requestData['interacts_with_id'],

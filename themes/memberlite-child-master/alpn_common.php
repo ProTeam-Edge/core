@@ -2255,7 +2255,7 @@ function  pte_make_rights_panel_view($panelData) {
   alpn_log("pte_make_rights_panel_view");
   alpn_log($panelData);
 
-	$topicStates = array('10' => "Added", '20' => "Notified", '30' => "Active", '40' => "Topic Linked");
+	$topicStates = array('10' => "Added", '20' => "Invite Sent", '30' => "Active", '40' => "Topic Linked", '80' => "Email Sent", '90' => "Declined");
 
 	$proTeamRowId = $panelData['proTeamRowId'];
   $topicNetworkId = $panelData['topicNetworkId'];
