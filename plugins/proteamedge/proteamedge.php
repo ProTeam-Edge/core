@@ -739,7 +739,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
       // Save a JSON list when Save Linked Topics is clicked
       $(document).on("click", "#save_linked_topics" , function() {
-		  
+		  	$.LoadingOverlay("show");
           // Show a loading icon
           var saveLinkedTopicsButton = document.querySelector('#save_linked_topics');
           saveLinkedTopicsButton.innerHTML = "Saving...";
@@ -803,7 +803,7 @@ $nonce = wp_create_nonce( 'admin_test');
           linkedTopicsOnLoad = linkedTopicsChecked;
           hiddenTopicsOnLoad = hiddenTopicsChecked;
           topicClassesOnLoad = pteScopePairs;
-
+			$.LoadingOverlay("hide");
 
       });
 
@@ -1246,11 +1246,7 @@ $nonce = wp_create_nonce( 'admin_test');
 				return false;
 			
 			}
-			else
-			{
-				$.LoadingOverlay("show");
-
-			}
+			
             var tr = $(this).closest('tr');
             var row = dt.row( tr );
             var idx = $.inArray( tr.attr('id'), detailRows );
