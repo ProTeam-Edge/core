@@ -5791,7 +5791,7 @@ function pte_save_topic_type_meta(skipRefresh = false) {
 		data: {
 			form_id: formId,
 			topic_type_object: JSON.stringify(pte_selected_topic_type_object),
-			security: security,
+			security: security
 		},
 		dataType: "json",
 		success: function(json) {

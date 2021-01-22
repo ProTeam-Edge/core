@@ -369,8 +369,8 @@ function pte_make_button_line($lineType, $uxMeta) {
 
 function pte_make_interaction_link($linkType, $uxMeta) {
 
-	alpn_log('pte_make_interaction_link');
-	alpn_log($uxMeta);
+	//alpn_log('pte_make_interaction_link');
+	//alpn_log($uxMeta);
 
 	$currentDomain = PTE_HOST_DOMAIN_NAME;
 

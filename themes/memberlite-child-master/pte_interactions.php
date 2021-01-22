@@ -339,6 +339,7 @@ function pte_manage_interaction_proper($data) {
         if (isset($connectedUserData->data->ID) && $connectedUserData->data->ID) {
           $processContext['connected_contact_status'] = 'not_connected_member';
           $processContext['connected_contact_id_alt'] = $connectedUserData->data->ID;
+          $processContext['connected_contact_email_alt'] = $processContext['alt_id'];
           $processContext['connected_contact_topic_id_alt'] = get_user_meta( $connectedUserData->data->ID, 'pte_user_network_id', true );
         }
       }

@@ -532,7 +532,9 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
             pte_manage_user_sync($data);
           }
 				} else { //add
+
           if ($topicSchemaKey == "Person") {$topicData['image_handle'] = "pte_icon_letter_n.png";}  //Dor new user until they edit
+					
           $data = array();
           $topicData['last_op'] = "add";
           $topicData['created_date'] = $now;

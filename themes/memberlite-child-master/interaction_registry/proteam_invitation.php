@@ -40,7 +40,7 @@ function pte_get_proteam_invitation_registry() {
                 'template_id' => $requestData["template_id"],
                 'template_name' => $requestData["template_name"],
                 'message_title' => $requestData["message_title"],
-                'message_body' => nl2br($requestData["message_body"]),
+                'message_body' => $requestData["message_body"],
                 'expiration_minutes' => $requestData["expiration_minutes"],
                 'interacts_with_id' => $requestData["process_id"],
                 'process_id' => '',
@@ -52,6 +52,7 @@ function pte_get_proteam_invitation_registry() {
               );
 
               if ($requestData['connected_id'] || $requestData['connected_contact_id_alt']) { //connected -- create inviation received
+
                 $data = array(
               		'process_id' => "",
               		'process_type_id' => "proteam_invitation_received",
@@ -60,6 +61,7 @@ function pte_get_proteam_invitation_registry() {
               		'process_data' => $newRequestData
               	);
               	$requestData['interacts_with_id'] = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
+
               } else {
 
                   alpn_log('Send an Email instead...');
@@ -102,6 +104,8 @@ function pte_get_proteam_invitation_registry() {
       },
       'handle_request_response' => function(Token $token) {
 
+          global $wpdb;
+
           $requestData = $token->getValue("process_context");
 
           $buttonOperation = $token->getValue("button_operation");
@@ -109,6 +113,56 @@ function pte_get_proteam_invitation_registry() {
           switch ($buttonOperation) {
             case 'accept':
               alpn_log('Handling Accept...');
+              //alpn_log($requestData);
+
+              if ($requestData['connected_contact_status'] = 'not_connected_member') {
+                // if member but not connected, connect them, handle as connected.
+                alpn_log('Making connection to not_connected_member...');
+                $connectData = array(
+                  'contact_topic_id' => $requestData['connected_contact_topic_id_alt'],
+                  'contact_email' => $requestData['connected_contact_email_alt'],
+                  'owner_wp_id' => $requestData['owner_id']
+                );
+                pte_manage_user_connection($connectData);
+                $requestData['connected_contact_status'] = 'connected_member';
+                $requestData['connected_id'] = $requestData['connected_contact_id_alt'];
+                $requestData['connected_network_id'] = $requestData['connected_contact_topic_id_alt'];
+              }
+
+              //add user to chat group if they are a member
+              if ($requestData['connected_contact_status'] == 'connected_member') {   //add them as long as they are members.
+                $data = array(
+                  'owner_wp_id' => $requestData['owner_id'],
+                  'topic_id' => $requestData['topic_id'],
+                  'user_id' => $requestData['connected_network_id']
+                );
+                pte_manage_cc_groups("add_member", $data);
+              }
+
+              //creates a link between this topic and the connected user topic.
+              $connectedType = "join";
+              if ($requestData['connection_link_type'] == 1) {  //Link type
+                pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData);
+                $connectedType = "link";
+              }
+
+              //Update ProTeam with Join/Link type and Status.
+
+              if (isset($requestData['proteam_row_id']) && $requestData['proteam_row_id']) {
+
+                alpn_log('Handling ProTeam Update...');
+
+                $proTeamData = array(
+                  "connected_type" => $connectedType,
+                  "state" => 20
+                );
+                $whereClause = array(
+                  "id" => $requestData['proteam_row_id']
+                );
+                $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
+              }
+
+              //TODO Feedback on ProTeam Card IRT Linked, Joined, Connected Topic?
 
 
               return;
@@ -177,31 +231,7 @@ function pte_get_proteam_invitation_registry() {
           $requestData = $token->getValue("process_context");
           $requestData['interaction_type_status'] = "Complete";
 
-          switch ($requestData['connection_link_type']) {
 
-            case '0':   //join
-
-            break;
-            case '1':  //link
-
-                alpn_log('About to add edit topic bi link');
-
-                pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData);
-
-            break;
-            case '2':  //new topic from data
-
-
-            break;
-
-          }
-
-          $data = array(
-            'owner_wp_id' => $requestData['owner_id'],
-            'topic_id' => $requestData['topic_id'],
-            'user_id' => $requestData['connected_network_id']
-          );
-          pte_manage_cc_groups("add_member", $data);
 
           $requestData['interaction_complete'] = true;
           $requestData['widget_type_id'] = "information";
