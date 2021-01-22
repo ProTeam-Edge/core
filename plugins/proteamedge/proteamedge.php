@@ -557,8 +557,7 @@ $nonce = wp_create_nonce( 'admin_test');
                     out += getSubproperties(type,d,item);
                   }
                 } else {
-					 alert('core or hidden section');
-					  return false;
+					
                   // It is a core or hidden topic, display a single text field
                   out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                   out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
@@ -587,7 +586,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
         out += '</table>';
 		
-		alert(out);
+		
         return out;
       }
 
