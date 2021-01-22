@@ -464,8 +464,8 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
-			alert(output);
-
+			console.log(output)
+			alert('consoled output')
 				return false ;
         var d = row.data();
 
