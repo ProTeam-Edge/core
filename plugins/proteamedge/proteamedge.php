@@ -1250,7 +1250,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			{
 				$.alert({
 				title: 'Alert!',
-				content: 'Config has bee saved successfully.',
+				content: 'Please click Save Topic-level Config and try again.',
 				});
 				return false;
 			
