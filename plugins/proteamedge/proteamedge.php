@@ -530,6 +530,7 @@ $nonce = wp_create_nonce( 'admin_test');
                 var typeName = item["ExpectedTypes"].slice(18);
                 var type = item["ExpectedTypes"];
 	alert(type);
+	alert('else alert');
 				return false ;
                 var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+typeName);
                 var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+typeName);
