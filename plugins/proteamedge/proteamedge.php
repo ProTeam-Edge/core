@@ -540,7 +540,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
                 if ((typeIsCore == false) && (typeIsHidden == false)) { // Neither core nor hidden
                   if (dataTypes.includes(item["ExpectedTypes"].slice(18))) {
-					  alert('Neither core nor hidden');
+					  alert('neither core nor hidden');
 					  return false;
                     out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                     out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
@@ -555,6 +555,8 @@ $nonce = wp_create_nonce( 'admin_test');
                     out += getSubproperties(type,d,item);
                   }
                 } else {
+					 alert('core or hidden section');
+					  return false;
                   // It is a core or hidden topic, display a single text field
                   out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                   out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
