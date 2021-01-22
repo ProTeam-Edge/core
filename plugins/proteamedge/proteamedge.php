@@ -468,7 +468,8 @@ $nonce = wp_create_nonce( 'admin_test');
         var d = row.data();
 
         var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
-
+		alert(out);
+		return false;
         // Add rows to table
         var i;
         for (i = 0; i < output.length; i++) { // Loop through all properties
