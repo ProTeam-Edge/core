@@ -599,7 +599,8 @@ $nonce = wp_create_nonce( 'admin_test');
           async: false,
           cache: false,
           success: function(data){
-            //output = JSON.stringify(data);
+            output = JSON.stringify(data);
+			alert(output);
             output = data;
           },
           error: function() {
