@@ -470,7 +470,7 @@ $nonce = wp_create_nonce( 'admin_test');
 	
 			console.log(output);
 			console.log('consoled output')
-		$.LoadingOverlay("show");	
+		
         var d = row.data();
 
         var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
@@ -1245,6 +1245,7 @@ $nonce = wp_create_nonce( 'admin_test');
         var detailRows = [];
 
         $('#classes tbody').on( 'click', 'tr td.details-control', function () {
+			$.LoadingOverlay("show");	
 			if(linkedTopicsOnLoad==null)
 			{
 				alert('Please click Save Topic-level Config and try again.');
