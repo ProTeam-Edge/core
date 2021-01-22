@@ -739,6 +739,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
       // Save a JSON list when Save Linked Topics is clicked
       $(document).on("click", "#save_linked_topics" , function() {
+		  
           // Show a loading icon
           var saveLinkedTopicsButton = document.querySelector('#save_linked_topics');
           saveLinkedTopicsButton.innerHTML = "Saving...";
@@ -1239,6 +1240,11 @@ $nonce = wp_create_nonce( 'admin_test');
         var detailRows = [];
 
         $('#classes tbody').on( 'click', 'tr td.details-control', function () {
+			if(linkedTopicsOnLoad==null)
+			{
+				alert('Please click Save Topic-level Config and try again.');
+				return false;
+			}
             var tr = $(this).closest('tr');
             var row = dt.row( tr );
             var idx = $.inArray( tr.attr('id'), detailRows );
