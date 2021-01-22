@@ -776,7 +776,7 @@ $nonce = wp_create_nonce( 'admin_test');
               });
             }
           });
-		alert(linkedTopicsChecked);
+	
           // Update global vars
           linkedTopicsOnLoad = linkedTopicsChecked;
           hiddenTopicsOnLoad = hiddenTopicsChecked;
