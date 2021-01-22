@@ -571,6 +571,8 @@ $nonce = wp_create_nonce( 'admin_test');
         out += "<tr><td class='addProperty'></td><td>Add property</td><td></td><td></td><td></td><td></td><td></td></tr>";
 
         out += '</table>';
+		
+		alert(out);
         return out;
       }
 
