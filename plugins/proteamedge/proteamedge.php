@@ -482,8 +482,7 @@ $nonce = wp_create_nonce( 'admin_test');
             // Get an array of expected types (for use later if there are multiple)
             var expectedTypes = item["ExpectedTypes"].split(', ');
 
-				alert(expectedTypes.length);
-				return false;
+				
               if (expectedTypes.length > 1) {
                 // Multiple types for a given property
                 $.each(expectedTypes, function(index, type) {
