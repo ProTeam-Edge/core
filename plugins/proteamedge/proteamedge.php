@@ -292,7 +292,7 @@ $nonce = wp_create_nonce( 'admin_test');
       function addAdditionalPropertyRows(topicName) {
 
         var out = "";
-        var url = "/wp-content/themes/memberlite-child-master/topics/topicConfig/" + topicName + "_config.json";
+        var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/topicConfig/" + topicName + "_config.json";
         var loadedAdditionalProperties;
         $.ajax({
           url: url,
@@ -381,7 +381,7 @@ $nonce = wp_create_nonce( 'admin_test');
       function getSubproperties (type, d, item) {
         var output="";
         var subPropertyOutput;
-        var url = "/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
+        var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
         $.ajax({
           url: url,
           type: "GET",
@@ -393,7 +393,7 @@ $nonce = wp_create_nonce( 'admin_test');
             subPropertyOutput = data;
           },
           error: function() {
-            url = "/wp-content/themes/memberlite-child-master/tester.php?url=" + encodeURIComponent("http://schema.org/" + type.slice(18));
+            url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/tester.php?url=" + encodeURIComponent("http://schema.org/" + type.slice(18));
             $.ajax({
               url: url,
               type: "GET",
@@ -613,7 +613,7 @@ $nonce = wp_create_nonce( 'admin_test');
         // });
 
         // New filesystem method to get properties
-        var url = "/wp-content/themes/memberlite-child-master/topics/classes/" + d.TopicName + ".jsonld";
+        var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + d.TopicName + ".jsonld";
         $.ajax({
           url: url,
           type: "GET",
@@ -778,14 +778,14 @@ $nonce = wp_create_nonce( 'admin_test');
             dataType: "json",
             complete: function(){
               // Save Hidden Topics
-              var url = "/wp-content/themes/memberlite-child-master/topics/saveHiddenTopics.php";
+              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/saveHiddenTopics.php";
               $.ajax({
                 url: url,
                 type: "POST",
                 data: {data : hiddenJSONString,security:"<?php echo $nonce ?>"},
                 dataType: "json",
                 complete: function(){
-                  var url = "/wp-content/themes/memberlite-child-master/topics/savePteScopeTopics.php";
+                  var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/savePteScopeTopics.php";
                   $.ajax({
                     url: url,
                     type: "POST",
@@ -899,7 +899,7 @@ $nonce = wp_create_nonce( 'admin_test');
           config["hiddenCheckedBoxes"] = hiddenCheckedBoxes;
           config["additionalProperties"] = additionalProperties;
 
-          var url = "/wp-content/themes/memberlite-child-master/topics/generateTopicConfig.php";
+          var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/generateTopicConfig.php";
           $.ajax({
             url: url,
             type: "POST",
@@ -1086,7 +1086,7 @@ $nonce = wp_create_nonce( 'admin_test');
           config["checkedBoxes"] = checkedBoxes;
 
           // Save this JSON to server
-          var url = "/wp-content/themes/memberlite-child-master/topics/generateTopic.php";
+          var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/generateTopic.php";
           $.ajax({
             url: url,
             type: "POST",
@@ -1116,7 +1116,7 @@ $nonce = wp_create_nonce( 'admin_test');
         dt = $('#classes').DataTable( {
           "processing": true,
           "ajax": {
-            "url": "/wp-content/themes/memberlite-child-master/topics/getClasses.php",
+            "url": "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/getClasses.php",
             "dataSrc": ""
           },
           "columns": [
@@ -1181,7 +1181,7 @@ $nonce = wp_create_nonce( 'admin_test');
               });
 
               // Get all topics whose properties we don't want to expand
-              var url = "/wp-content/themes/memberlite-child-master/topics/hiddenTopicConfig.json";
+              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/hiddenTopicConfig.json";
               var hiddenTopics;
               $.ajax({
                 url: url,
@@ -1210,7 +1210,7 @@ $nonce = wp_create_nonce( 'admin_test');
               });
 
               // Get all topic_class fields
-              var url = "/wp-content/themes/memberlite-child-master/topics/pteScopeConfig.json";
+              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/pteScopeConfig.json";
               var topicClasses;
               $.ajax({
                 url: url,
