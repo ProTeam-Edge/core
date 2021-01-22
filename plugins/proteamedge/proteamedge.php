@@ -464,6 +464,11 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
+		  if(linkedTopicsOnLoad==null)
+		  {
+			  alert("Please save Topic-level Config and try again.");
+			  return false;
+		  }
 			console.log(output);
 			console.log('consoled output')
 			
