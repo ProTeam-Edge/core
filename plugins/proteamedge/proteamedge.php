@@ -740,7 +740,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
       // Save a JSON list when Save Linked Topics is clicked
       $(document).on("click", "#save_linked_topics" , function() {
-		 $.LoadingOverlay("text", "Loading Please Wait");
+		 $.LoadingOverlay("show");
           // Show a loading icon
           var saveLinkedTopicsButton = document.querySelector('#save_linked_topics');
           saveLinkedTopicsButton.innerHTML = "Saving...";
