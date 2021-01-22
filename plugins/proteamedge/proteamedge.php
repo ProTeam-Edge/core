@@ -139,6 +139,8 @@ $nonce = wp_create_nonce( 'admin_test');
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/plug-ins/1.10.21/integration/font-awesome/dataTables.fontAwesome.css" />
     <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js
+"></script>
     <style>
       @base:#212121;
       @color:silver;
@@ -464,6 +466,7 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
+		  jQuery.LoadingOverlay("show");
 		  if(linkedTopicsOnLoad==null)
 		  {
 			  alert("Please save Topic-level Config and try again.");
@@ -582,7 +585,7 @@ $nonce = wp_create_nonce( 'admin_test');
               }
             }
         }
-
+		 jQuery.LoadingOverlay("hide");
         // If we have some additional property rows, add those here
         out += addAdditionalPropertyRows(d.TopicName);
 
