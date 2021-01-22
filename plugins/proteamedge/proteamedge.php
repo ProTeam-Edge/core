@@ -489,8 +489,8 @@ $nonce = wp_create_nonce( 'admin_test');
                   // Check if the type is a core topic
                   var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+type.slice(18));
                   var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+type.slice(18));
-
-                  if ((typeIsCore == false) && (typeIsHidden == false)) { // Not a core nor hidden type
+					alert(typeIsCore);
+					if ((typeIsCore == false) && (typeIsHidden == false)) { // Not a core nor hidden type
                     if (dataTypes.includes(type.slice(18))) { // Render basic datatypes like this
                       out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                       out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + type.slice(18) + "_" + "friendly'></td>";
