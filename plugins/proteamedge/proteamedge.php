@@ -590,7 +590,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
         out += '</table>';
 		
-		$.LoadingOverlay("hide");
+	
 		alert('Success rows have been added successfully.');
         return out;
       }
@@ -1245,7 +1245,7 @@ $nonce = wp_create_nonce( 'admin_test');
         var detailRows = [];
 
         $('#classes tbody').on( 'click', 'tr td.details-control', function () {
-			$.LoadingOverlay("show");	
+		
 			if(linkedTopicsOnLoad==null)
 			{
 				alert('Please click Save Topic-level Config and try again.');
