@@ -464,7 +464,7 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
-		  alert('reached add rows');
+		alert(linkedTopicsOnLoad)
         var d = row.data();
 
         var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
