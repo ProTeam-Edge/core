@@ -467,11 +467,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
       function addRows ( row , output) {
 		  jQuery.LoadingOverlay("show");
-		  if(linkedTopicsOnLoad==null)
-		  {
-			  alert("Please save Topic-level Config and try again.");
-			  return false;
-		  }
+		 
 			console.log(output);
 			console.log('consoled output')
 			
@@ -599,6 +595,11 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function format ( row ) {
+		if(linkedTopicsOnLoad==null)
+		{
+			alert("Please save Topic-level Config and try again.");
+			return false;
+		}
         var d = row.data();
         // Make ajax request to php to get properties for this class
         var output;
