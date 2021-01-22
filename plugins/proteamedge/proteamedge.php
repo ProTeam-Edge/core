@@ -534,6 +534,8 @@ $nonce = wp_create_nonce( 'admin_test');
 				console.log(typeName);
 				console.log(type);
 				console.log('consoled output');
+				console.log(linkedTopicsOnLoad);
+				console.log('linkedTopicsOnLoad');
 				
                 var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+typeName);
                 var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+typeName);
