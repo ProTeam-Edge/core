@@ -1244,6 +1244,12 @@ $nonce = wp_create_nonce( 'admin_test');
 			{
 				alert('Please click Save Topic-level Config and try again.');
 				return false;
+			
+			}
+			else
+			{
+				$.LoadingOverlay("show");
+
 			}
             var tr = $(this).closest('tr');
             var row = dt.row( tr );
