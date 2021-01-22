@@ -792,6 +792,9 @@ $nonce = wp_create_nonce( 'admin_test');
                     dataType: "json",
                     complete: function(){
                       saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
+				    	  $.LoadingOverlay("hide");
+					   alert('Config has been saved successfully.');
+						
                     }
                   });
                   //saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
@@ -804,8 +807,7 @@ $nonce = wp_create_nonce( 'admin_test');
           linkedTopicsOnLoad = linkedTopicsChecked;
           hiddenTopicsOnLoad = hiddenTopicsChecked;
           topicClassesOnLoad = pteScopePairs;
-		 alert('Config has bee saved successfully.');
-		$.LoadingOverlay("hide");
+		 
 
       });
 
