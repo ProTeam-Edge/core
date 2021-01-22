@@ -141,8 +141,7 @@ $nonce = wp_create_nonce( 'admin_test');
     <script type="text/javascript" charset="utf8" src="//cdn.datatables.net/1.10.12/js/jquery.dataTables.js"></script>
     <script type="text/javascript" charset="utf8" src="https://cdn.jsdelivr.net/npm/gasparesganga-jquery-loading-overlay@2.1.7/dist/loadingoverlay.min.js
 "></script>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js"></script>
+
     <style>
       @base:#212121;
       @color:silver;
@@ -805,10 +804,7 @@ $nonce = wp_create_nonce( 'admin_test');
           linkedTopicsOnLoad = linkedTopicsChecked;
           hiddenTopicsOnLoad = hiddenTopicsChecked;
           topicClassesOnLoad = pteScopePairs;
-		   $.alert({
-				title: 'Alert!',
-				content: 'Config has bee saved successfully.',
-			});
+		 alert('Config has bee saved successfully.');
 		$.LoadingOverlay("hide");
 
       });
@@ -1248,10 +1244,7 @@ $nonce = wp_create_nonce( 'admin_test');
         $('#classes tbody').on( 'click', 'tr td.details-control', function () {
 			if(linkedTopicsOnLoad==null)
 			{
-				$.alert({
-				title: 'Alert!',
-				content: 'Please click Save Topic-level Config and try again.',
-				});
+				alert('Please click Save Topic-level Config and try again.');
 				return false;
 			
 			}
