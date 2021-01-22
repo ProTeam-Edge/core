@@ -540,6 +540,8 @@ $nonce = wp_create_nonce( 'admin_test');
 
                 if ((typeIsCore == false) && (typeIsHidden == false)) { // Neither core nor hidden
                   if (dataTypes.includes(item["ExpectedTypes"].slice(18))) {
+					  alert('Neither core nor hidden');
+					  return false;
                     out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                     out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
                     out += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
