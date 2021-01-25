@@ -25,6 +25,7 @@ if($passed==0)
   // array_push($output, $temp);
 
   // Save list of linked topics to server
-  file_put_contents('hiddenTopicConfig.json', json_encode($post_data));
+  $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/';
+  file_put_contents(''.$root.'/hiddenTopicConfig.json', json_encode($post_data));
   echo 'Yay';
 ?>

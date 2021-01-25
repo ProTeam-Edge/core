@@ -23,8 +23,8 @@ if($passed==0)
   // $temp["LinkedTopics"] = $data;
   // $temp["This or that"] = "hey o";
   // array_push($output, $temp);
-
+	 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/';
   // Save list of linked topics to server
-  file_put_contents('pteScopeConfig.json', json_encode($post_data));
+  file_put_contents(''.$root.'/pteScopeConfig.json', json_encode($post_data));
   echo 'Yay';
 ?>
