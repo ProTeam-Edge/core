@@ -1245,9 +1245,10 @@ $nonce = wp_create_nonce( 'admin_test');
         // Array to track the ids of the details displayed rows
         var detailRows = [];
 		function processrows(element) {
-			console.log(element);
-			return false;
+			
 		var tr = $(element).closest('tr');
+		console.log(tr);
+			return false;
             var row = dt.row( tr );
             var idx = $.inArray( tr.attr('id'), detailRows );
 
