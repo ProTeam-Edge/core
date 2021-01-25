@@ -761,8 +761,8 @@ $nonce = wp_create_nonce( 'admin_test');
 		  
 		 
 		  
-          var pteScopeIDs = dt.rows().nodes().to$().find('.topic_class').map(idSelector).get();
-          var pteScopeValues = dt.rows().nodes().to$().find('.topic_class').map(valSelector).get();
+          var pteScopeIDs = dt.rows().nodes().to$().find('.linked_topic_checkbox:checkbox:checked').parent().parent().find('.topic_class').map(idSelector).get();
+          var pteScopeValues = dt.rows().nodes().to$().find('.linked_topic_checkbox:checkbox:checked').parent().parent().find('.topic_class').map(valSelector).get();
 		   console.log('pteScopeIDs')	
 			console.log(pteScopeIDs);	
 			console.log('pteScopeValues')	
