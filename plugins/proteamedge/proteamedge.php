@@ -238,7 +238,6 @@ $nonce = wp_create_nonce( 'admin_test');
       var dataTypes = ["Text","URL","Distance","QuantitativeValue","Boolean","Date","DateTime","Number","Time","Integer"];
 
       function fillRow (row) {
-		  
         var d = row.data();
         // Get and fill friendly fields
         // Get all topics whose properties we don't want to expand
@@ -468,10 +467,10 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
-			
+	
 			console.log(output);
-			console.log('Reached rows') 
-			return false;
+			console.log('consoled output')
+		
         var d = row.data();
 
         var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
@@ -597,7 +596,6 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function format ( row ) {
-		
         var d = row.data();
         // Make ajax request to php to get properties for this class
         var output;
