@@ -469,7 +469,7 @@ $nonce = wp_create_nonce( 'admin_test');
       function addRows ( row , output) {
 			
 			console.log(output);
-			console.log('Reached rows')
+			console.log('Reached rows') 
 		
         var d = row.data();
 
