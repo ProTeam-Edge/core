@@ -467,7 +467,8 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
-			
+			 $.LoadingOverlay("show");
+			 return false;
 			console.log(output);
 			console.log('Reached rows') 
 		
@@ -596,7 +597,7 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function format ( row ) {
-		 $.LoadingOverlay("show");
+		
         var d = row.data();
         // Make ajax request to php to get properties for this class
         var output;
