@@ -655,7 +655,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
         // Get the overarching class to which this table belongs
         var topicName = tableID.split("_")[0];
-
+		alert(topicName);
   			var table = document.getElementById(tableID);
 
   			var rowCount = table.rows.length;
