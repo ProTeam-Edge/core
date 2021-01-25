@@ -1244,11 +1244,10 @@ $nonce = wp_create_nonce( 'admin_test');
 
         // Array to track the ids of the details displayed rows
         var detailRows = [];
-		function processrows(element) {
+		function processrows(tr) {
 			
-		var tr = $(element).closest('tr');
-		console.log(tr);
-			return false;
+		
+	
             var row = dt.row( tr );
             var idx = $.inArray( tr.attr('id'), detailRows );
 
@@ -1281,9 +1280,9 @@ $nonce = wp_create_nonce( 'admin_test');
 				return false;
 			
 			}
-			
+			var tr = $(this).closest('tr');
 			$.LoadingOverlay("show");
-			setTimeout(function(){ processrows(this) }, 100);
+			setTimeout(function(){ processrows(tr) }, 100);
             
         } );
 
