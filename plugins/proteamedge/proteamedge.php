@@ -468,11 +468,11 @@ $nonce = wp_create_nonce( 'admin_test');
 
       function addRows ( row , output) {
 		$.LoadingOverlay("show");
-		return false;
+	
 		console.log(output);
 		console.log('consoled output')
-		
-        var d = row.data();
+		setTimeout(
+		 var d = row.data();
 
         var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
 	
@@ -594,6 +594,9 @@ $nonce = wp_create_nonce( 'admin_test');
 	
 		alert('Success rows have been added successfully.');
         return out;
+		, 100);
+
+       
       }
 
       function format ( row ) {
