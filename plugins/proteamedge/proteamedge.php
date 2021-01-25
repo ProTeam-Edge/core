@@ -751,15 +751,16 @@ $nonce = wp_create_nonce( 'admin_test');
           // Get checkboxes under this topic class that are checked
           var idSelector = function() { return this.id; };
           var valSelector = function() { return this.value; };
-		   console.log('idSelector')	
-			console.log(idSelector);	
-			console.log('valSelector')	
-			console.log(valSelector);
+		
           //var linkedTopicsChecked = $(".linked_topic_checkbox:checkbox:checked").map(idSelector).get();
           var linkedTopicsChecked = dt.rows().nodes().to$().find('.linked_topic_checkbox:checkbox:checked').map(idSelector).get();
 		  console.log('linkedTopicsChecked')	
 		  console.log(linkedTopicsChecked);	
           var hiddenTopicsChecked = dt.rows().nodes().to$().find('.hidden_topic_checkbox:checkbox:checked').map(idSelector).get();
+		  
+		  
+		 
+		  
           var pteScopeIDs = dt.rows().nodes().to$().find('.topic_class').map(idSelector).get();
           var pteScopeValues = dt.rows().nodes().to$().find('.topic_class').map(valSelector).get();
 		   console.log('pteScopeIDs')	
