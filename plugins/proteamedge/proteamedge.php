@@ -640,7 +640,7 @@ $nonce = wp_create_nonce( 'admin_test');
           }
         });
 		 $.LoadingOverlay("show");
-		setTimeout(function(){ addRows(row, output); }, 100);
+		setTimeout(function(){ addRows(row, output); }, 1000);
 
        
         //return 'Detail:'+gettype(output);
