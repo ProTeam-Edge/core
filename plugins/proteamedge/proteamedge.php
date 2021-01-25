@@ -758,7 +758,8 @@ $nonce = wp_create_nonce( 'admin_test');
           var hiddenTopicsChecked = dt.rows().nodes().to$().find('.hidden_topic_checkbox:checkbox:checked').map(idSelector).get();
           var pteScopeIDs = dt.rows().nodes().to$().find('.topic_class').map(idSelector).get();
           var pteScopeValues = dt.rows().nodes().to$().find('.topic_class').map(valSelector).get();
-		console.log(pteScopeValues);	
+			console.log(pteScopeIDs);	
+			console.log(pteScopeValues);	
           // Store pteScopeID:pteScopeValue pairs
           var pteScopePairs = {};
           var i;
