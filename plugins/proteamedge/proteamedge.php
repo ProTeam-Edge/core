@@ -467,12 +467,11 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
-		$.LoadingOverlay("show");
 	
-		console.log(output);
-		console.log('consoled output')
-		setTimeout(
-		 var d = row.data();
+			console.log(output);
+			console.log('consoled output')
+		
+        var d = row.data();
 
         var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
 	
@@ -594,9 +593,6 @@ $nonce = wp_create_nonce( 'admin_test');
 	
 		alert('Success rows have been added successfully.');
         return out;
-		, 100);
-
-       
       }
 
       function format ( row ) {
@@ -643,9 +639,10 @@ $nonce = wp_create_nonce( 'admin_test');
             });
           }
         });
+		 $.LoadingOverlay("show");
+		setTimeout(function(){ addRows(row, output); }, 100);
 
-
-        return addRows(row, output);
+       
         //return 'Detail:'+gettype(output);
         //return 'Detail: '+d.Detail+'<br>'+
         //    'The child row can contain any data you wish, including links, images, inner tables etc.';
