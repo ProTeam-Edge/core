@@ -36,10 +36,33 @@ function pte_get_proteam_invitation_received_registry() {
           $requestData['to_from'] = 'From';
 
           $buttonOperation = $token->getValue("button_operation");
+          $requestOperation = $token->getValue("request_operation");
+
+          if ($requestOperation == 'recall_interaction') {
+            alpn_log('Interaction Received Recall Interaction');
+
+
+          }
 
           if ($buttonOperation == 'accept' || $buttonOperation == 'decline') {
 
-            //TODO do the contact side: setup topic, connections, etc.
+
+            if ($buttonOperation == 'accept') {
+              alpn_log('Interaction Received Handle Setting Up ProTeam Relationship.');
+
+
+              //TODO do the contact side: setup topic, connections, etc. Or should the other side do it? It feels like it should be here.
+
+              // Create New Topic, if needed
+              // Create ProTeam Entry for the Topic to my Connection with proper state and Link type (only)
+              // Add ProTeam Card
+              // Create topic Link.
+              // Client Side Updates?
+
+
+              }
+
+              //TODO only do this stuff if all the setup worked for this guy above?
 
             $updateRequestData = array( //The ol swaparoo
               'process_id' => $requestData['interacts_with_id'],
