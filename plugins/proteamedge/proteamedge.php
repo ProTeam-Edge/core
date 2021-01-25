@@ -1274,15 +1274,15 @@ $nonce = wp_create_nonce( 'admin_test');
 		}
         $('#classes tbody').on( 'click', 'tr td.details-control', function () {
 			
-			if(linkedTopicsOnLoad==null)
+			/* if(linkedTopicsOnLoad==null)
 			{
 				alert('Please click Save Topic-level Config and try again.');
 				return false;
 			
-			}
+			} */
 			var tr = $(this).closest('tr');
 			$.LoadingOverlay("show");
-			setTimeout(function(){ processrows(tr) }, 500);
+			setTimeout(function(){ processrows(tr) }, 1000);
             
         } );
 
