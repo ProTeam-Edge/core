@@ -590,7 +590,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
         out += '</table>';
 		
-	
+		$.LoadingOverlay("hide");
 		alert('Success rows have been added successfully.');
         return out;
       }
@@ -1282,7 +1282,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			}
 			var tr = $(this).closest('tr');
 			$.LoadingOverlay("show");
-			setTimeout(function(){ processrows(tr) }, 100);
+			setTimeout(function(){ processrows(tr) }, 500);
             
         } );
 
