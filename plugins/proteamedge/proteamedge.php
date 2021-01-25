@@ -596,6 +596,7 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function format ( row ) {
+		  alert("reached click")
         var d = row.data();
         // Make ajax request to php to get properties for this class
         var output;
