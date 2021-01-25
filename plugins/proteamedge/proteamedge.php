@@ -238,8 +238,7 @@ $nonce = wp_create_nonce( 'admin_test');
       var dataTypes = ["Text","URL","Distance","QuantitativeValue","Boolean","Date","DateTime","Number","Time","Integer"];
 
       function fillRow (row) {
-		$.LoadingOverlay("show");
-
+		  
         var d = row.data();
         // Get and fill friendly fields
         // Get all topics whose properties we don't want to expand
