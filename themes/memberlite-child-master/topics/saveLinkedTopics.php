@@ -26,5 +26,6 @@ if($passed==0)
 
   // Save list of linked topics to server
   $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/';
-  file_put_contents(''.$root.'/linkedTopicConfig.json', json_encode($post_data));
+  $root_plugin = $_SERVER['DOCUMENT_ROOT'].'/wp-content/plugins/proteamedge/';
+  file_put_contents(''.$root_plugin.'/linkedTopicConfig.json', json_encode($post_data));
 ?>

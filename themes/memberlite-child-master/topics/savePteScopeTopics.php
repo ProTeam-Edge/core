@@ -24,7 +24,8 @@ if($passed==0)
   // $temp["This or that"] = "hey o";
   // array_push($output, $temp);
 	 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/';
+	  $root_plugin = $_SERVER['DOCUMENT_ROOT'].'/wp-content/plugins/proteamedge/';
   // Save list of linked topics to server
-  file_put_contents(''.$root.'/pteScopeConfig.json', json_encode($post_data));
+  file_put_contents(''.$root_plugin.'/pteScopeConfig.json', json_encode($post_data));
   echo 'Yay';
 ?>
