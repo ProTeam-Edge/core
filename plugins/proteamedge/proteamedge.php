@@ -1267,7 +1267,8 @@ $nonce = wp_create_nonce( 'admin_test');
             }
             else {
                 tr.addClass( 'details' );
-                row.child( format( row ) ).show();
+				setTimeout(function(){   row.child( format( row ) ).show(); }, 100);
+              
 
                 // Add to the 'open' array
                 if ( idx === -1 ) {
