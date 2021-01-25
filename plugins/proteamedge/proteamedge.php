@@ -758,7 +758,9 @@ $nonce = wp_create_nonce( 'admin_test');
           var hiddenTopicsChecked = dt.rows().nodes().to$().find('.hidden_topic_checkbox:checkbox:checked').map(idSelector).get();
           var pteScopeIDs = dt.rows().nodes().to$().find('.topic_class').map(idSelector).get();
           var pteScopeValues = dt.rows().nodes().to$().find('.topic_class').map(valSelector).get();
+		   console.log('pteScopeIDs')	
 			console.log(pteScopeIDs);	
+			console.log('pteScopeValues')	
 			console.log(pteScopeValues);	
           // Store pteScopeID:pteScopeValue pairs
           var pteScopePairs = {};
@@ -766,7 +768,7 @@ $nonce = wp_create_nonce( 'admin_test');
           for (i = 0; i < pteScopeIDs.length; i++) {
             pteScopePairs[pteScopeIDs[i]] = pteScopeValues[i];
           }
-
+			console.log(pteScopePairs);	
           var jsonString = JSON.stringify(linkedTopicsChecked);
           var hiddenJSONString = JSON.stringify(hiddenTopicsChecked);
           var pteScopePairsString = JSON.stringify(pteScopePairs);
