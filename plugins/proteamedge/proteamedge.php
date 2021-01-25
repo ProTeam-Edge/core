@@ -241,7 +241,7 @@ $nonce = wp_create_nonce( 'admin_test');
         var d = row.data();
         // Get and fill friendly fields
         // Get all topics whose properties we don't want to expand
-        var url = "/wp-content/themes/memberlite-child-master/topics/topicConfig/" + d.TopicName + "_config.json";
+        var url = "<?php echo $site_url ?>//wp-content/themes/memberlite-child-master/topics/topicConfig/" + d.TopicName + "_config.json";
         var loadedFriendlyFields;
         $.ajax({
           url: url,
@@ -628,7 +628,7 @@ $nonce = wp_create_nonce( 'admin_test');
           error: function() {
             alert('Topic not in filesystem...give it a minute to parse schema.org.');
             $.ajax({
-              url: "/wp-content/themes/memberlite-child-master/tester.php?url=" + encodeURIComponent("http://schema.org/" + d.TopicName),
+              url: "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/tester.php?url=" + encodeURIComponent("http://schema.org/" + d.TopicName),
               type: "GET",
               dataType: "json",
               async: false,
@@ -787,7 +787,7 @@ $nonce = wp_create_nonce( 'admin_test');
           var pteScopePairsString = JSON.stringify(pteScopePairs);
 
           // Save this JSON to server
-          var url = "/wp-content/themes/memberlite-child-master/topics/saveLinkedTopics.php";
+          var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/saveLinkedTopics.php";
           $.ajax({
             url: url,
             type: "POST",
@@ -1168,7 +1168,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
               // Check appropriate checkboxes for linked topics
               // First, get list of linked topics from server
-              var url = "/wp-content/themes/memberlite-child-master/topics/linkedTopicConfig.json";
+              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/linkedTopicConfig.json";
               var linkedTopics;
               $.ajax({
                 url: url,
