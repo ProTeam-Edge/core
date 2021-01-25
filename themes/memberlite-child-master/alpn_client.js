@@ -1922,12 +1922,25 @@ function alpn_resizeChat() { //Centered on the work
 
 function pte_handle_sync(data){
 	console.log("Handling Sync...");
-	console.log(data);
-
+	//console.log(data);
 	var syncSection = data.sync_section;
 	var syncPayload = data.sync_payload;
-
 	switch(syncSection) {
+		case 'proteam_card_update':
+		 var topicStates = {'10': "Added", '20': "Invite Sent", '30': "Joined", '40': "Linked", '80': "Email Sent", '90': "Declined"};
+			console.log("Handling ProTeam Card Update...");
+			var ptId = syncPayload.proteam_row_id;
+			var ptStatus = syncPayload.state;
+			var ptStatusString = topicStates[ptStatus];
+			var proTeamCard =  jQuery('div.proteam_user_panel[data-id=' + ptId + ']');
+			var statusArea = proTeamCard.find('div#proTeamPanelUserData');
+			var statusText = proTeamCard.find('span#pte_topic_state');
+			statusArea.fadeOut('normal', function(){
+					statusText.text(ptStatusString);
+	        statusArea.fadeIn();
+	    });
+		break;
+
 		case 'interaction_update':
 			console.log("Handling interaction_update...");
 			wpDataTables.table_interactions.fnFilterClear();

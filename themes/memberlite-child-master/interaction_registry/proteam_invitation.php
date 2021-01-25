@@ -62,14 +62,20 @@ function pte_get_proteam_invitation_registry() {
               		'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $requestData['connected_contact_id_alt'],
               		'process_data' => $newRequestData
               	);
-              	$requestData['interacts_with_id'] = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
+              	$response = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
+                $requestData['interacts_with_id'] = $response['process_id'];
+
+                $data = array(
+                  'connected_type' => 'none',
+                  'state' => 20,
+                  'proteam_row_id' => $requestData['proteam_row_id'],
+                  'owner_id' => $requestData['owner_id']
+                );
+                pte_proteam_state_change_sync($data);
 
               } else {
 
-                  alpn_log('Send an Email instead...');
-
                   $userInfo = get_user_by('id', $requestData['owner_id']);
-                  alpn_log('Got User Info...');
 
                   if (isset($userInfo->data)) {
                     $data = array(
@@ -85,21 +91,14 @@ function pte_get_proteam_invitation_registry() {
                     );
                     alpn_log($data);
                     pte_send_mail ($data);
-                    alpn_log('Email Sent...');
 
-                    //Update ProTeam state and type
-                    $proTeamData = array(
-                      "connected_type" => 'external',
-                      "state" => 80
+                    $data = array(
+                      'connected_type' => 'external',
+                      'state' => 80,
+                      'proteam_row_id' => $requestData['proteam_row_id'],
+                      'owner_id' => $requestData['owner_id']
                     );
-                    $whereClause = array(
-                      "id" => $requestData['proteam_row_id']
-                    );
-                    $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
-
-                    alpn_log('ProTeams Updated...');
-
-                    //TODO send a client message to update this ProTeam Card
+                    pte_proteam_state_change_sync($data);
 
                   }
               }
@@ -159,48 +158,43 @@ function pte_get_proteam_invitation_registry() {
               }
 
               //creates a link between this topic and the connected user topic if link type.
-
               $connectedType = "join";
+              $ptState = 30;
               if ($requestData['connection_link_type'] == 1) {  //Link type
                 pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData);
                 $connectedType = "link";
+                $ptState = 40;
               }
               //Update ProTeam with Join/Link type and Status.
               if (isset($requestData['proteam_row_id']) && $requestData['proteam_row_id']) {
                 alpn_log('Handling ProTeam Update...');
-                $proTeamData = array(
-                  "connected_type" => $connectedType,
-                  "state" => 20
+                $data = array(
+                  'connected_type' => $connectedType,
+                  'state' => $ptState,
+                  'proteam_row_id' => $requestData['proteam_row_id'],
+                  'owner_id' => $requestData['owner_id']
                 );
-                $whereClause = array(
-                  "id" => $requestData['proteam_row_id']
-                );
-                $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
-
-                //TODO send a client message to update this ProTeam Card
+                pte_proteam_state_change_sync($data);
               }
               return;
             break;
             case 'decline':
               alpn_log('Handling Decline...');
-
-              //Update proTeam
-              $proTeamData = array(
-                "connected_type" => 'none',
-                "state" => 90
+              $data = array(
+                'connected_type' => 'none',
+                'state' => 90,  //declined
+                'proteam_row_id' => $requestData['proteam_row_id'],
+                'owner_id' => $requestData['owner_id']
               );
-              $whereClause = array(
-                "id" => $requestData['proteam_row_id']
-              );
-              $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
-
-              //TODO send a client message to update this ProTeam Card
-
-
+              pte_proteam_state_change_sync($data);
               return;
             break;
             case 'update':
               alpn_log('Handling Update...');
+
+              //update title and message in interaction here.
+              //Send a message to the other interaction. at $requestData['interacts_with_id']
+              //Both sides show updated.
 
 
               $token->setValue("process_context", $requestData);
@@ -208,6 +202,24 @@ function pte_get_proteam_invitation_registry() {
             break;
             case 'recall':
               alpn_log('Handling Recall...');
+
+              $newRequestData = array(
+                'request_operation' => "recall_interaction"
+              );
+
+              $data = array(
+                'process_id' => $requestData['interacts_with_id'],
+                'process_type_id' => "proteam_invitation_received",
+                'owner_network_id' => $requestData['connected_network_id'] ? $requestData['connected_network_id'] : $requestData['connected_contact_topic_id_alt'],
+                'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $requestData['connected_contact_id_alt'],
+                'process_data' => $newRequestData
+              );
+              $response = pte_manage_interaction_proper($data);  //Send request_operation to corresponding Interaction. //TODO return a JSON rather than id number
+
+
+
+              //On this side, the interaction should be reset to before hitting send
+              //How do we show feedback here and there?
 
 
               $token->setValue("process_context", $requestData);
@@ -238,15 +250,13 @@ function pte_get_proteam_invitation_registry() {
 
           //TODO Show button pressed and response message at Top
 
-
           $requestData['widget_type_id'] = "information";
           $requestData['buttons'] =  array(
               "file" => true
           );
           $requestData['data_lines'] =  array(
               "to_from_line",
-              "regarding_line",
-              "type_line"
+              "regarding_line"
           );
           $requestData['content_lines'] =  array(
               "network_panel",
@@ -264,18 +274,17 @@ function pte_get_proteam_invitation_registry() {
           $requestData = $token->getValue("process_context");
           $requestData['interaction_type_status'] = "Complete";
 
-
-
           $requestData['interaction_complete'] = true;
           $requestData['widget_type_id'] = "information";
-          $requestData['information_title'] = "Invitation |style_1b|Complete|style_1e|";
           $requestData['buttons'] =  array(
             "file" => true
             );
             $requestData['data_lines'] =  array(
                 "to_from_line",
                 "regarding_line",
-                "type_line"
+                "response_selected",
+                "connect_type",
+                "response_message"
               );
           $requestData['content_lines'] =  array(
             "network_panel",

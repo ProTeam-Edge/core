@@ -493,6 +493,12 @@ function pte_make_data_line ($lineType, $uxMeta) {
 	$fileName =	isset($uxMeta['file_name']) ? stripslashes($uxMeta['file_name']) : "";
 	$staticName =	isset($uxMeta['interaction_to_from_name']) ? $uxMeta['interaction_to_from_name'] : "";
 
+	$responseSelected = isset($uxMeta['button_operation']) ? ucfirst($uxMeta['button_operation']) : "";
+	$responseMessage = isset($uxMeta['message_response']) && $uxMeta['message_response'] ? $uxMeta['message_response'] : "- -";
+
+	$connectionLinkType = isset($uxMeta['connection_link_type']) ? $uxMeta['connection_link_type'] : 0;
+	$connectionLinkTypeText = ($connectionLinkType > 0) ? "Linked to Topic" : "Joined Topic";
+
 	$phoneNumber =	isset($uxMeta['fax_field_fax_number']) ? $uxMeta['fax_field_fax_number'] : "";
 
 	switch ($lineType) {
@@ -511,8 +517,16 @@ function pte_make_data_line ($lineType, $uxMeta) {
 		case 'regarding_line':
 			$html = "<div class='pte_data_line_title'>Re</div><div class='pte_data_line_value'>{$topicName}</div>";
 		break;
-		case 'type_line':  //TODO Do we prefer to break this out or leave in title?
-			//$html = "<div class='pte_data_line_title'>Type</div><div class='pte_data_line_value'>{$templateName}</div>";
+		case 'response_selected':
+			$html = "<div class='pte_data_line_title'>Option</div><div class='pte_data_line_value'>{$responseSelected}</div>";
+		break;
+		case 'response_message':
+			$html = "<div class='pte_data_line_title'>Note</div><div class='pte_data_line_value'>{$responseMessage}</div>";
+		break;
+		case 'connect_type':
+			if ($uxMeta['button_operation'] != 'decline') {
+				$html = "<div class='pte_data_line_title'>Type</div><div class='pte_data_line_value'>{$connectionLinkTypeText}</div>";
+			}
 		break;
 		case 'file_name':
 			$html = "<div class='pte_data_line_title'>Name</div><div class='pte_data_line_value'>{$fileName}</div>";
@@ -564,7 +578,7 @@ function pte_make_message_line ($lineType, $uxMeta) {
 		$html .= pte_make_button_line("accept_decline", $uxMeta);
 		$html .= "
 						<div id='pte_interaction_response_inner_textarea_container'>
-								<textarea id='pte_message_body_area_response' placeholder='Optional message'></textarea>
+								<textarea id='pte_message_body_area_response' placeholder='Optional Note...'></textarea>
 						</div>
 					</div>
 		";

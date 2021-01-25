@@ -331,7 +331,7 @@ function pte_manage_interaction_proper($data) {
     $processId = $process->getId();
     $processContext['process_id'] = $processId;
 
-    //update contact status evertime interaction is run. TODO What happens when
+    //update contact status evertime interaction is run. TODO What happens when this changes mid interaction?
     $processContext['connected_contact_status'] = 'not_connected_not_member';
     if (!$processContext['connected_id']) { //If not connected, see if member from email alt_id
       if ($processContext['alt_id']) {  //is actually a user based on email so let's engage that way-- create inviation received
@@ -354,8 +354,7 @@ function pte_manage_interaction_proper($data) {
       //TODO Check for waitException fallthrought versus others for hardening
       $exMsg = $e->getMessage();
 
-      alpn_log("Handling Exception in INTERACTIONS...{$processTypeId}");
-
+      //alpn_log("Handling Thrown Exception in INTERACTIONS...{$processTypeId}");
 
     }
     $requestData = $token->getValue("process_context");
@@ -376,8 +375,10 @@ function pte_manage_interaction_proper($data) {
   } else { //TODO Handle No process
 
   }
-
-    return $processId;
+    $returnData = array(
+      'process_id' => $processId
+    );
+    return $returnData;
 }
 
 

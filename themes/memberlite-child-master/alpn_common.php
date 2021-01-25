@@ -1634,6 +1634,44 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
   return $topicOptions;
 }
 
+function pte_proteam_state_change_sync($data){
+  alpn_log("pte_proteam_state_change_sync...");
+  alpn_log($data);
+
+  global $wpdb;
+
+  $connectedType =  isset($data['connected_type']) ? $data['connected_type'] : '';
+  $ptState =  isset($data['state']) ? $data['state'] : 0;
+  $ptId =  isset($data['proteam_row_id']) ? $data['proteam_row_id'] : 0;
+  $ownerId = isset($data['owner_id']) ? $data['owner_id'] : 0;
+
+if ($connectedType && $ptState && $ptId) {
+
+    $proTeamData = array(
+      "connected_type" => $connectedType,
+      "state" => $ptState
+    );
+    $whereClause = array(
+      "id" => $ptId
+    );
+    $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
+
+    alpn_log('ProTeams Updated...');
+
+    if ($ownerId) {
+
+      $syncdata = array(
+        "sync_type" => "add_update_section",
+        "sync_section" => "proteam_card_update",
+        "sync_user_id" => $ownerId,
+        "sync_payload" => $data
+      );
+      pte_manage_user_sync($syncdata);
+      alpn_log('ProTeams Sync Sent...');
+    }
+  }
+}
+
 function pte_manage_user_sync($data){   ///Must be a user and have a wpid
 
   alpn_log("pte_manage_user_sync...");
@@ -1643,7 +1681,6 @@ function pte_manage_user_sync($data){   ///Must be a user and have a wpid
 
   $userInfo = wp_get_current_user();
   $userID = $userInfo->data->ID;
-
 
   $accountSid = ACCOUNT_SID;
   $authToken = AUTHTOKEN;
@@ -2253,9 +2290,9 @@ function get_custom_post_items($post_type, $order){
 function  pte_make_rights_panel_view($panelData) {
 
   alpn_log("pte_make_rights_panel_view");
-  alpn_log($panelData);
+  //alpn_log($panelData);
 
-	$topicStates = array('10' => "Added", '20' => "Invite Sent", '30' => "Active", '40' => "Topic Linked", '80' => "Email Sent", '90' => "Declined");
+	$topicStates = array('10' => "Added", '20' => "Invite Sent", '30' => "Joined", '40' => "Linked", '80' => "Email Sent", '90' => "Declined");
 
 	$proTeamRowId = $panelData['proTeamRowId'];
   $topicNetworkId = $panelData['topicNetworkId'];
@@ -2302,7 +2339,7 @@ function  pte_make_rights_panel_view($panelData) {
   		<div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
         <div class='proTeamPanelUserOuter'>
           <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
-  				<div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]} &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
+  				<div id='proTeamPanelUserData' class='proTeamPanelUserData'><span id='pte_topic_state'>{$topicStates[$topicState]}</span> &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
           <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
   			</div>
   			<div class='proTeamPanelSettings'>
@@ -2316,7 +2353,7 @@ function  pte_make_rights_panel_view($panelData) {
       <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
         <div class='proTeamPanelUserOuter'>
           <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
-          <div id='proTeamPanelUserData' class='proTeamPanelUserData'>{$topicStates[$topicState]} &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
+          <div id='proTeamPanelUserData' class='proTeamPanelUserData'><span id='pte_topic_state'>{$topicStates[$topicState]}</span> &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
           <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
         </div>
         <div class='proTeamPanelSettings'>
