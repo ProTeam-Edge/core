@@ -1244,18 +1244,8 @@ $nonce = wp_create_nonce( 'admin_test');
 
         // Array to track the ids of the details displayed rows
         var detailRows = [];
-
-        $('#classes tbody').on( 'click', 'tr td.details-control', function () {
-			
-			if(linkedTopicsOnLoad==null)
-			{
-				alert('Please click Save Topic-level Config and try again.');
-				return false;
-			
-			}
-			
-			$.LoadingOverlay("show");
-            var tr = $(this).closest('tr');
+		function processrows(element) {
+		var tr = $(element).closest('tr');
             var row = dt.row( tr );
             var idx = $.inArray( tr.attr('id'), detailRows );
 
@@ -1279,6 +1269,19 @@ $nonce = wp_create_nonce( 'admin_test');
                 fillRow(row);
 
             }
+		}
+        $('#classes tbody').on( 'click', 'tr td.details-control', function () {
+			
+			if(linkedTopicsOnLoad==null)
+			{
+				alert('Please click Save Topic-level Config and try again.');
+				return false;
+			
+			}
+			
+			$.LoadingOverlay("show");
+			setTimeout(function(){ processrows(this) }, 100);
+            
         } );
 
         // On each draw, loop over the `detailRows` array and show any child rows
