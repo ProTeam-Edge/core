@@ -467,7 +467,8 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
-	
+		 $.LoadingOverlay("show");
+		 return false;
 			console.log(output);
 			console.log('consoled output')
 		
