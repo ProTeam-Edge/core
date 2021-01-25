@@ -465,8 +465,12 @@ $nonce = wp_create_nonce( 'admin_test');
         }
         return output;
       }
-	  function processrows(row , output) {
-		  
+
+      function addRows ( row , output) {
+	
+			console.log(output);
+			console.log('consoled output')
+		
         var d = row.data();
 
         var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
@@ -589,12 +593,10 @@ $nonce = wp_create_nonce( 'admin_test');
 	
 		alert('Success rows have been added successfully.');
         return out;
-	  }
-      function addRows ( row , output) {
-		setTimeout(function(){ processrows(row , output) }, 100);
       }
 
       function format ( row ) {
+		   
         var d = row.data();
         // Make ajax request to php to get properties for this class
         var output;
@@ -639,7 +641,6 @@ $nonce = wp_create_nonce( 'admin_test');
           }
         });
 
-		$.LoadingOverlay("show");
 
         return addRows(row, output);
         //return 'Detail:'+gettype(output);
@@ -1245,7 +1246,7 @@ $nonce = wp_create_nonce( 'admin_test');
         var detailRows = [];
 
         $('#classes tbody').on( 'click', 'tr td.details-control', function () {
-		
+			
 			if(linkedTopicsOnLoad==null)
 			{
 				alert('Please click Save Topic-level Config and try again.');
@@ -1253,7 +1254,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			
 			}
 			
-			
+			$.LoadingOverlay("show");
             var tr = $(this).closest('tr');
             var row = dt.row( tr );
             var idx = $.inArray( tr.attr('id'), detailRows );
@@ -1267,8 +1268,7 @@ $nonce = wp_create_nonce( 'admin_test');
             }
             else {
                 tr.addClass( 'details' );
-				setTimeout(function(){   row.child( format( row ) ).show(); }, 200);
-              
+                row.child( format( row ) ).show();
 
                 // Add to the 'open' array
                 if ( idx === -1 ) {
