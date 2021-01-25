@@ -211,6 +211,7 @@ $nonce = wp_create_nonce( 'admin_test');
    <h1>Manage Topic Types</h1>
     <div style="overflow:hidden"><button class="button" id="save_linked_topics">Save Topic-level Config</button></div>
     <br>
+	<div class="loading" style="text-align:center;display:none">Loading Please Wait</div>
     <table id="classes" class="display" style="width:100%">
         <thead>
           <tr>
@@ -467,8 +468,8 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function addRows ( row , output) {
-		 $.LoadingOverlay("show");
 	
+			$(".loading").show();
 			console.log(output);
 			console.log('consoled output')
 		
@@ -591,7 +592,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
         out += '</table>';
 		
-	
+		$(".loading").hide();
 		alert('Success rows have been added successfully.');
         return out;
       }
