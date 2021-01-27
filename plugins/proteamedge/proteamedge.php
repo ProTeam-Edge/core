@@ -327,6 +327,7 @@ $nonce = wp_create_nonce( 'admin_test');
             // Dropdown
             var coreTopicDropdownHTML = "<select onchange='addPropertyChange(this.id)' class='addPropertyDropdown' id='" + topicName + "_addProperty_" + propertyCount + "'>";
             var valueParsed = "";
+			coreTopicDropdownHTML += "<option value=''>Please Select</option>";
             $.each(linkedTopicsOnLoad, function(index, value) {
               valueParsed = value.split("_")[2];
               // Add these to dropdown options
