@@ -282,6 +282,7 @@ function pte_get_proteam_invitation_registry() {
             $requestData['data_lines'] =  array(
                 "to_from_line",
                 "regarding_line",
+                "separator",
                 "response_selected",
                 "connect_type",
                 "response_message"

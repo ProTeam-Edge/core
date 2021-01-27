@@ -53,8 +53,21 @@ function pte_get_proteam_invitation_received_registry() {
 
               //TODO do the contact side: setup topic, connections, etc. Or should the other side do it? It feels like it should be here.
 
-              // Create New Topic, if needed
+              // Create New Topic, if needed.
+
+              $formId = "aaa"; //From drop down list of acceptable Topic Types.
+              $userId = "xyz"; // the user who owns this topic
+              $entry = array(
+                'id' => $formId,  //source user template type  Using custom TT
+                'new_owner' => $userId,
+                'fields' => array()  //required fields?
+              );
+              //alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
+
+
               // Create ProTeam Entry for the Topic to my Connection with proper state and Link type (only)
+
+
               // Add ProTeam Card
               // Create topic Link.
               // Client Side Updates?
@@ -106,7 +119,6 @@ function pte_get_proteam_invitation_received_registry() {
           $requestData = $token->getValue("process_context");
           $requestData['interaction_type_status'] = "Complete";
 
-
           $requestData['interaction_complete'] = true;
           $requestData['widget_type_id'] = "information";
           $requestData['information_title'] = "Invitation |style_1b|Complete|style_1e|";
@@ -117,12 +129,19 @@ function pte_get_proteam_invitation_received_registry() {
             $requestData['data_lines'] =  array(
                 "to_from_line",
                 "regarding_line",
-                "type_line"
+                "separator",
+                "response_selected",
+                "connect_type",
+                "response_message"
               );
           $requestData['content_lines'] =  array(
-            "network_panel",
-            "topic_panel"
+            "network_panel"
             );
+
+          if ($requestData['button_operation'] == 'accept') {
+            $requestData['content_lines'][] = 'topic_panel';
+          }
+
           $requestData['message_lines'] =  array(
               "message_view_only"
             );
