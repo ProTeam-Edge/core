@@ -2004,6 +2004,7 @@ function pte_manage_cc_groups($operation, $data) {
     } else {   //TODO Handle error
 
 
+
     }
 
 		break;

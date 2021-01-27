@@ -11,6 +11,11 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+.pte_interaction_separator {
+	 background-color: #ccc;
+	 height: 1px;
+}
+
 #pte_interaction_bar{
 	margin-top: 21px;
 	height: 24px;
@@ -677,6 +682,10 @@ ul#pte_topic_type_properties_list li {
 	cursor: move;
 }
 
+.pte_topic_type_fields{
+	padding: 5px 10px;
+}
+
 #pte_topic_type_property_editor_proper {
 	min-height: 150px;
 	width: 100%;
@@ -686,7 +695,10 @@ ul#pte_topic_type_properties_list li {
 
 #pte_topic_type_property_editor {
 	margin-bottom: 20px;
+	background-color: #eee;
+	padding: 5px 10px;
 }
+
 
 #pte_topic_type_field_property_editor {
 	padding-left: 20px;
@@ -1980,13 +1992,13 @@ table#table_vault td.column-draw_id{
 	height: 32px;
 	display: inline-block;
 	margin-right: 40px;
-	border: solid 1px #0074BB;
-	min-width: 150px;
+	border: solid 1px	#700000;
+	min-width: 200px;
 	vertical-align: top;
 }
 
 #pte_interaction_owner_inner_message{
-	background-color: #0074BB;
+	background-color: #700000;
 	height: 14px;
 	line-height: 14px;
 	font-size: 10px;
@@ -2002,7 +2014,7 @@ table#table_vault td.column-draw_id{
 	line-height: 16px;
 	font-size: 12px;
 	vertical-align: top;
-	color: #0074BB;
+	color: #700000;
 	cursor: pointer;
 	font-weight: normal;
 	background-color: white;
@@ -4028,8 +4040,6 @@ table#table_network.wpDataTable td {
 	white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-
 }
 
 .alpn_filter_container{
