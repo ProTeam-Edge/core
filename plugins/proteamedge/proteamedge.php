@@ -1266,6 +1266,7 @@ $nonce = wp_create_nonce( 'admin_test');
               // Now, check all the boxes
               $.each(linkedTopics, function(index, linked_topic_checkbox_id) {
                 dt.rows().nodes().to$().find("#"+linked_topic_checkbox_id).attr("checked", true);
+                dt.rows().nodes().to$().find("#"+linked_topic_checkbox_id).after('<div>1</div>');
                 //$("#"+linked_topic_checkbox_id).attr("checked", true);
               });
 
