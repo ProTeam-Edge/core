@@ -98,13 +98,15 @@ $subjectToken = '';
 
 $fullMap = $topicMeta['field_map'];
 $topicTabs = array();
+$infoColor = $topicData->connected_id ? '#700000' : '#444';
+$infoTitle = $topicData->connected_id ? 'Info Comes from Contact Topic' : 'Info Comes from Your Topic';
 
 $linkId = 0;
 $topicTabs[] = array(   //Info Page. All Topics Have Them
 	'type' => 'page',
 	'key' => $typeKey,
 	'id' => $linkId,
-	'name' => "Info",
+	'name' => "<span style='color: {$infoColor};' title='{$infoTitle}'>Info</span>",
 	'html' => $topicHtml,
 	'subject_token' => $subjectToken,
 	'owner_topic_id' => $topicId,
@@ -188,7 +190,6 @@ if (!$topicBelongsToUser) {
 	}
 	$connectedId = $topicData->connected_id;
 	if ($connectedId) {
-		//$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Topic Vault</div><div id='pte_interaction_owner_inner_name'>Shared</div></div>";
 		$topicContent = json_decode($topicData->connected_topic_content, true);
 	}
 }
