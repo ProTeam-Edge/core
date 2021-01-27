@@ -1219,7 +1219,7 @@ $nonce = wp_create_nonce( 'admin_test');
             { "data": "Comment" },
             { "data": "LinkedTopic",
               "class": "dt-body-center",
-			  "orderable": true,},
+              "orderable": false},
             { "data": "HiddenTopic",
               "class": "dt-body-center",
               "orderable": false},
@@ -1266,7 +1266,6 @@ $nonce = wp_create_nonce( 'admin_test');
               // Now, check all the boxes
               $.each(linkedTopics, function(index, linked_topic_checkbox_id) {
                 dt.rows().nodes().to$().find("#"+linked_topic_checkbox_id).attr("checked", true);
-                dt.rows().nodes().to$().find("#"+linked_topic_checkbox_id).after('<div style="display:none">1</div>');
                 //$("#"+linked_topic_checkbox_id).attr("checked", true);
               });
 
@@ -1330,7 +1329,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
             }
         } );
-		
+
         // Array to track the ids of the details displayed rows
         var detailRows = [];
 		function processrows(tr) {
