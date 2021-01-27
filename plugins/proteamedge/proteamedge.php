@@ -784,7 +784,7 @@ $nonce = wp_create_nonce( 'admin_test');
 						
                     }
                   });
-                  //saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
+                 
                 }
               });
             }
