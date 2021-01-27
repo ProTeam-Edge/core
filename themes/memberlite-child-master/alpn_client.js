@@ -189,7 +189,6 @@ function pte_add_link_to_topic(data) {
 				pte_set_table_page(pageData);
 
 				//TODO Add a Topic Link then edit. Does not return properly. I think it's because it needs these values
-
 			//	jQuery('#pte_selected_topic_meta').data('tdid', json.target_dom_id);
 			//	jQuery('#pte_selected_topic_meta').data('tid', data.pte_topic_id);
 			//	jQuery('#pte_selected_topic_meta').data('ttid', '');
