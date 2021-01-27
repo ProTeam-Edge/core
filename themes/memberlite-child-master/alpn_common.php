@@ -1895,7 +1895,7 @@ function pte_manage_cc_groups($operation, $data) {
   }
 
   $topicId = isset($data['topic_id']) ? $data['topic_id'] : "";
-  $userId = isset($data['user_id']) ? $data['user_id'] : "";
+  $userId = isset($data['user_id']) ? $data['user_id'] : "";   //TODO This is contact topic ID, not wpidz
   $topicName = isset($data['topic_name']) && $data['topic_name'] ? $data['topic_name'] : "New";
   $imageHandle = isset($data['image_handle']) && $data['image_handle'] ? $data['image_handle'] : "pte_icon_letter_" . strtolower(substr($topicName, 0, 1));
   $ownerId = (isset($data['owner_id']) && $data['owner_id']) ? $data['owner_id'] : $data['user_id'];
@@ -1939,6 +1939,7 @@ function pte_manage_cc_groups($operation, $data) {
                   'code' => $e->getCode(),
                   'error' => $e
               );
+              alpn_log('get_create_channel');
               alpn_log($response);
           }
 
@@ -1963,7 +1964,7 @@ function pte_manage_cc_groups($operation, $data) {
               'code' => $e->getCode(),
               'error' => $e
           );
-          alpn_log($response);
+
           if ($topicId) {
             $topicData = array(
               "channel_id" => ""
@@ -1996,7 +1997,9 @@ function pte_manage_cc_groups($operation, $data) {
                 'code' => $e->getCode(),
                 'error' => $e
             );
+            alpn_log('add_member');
             alpn_log($response);
+            alpn_log('Not sure why this is happening -- should be deleted as a member');
         }
     } else {   //TODO Handle error
 
@@ -2007,6 +2010,7 @@ function pte_manage_cc_groups($operation, $data) {
 
     case "delete_member":
     $channelId = pte_manage_cc_groups("get_create_channel", $data);
+
     if ($channelId) {
       try {
         $members = $twilio->chat->v2
@@ -2024,8 +2028,6 @@ function pte_manage_cc_groups($operation, $data) {
                 ->channels($channelId)
                 ->members($record->sid)
                 ->delete();
-
-                alpn_log("Deleted member... " . $record->sid);
                 $memberCount--;
                 break;
               }
@@ -2040,8 +2042,9 @@ function pte_manage_cc_groups($operation, $data) {
               'code' => $e->getCode(),
               'error' => $e
           );
+          alpn_log('delete_member');
           alpn_log($response);
-      }
+        }
     } else {  //TODO Handle Error
 
 
@@ -2075,6 +2078,7 @@ function pte_manage_cc_groups($operation, $data) {
               'code' => $e->getCode(),
               'error' => $e
           );
+          alpn_log('delete_channel');
           alpn_log($response);
       }
     } else { //TODO handle error.
@@ -2109,6 +2113,7 @@ function pte_manage_cc_groups($operation, $data) {
               'code' => $e->getCode(),
               'error' => $e
           );
+          alpn_log('add user');
           alpn_log($response);
       }
 

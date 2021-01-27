@@ -38,6 +38,8 @@ function pte_get_proteam_invitation_registry() {
 
             if ($token->getValue("message_title")) { //As long as there is a title, we can send.
 
+              //TODO mark an interaction as BUSY so that accidental secondary messages are ignored while processing primmary.
+
               $newRequestData = array( //start a proteam_invitation_received process for network contact
                 'template_id' => $requestData["template_id"],
                 'template_name' => $requestData["template_name"],
@@ -62,8 +64,8 @@ function pte_get_proteam_invitation_registry() {
               		'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $requestData['connected_contact_id_alt'],
               		'process_data' => $newRequestData
               	);
-              	$response = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
-                $requestData['interacts_with_id'] = $response['process_id'];
+              	$interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
+                $requestData['interacts_with_id'] = $interactsWithProcessResponse['process_id'];
 
                 $data = array(
                   'connected_type' => 'none',
@@ -133,7 +135,7 @@ function pte_get_proteam_invitation_registry() {
             case 'accept':
               alpn_log('Handling Accept...');
               //alpn_log($requestData);
-              if ($requestData['connected_contact_status'] = 'not_connected_member') {
+              if ($requestData['connected_contact_status'] == 'not_connected_member') {
                 // if member but not connected, connect them, handle as connected.
                 alpn_log('Making connection to not_connected_member...');
                 $connectData = array(
@@ -214,9 +216,7 @@ function pte_get_proteam_invitation_registry() {
                 'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $requestData['connected_contact_id_alt'],
                 'process_data' => $newRequestData
               );
-              $response = pte_manage_interaction_proper($data);  //Send request_operation to corresponding Interaction. //TODO return a JSON rather than id number
-
-
+              $interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
 
               //On this side, the interaction should be reset to before hitting send
               //How do we show feedback here and there?

@@ -53,6 +53,8 @@ function usernetwork_shortcode($attr) {
 	$avatarUrl = "https://storage.googleapis.com/pte_media_store_1/";
 	$fullAvatarUrl = $userImageHandle ? "{$avatarUrl}{$userImageHandle}" : "";
 
+	$rootUrl = PTE_ROOT_URL;
+
     switch ($block_type) {
 
 			case 'load_user_data':
@@ -363,18 +365,32 @@ function usernetwork_shortcode($attr) {
 			$html = "";
 			$html .= "<div id='alpn_section_alert'>
 
-							 <div id='pte_interaction_outer_container'>
-							 <div id='pte_interaction_current'>
-		 					 </div>
-							 </div>
-							 <div id='pte_on_off_outer'><div class='onoffswitch' title='View Active or Filed Interactions'>
+					 <div id='pte_interaction_outer_container'>
+					 	<div id='pte_interaction_current'>
+ 					 	</div>
+					 </div>
+
+					 <div id='pte_interaction_bar' class='pte_vault_row'>
+
+						<div class='pte_vault_row_50'>
+						 <div id='pte_on_off_outer'>
+						 		<div class='onoffswitch' title='View Active or Filed Interactions'>
 							    <input onchange='pte_handle_active_filed_change(this);' type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='myonoffswitch' tabindex='0' checked>
 							    <label class='onoffswitch-label' for='myonoffswitch'>
 							        <span class='onoffswitch-inner'></span>
 							        <span class='onoffswitch-switch'></span>
 							    </label>
+								</div>
 							</div>
-							</div>";
+						</div>
+
+
+						<div class='pte_vault_row_50 pte_vault_right'>
+							<img id='interaction_wait_indicator' class='pte_refresh_report_loading' src='{$rootUrl}pdf/web/images/loading-icon.gif'>
+						</div>
+
+
+					</div>";
 			$html .= "<div id='pte_interactions_table_container'>";
 
 			$interactionFilterTypes = array(
