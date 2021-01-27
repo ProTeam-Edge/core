@@ -708,11 +708,12 @@ $nonce = wp_create_nonce( 'admin_test');
 
       function addPropertyChange(selectID) { // Do this when additional property dropdown is changed
         // We want to update the class of the checkox on this row
-		if(selectID!='')
+		  var selectValue = $('select[id='+selectID+'] option').filter(':selected').val();
+		if(selectValue!='')
 		{
 			 var topicName = selectID.split("_")[0];
 
-        var selectValue = $('select[id='+selectID+'] option').filter(':selected').val();
+      
         var pteCoreType = selectValue.split("_")[2];
         var propertyCount = selectID.split("_")[2];
 
