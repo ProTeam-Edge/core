@@ -778,7 +778,7 @@ $nonce = wp_create_nonce( 'admin_test');
                     data: {data : jsonString,security:"<?php echo $nonce ?>"},
                     dataType: "json",
                     complete: function(){
-                      saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
+                     
 				    	$.LoadingOverlay("hide");
 					   alert('Config has been emptied successfully.');
 						
