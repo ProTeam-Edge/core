@@ -381,7 +381,7 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function getSubproperties (type, d, item) {
-		  alert('1');
+		 
         var output="";
         var subPropertyOutput;
         var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
@@ -599,7 +599,7 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function format ( row ) {
-		   alert('2');
+		  
         var d = row.data();
         // Make ajax request to php to get properties for this class
         var output;
@@ -644,7 +644,8 @@ $nonce = wp_create_nonce( 'admin_test');
           }
         });
 
-
+		console.log(output);
+		console.log('output');
         return addRows(row, output);
         //return 'Detail:'+gettype(output);
         //return 'Detail: '+d.Detail+'<br>'+
