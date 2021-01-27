@@ -381,7 +381,8 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function getSubproperties (type, d, item) {
-		 
+		 console.log('getSubproperties type');
+		 console.log(type);
         var output="";
         var subPropertyOutput;
         var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
