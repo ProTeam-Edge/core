@@ -210,7 +210,7 @@ $nonce = wp_create_nonce( 'admin_test');
   <body>
    <h1>Manage Topic Types</h1>  
     <div style="overflow:hidden"><button class="button" id="save_linked_topics">Save Topic-level Config</button></div>
-    <div style="overflow:hidden"><button onclick="return confirm('Are you sure? it will clear previous saved configs')" class="button" id="empty_previous_configs">Empty Previous Configs</button></div>
+    <div style="overflow:hidden"><button class="button" id="empty_previous_configs">Empty Previous Configs</button></div>
     <br>
     <table id="classes" class="display" style="width:100%">
         <thead>
@@ -752,7 +752,9 @@ $nonce = wp_create_nonce( 'admin_test');
 
       // Save a JSON list when Save Linked Topics is clicked
 	   $(document).on("click", "#empty_previous_configs" , function() {
-		 $.LoadingOverlay("show");
+		   var result = confirm("Are you sure this will empty all configs?");
+		if (result) {
+			 $.LoadingOverlay("show");
       
 		jsonString = [];
           // Save this JSON to server
@@ -794,6 +796,8 @@ $nonce = wp_create_nonce( 'admin_test');
           linkedTopicsOnLoad = null
           hiddenTopicsOnLoad = null;
           topicClassesOnLoad = null;
+		}
+				
 		 
 
       });
