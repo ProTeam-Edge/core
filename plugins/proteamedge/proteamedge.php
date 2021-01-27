@@ -708,7 +708,9 @@ $nonce = wp_create_nonce( 'admin_test');
 
       function addPropertyChange(selectID) { // Do this when additional property dropdown is changed
         // We want to update the class of the checkox on this row
-        var topicName = selectID.split("_")[0];
+		if(selectID!='')
+		{
+			 var topicName = selectID.split("_")[0];
 
         var selectValue = $('select[id='+selectID+'] option').filter(':selected').val();
         var pteCoreType = selectValue.split("_")[2];
@@ -742,6 +744,8 @@ $nonce = wp_create_nonce( 'admin_test');
         typeHTML += "<div><input type='hidden' class='schemaKey' value='pte_" + pteCoreType + "_" + propertyCount + "_" + pteCoreType + "'></div>";
         //typeHTML += "<div><input type='hidden' class='schemaKey' value='pte_" + pteCoreType + "_" + pteCoreType + "'></div>";
         $("div[id="+selectID+"_type"+"]").html(typeHTML);
+		}
+       
       }
 
       // Save a JSON list when Save Linked Topics is clicked
