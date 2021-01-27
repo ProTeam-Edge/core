@@ -1219,6 +1219,7 @@ $nonce = wp_create_nonce( 'admin_test');
             { "data": "Comment" },
             { "data": "LinkedTopic",
               "class": "dt-body-center",
+			  "searchable": true,
               "orderable": false},
             { "data": "HiddenTopic",
               "class": "dt-body-center",
