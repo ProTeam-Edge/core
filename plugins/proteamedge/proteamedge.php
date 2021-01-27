@@ -490,7 +490,8 @@ $nonce = wp_create_nonce( 'admin_test');
             }
             // Get an array of expected types (for use later if there are multiple)
             var expectedTypes = item["ExpectedTypes"].split(', ');
-		
+			console.log(expectedTypes);
+			return false;
             if (true) {
               if (expectedTypes.length > 1) {
 				
@@ -564,7 +565,7 @@ $nonce = wp_create_nonce( 'admin_test');
                     out += getSubproperties(type,d,item);
                   }
                 } else {
-					alert('reached')
+		
                   // It is a core or hidden topic, display a single text field
                   out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                   out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
