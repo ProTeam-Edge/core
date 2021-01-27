@@ -697,7 +697,7 @@ $nonce = wp_create_nonce( 'admin_test');
         // Get the table ID
         tableID = $(this).closest("table").attr('id');
 		console.log(tableID);
-		return false;
+		
         addPropertyCount += 1;
         // Pass tableID to addPropertyRow to add a row
         addPropertyRow(tableID, addPropertyCount);
