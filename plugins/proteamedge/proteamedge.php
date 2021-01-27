@@ -210,7 +210,7 @@ $nonce = wp_create_nonce( 'admin_test');
   <body>
    <h1>Manage Topic Types</h1>
     <div style="overflow:hidden"><button class="button" id="save_linked_topics">Save Topic-level Config</button></div>
-    <div style="overflow:hidden"><button onclick="return confirm('Are you sure it will clear previous saved configs')" class="button" id="empty_previous_configs">Empty Previous Configs</button></div>
+    <div style="overflow:hidden"><button onclick="return confirm('Are you sure? it will clear previous saved configs')" class="button" id="empty_previous_configs">Empty Previous Configs</button></div>
     <br>
     <table id="classes" class="display" style="width:100%">
         <thead>
