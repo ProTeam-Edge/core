@@ -527,6 +527,9 @@ function pte_make_data_line ($lineType, $uxMeta) {
 		case 'response_selected':
 			$html = "<div class='pte_data_line_title'>Option</div><div class='pte_data_line_value'>{$responseSelected}</div>";
 		break;
+		case 'separator':
+		$html = "<div class='pte_data_line_title pte_interaction_separator'>&nbsp;</div><div class='pte_data_line_value pte_interaction_separator'>&nbsp;</div>";
+		break;
 		case 'response_message':
 			$html = "<div class='pte_data_line_title'>Note</div><div class='pte_data_line_value'>{$responseMessage}</div>";
 		break;
