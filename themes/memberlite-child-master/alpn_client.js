@@ -1201,8 +1201,16 @@ function pte_handle_interaction_link(mapData){
 
 
 function pte_show_process_ux(processId) {
+
+	console.log('Getting Process UX...', processId);
+
+	var alpnSectionAlert = jQuery('#alpn_section_alert');
+	var interactionWaitIndicator = jQuery('#interaction_wait_indicator');
+
 	var security = specialObj.security;
 	if (processId) {
+		alpnSectionAlert.css('pointer-events', 'none');
+		interactionWaitIndicator.show();
 		jQuery.ajax({
 			url: alpn_templatedir + 'pte_get_interaction_ux.php',
 			type: 'POST',
@@ -1215,6 +1223,8 @@ function pte_show_process_ux(processId) {
 			success: function(html) {
 				var processUx = jQuery("#pte_interaction_current");
 				processUx.html(html);
+				alpnSectionAlert.css('pointer-events', 'auto');
+				interactionWaitIndicator.hide();
 			},
 			error: function() {
 				console.log('problem getting interation');
@@ -1222,6 +1232,9 @@ function pte_show_process_ux(processId) {
 			}
 		})
 	} else {
+
+
+		//Interaction Box Zero
 
 		var availableImages = 3;
 		var processUx = jQuery("#pte_interaction_current");
@@ -1231,8 +1244,9 @@ function pte_show_process_ux(processId) {
 				html += "<img id='pte_interactions_message_image' src='" + imageUrl + "'>";
 
 		    html += "</div>";
-
 		processUx.html(html);
+		alpnSectionAlert.css('pointer-events', 'auto');
+		interactionWaitIndicator.hide();
 	}
 }
 
@@ -1319,6 +1333,9 @@ function pte_add_to_important_topics(type, data) {
 
 
 function pte_handle_interaction_selected(processId) {
+
+console.log('pte_handle_interaction_selected...');
+
 	if (pte_selected_interaction_process_id) {
 		var oldDom = jQuery("div[data-uid='" + pte_selected_interaction_process_id + "']");
 		var oldCell = oldDom.closest('td');
@@ -1327,6 +1344,9 @@ function pte_handle_interaction_selected(processId) {
 	}
 	if (processId) {
 		var selectedDom = jQuery("div[data-uid='" + processId + "']");
+
+		console.log(selectedDom);
+
 		var theCell = selectedDom.closest('td');
 		theCell.attr("style", "background-color: #D8D8D8 !important;");
 		pte_selected_interaction_process_id = processId;
@@ -1335,6 +1355,12 @@ function pte_handle_interaction_selected(processId) {
 
 
 function pte_handle_active_filed_change(tObj){
+
+	var alpnSectionAlert = jQuery('#alpn_section_alert');
+	var interactionWaitIndicator = jQuery('#interaction_wait_indicator');
+	alpnSectionAlert.css('pointer-events', 'none');
+	interactionWaitIndicator.show();
+
 	var security = specialObj.security;
 	var jObj = jQuery(tObj);
 	var checkedState = jObj.prop('checked');
@@ -1348,7 +1374,7 @@ function pte_handle_active_filed_change(tObj){
 		type: 'POST',
 		data: {
 			show_type: showType,
-			security: security,
+			security: security
 		},
 		dataType: "json",
 		success: function(json) {
@@ -1398,10 +1424,10 @@ function pte_handle_file_away(tObj){
 		},
 		dataType: "json",
 		success: function(json) {
-			wpDataTables.table_interactions.fnFilterClear();
 			pte_select_first_interaction = true;
-			pte_interactions_table();
-		},
+			pte_handle_interaction_skip_table_reselect = false;
+			wpDataTables.table_interactions.fnFilterClear();
+},
 		error: function() {
 			console.log('problem getting interation table');
 		//TODO
@@ -1589,21 +1615,31 @@ function pte_interactions_table() {
 	}
 
 	if (!rowCount) {
-		pte_show_process_ux('');
+			console.log('Showing empty pte_show_process_ux');
+			pte_show_process_ux('');
+			pte_select_first_interaction = true;
+			pte_selected_interaction_process_id = '';
+
 	} else {
 
 			if (pte_handle_interaction_skip_table_reselect) {
+				console.log('pte_handle_interaction_skip_table_reselect');
 				pte_handle_interaction_skip_table_reselect = false;
 				pte_handle_interaction_selected(pte_selected_interaction_process_id);
 				return;
 			}
 
 			if (pte_select_first_interaction) {
+				console.log('pte_select_first_interaction');
+
 				pte_handle_interaction_selected(first_row_id);
 				pte_select_first_interaction = false;
 				pte_show_process_ux(first_row_id);
 				pte_selected_interaction_process_id = first_row_id;
 			} else if (pte_selected_interaction_process_id)  {
+
+				console.log('selecting based on pte_selected_interaction_process_id');
+
 				pte_handle_interaction_selected(pte_selected_interaction_process_id);
 				pte_show_process_ux(pte_selected_interaction_process_id);
 			}

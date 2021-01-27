@@ -162,6 +162,13 @@ function pte_make_interaction_editor_ux($uxMeta) {
 					'process_id': '{$processId}',
 					'process_type_id': '{$processTypeId}'
 				};
+
+				//Start interaction wait. updating interaction ux is where it gets turned off. TODO make sure this always works.
+				var alpnSectionAlert = jQuery('#alpn_section_alert');
+				var interactionWaitIndicator = jQuery('#interaction_wait_indicator');
+				alpnSectionAlert.css('pointer-events', 'none');
+				interactionWaitIndicator.show();
+
 				pte_handle_widget_interaction(sendData);
 		}
 	</script>
@@ -685,7 +692,7 @@ function pte_make_invitation_received_panel ($uxMeta) {
 
 	$connectionTypeSelect = "<select id='alpn_select2_small_connection_type_select'>";
 	$connectionTypeSelect .= "<option value='1'>Create Topic Link To</option>";
-	$connectionTypeSelect .= "<option value='2'>Create New Linked Topic</option>";
+	//$connectionTypeSelect .= "<option value='2'>Create New Linked Topic</option>";   TODO implement this
 	$connectionTypeSelect .= "<option value='0'>Join Topic</option>";
 	$connectionTypeSelect .= "</select>";
 

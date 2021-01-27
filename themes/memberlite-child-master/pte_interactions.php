@@ -312,6 +312,8 @@ function pte_manage_interaction_proper($data) {
   $processContext = $processContext ? $processContext : array_merge(pte_get_process_context($processData), $extraContext);
 
   if ($process) {
+
+    //TODO MARK BUSY HERE
     $registry = new DefaultBehaviorRegistry($registryArray);
     $engine = new ProcessEngine($registry);
     $tokens = $engine->getProcessTokens($process);
@@ -375,10 +377,9 @@ function pte_manage_interaction_proper($data) {
   } else { //TODO Handle No process
 
   }
-    $returnData = array(
-      'process_id' => $processId
-    );
-    return $returnData;
+    //TODO MARK UNBUSY HERE AND add any ERROR Codes here.
+
+    return $requestData;  //all data about this process
 }
 
 

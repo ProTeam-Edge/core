@@ -81,7 +81,8 @@ function pte_get_proteam_invitation_received_registry() {
               'owner_id' => $requestData['connected_id'],
               'process_data' => $updateRequestData
             );
-            $response = pte_manage_interaction_proper($data);   //TODO WHEN this is ASYNC, drawing fails. What is being done here that needs to be syncronous?
+            $interactsWithProcessResponse = pte_manage_interaction_proper($data);  //TODO WHEN this is ASYNC, drawing fails. What is being done here that needs to be syncronous?
+
 
             $token->setValue("process_context", $requestData);
             return; //if successful

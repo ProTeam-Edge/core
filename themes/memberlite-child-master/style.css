@@ -10,6 +10,13 @@ License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
+
+#pte_interaction_bar{
+	margin-top: 21px;
+	height: 24px;
+	vertical-align: top;
+}
+
 .pte_default_topic{
 	margin-left: 5px;
 }
@@ -2074,7 +2081,6 @@ button[aria-label="Crop portrait (9:16)"]
 }
 
 #pte_on_off_outer{
-	margin-top: 21px;
 	margin-left: 2px;
 }
 .onoffswitch {
