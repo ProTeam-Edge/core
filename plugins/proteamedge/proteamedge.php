@@ -549,7 +549,10 @@ $nonce = wp_create_nonce( 'admin_test');
 				
                 var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+typeName);
                 var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+typeName);
-
+				console.log('typeIsCore vals');
+				console.log(typeIsCore);	
+				console.log('typeIsHidden');	
+				console.log(typeIsHidden);	
                 if ((typeIsCore == false) && (typeIsHidden == false)) { // Neither core nor hidden
                   if (dataTypes.includes(item["ExpectedTypes"].slice(18))) {
 					  	console.log('expected if')	
