@@ -892,7 +892,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
       // Save Config JSON when "Save Prop. Config" is clicked
       $(document).on("click", ".saveTopicConfig" , function() {
-
+			$.LoadingOverlay("show");
           var topicClass = this.id.slice(11); // Remove "save_topic_" from topic id
 
           var friendlyFields = {};
@@ -985,6 +985,7 @@ $nonce = wp_create_nonce( 'admin_test');
             dataType: "json",
             complete: function(){
               alert('Saving complete.');
+			  	$.LoadingOverlay("hide");
             }
           });
 
