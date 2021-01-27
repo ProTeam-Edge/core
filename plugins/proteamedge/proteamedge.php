@@ -1330,7 +1330,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
             }
         } );
-
+		
         // Array to track the ids of the details displayed rows
         var detailRows = [];
 		function processrows(tr) {
