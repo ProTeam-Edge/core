@@ -210,6 +210,7 @@ $nonce = wp_create_nonce( 'admin_test');
   <body>
    <h1>Manage Topic Types</h1>
     <div style="overflow:hidden"><button class="button" id="save_linked_topics">Save Topic-level Config</button></div>
+    <div style="overflow:hidden"><button class="button" id="empty_previous_configs">Empty Previous Configs</button></div>
     <br>
     <table id="classes" class="display" style="width:100%">
         <thead>
@@ -750,6 +751,52 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       // Save a JSON list when Save Linked Topics is clicked
+	   $(document).on("click", "#empty_previous_configs" , function() {
+		 $.LoadingOverlay("show");
+      
+		jsonString = [];
+          // Save this JSON to server
+          var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/saveLinkedTopics.php";
+          $.ajax({
+            url: url,
+            type: "POST",
+            data: {data : jsonString,security:"<?php echo $nonce ?>"},
+            dataType: "json",
+            complete: function(){
+              // Save Hidden Topics
+              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/saveHiddenTopics.php";
+              $.ajax({
+                url: url,
+                type: "POST",
+                data: {data : jsonString,security:"<?php echo $nonce ?>"},
+                dataType: "json",
+                complete: function(){
+                  var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/savePteScopeTopics.php";
+                  $.ajax({
+                    url: url,
+                    type: "POST",
+                    data: {data : jsonString,security:"<?php echo $nonce ?>"},
+                    dataType: "json",
+                    complete: function(){
+                      saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
+				    	$.LoadingOverlay("hide");
+					   alert('Config has been emptied successfully.');
+						
+                    }
+                  });
+                  //saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
+                }
+              });
+            }
+          });
+
+          // Update global vars
+          linkedTopicsOnLoad = null
+          hiddenTopicsOnLoad = null;
+          topicClassesOnLoad = null;
+		 
+
+      });
       $(document).on("click", "#save_linked_topics" , function() {
 		 $.LoadingOverlay("show");
           // Show a loading icon
