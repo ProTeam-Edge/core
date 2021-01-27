@@ -1330,9 +1330,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
             }
         } );
-		$('.linked_topic_checkbox').click(function(){
-			alert("reached");
-		})
+		
         // Array to track the ids of the details displayed rows
         var detailRows = [];
 		function processrows(tr) {
