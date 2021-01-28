@@ -25,7 +25,16 @@ $hide_properties = 0;
 $friendly_name = '';
 $visibility = '';
 if($field_type=='linked_topic') {
-	$core_topic = $value 
+	$core_topic = $value ;
+}
+if($field_type=='hidden_topic') {
+	$hide_properties = $value ;
+}
+if($field_type=='friendly_name') {
+	$friendly_name = $value ;
+}
+if($field_type=='visibility') {
+	$visibility = $value ;
 }
 if(empty($data)) {
 	$sql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,cdate,mdate)values("'.$topic_name.'","'.$core_topic.'","'.$hide_properties.'","'.$friendly_name.'","'.$visibility.'","'.time().'","'.time().'")';
