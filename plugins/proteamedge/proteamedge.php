@@ -1280,8 +1280,7 @@ $nonce = wp_create_nonce( 'admin_test');
                 }
               });
 				 function useReturnDataFriendly(data){
-                   $.each(data, function(index, linked_topic_checkbox_id) {
-				   }
+                   console.log(data)
               };
               function useReturnData(data){
                   linkedTopics = data;
