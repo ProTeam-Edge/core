@@ -29,5 +29,12 @@ foreach($data as $vals)
 {
 	$array['hidden_topic'][] = 'hidden_topic_'.$vals->topic_name;
 }
+$sql = 'select * from alpn_manage_topic where friendly_name!=""';
+$data = $wpdb->get_results($sql);
+foreach($data as $vals)
+{
+	$array['friendly_name'][]['topic_name'] = $vals->topic_name;
+	$array['friendly_name'][]['friendly_name'] = $vals->friendly_name;
+}
 echo json_encode($array);
 ?>
