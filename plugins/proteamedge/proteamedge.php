@@ -1280,7 +1280,10 @@ $nonce = wp_create_nonce( 'admin_test');
                 }
               });
 				 function useReturnDataFriendly(data){
-                   console.log(data)
+                   $.each(data, function(key, value){
+					console.log(key);
+					console.log(value);
+				});
               };
               function useReturnData(data){
                   linkedTopics = data;
