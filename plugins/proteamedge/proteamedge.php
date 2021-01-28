@@ -1365,7 +1365,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			
 			if(linkedTopicsOnLoad==null)
 			{
-				//alert('Please click Save Topic-level Config and try again.');
+				alert('Please click Save Topic-level Config and try again.');
 				return false;
 			
 			}
