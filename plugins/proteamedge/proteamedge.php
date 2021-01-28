@@ -1273,6 +1273,7 @@ $nonce = wp_create_nonce( 'admin_test');
                   useReturnData(data.linked_topic);
                   useReturnDataHidden(data.hidden_topic);
                   useReturnDataFriendly(data.friendly_name);
+                  useReturnDataTopicClasses(data.topic_class);
                   //linkedTopics = data;
                 },
                 error: function() {
@@ -1296,6 +1297,17 @@ $nonce = wp_create_nonce( 'admin_test');
 					})
 				});
               };
+			  function useReturnDataTopicClasses(data){
+                  topicClasses = data;
+                  // Store list of linkedTopics to signify these in "ExpectedTypes"
+                  topicClassesOnLoad = data;
+              };
+
+              // Fill all the topic_class fields
+              $.each(topicClasses, function(key, value) {
+                dt.rows().nodes().to$().find("#"+key).val(value);
+              });
+			  
               function useReturnData(data){
                   linkedTopics = data;
                   // Store list of linkedTopics to signify these in "ExpectedTypes"
@@ -1361,34 +1373,8 @@ $nonce = wp_create_nonce( 'admin_test');
 				
               
 
-              // Get all topic_class fields
-              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/pteScopeConfig.json";
-              var topicClasses;
-              $.ajax({
-                url: url,
-                type: "GET",
-                dataType: "json",
-                async: false,
-                cache: false,
-                success: function(data){
-                  useReturnDataTopicClasses(data);
-                  //linkedTopics = data;
-                },
-                error: function() {
-                //  alert('Error getting topic class data.');
-                }
-              });
-
-              function useReturnDataTopicClasses(data){
-                  topicClasses = data;
-                  // Store list of linkedTopics to signify these in "ExpectedTypes"
-                  topicClassesOnLoad = data;
-              };
-
-              // Fill all the topic_class fields
-              $.each(topicClasses, function(key, value) {
-                dt.rows().nodes().to$().find("#"+key).val(value);
-              });
+             
+              
 
             }
         } );
