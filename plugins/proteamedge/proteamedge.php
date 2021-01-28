@@ -1242,7 +1242,7 @@ $nonce = wp_create_nonce( 'admin_test');
             { "data": "SaveConfig",
               "orderable": false }
           ],
-			dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
+			$(".linked_topic_checkbox").click(function(){
 				alert("test");
 			});
           "fnInitComplete": function( oSettings ) {
