@@ -20,10 +20,19 @@ $topic_name = $_POST['topic_name'];
 $value = $_POST['value'];
 $sql = 'select * from alpn_manage_topic where topic_name= "'.$topic_name.'"';
 $data = $wpdb->get_row($sql);
-$core_topic = 0;
-$hide_properties = 0;
-$friendly_name = '';
-$visibility = '';
+if(empty($data)) {
+	$core_topic = 0;
+	$hide_properties = 0;
+	$friendly_name = '';
+	$visibility = '';
+}
+else {
+	$core_topic = $data->core_topic;
+	$hide_properties = $data->hide_properties;
+	$friendly_name = $data->friendly_name;
+	$visibility =  $data->visibility;
+}
+
 if($field_type=='linked_topic') {
 	$core_topic = $value ;
 }
