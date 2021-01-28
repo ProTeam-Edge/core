@@ -1033,16 +1033,7 @@ $nonce = wp_create_nonce( 'admin_test');
         }
 
       }
-		function update_manage_topic_settings(field_type,topic_name,value){
-			$.ajax({
-            url: url,
-            type: "POST",
-            data: {field_type : field_type,topic_name:topic_name,value:value,security:"<?php echo $nonce ?>"},
-            complete: function(){
-            
-            }
-          });
-		}
+		
       // Post a JSON list to a PHP file when "Generate Topic" button is clicked
       $(document).on("click", ".disabled" , function() {
 
@@ -1217,7 +1208,16 @@ $nonce = wp_create_nonce( 'admin_test');
       });
 
 
-
+	function update_manage_topic_settings(field_type,topic_name,value){
+			$.ajax({
+            url: '<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/update_manage_topic_settings.php',
+            type: "POST",
+            data: {field_type : field_type,topic_name:topic_name,value:value,security:"<?php echo $nonce ?>"},
+            complete: function(){
+            
+            }
+          });
+		}
       $(document).ready(function() {
 
         dt = $('#classes').DataTable( {
