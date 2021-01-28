@@ -1281,8 +1281,19 @@ $nonce = wp_create_nonce( 'admin_test');
               });
 				 function useReturnDataFriendly(data){
                    $.each(data, function(key, value){
-					console.log(key);
-					console.log(value);
+					$('.linked_topic_checkbox').each(function(){
+						linked_topic_id_string = $(this).attr('id');
+						split_linked_topic_id =  linked_topic_id_string.split('_');
+						linked_topic_id =  split_linked_topic_id[2];
+						topic_name = value.topic_name;
+						friendly_name = value.friendly_name;
+						if(linked_topic_id==topic_name)
+						{
+						dt.rows().nodes().to$().find("#"+linked_topic_id_string).parent().parent().find("input[type='text']").val(friendly_name);
+
+						}
+						
+					})
 				});
               };
               function useReturnData(data){
