@@ -32,3 +32,5 @@ Added -- Waiting
 
 Re-invite.
 Disconnect of Topic Team
+Handle variations for topic Person schema_types. joining their own topics.
+Can you "connect" with topic people or just contacts?
