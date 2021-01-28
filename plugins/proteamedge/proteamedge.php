@@ -1272,13 +1272,17 @@ $nonce = wp_create_nonce( 'admin_test');
                 success: function(data){
                   useReturnData(data.linked_topic);
                   useReturnDataHidden(data.hidden_topic);
+                  useReturnDataFriendly(data.friendly_name);
                   //linkedTopics = data;
                 },
                 error: function() {
                  // alert('Error getting linked topics.');
                 }
               });
-			
+				 function useReturnDataFriendly(data){
+                   $.each(data, function(index, linked_topic_checkbox_id) {
+				   }
+              };
               function useReturnData(data){
                   linkedTopics = data;
                   // Store list of linkedTopics to signify these in "ExpectedTypes"

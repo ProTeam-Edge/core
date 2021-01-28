@@ -31,10 +31,10 @@ foreach($data as $vals)
 }
 $sql = 'select * from alpn_manage_topic where friendly_name!=""';
 $data = $wpdb->get_results($sql);
-foreach($data as $vals)
+foreach($data as $keys=>$vals)
 {
-	$array['friendly_name'][]['topic_name'] = $vals->topic_name;
-	$array['friendly_name'][]['friendly_name'] = $vals->friendly_name;
+	$array['friendly_name'][$keys]['topic_name'] = $vals->topic_name;
+	$array['friendly_name'][$keys]['friendly_name'] = $vals->friendly_name;
 }
 echo json_encode($array);
 ?>
