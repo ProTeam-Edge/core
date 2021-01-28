@@ -50,25 +50,58 @@ function pte_get_proteam_invitation_received_registry() {
             if ($buttonOperation == 'accept') {
               alpn_log('Interaction Received Handle Setting Up ProTeam Relationship.');
 
+              $connectionLinkType = $token->getValue("connection_link_type");
 
-              //TODO do the contact side: setup topic, connections, etc. Or should the other side do it? It feels like it should be here.
+              switch ($connectionLinkType) {
+                case '0': //Join
 
-              // Create New Topic, if needed.
+                break;
+                case '1': //Link to Existing Topic
 
-              $formId = "aaa"; //From drop down list of acceptable Topic Types.
-              $userId = "xyz"; // the user who owns this topic
-              $entry = array(
-                'id' => $formId,  //source user template type  Using custom TT
-                'new_owner' => $userId,
-                'fields' => array()  //required fields?
+
+
+                break;
+                case '2': //Create and Link to New Topic
+
+                  // Create New Topic
+
+                  $formId = "aaa"; //From drop down list of acceptable Topic Types.
+                  $userId = "xyz"; // the user who owns this topic
+                  $entry = array(
+                    'id' => $formId,  //source user template type  Using custom TT
+                    'new_owner' => $userId,
+                    'fields' => array()  //required fields?
+                  );
+                  alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
+
+                  //TODO Update Topics
+
+                break;
+              }
+
+              $proTeamData = array(
+                'owner_id' => $requestData['owner_id'],  //owner_id
+            		'topic_id' => $requestData['connection_link_topic_id'],  //this user's linked topic id
+            		'proteam_member_id' => $requestData['network_id'],
+            		'wp_id' => $requestData['connected_id'],
+                'access_level' => '10',
+                'state' => '40',
+                'member_rights' => false  //TODO uses default until we want to specify something here.
               );
-              //alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
 
+              $proTeamRowId = pte_add_to_proteam($proTeamData);
+
+              alpn_log('ProTeam Add Data');
+              alpn_log($proTeamData);
+              alpn_log($proTeamRowId);
 
               // Create ProTeam Entry for the Topic to my Connection with proper state and Link type (only)
 
 
-              // Add ProTeam Card
+              // Add to ProTeam but don't refresh ProTeam cause ASYNC?
+
+
+
               // Create topic Link.
               // Client Side Updates?
 

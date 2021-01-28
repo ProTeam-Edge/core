@@ -83,10 +83,10 @@ if ($formId) {
 
 		 		$html .= "
 				<div id='pte_selected_template_meta' class='pte_template_editor_container' data-ttkey='{$typeKey}' data-ttfid='{$formId}'>
-					<div class='pte_topic_manager_editor_title'>{$savedString}</div>
-					{$saveControls}
-					<input type='text' id='pte_template_title_field' placeholder='Message Title...' style='display: {$hideShowMessageTitle}; width: {$editorWidth};'>
+				<div class='pte_topic_manager_editor_title'>{$savedString}</div>
+				{$saveControls}
 				</div>
+				<input type='text' id='pte_template_title_field' placeholder='Message Title...' style='display: {$hideShowMessageTitle}; width: {$editorWidth};'>
 				<textarea id='template_editor'></textarea>
 		 		<script>
 		 		var editorMode = '{$editorMode}';

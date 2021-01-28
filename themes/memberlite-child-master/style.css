@@ -50,6 +50,9 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 }
 
 .pte_template_editor_container{
+	padding: 8px 10px;
+	background-color: #eee;
+	margin-bottom: 30px;
 }
 
 #pte_template_title_field:active,

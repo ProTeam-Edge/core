@@ -1,1 +1,1 @@
-{"topic_name":"Airline","friendly_fields":{},"checkedBoxes":[],"requiredCheckedBoxes":[],"hiddenCheckedBoxes":[],"additionalProperties":{}}
+{"topic_name":"Airline","friendly_fields":{},"checkedBoxes":["pte_airline_1_airline"],"requiredCheckedBoxes":[],"hiddenCheckedBoxes":[],"additionalProperties":{"pte_airline_1_airline":{"friendly":"","type":"core_airline","name":"pte_airline_1_airline","required":"false","schema_key":"pte_Airline_1_Airline","hidden":"false"}}}

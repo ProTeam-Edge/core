@@ -11,6 +11,42 @@ use PascalDeVink\ShortUuid\ShortUuid;
 
 //TODO centralize this with report usages on ZIP
 
+function pte_add_to_proteam($data) {
+
+  global $wpdb;
+
+  $accessLevel = isset($data['access_level']) && $data['access_level'] ? $data['access_level'] : "10";
+  $state = isset($data['state']) && $data['state'] ? $data['state'] : "10";
+
+  $defaultMemberRights = array(
+		'download' => '0',
+		'share' => '0',
+		'delete' => '0',
+		'fax'  => '0',
+		'email' => '0',
+		'new' => '1',
+		'edit' => '1',
+		'chat' => '1',
+		'action' => '1',
+		'print' => '1',
+		'transfer' => '1',
+		);
+  $memberRights = isset($data['member_rights']) && $data['member_rights'] ? json_decode($data['member_rights'], true) : $defaultMemberRights;
+
+	$proTeamData = array( //TODO start IA and store processID
+		'owner_id' => $data['owner_id'],
+		'topic_id' => $data['topic_id'],  //topicContext
+		'proteam_member_id' => $data['proteam_member_id'],
+		'wp_id' => $data['wp_id'],
+		'access_level' => $accessLevel,
+		'state' => $state,
+		'member_rights' => json_encode($memberRights)
+	);
+	$wpdb->insert( 'alpn_proteams', $proTeamData );
+
+  return $wpdb->insert_id;
+}
+
 
 function storePdf($pdfSettings){
   alpn_log('STORING PDF');
@@ -1636,7 +1672,7 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
 
 function pte_proteam_state_change_sync($data){
   alpn_log("pte_proteam_state_change_sync...");
-  alpn_log($data);
+  //alpn_log($data);
 
   global $wpdb;
 
