@@ -96,6 +96,11 @@ function my_menu_pages(){
     add_submenu_page('manage-topic-types', 'Generate Topic Parts', 'Generate Topic Parts', 'manage_options', 'generate-topic-parts','generate_topic_parts' );
 }
 function manage_topic_types() {
+	global $wpdb;
+	$sql = 'select * from alpn_manage_topic';
+	$data = $wpdb->get_results($sql);
+	print_r($data);
+
 $schema_master_file = WP_CONTENT_DIR . "/plugins/proteamedge/schema.jsonId";
 if ($json = file_get_contents($schema_master_file)) {
     error_log("Got contents successfully.", 0);
