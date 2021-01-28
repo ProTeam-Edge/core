@@ -1296,7 +1296,7 @@ $nonce = wp_create_nonce( 'admin_test');
 					 else {
 						  value = 0;
 					 }
-					update_manage_topic_settings(field_type,topic_name,val);
+					update_manage_topic_settings(field_type,topic_name,value);
 				});
               // Get all topics whose properties we don't want to expand
               var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/hiddenTopicConfig.json";
