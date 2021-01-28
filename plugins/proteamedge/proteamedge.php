@@ -1259,11 +1259,12 @@ $nonce = wp_create_nonce( 'admin_test');
 
               // Check appropriate checkboxes for linked topics
               // First, get list of linked topics from server
-              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/linkedTopicConfig.json";
+              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/prefill_manage_topic_fields.php";
               var linkedTopics;
               $.ajax({
                 url: url,
-                type: "GET",
+                type: "POST",
+                data: {type : 'linked_topic',security:"<?php echo $nonce ?>"},
                 dataType: "json",
                 async: false,
                 cache: false,
