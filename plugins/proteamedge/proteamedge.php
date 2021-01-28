@@ -254,7 +254,7 @@ $nonce = wp_create_nonce( 'admin_test');
             useReturnDataFriendly(data);
           },
           error: function() {
-            alert('No checkboxes and friendly fields set.');
+            //alert('No checkboxes and friendly fields set.');
           }
         });
 
@@ -305,7 +305,7 @@ $nonce = wp_create_nonce( 'admin_test');
             useReturnDataFriendly(data);
           },
           error: function() {
-            alert('No additional properties set in config.');
+            //alert('No additional properties set in config.');
           }
         });
 
@@ -601,7 +601,7 @@ $nonce = wp_create_nonce( 'admin_test');
         out += '</table>';
 		
 		$.LoadingOverlay("hide");
-		alert('Success rows have been added successfully.');
+		//alert('Success rows have been added successfully.');
         return out;
       }
 
@@ -636,7 +636,7 @@ $nonce = wp_create_nonce( 'admin_test');
             output = data;
           },
           error: function() {
-            alert('Topic not in filesystem...give it a minute to parse schema.org.');
+            //alert('Topic not in filesystem...give it a minute to parse schema.org.');
             $.ajax({
               url: "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/tester.php?url=" + encodeURIComponent("http://schema.org/" + d.TopicName),
               type: "GET",
@@ -792,7 +792,7 @@ $nonce = wp_create_nonce( 'admin_test');
                     complete: function(){
                      
 				    	$.LoadingOverlay("hide");
-					   alert('Config has been emptied successfully.');
+					  // alert('Config has been emptied successfully.');
 						
                     }
                   });
@@ -882,7 +882,7 @@ $nonce = wp_create_nonce( 'admin_test');
                     complete: function(){
                       saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
 				    	$.LoadingOverlay("hide");
-					   alert('Config has been saved successfully.');
+					  // alert('Config has been saved successfully.');
 						
                     }
                   });
@@ -994,7 +994,7 @@ $nonce = wp_create_nonce( 'admin_test');
             data: {data : JSON.stringify(config),security:"<?php echo $nonce ?>"},
             dataType: "json",
             complete: function(){
-              alert('Saving complete.');
+             // alert('Saving complete.');
 			  	$.LoadingOverlay("hide");
             }
           });
@@ -1071,7 +1071,7 @@ $nonce = wp_create_nonce( 'admin_test');
           // Get friendly topic name
           friendlyTopicName = $(this).closest("tr").find('input[type="text"]').val();
           if (friendlyTopicName == "") {
-            alert("Please enter a friendly topic name.");
+           // alert("Please enter a friendly topic name.");
             return false;
           }
 
@@ -1182,7 +1182,7 @@ $nonce = wp_create_nonce( 'admin_test');
             data: {data : JSON.stringify(fileContents),security:"<?php echo $nonce ?>"},
             dataType: "json",
             complete: function(){
-              alert('Saving complete.');
+             // alert('Saving complete.');
               // Save this JSON to server
               // var url = "/wp-content/themes/memberlite-child-master/topics/generateTopicConfig.php";
               // $.ajax({
@@ -1253,7 +1253,7 @@ $nonce = wp_create_nonce( 'admin_test');
                   //linkedTopics = data;
                 },
                 error: function() {
-                  alert('Error getting linked topics.');
+                 // alert('Error getting linked topics.');
                 }
               });
 
@@ -1284,7 +1284,7 @@ $nonce = wp_create_nonce( 'admin_test');
                   //linkedTopics = data;
                 },
                 error: function() {
-                  alert('Error getting hidden topics.');
+                //  alert('Error getting hidden topics.');
                 }
               });
 
@@ -1313,7 +1313,7 @@ $nonce = wp_create_nonce( 'admin_test');
                   //linkedTopics = data;
                 },
                 error: function() {
-                  alert('Error getting topic class data.');
+                //  alert('Error getting topic class data.');
                 }
               });
 
@@ -1365,7 +1365,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			
 			if(linkedTopicsOnLoad==null)
 			{
-				alert('Please click Save Topic-level Config and try again.');
+				//alert('Please click Save Topic-level Config and try again.');
 				return false;
 			
 			}
