@@ -1328,11 +1328,12 @@ $nonce = wp_create_nonce( 'admin_test');
 				});
 				
               // Get all topics whose properties we don't want to expand
-              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/hiddenTopicConfig.json";
+              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/prefill_manage_topic_fields.php";
               var hiddenTopics;
               $.ajax({
                 url: url,
-                type: "GET",
+                type: "POST",
+				data: {type : 'hidden_topic',security:"<?php echo $nonce ?>"},
                 dataType: "json",
                 async: false,
                 cache: false,

@@ -25,6 +25,15 @@ if($type=='linked_topic') {
 		$array[] = 'linked_topic_'.$vals->topic_name;
 	}
 	echo json_encode($array);
+} 
+else if($type=='hidden_topic') {
+	$sql = 'select * from alpn_manage_topic where hide_properties=1';
+	$data = $wpdb->get_results($sql);
+	foreach($data as $vals)
+	{
+		$array[] = 'hidden_topic_'.$vals->topic_name;
+	}
+	echo json_encode($array);
 }
 
 ?>
