@@ -1278,7 +1278,9 @@ $nonce = wp_create_nonce( 'admin_test');
 
                 //$("#"+linked_topic_checkbox_id).attr("checked", true);
               });
-
+				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
+				alert("test");
+			});
               // Get all topics whose properties we don't want to expand
               var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/hiddenTopicConfig.json";
               var hiddenTopics;
@@ -1339,9 +1341,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
             }
         } );
-		$(".linked_topic_checkbox").click(function(){
-				alert("test");
-			});
+		
         // Array to track the ids of the details displayed rows
         var detailRows = [];
 		function processrows(tr) {
