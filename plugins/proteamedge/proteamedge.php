@@ -1297,8 +1297,8 @@ $nonce = wp_create_nonce( 'admin_test');
 					 else {
 						  value = 0;
 					 }
-					//update_manage_topic_settings(field_type,topic_name,value);
-					$('#save_linked_topics').click();
+					update_manage_topic_settings(field_type,topic_name,value);
+					
 				});
 				dt.rows().nodes().to$().find(".hidden_topic_checkbox").click(function(){
 					 field_type = 'hidden_topic';
@@ -1309,21 +1309,21 @@ $nonce = wp_create_nonce( 'admin_test');
 					 else {
 						  value = 0;
 					 }
-					//update_manage_topic_settings(field_type,topic_name,value);
-					$('#save_linked_topics').click();
+					update_manage_topic_settings(field_type,topic_name,value);
+					
 				});
 				dt.rows().nodes().to$().find(".topic_class").on('change',function(){
 					 field_type = 'visibility';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
 					 value = $(this).val();
-					//update_manage_topic_settings(field_type,topic_name,value);
-					$('#save_linked_topics').click();
+					update_manage_topic_settings(field_type,topic_name,value);
+					
 				});
 				dt.rows().nodes().to$().find("input[type='text']").blur(function(){
 					 field_type = 'friendly_name';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
 					 value = $(this).val();
-					//update_manage_topic_settings(field_type,topic_name,value);
+					update_manage_topic_settings(field_type,topic_name,value);
 				});
 				
               // Get all topics whose properties we don't want to expand
