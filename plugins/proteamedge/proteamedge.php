@@ -1243,7 +1243,7 @@ $nonce = wp_create_nonce( 'admin_test');
               "class": "dt-body-center",
               "orderable": false},
             { "data": null,
-              "defaultContent": "<input type='text'>",
+              "defaultContent": "<input type='text' class='friendly_name'>",
               "orderable": false },
             { "data": "topic_class",
               "orderable": false },
@@ -1261,22 +1261,24 @@ $nonce = wp_create_nonce( 'admin_test');
               // First, get list of linked topics from server
               var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/prefill_manage_topic_fields.php";
               var linkedTopics;
+			  var hiddenTopics;
               $.ajax({
                 url: url,
                 type: "POST",
-                data: {type : 'linked_topic',security:"<?php echo $nonce ?>"},
+                data: {security:"<?php echo $nonce ?>"},
                 dataType: "json",
                 async: false,
                 cache: false,
                 success: function(data){
-                  useReturnData(data);
+                  useReturnData(data.linked_topic);
+                  useReturnDataHidden(data.hidden_topic);
                   //linkedTopics = data;
                 },
                 error: function() {
                  // alert('Error getting linked topics.');
                 }
               });
-
+			
               function useReturnData(data){
                   linkedTopics = data;
                   // Store list of linkedTopics to signify these in "ExpectedTypes"
@@ -1289,6 +1291,19 @@ $nonce = wp_create_nonce( 'admin_test');
 
                 //$("#"+linked_topic_checkbox_id).attr("checked", true);
               });
+			  
+			  
+			  function useReturnDataHidden(data){
+                  hiddenTopics = data;
+                  // Store list of linkedTopics to signify these in "ExpectedTypes"
+                  hiddenTopicsOnLoad = data;
+              };
+
+              // Now, check all the boxes
+              $.each(hiddenTopics, function(index, hidden_topic_checkbox_id) {
+                dt.rows().nodes().to$().find("#"+hidden_topic_checkbox_id).attr("checked", true);
+              });
+			  
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
 					 field_type = 'linked_topic';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
@@ -1327,35 +1342,7 @@ $nonce = wp_create_nonce( 'admin_test');
 					update_manage_topic_settings(field_type,topic_name,value);
 				});
 				
-              // Get all topics whose properties we don't want to expand
-              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/prefill_manage_topic_fields.php";
-              var hiddenTopics;
-              $.ajax({
-                url: url,
-                type: "POST",
-				data: {type : 'hidden_topic',security:"<?php echo $nonce ?>"},
-                dataType: "json",
-                async: false,
-                cache: false,
-                success: function(data){
-                  useReturnDataHidden(data);
-                  //linkedTopics = data;
-                },
-                error: function() {
-                //  alert('Error getting hidden topics.');
-                }
-              });
-
-              function useReturnDataHidden(data){
-                  hiddenTopics = data;
-                  // Store list of linkedTopics to signify these in "ExpectedTypes"
-                  hiddenTopicsOnLoad = data;
-              };
-
-              // Now, check all the boxes
-              $.each(hiddenTopics, function(index, hidden_topic_checkbox_id) {
-                dt.rows().nodes().to$().find("#"+hidden_topic_checkbox_id).attr("checked", true);
-              });
+              
 
               // Get all topic_class fields
               var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/pteScopeConfig.json";

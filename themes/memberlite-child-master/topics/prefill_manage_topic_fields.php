@@ -17,23 +17,17 @@ if($passed==0) {
 }
 $type = $_POST['type'];
 $array = array();
-if($type=='linked_topic') {
-	$sql = 'select * from alpn_manage_topic where core_topic=1';
-	$data = $wpdb->get_results($sql);
-	foreach($data as $vals)
-	{
-		$array[] = 'linked_topic_'.$vals->topic_name;
-	}
-	echo json_encode($array);
-} 
-else if($type=='hidden_topic') {
-	$sql = 'select * from alpn_manage_topic where hide_properties=1';
-	$data = $wpdb->get_results($sql);
-	foreach($data as $vals)
-	{
-		$array[] = 'hidden_topic_'.$vals->topic_name;
-	}
-	echo json_encode($array);
+$sql = 'select * from alpn_manage_topic where core_topic=1';
+$data = $wpdb->get_results($sql);
+foreach($data as $vals)
+{
+	$array['linked_topic'] = 'linked_topic_'.$vals->topic_name;
 }
-
+$sql = 'select * from alpn_manage_topic where hide_properties=1';
+$data = $wpdb->get_results($sql);
+foreach($data as $vals)
+{
+	$array['hidden_topic'] = 'hidden_topic_'.$vals->topic_name;
+}
+echo json_encode($array);
 ?>
