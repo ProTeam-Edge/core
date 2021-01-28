@@ -1289,7 +1289,7 @@ $nonce = wp_create_nonce( 'admin_test');
 						friendly_name = value.friendly_name;
 						if(linked_topic_id==topic_name)
 						{
-						dt.rows().nodes().to$().find("#"+linked_topic_id_string).parent().parent().find("input[type='text']").val(friendly_name);
+						dt.rows().nodes().to$().find("#"+linked_topic_id_string).parent().parent().find(".friendly_name").val(friendly_name);
 
 						}
 						
