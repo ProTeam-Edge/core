@@ -100,10 +100,10 @@ function manage_topic_types() {
 
 	/* $inssql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,cdate,mdate)values("Airline","1","1","Name","1","'.time().'","'.time().'")';
 	echo $insdata = $wpdb->query($inssql); */
-	$sql = 'select * from alpn_manage_topic';
+	/* $sql = 'select * from alpn_manage_topic';
 	$data = $wpdb->get_results($sql);
 	echo '<pre>';
-	print_r($data);
+	print_r($data); */
 
 $schema_master_file = WP_CONTENT_DIR . "/plugins/proteamedge/schema.jsonId";
 if ($json = file_get_contents($schema_master_file)) {
