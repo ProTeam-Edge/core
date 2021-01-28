@@ -1279,8 +1279,15 @@ $nonce = wp_create_nonce( 'admin_test');
                 //$("#"+linked_topic_checkbox_id).attr("checked", true);
               });
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
-				topic_name = $(this).parent().parent().find("td:eq(1)").text();
-				alert(topic_name)
+					 if($(this).is(':checked') ){
+						 topic_name = $(this).parent().parent().find("td:eq(1)").text();
+						alert(topic_name)
+					 }
+					 else
+					 {
+						 alert('not checked')
+					 }
+				
 				});
               // Get all topics whose properties we don't want to expand
               var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/hiddenTopicConfig.json";
