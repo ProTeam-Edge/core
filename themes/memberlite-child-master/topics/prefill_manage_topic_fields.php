@@ -36,5 +36,11 @@ foreach($data as $keys=>$vals)
 	$array['friendly_name'][$keys]['topic_name'] = $vals->topic_name;
 	$array['friendly_name'][$keys]['friendly_name'] = $vals->friendly_name;
 }
+$sql = 'select * from alpn_manage_topic where visibility!=""';
+$data = $wpdb->get_results($sql);
+foreach($data as $keys=>$vals)
+{
+	$array['topic_class'][$key]['topic_class_'.$vals->topic_name.''] = $vals->visibility;
+}
 echo json_encode($array);
 ?>
