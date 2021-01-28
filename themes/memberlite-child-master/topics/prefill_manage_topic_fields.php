@@ -16,6 +16,6 @@ if($passed==0) {
 	die;
 }
 echo '<pre>';
-print_r($linked_topic);
+print_r($_POST);
 die;
 ?>
