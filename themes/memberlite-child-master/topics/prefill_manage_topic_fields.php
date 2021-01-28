@@ -15,7 +15,16 @@ if($passed==0) {
 	echo 'Not a valid request.';
 	die;
 }
-echo '<pre>';
-print_r($_POST);
-die;
+$type = $_POST['type'];
+$array = array();
+if($type=='linked_topic') {
+	$sql = 'select * from alpn_manage_topic where core_topic=1';
+	$data = $wpdb->get_results($sql);
+	foreach($data as $vals)
+	{
+		$array[] = 'linked_topic_'.$vals->topic_name;
+	}
+	return json_encode($array);
+}
+
 ?>
