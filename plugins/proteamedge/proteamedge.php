@@ -1033,7 +1033,16 @@ $nonce = wp_create_nonce( 'admin_test');
         }
 
       }
-
+		update_manage_topic_settings(field_type,topic_name,value){
+			$.ajax({
+            url: url,
+            type: "POST",
+            data: {field_type : field_type,topic_name:topic_name,value:value,security:"<?php echo $nonce ?>"},
+            complete: function(){
+            
+            }
+          });
+		}
       // Post a JSON list to a PHP file when "Generate Topic" button is clicked
       $(document).on("click", ".disabled" , function() {
 
@@ -1279,14 +1288,15 @@ $nonce = wp_create_nonce( 'admin_test');
                 //$("#"+linked_topic_checkbox_id).attr("checked", true);
               });
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
+					 field_type = 'linked_topic';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
 					 if($(this).is(':checked') ){
-						 checked = 1;
+						 value = 1;
 					 }
 					 else {
-						  checked = 0;
+						  value = 0;
 					 }
-					
+					update_manage_topic_settings(field_type,topic_name,val);
 				});
               // Get all topics whose properties we don't want to expand
               var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/hiddenTopicConfig.json";
