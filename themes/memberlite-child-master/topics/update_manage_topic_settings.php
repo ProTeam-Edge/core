@@ -24,7 +24,7 @@ if(empty($data)) {
 	$core_topic = 0;
 	$hide_properties = 0;
 	$friendly_name = '';
-	$visibility = '';
+	$visibility = 'topic';
 }
 else {
 	$core_topic = $data->core_topic;
