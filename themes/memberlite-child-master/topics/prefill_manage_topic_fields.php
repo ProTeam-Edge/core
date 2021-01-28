@@ -40,7 +40,8 @@ $sql = 'select * from alpn_manage_topic where visibility!=""';
 $data = $wpdb->get_results($sql);
 foreach($data as $keys=>$vals)
 {
-	$array['topic_class'][$keys]['topic_class_'.$vals->topic_name.''] = $vals->visibility;
+	$array['topic_class'][$keys]['topic_name'] = 'topic_class_'.$vals->topic_name.'';
+	$array['topic_class'][$keys]['visibility_value'] = $vals->visibility;
 }
 echo json_encode($array);
 ?>
