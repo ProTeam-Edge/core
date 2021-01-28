@@ -98,7 +98,7 @@ function my_menu_pages(){
 function manage_topic_types() {
 	global $wpdb;
 
-	$inssql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visiblity)values("Airline","1","1","Name","1")';
+	$inssql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility)values("Airline","1","1","Name","1")';
 	echo $insdata = $wpdb->query($inssql);
 	$sql = 'select * from alpn_manage_topic';
 	$data = $wpdb->get_results($sql);
