@@ -24,7 +24,7 @@ if($type=='linked_topic') {
 	{
 		$array[] = 'linked_topic_'.$vals->topic_name;
 	}
-	return json_encode($array);
+	echo json_encode($array);
 }
 
 ?>
