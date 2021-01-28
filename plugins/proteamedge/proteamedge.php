@@ -1242,9 +1242,7 @@ $nonce = wp_create_nonce( 'admin_test');
             { "data": "SaveConfig",
               "orderable": false }
           ],
-			$(".linked_topic_checkbox").click(function(){
-				alert("test");
-			});
+			
           "fnInitComplete": function( oSettings ) {
               // Do someting after table is drawn
               //$('.disabled').attr('disabled','disabled');
@@ -1341,7 +1339,9 @@ $nonce = wp_create_nonce( 'admin_test');
 
             }
         } );
-		
+		$(".linked_topic_checkbox").click(function(){
+				alert("test");
+			});
         // Array to track the ids of the details displayed rows
         var detailRows = [];
 		function processrows(tr) {
