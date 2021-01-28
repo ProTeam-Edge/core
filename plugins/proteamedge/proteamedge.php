@@ -1305,6 +1305,8 @@ $nonce = wp_create_nonce( 'admin_test');
 
               // Fill all the topic_class fields
               $.each(topicClasses, function(key1, value1) {
+				  console.log(key1);
+				  console.log(value1);
 				  key = value1.topic_name;
 				  value = value1.friendly_name;
                 dt.rows().nodes().to$().find("#"+key).val(value);
