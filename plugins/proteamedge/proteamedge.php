@@ -1436,7 +1436,8 @@ $nonce = wp_create_nonce( 'admin_test');
               });
 			  
 			  
-			  dt.rows().nodes().to$().find(".subpropertycheckbox").click(function(){
+			 $(".subpropertycheckbox").click(function(){
+				 alert("clicked");
 					 field_type = 'child_fields';
 					 getclass = $(this).attr('class');
 					 split_class = getclass.split(' ');
