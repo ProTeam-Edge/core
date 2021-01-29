@@ -471,12 +471,16 @@ $nonce = wp_create_nonce( 'admin_test');
                 if (dataTypes.includes(subType.slice(18))) {
                   output += "<div class='typeIsDataType'>";
                   output += "<input type='hidden' class='ExpectedType' value='" + subType.slice(18) + "'>";
-                } else if (linkedTopicsOnLoad.includes("linked_topic_"+subType.slice(18))) { // Core type
+                } else if(linkedTopicsOnLoad!=null){
+					if(linkedTopicsOnLoad.includes("linked_topic_"+subType.slice(18))) { // Core type
                   output += "<div class='typeIsCore'>";
                   output += "<input type='hidden' class='ExpectedType' value='core_" + subType.slice(18) + "'>";
-                } else if (hiddenTopicsOnLoad.includes("hidden_topic_"+subType.slice(18))) { // Hidden type
+                } 
+				} else if (hiddenTopicsOnLoad!=null){
+					if(hiddenTopicsOnLoad.includes("hidden_topic_"+subType.slice(18))) { // Hidden type
                   output += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='hidden_" + subType.slice(18) + "'></div>";
-                } else {
+                }
+				} else {
                   output += "<div><input type='hidden' class='ExpectedType' value='" + subType.slice(18) + "'>";
                 }
                 output += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "'>";
