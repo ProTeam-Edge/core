@@ -821,7 +821,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
       });
       $(document).on("click", "#save_linked_topics" , function() {
-		 $.LoadingOverlay("show");
+		
           // Show a loading icon
           var saveLinkedTopicsButton = document.querySelector('#save_linked_topics');
           saveLinkedTopicsButton.innerHTML = "Saving...";
@@ -890,7 +890,7 @@ $nonce = wp_create_nonce( 'admin_test');
                     dataType: "json",
                     complete: function(){
                       saveLinkedTopicsButton.innerHTML = "Save Topic-level Config";
-				    	$.LoadingOverlay("hide");
+				    	
 					  // alert('Config has been saved successfully.');
 						
                     }
