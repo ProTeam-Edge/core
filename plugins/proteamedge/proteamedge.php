@@ -931,7 +931,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
       });
       function saveTopicConfig(id) {
-		  $.LoadingOverlay("show");
+		
           var topicClass = id; // Remove "save_topic_" from topic id
 
           var friendlyFields = {};
@@ -1024,7 +1024,7 @@ $nonce = wp_create_nonce( 'admin_test');
             dataType: "json",
             complete: function(){
              // alert('Saving complete.');
-			  	$.LoadingOverlay("hide");
+			  
             }
           });
 
