@@ -493,10 +493,15 @@ $nonce = wp_create_nonce( 'admin_test');
               //output += "<input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
               if (dataTypes.includes(subItem["ExpectedTypes"].slice(18))) {
                 output += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
-              } else if (linkedTopicsOnLoad.includes("linked_topic_"+subItem["ExpectedTypes"].slice(18))) { // Core type
+              } else if (linkedTopicsOnLoad!=null) { // Core type
+			  if(linkedTopicsOnLoad.includes("linked_topic_"+subItem["ExpectedTypes"].slice(18))){
                 output += "<div class='typeIsCore'><input type='hidden' class='ExpectedType' value='core_" + subItem["ExpectedTypes"].slice(18) + "'>";
-              } else if (hiddenTopicsOnLoad.includes("hidden_topic_"+subItem["ExpectedTypes"].slice(18))) { // Hidden type
+			  }
+              } 
+			  else if(hiddenTopicsOnLoad!=null){
+			  if (hiddenTopicsOnLoad.includes("hidden_topic_"+subItem["ExpectedTypes"].slice(18))) { // Hidden type
                 output += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='hidden_" + subItem["ExpectedTypes"].slice(18) + "'>";
+			  }
               } else {
                 output += "<div><input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
               }
