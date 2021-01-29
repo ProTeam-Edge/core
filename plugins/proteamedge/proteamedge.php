@@ -537,9 +537,12 @@ $nonce = wp_create_nonce( 'admin_test');
 				console.log('expected type more then 1')	
                 // Multiple types for a given property
                 $.each(expectedTypes, function(index, type) {
-					
+				var typeIsCore = false;
+				var typeIsHidden = false;
                   // Check if the type is a core topic
+				  if(linkedTopicsOnLoad!=null)
                   var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+type.slice(18));
+				    if(hiddenTopicsOnLoad!=null)
                   var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+type.slice(18));
 			
 					if ((typeIsCore == false) && (typeIsHidden == false)) { // Not a core nor hidden type
