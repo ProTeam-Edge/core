@@ -256,7 +256,12 @@ $nonce = wp_create_nonce( 'admin_test');
 		console.log(topic_name);
 		saveTopicConfig(topic_name);	
 		}
-			  
+		function additionalchild_settings_trigger(element){
+		id =$(element).parent().attr('id');
+		split_id = id.split('_');
+		topic_name = split_id[0];
+		saveTopicConfig(topic_name);	
+		}	  
       var dt = null;
       var linkedTopicsOnLoad = null;
       var hiddenTopicsOnLoad = null;
@@ -372,19 +377,19 @@ $nonce = wp_create_nonce( 'admin_test');
             out += "</div></td>";
 
             // Friendly
-            var friendlyHTML = "<input type='text' class='friendly' id='pte_" + pteCoreType + "_" + propertyCount + "friendly' value='" + value["friendly"] + "'>";
+            var friendlyHTML = "<input onblur='return additionalchild_settings_trigger(this)' type='text' class='friendly' id='pte_" + pteCoreType + "_" + propertyCount + "friendly' value='" + value["friendly"] + "'>";
             out += "<td><div id='" + topicName + "_addProperty_" + propertyCount + "_friendly" +"'>";
             out += friendlyHTML;
             out += "</div></td>";
 
             // Required
-            var requiredHTML = "<input type='checkbox' class='" + topicName + "_required' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_required'>";
+            var requiredHTML = "<input type='checkbox' onclick='return additionalchild_settings_trigger(this)' class='" + topicName + "_required' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_required'>";
             out += "<td><div id='" + topicName + "_addProperty_" + propertyCount + "_required" +"'>";
             out += requiredHTML;
             out += "</div></td>";
 
             // Hidden
-            var hiddenHTML = "<input type='checkbox' class='" + topicName + "_hidden' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_hidden'>";
+            var hiddenHTML = "<input type='checkbox' onclick='return additionalchild_settings_trigger(this)' class='" + topicName + "_hidden' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_hidden'>";
             out += "<td><div id='" + topicName + "_addProperty_" + propertyCount + "_hidden" +"'>";
             out += hiddenHTML;
             out += "</div></td>";
