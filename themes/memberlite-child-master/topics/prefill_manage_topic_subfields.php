@@ -19,10 +19,8 @@ if($passed==0) {
 $array = array();
 $topic_name = $_POST['topic_name'];
 $sql = 'select child_fields from alpn_manage_topic where topic_name="'.$topic_name.'"';
-$data = $wpdb->get_results($sql);
-foreach($data as $keys=>$vals)
-{
-	$array = $vals->child_fields;
-}
-echo json_encode($array, JSON_UNESCAPED_SLASHES);
+$data = $wpdb->get_row($sql);
+$array = $data->child_fields;
+
+echo $array;
 ?>
