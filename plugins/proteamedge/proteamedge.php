@@ -279,45 +279,48 @@ $nonce = wp_create_nonce( 'admin_test');
 			cache: false,
           success: function(data){
 		  if(data!='')	 
-          useReturnDataFriendly(data);
+		  {
+			loadedFriendlyFields = data;
+			  // Fill field ids with friendly text
+			$.each(loadedFriendlyFields["friendly_fields"], function(key, value) {
+			  //document.getElementById('output').setAttribute("value", "100");
+			  $("#"+key).val(value);
+			});
+
+			// Check checkboxes if they have associated data
+			// $.each(loadedFriendlyFields["checkedBoxes"], function(key, value) {
+			//   //document.getElementById('output').setAttribute("value", "100");
+			//   if (key != "pte_meta") {
+			//     $("#"+key).prop( "checked", true );
+			//   }
+			// });
+
+			$.each(loadedFriendlyFields["checkedBoxes"], function(index, value) {
+			  $("#"+value).prop( "checked", true );
+			});
+
+			$.each(loadedFriendlyFields["requiredCheckedBoxes"], function(index, value) {
+			  $("#"+value).prop( "checked", true );
+			});
+
+			$.each(loadedFriendlyFields["hiddenCheckedBoxes"], function(index, value) {
+			  $("#"+value).prop( "checked", true );
+			});
+		  }
           },
           error: function() {
             //alert('No checkboxes and friendly fields set.');
           }
         });
 
-        function useReturnDataFriendly(data){
-            loadedFriendlyFields = data;
-        };
+      
 
-        // Fill field ids with friendly text
-        $.each(loadedFriendlyFields["friendly_fields"], function(key, value) {
-          //document.getElementById('output').setAttribute("value", "100");
-          $("#"+key).val(value);
-        });
-
-        // Check checkboxes if they have associated data
-        // $.each(loadedFriendlyFields["checkedBoxes"], function(key, value) {
-        //   //document.getElementById('output').setAttribute("value", "100");
-        //   if (key != "pte_meta") {
-        //     $("#"+key).prop( "checked", true );
-        //   }
-        // });
-
-        $.each(loadedFriendlyFields["checkedBoxes"], function(index, value) {
-          $("#"+value).prop( "checked", true );
-        });
-
-        $.each(loadedFriendlyFields["requiredCheckedBoxes"], function(index, value) {
-          $("#"+value).prop( "checked", true );
-        });
-
-        $.each(loadedFriendlyFields["hiddenCheckedBoxes"], function(index, value) {
-          $("#"+value).prop( "checked", true );
-        });
+        
 
       }
-
+ function useReturnDataFriendly(data){
+            loadedAdditionalProperties = data;
+        };
       function addAdditionalPropertyRows(topicName) {
 
         var out = "";
@@ -332,19 +335,10 @@ $nonce = wp_create_nonce( 'admin_test');
 			async: false,
 			cache: false,
           success: function(data){
-			  if(data!='')
-            useReturnDataFriendly(data);
-          },
-          error: function() {
-            //alert('No additional properties set in config.');
-          }
-        });
-
-        function useReturnDataFriendly(data){
+			if(data!='')	 
+			{
             loadedAdditionalProperties = data;
-        };
-
-        if (typeof loadedAdditionalProperties !== 'undefined') {
+			     if (typeof loadedAdditionalProperties !== 'undefined') {
           $.each(loadedAdditionalProperties["additionalProperties"], function(key, value) {
             var pteCoreType = value["schema_key"].split("_")[3];
             var propertyCount = value["name"].split("_")[2];
@@ -405,7 +399,16 @@ $nonce = wp_create_nonce( 'admin_test');
             out += "</tr>";
 
           });
-        }
+		  }}
+          },
+          error: function() {
+            //alert('No additional properties set in config.');
+          }
+        });
+
+       
+
+     
 
         return out;
 
