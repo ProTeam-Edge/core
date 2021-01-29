@@ -24,12 +24,14 @@ if(empty($data)) {
 	$core_topic = 0;
 	$hide_properties = 0;
 	$friendly_name = '';
+	$child_fields = '';
 	$visibility = 'topic';
 }
 else {
 	$core_topic = $data->core_topic;
 	$hide_properties = $data->hide_properties;
 	$friendly_name = $data->friendly_name;
+	$child_fields = $data->child_fields;
 	$visibility =  $data->visibility;
 }
 
@@ -45,12 +47,15 @@ if($field_type=='friendly_name') {
 if($field_type=='visibility') {
 	$visibility = $value ;
 }
+if($field_type=='child_fields') {
+	$child_fields = $value ;
+}
 if(empty($data)) {
-	$sql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,cdate,mdate)values("'.$topic_name.'","'.$core_topic.'","'.$hide_properties.'","'.$friendly_name.'","'.$visibility.'","'.time().'","'.time().'")';
+	$sql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,child_fields,cdate,mdate)values("'.$topic_name.'","'.$core_topic.'","'.$hide_properties.'","'.$friendly_name.'","'.$visibility.'","'.$child_fields.'","'.time().'","'.time().'")';
 	
 }
 else {
-	$sql = 'update alpn_manage_topic set topic_name = "'.$topic_name.'",core_topic="'.$core_topic.'",hide_properties="'.$hide_properties.'",friendly_name="'.$friendly_name.'",visibility="'.$visibility.'",mdate="'.time().'" where topic_name="'.$topic_name.'"';
+	$sql = 'update alpn_manage_topic set topic_name = "'.$topic_name.'",core_topic="'.$core_topic.'",hide_properties="'.$hide_properties.'",friendly_name="'.$friendly_name.'",visibility="'.$visibility.'",mdate="'.time().'" , child_fields="'.$child_fields.'" where topic_name="'.$topic_name.'"';
 }
 $data = $wpdb->query($sql);
 ?>

@@ -97,6 +97,7 @@ function my_menu_pages(){
     add_submenu_page('manage-topic-types', 'Manage Topic Types DB', 'Manage Topic Types DB', 'manage_options', 'manage-topic-types-db','manage_topic_types_db' );
 }
 function manage_topic_types_db() {
+	echo 'changes';
 	global $wpdb;
 
 	/* $inssql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,cdate,mdate)values("Airline","1","1","Name","1","'.time().'","'.time().'")';
@@ -252,7 +253,7 @@ $nonce = wp_create_nonce( 'admin_test');
         var d = row.data();
         // Get and fill friendly fields
         // Get all topics whose properties we don't want to expand
-        var url = "<?php echo $site_url ?>//wp-content/themes/memberlite-child-master/topics/topicConfig/" + d.TopicName + "_config.json";
+        var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/topicConfig/" + d.TopicName + "_config.json";
         var loadedFriendlyFields;
         $.ajax({
           url: url,
@@ -433,10 +434,10 @@ $nonce = wp_create_nonce( 'admin_test');
             var expectedTypes = subItem["ExpectedTypes"].split(', ');
             if (expectedTypes.length > 1) {
               $.each(expectedTypes, function(index, subType) {
-                output += "<tr><td class='subProperty'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "'></td>";
-                output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "friendly'></td>";
-                output += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "_required" + "'></td>";
-                output += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "_hidden" + "'></td>";
+                output += "<tr><td class='subProperty'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "'></td>";
+                output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "friendly'></td>";
+                output += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "_required" + "'></td>";
+                output += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + " subpropertyhidden' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "_hidden" + "'></td>";
                 output += "<td>" + subType.slice(18);
                 //output += "<input type='hidden' class='ExpectedType' value='" + subType.slice(18) + "'>";
                 if (dataTypes.includes(subType.slice(18))) {
@@ -456,10 +457,10 @@ $nonce = wp_create_nonce( 'admin_test');
 
 
             } else {
-              output += "<tr><td class='subProperty'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "'></td>";
-              output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "friendly'></td>";
-              output += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
-              output += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
+              output += "<tr><td class='subProperty'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "'></td>";
+              output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "friendly'></td>";
+              output += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
+              output += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + " subpropertyhidden' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
               output += "<td>" + subItem["ExpectedTypes"].slice(18);
               //output += "<input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
               if (dataTypes.includes(subItem["ExpectedTypes"].slice(18))) {
@@ -515,10 +516,10 @@ $nonce = wp_create_nonce( 'admin_test');
 			
 					if ((typeIsCore == false) && (typeIsHidden == false)) { // Not a core nor hidden type
                     if (dataTypes.includes(type.slice(18))) { // Render basic datatypes like this
-                      out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                      out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + type.slice(18) + "_" + "friendly'></td>";
-                      out += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
-                      out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_hidden" + "'></td>";
+                      out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                      out += "<td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + type.slice(18) + "_" + "friendly'></td>";
+                      out += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
+                      out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_hidden" + "'></td>";
                       out += "<td>" + type.slice(18);
                       out += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + type.slice(18) + "'>";
                       out += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'>";
@@ -530,10 +531,10 @@ $nonce = wp_create_nonce( 'admin_test');
                     }
                   } else { // It is a core or hidden type, display a single text field
 				  	console.log('expected = 1')	
-                    out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                    out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
-                    out += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
-                    out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_hidden" + "'></td>";
+                    out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                    out += "<td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
+                    out += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
+                    out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_hidden" + "'></td>";
                     out += "<td>" + type.slice(18);
                     if (typeIsCore == true) {
                       out += "<div class='typeIsLinked'><input type='hidden' class='ExpectedType' value='core_" + type.slice(18) + "'></div>";
@@ -568,10 +569,10 @@ $nonce = wp_create_nonce( 'admin_test');
                   if (dataTypes.includes(item["ExpectedTypes"].slice(18))) {
 					  	console.log('expected if')	
 					
-                    out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                    out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
-                    out += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
-                    out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
+                    out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                    out += "<td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
+                    out += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
+                    out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
                     out += "<td>" + typeName;
                     out += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + typeName + "'>";
                     out += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + item["ExpectedTypes"].slice(18) + "'>";
@@ -583,10 +584,10 @@ $nonce = wp_create_nonce( 'admin_test');
                 } else {
 				  	console.log('expected else')	
                   // It is a core or hidden topic, display a single text field
-                  out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                  out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
-                  out += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_required" + "'></td>";
-                  out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_hidden" + "'></td>";
+                  out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                  out += "<td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
+                  out += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_required" + "'></td>";
+                  out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_hidden" + "'></td>";
                   out += "<td>" + typeName;
                   if (typeIsCore == true) {
                     out += "<div class='typeIsLinked'><input type='hidden' class='ExpectedType' value='core_" + typeName + "'></div>";
@@ -909,7 +910,105 @@ $nonce = wp_create_nonce( 'admin_test');
 		 
 
       });
+      function saveTopicConfig(id) {
+		  $.LoadingOverlay("show");
+          var topicClass = id; // Remove "save_topic_" from topic id
 
+          var friendlyFields = {};
+          var checkedBoxes = [];
+          var requiredCheckedBoxes = [];
+          var hiddenCheckedBoxes = [];
+
+          var topicPropertyTable = topicClass + "_friendly";
+
+          // Get a list of the friendly text boxes which aren't empty
+          var friendlyTextBoxes = $("."+topicPropertyTable).map(function () {
+            if (this.value.length > 0) {
+              return $(this).val();
+            }
+          }).get();
+
+          // Get friendly text box IDs
+          var friendlyTextBoxIDs= $("."+topicPropertyTable).map(function() {
+            if (this.value.length > 0) {
+              return $(this).attr("id");
+            }
+          }).get();
+
+          // Store ID:friendly field pairs
+          var i;
+          for (i = 0; i < friendlyTextBoxes.length; i++) {
+            friendlyFields[friendlyTextBoxIDs[i]] = friendlyTextBoxes[i];
+          }
+
+          // Get checkboxes under this topic class that are checked
+          var idSelector = function() { return this.id; };
+          var boxesChecked = $("."+topicClass+":checkbox:checked").map(idSelector).get();
+          var requiredBoxesChecked = $("."+topicClass+"_required:checkbox:checked").map(idSelector).get();
+          var hiddenBoxesChecked = $("."+topicClass+"_hidden:checkbox:checked").map(idSelector).get();
+
+          //var textFields = $(".friendly:input:").map(idSelector).get();
+          $.each(boxesChecked, function(index, value) {
+            // Add ID of boxes that are checked for saving to config
+            checkedBoxes.push(value.toLowerCase());
+          });
+
+          $.each(requiredBoxesChecked, function(index, value) {
+            // Add ID of required boxes that are checked for saving to config
+            requiredCheckedBoxes.push(value.toLowerCase());
+          });
+
+          $.each(hiddenBoxesChecked, function(index, value) {
+            // Add ID of hidden boxes that are checked for saving to config
+            hiddenCheckedBoxes.push(value.toLowerCase());
+          });
+
+          // Get additional property fields that have been added
+          //var nameSelector = function() { return this.name; };
+          var additionalProperties = {};
+          //var additionalPropIDs = dt.rows().nodes().to$().find('.additionalProperty').map(idSelector).get();
+          var additionalPropIDs = $(".additionalProperty").map(idSelector).get();
+          $.each(additionalPropIDs, function(index, value) {
+            // Add ID of additional property checkboxes along with their selected type and required/hidden checkboxes
+            // Get each of the checked boxes and their corresponding friendly text fields
+            var checkbox = document.querySelector('[id='+value+']');
+            friendly = $(checkbox).closest("tr").find('input[type="text"]').val();
+
+            // Get corresponding required checkbox
+            required = $(checkbox).closest("tr").find("#"+value.toLowerCase()+"_required").is(':checked');
+
+            // Get corresponding hidden checkbox
+            hidden = $(checkbox).closest("tr").find("#"+value.toLowerCase()+"_hidden").is(':checked');
+
+            //type = $(checkbox).closest("tr").find('input[type="hidden"]').val();
+            type = $(checkbox).closest("tr").find('input.ExpectedType:hidden').val();
+            schemaKey = $(checkbox).closest("tr").find('input.schemaKey:hidden').val();
+
+            additionalProperties[value.toLowerCase()] = Object.fromEntries(new Map([ ["friendly", friendly],["type", type.toLowerCase()],["name", value.toLowerCase()],["required", required.toString()],["schema_key", schemaKey],["hidden", hidden.toString()]]));
+          });
+
+          // Create config file to store checked boxes and friendly fields
+          var config = {};
+          config["topic_name"] = topicClass;
+          config["friendly_fields"] = friendlyFields;
+          config["checkedBoxes"] = checkedBoxes;
+          config["requiredCheckedBoxes"] = requiredCheckedBoxes;
+          config["hiddenCheckedBoxes"] = hiddenCheckedBoxes;
+          config["additionalProperties"] = additionalProperties;
+
+          var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/update_manage_topic_settings.php";
+          $.ajax({
+            url: url,
+            type: "POST",
+            data: {data : JSON.stringify(config),type:'child_fields',security:"<?php echo $nonce ?>"},
+            dataType: "json",
+            complete: function(){
+             // alert('Saving complete.');
+			  	$.LoadingOverlay("hide");
+            }
+          });
+
+	  }
       // Save Config JSON when "Save Prop. Config" is clicked
       $(document).on("click", ".saveTopicConfig" , function() {
 			$.LoadingOverlay("show");
