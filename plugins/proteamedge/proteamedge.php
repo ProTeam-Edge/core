@@ -244,7 +244,6 @@ $nonce = wp_create_nonce( 'admin_test');
     <script type="text/javascript">
 		function child_settings_trigger(element){
 		getclass =$(element).attr('class');
-		
 		split_class = getclass.split(' ');
 		topic_name = split_class[0];
 		if(topic_name.indexOf("_")!='-1')
