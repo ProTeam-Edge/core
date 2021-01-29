@@ -242,7 +242,9 @@ $nonce = wp_create_nonce( 'admin_test');
     </table>
 
     <script type="text/javascript">
-
+		function child_settings_trigger(element){
+				  console.log(element);
+			  }
       var dt = null;
       var linkedTopicsOnLoad = null;
       var hiddenTopicsOnLoad = null;
@@ -1434,9 +1436,7 @@ $nonce = wp_create_nonce( 'admin_test');
               $.each(hiddenTopics, function(index, hidden_topic_checkbox_id) {
                 dt.rows().nodes().to$().find("#"+hidden_topic_checkbox_id).attr("checked", true);
               });
-			  function child_settings_trigger(element){
-				  console.log(element);
-			  }
+			  
 			  
 			/*  $(".subpropertycheckbox").click(function(){
 				 alert("clicked");
