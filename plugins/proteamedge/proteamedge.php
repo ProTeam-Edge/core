@@ -243,8 +243,14 @@ $nonce = wp_create_nonce( 'admin_test');
 
     <script type="text/javascript">
 		function child_settings_trigger(element){
-				  console.log(element);
+				   getclass =element.class;
+				   console.log(getclass);
+				   return false;
+					split_class = getclass.split(' ');
+					topic_name = split_class[0];
+					  saveTopicConfig(topic_name);	
 			  }
+			  
       var dt = null;
       var linkedTopicsOnLoad = null;
       var hiddenTopicsOnLoad = null;
@@ -1438,15 +1444,7 @@ $nonce = wp_create_nonce( 'admin_test');
               });
 			  
 			  
-			/*  $(".subpropertycheckbox").click(function(){
-				 alert("clicked");
-					 field_type = 'child_fields';
-					 getclass = $(this).attr('class');
-					 split_class = getclass.split(' ');
-					 topic_name = split_class[0];
-					  saveTopicConfig(topic_name);	
-					
-				}); */
+			
 			  
 			  
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
