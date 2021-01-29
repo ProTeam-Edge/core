@@ -234,7 +234,7 @@ $nonce = wp_create_nonce( 'admin_test');
             <th>Friendly Name</th>
             <th>Visibility</th>
             <th>Generate</th>
-            <th>Save</th>
+         
           </tr>
         </thead>
         <tbody>
@@ -1346,8 +1346,7 @@ $nonce = wp_create_nonce( 'admin_test');
               "orderable": false },
             { "data": "Generate",
               "orderable": false },
-            { "data": "SaveConfig",
-              "orderable": false }
+         
           ],
 			
           "fnInitComplete": function( oSettings ) {
