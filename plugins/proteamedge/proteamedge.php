@@ -1000,7 +1000,7 @@ $nonce = wp_create_nonce( 'admin_test');
           $.ajax({
             url: url,
             type: "POST",
-            data: {data : JSON.stringify(config),type:'child_fields',security:"<?php echo $nonce ?>"},
+            data: {topic_name:topicClass,value : JSON.stringify(config),field_type:'child_fields',security:"<?php echo $nonce ?>"},
             dataType: "json",
             complete: function(){
              // alert('Saving complete.');
@@ -1434,6 +1434,17 @@ $nonce = wp_create_nonce( 'admin_test');
               $.each(hiddenTopics, function(index, hidden_topic_checkbox_id) {
                 dt.rows().nodes().to$().find("#"+hidden_topic_checkbox_id).attr("checked", true);
               });
+			  
+			  
+			  dt.rows().nodes().to$().find(".subpropertycheckbox").click(function(){
+					 field_type = 'child_fields';
+					 getclass = $(this).attr('class');
+					 split_class = getclass.split(' ');
+					 topic_name = split_class[0];
+					  saveTopicConfig(topic_name);	
+					
+				});
+			  
 			  
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
 					 field_type = 'linked_topic';
