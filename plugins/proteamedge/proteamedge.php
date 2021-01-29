@@ -247,6 +247,11 @@ $nonce = wp_create_nonce( 'admin_test');
 		
 		split_class = getclass.split(' ');
 		topic_name = split_class[0];
+		if(topic_name.indexOf("_")!='-1')
+		{
+			split_hyphen = topic_name.split('_');
+			topic_name = split_hyphen[0];
+		}
 		saveTopicConfig(topic_name);	
 		}
 			  
