@@ -244,8 +244,7 @@ $nonce = wp_create_nonce( 'admin_test');
     <script type="text/javascript">
 		function child_settings_trigger(element){
 		getclass =$(element).attr('class');
-		console.log(getclass);
-		return false;
+		
 		split_class = getclass.split(' ');
 		topic_name = split_class[0];
 		saveTopicConfig(topic_name);	
