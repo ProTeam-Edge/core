@@ -246,7 +246,8 @@ $nonce = wp_create_nonce( 'admin_test');
 		getclass =$(element).attr('class');
 		split_class = getclass.split(' ');
 		topic_name = split_class[0];
-		console.log(topic_name);
+		check_hyphen = topic_name.indexOf("_");
+		console.log(check_hyphen);
 		return false;
 		if(topic_name.indexOf("_")!='-1')
 		{
