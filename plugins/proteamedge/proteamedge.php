@@ -267,16 +267,20 @@ $nonce = wp_create_nonce( 'admin_test');
         var d = row.data();
         // Get and fill friendly fields
         // Get all topics whose properties we don't want to expand
-        var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/topicConfig/" + d.TopicName + "_config.json";
+		var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/prefill_manage_topic_subfields.php";
+       // var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/topicConfig/" + d.TopicName + "_config.json";
         var loadedFriendlyFields;
         $.ajax({
-          url: url,
-          type: "GET",
-          dataType: "json",
-          async: false,
-          cache: false,
+            url: url,
+			type: "POST",
+			data: {topic_name:d.TopicName,security:"<?php echo $nonce ?>"},
+			dataType: "json",
+			async: false,
+			cache: false,
           success: function(data){
-            useReturnDataFriendly(data);
+			  console.log(data);
+			  return false; 
+            //useReturnDataFriendly(data);
           },
           error: function() {
             //alert('No checkboxes and friendly fields set.');

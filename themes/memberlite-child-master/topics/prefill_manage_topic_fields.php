@@ -43,11 +43,6 @@ foreach($data as $keys=>$vals)
 	$array['topic_class'][$keys]['topic_name'] = 'topic_class_'.$vals->topic_name.'';
 	$array['topic_class'][$keys]['visibility_value'] = $vals->visibility;
 }
-$sql = 'select * from alpn_manage_topic where child_fields!=""';
-$data = $wpdb->get_results($sql);
-foreach($data as $keys=>$vals)
-{
-	$array['child_fields'][$keys][$vals->topic_name] = $vals;
-}
+
 echo json_encode($array);
 ?>
