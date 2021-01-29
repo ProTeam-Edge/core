@@ -1179,7 +1179,7 @@ $nonce = wp_create_nonce( 'admin_test');
           // Get friendly topic name
           friendlyTopicName = $(this).closest("tr").find('input[type="text"]').val();
           if (friendlyTopicName == "") {
-           // alert("Please enter a friendly topic name.");
+           alert("Please enter a friendly topic name.");
             return false;
           }
 
