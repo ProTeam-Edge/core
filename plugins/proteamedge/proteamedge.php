@@ -586,9 +586,12 @@ $nonce = wp_create_nonce( 'admin_test');
 				console.log(linkedTopicsOnLoad);
 				console.log('check vals');
 				console.log("linked_topic_"+typeName);
-				
-                var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+typeName);
-                var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+typeName);
+				var typeIsCore = false;
+				var typeIsHidden = false;
+				if(linkedTopicsOnLoad!=null)
+				typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+typeName);
+				if(hiddenTopicsOnLoad!=null)
+                typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+typeName);
 				console.log('typeIsCore vals');
 				console.log(typeIsCore);	
 				console.log('typeIsHidden');	
