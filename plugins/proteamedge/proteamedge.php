@@ -1367,6 +1367,10 @@ $nonce = wp_create_nonce( 'admin_test');
                 async: false,
                 cache: false,
                 success: function(data){
+					console.log('data.linked_topic');
+					console.log(data.linked_topic);
+					console.log('data.hidden_topic');
+					console.log(data.hidden_topic);
 				  if(data.linked_topic=='' || data.hidden_topic=='')
 				  {
 					  $('#save_linked_topics').click();
