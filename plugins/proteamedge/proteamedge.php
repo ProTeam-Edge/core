@@ -812,7 +812,7 @@ $nonce = wp_create_nonce( 'admin_test');
             dataType: "json",
             complete: function(){
             alert('All settings have been cleared successfully.');
-			  
+			  $.LoadingOverlay("hide"); 
             }
           });
 		}
