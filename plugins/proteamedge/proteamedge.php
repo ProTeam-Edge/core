@@ -252,7 +252,7 @@ $nonce = wp_create_nonce( 'admin_test');
         var d = row.data();
         // Get and fill friendly fields
         // Get all topics whose properties we don't want to expand
-        var url = "<?php echo $site_url ?>//wp-content/themes/memberlite-child-master/topics/topicConfig/" + d.TopicName + "_config.json";
+        var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/topicConfig/" + d.TopicName + "_config.json";
         var loadedFriendlyFields;
         $.ajax({
           url: url,
