@@ -11,6 +11,12 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+.pte_external_link_owner {
+	color: #700000;
+	font-size: 12px;
+	line-height: 16px;
+}
+
 .pte_interaction_separator {
 	 background-color: #ccc;
 	 height: 1px;

@@ -332,8 +332,10 @@ function alpn_handle_extra_table(extraKey) {
 	var connectedTopicClass;
 	var linkId;
 	var defaultTopic;
+	var subjectToken;
+	var ownerName;
 
-	// console.log(tableData);
+	console.log(tableData);
 
 	for (i=0; i< tableData.length; i++) {
 		rowData = tableData[i];
@@ -341,6 +343,8 @@ function alpn_handle_extra_table(extraKey) {
 		itemName = rowData[1];
 		itemBody = rowData[2];
 		ownerId = rowData[3];
+		ownerName = rowData[6];
+		subjectToken = rowData[8];
 		connectedTopicId = rowData[9];
 		connectedTopicTypeId = rowData[11];
 		connectedTopicSpecial = rowData[13];
@@ -348,6 +352,11 @@ function alpn_handle_extra_table(extraKey) {
 
 		linkId = rowData[12];
 		defaultTopic = rowData[15] ? rowData[15] : 'no';
+
+		var topicOwnerName = '';
+		if (subjectToken == 'pte_external') {
+			topicOwnerName = "<div class='pte_external_link_owner'><i class='far fa-user-friends' title='Topic Owner'></i> " + ownerName + "</div>";
+		}
 
 		if (defaultTopic == 'yes') {
 			var defaultTopicIcon = "<i class='far fa-check-circle pte_default_topic' title='Default Topic Link'></i>";
@@ -359,14 +368,14 @@ function alpn_handle_extra_table(extraKey) {
 		cellId = "div#tabcontent_" + extraKey + " #alpn_field_" + rowData[4];
 
 		if (connectedTopicClass == 'LINKYES') {
-			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>";
+			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold' data-link-id='" + linkId  + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 		} else {
-			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>";
+			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 			if (connectedTopicSpecial == 'contact') {
-				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>";
+				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 			}
 			if (connectedTopicSpecial == 'user') {
-				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>";
+				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 			}
 		}
 
