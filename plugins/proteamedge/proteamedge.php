@@ -248,8 +248,8 @@ $nonce = wp_create_nonce( 'admin_test');
 		topic_name = split_class[0];
 		check_hyphen = topic_name.indexOf("_");
 		console.log(check_hyphen);
-		return false;
-		if(topic_name.indexOf("_")!='-1')
+		
+		if(check_hyphen!='-1')
 		{
 			split_hyphen = topic_name.split('_');
 			topic_name = split_hyphen[0];
