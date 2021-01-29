@@ -265,7 +265,7 @@ $nonce = wp_create_nonce( 'admin_test');
       var dt = null;
       var linkedTopicsOnLoad = null;
       var hiddenTopicsOnLoad = null;
-      var topicClassesOnLoad = null;
+      var topicClassesOnLoad = null];
       var dataTypes = ["Text","URL","Distance","QuantitativeValue","Boolean","Date","DateTime","Number","Time","Integer"];
 
       function fillRow (row) {
@@ -471,16 +471,12 @@ $nonce = wp_create_nonce( 'admin_test');
                 if (dataTypes.includes(subType.slice(18))) {
                   output += "<div class='typeIsDataType'>";
                   output += "<input type='hidden' class='ExpectedType' value='" + subType.slice(18) + "'>";
-                } else if(linkedTopicsOnLoad!=null){
-					if(linkedTopicsOnLoad.includes("linked_topic_"+subType.slice(18))) { // Core type
+                } else if (linkedTopicsOnLoad.includes("linked_topic_"+subType.slice(18))) { // Core type
                   output += "<div class='typeIsCore'>";
                   output += "<input type='hidden' class='ExpectedType' value='core_" + subType.slice(18) + "'>";
-                } 
-				} else if (hiddenTopicsOnLoad!=null){
-					if(hiddenTopicsOnLoad.includes("hidden_topic_"+subType.slice(18))) { // Hidden type
+                } else if (hiddenTopicsOnLoad.includes("hidden_topic_"+subType.slice(18))) { // Hidden type
                   output += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='hidden_" + subType.slice(18) + "'></div>";
-                }
-				} else {
+                } else {
                   output += "<div><input type='hidden' class='ExpectedType' value='" + subType.slice(18) + "'>";
                 }
                 output += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "'>";
@@ -497,15 +493,10 @@ $nonce = wp_create_nonce( 'admin_test');
               //output += "<input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
               if (dataTypes.includes(subItem["ExpectedTypes"].slice(18))) {
                 output += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
-              } else if (linkedTopicsOnLoad!=null) { // Core type
-			  if(linkedTopicsOnLoad.includes("linked_topic_"+subItem["ExpectedTypes"].slice(18))){
+              } else if (linkedTopicsOnLoad.includes("linked_topic_"+subItem["ExpectedTypes"].slice(18))) { // Core type
                 output += "<div class='typeIsCore'><input type='hidden' class='ExpectedType' value='core_" + subItem["ExpectedTypes"].slice(18) + "'>";
-			  }
-              } 
-			  else if(hiddenTopicsOnLoad!=null){
-			  if (hiddenTopicsOnLoad.includes("hidden_topic_"+subItem["ExpectedTypes"].slice(18))) { // Hidden type
+              } else if (hiddenTopicsOnLoad.includes("hidden_topic_"+subItem["ExpectedTypes"].slice(18))) { // Hidden type
                 output += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='hidden_" + subItem["ExpectedTypes"].slice(18) + "'>";
-			  }
               } else {
                 output += "<div><input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
               }
@@ -546,12 +537,9 @@ $nonce = wp_create_nonce( 'admin_test');
 				console.log('expected type more then 1')	
                 // Multiple types for a given property
                 $.each(expectedTypes, function(index, type) {
-				var typeIsCore = false;
-				var typeIsHidden = false;
+					
                   // Check if the type is a core topic
-				  if(linkedTopicsOnLoad!=null)
                   var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+type.slice(18));
-				    if(hiddenTopicsOnLoad!=null)
                   var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+type.slice(18));
 			
 					if ((typeIsCore == false) && (typeIsHidden == false)) { // Not a core nor hidden type
@@ -598,12 +586,9 @@ $nonce = wp_create_nonce( 'admin_test');
 				console.log(linkedTopicsOnLoad);
 				console.log('check vals');
 				console.log("linked_topic_"+typeName);
-				var typeIsCore = false;
-				var typeIsHidden = false;
-				if(linkedTopicsOnLoad!=null)
-				typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+typeName);
-				if(hiddenTopicsOnLoad!=null)
-                typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+typeName);
+				
+                var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+typeName);
+                var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+typeName);
 				console.log('typeIsCore vals');
 				console.log(typeIsCore);	
 				console.log('typeIsHidden');	
@@ -1193,7 +1178,7 @@ $nonce = wp_create_nonce( 'admin_test');
           // Get friendly topic name
           friendlyTopicName = $(this).closest("tr").find('input[type="text"]').val();
           if (friendlyTopicName == "") {
-            alert("Please enter a friendly topic name.");
+           // alert("Please enter a friendly topic name.");
             return false;
           }
 
