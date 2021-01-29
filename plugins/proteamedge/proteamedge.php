@@ -1371,17 +1371,12 @@ $nonce = wp_create_nonce( 'admin_test');
 					console.log(data.linked_topic);
 					console.log('data.hidden_topic');
 					console.log(data.hidden_topic);
-				  if(data.linked_topic=='' || data.hidden_topic=='')
-				  {
-					  $('#save_linked_topics').click();
-				  }
-				  else
-				  {
+				 
                   useReturnData(data.linked_topic);
                   useReturnDataHidden(data.hidden_topic);
                   useReturnDataFriendly(data.friendly_name);
                   useReturnDataTopicClasses(data.topic_class);
-				  }
+				  
                   //linkedTopics = data;
                 },
                 error: function() {
