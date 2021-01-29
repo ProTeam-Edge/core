@@ -19,15 +19,29 @@ $type = $_POST['type'];
 $array = array();
 $sql = 'select * from alpn_manage_topic where core_topic=1';
 $data = $wpdb->get_results($sql);
-foreach($data as $vals)
+if(!empty($data))
 {
-	$array['linked_topic'][] = 'linked_topic_'.$vals->topic_name;
+	foreach($data as $vals)
+	{
+		$array['linked_topic'][] = 'linked_topic_'.$vals->topic_name;
+	}
+}
+else
+{
+	$array['linked_topic']= '';
 }
 $sql = 'select * from alpn_manage_topic where hide_properties=1';
-$data = $wpdb->get_results($sql);
-foreach($data as $vals)
+$data1 = $wpdb->get_results($sql);
+if(!empty($data))
 {
-	$array['hidden_topic'][] = 'hidden_topic_'.$vals->topic_name;
+	foreach($data1 as $vals1)
+	{
+		$array['hidden_topic'][] = 'hidden_topic_'.$vals1->topic_name;
+	}
+}
+else
+{
+	$array['hidden_topic'] = '';
 }
 $sql = 'select * from alpn_manage_topic where friendly_name!=""';
 $data = $wpdb->get_results($sql);
