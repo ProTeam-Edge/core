@@ -220,8 +220,8 @@ $nonce = wp_create_nonce( 'admin_test');
   </head>
   <body>
    <h1>Manage Topic Types</h1>  
-    <div style="overflow:hidden"><button class="button" id="save_linked_topics">Save Topic-level Config</button></div>
-    <div style="overflow:hidden"><button class="button" id="empty_previous_configs">Clear Topic-level Config</button></div>
+    <div style="overflow:hidden;display:none"><button class="button" id="save_linked_topics">Save Topic-level Config</button></div>
+    <div style="overflow:hidden"><button class="button" id="empty_previous_configs">Clear Saved Settings</button></div>
     <br>
     <table id="classes" class="display" style="width:100%">
         <thead>
@@ -801,50 +801,20 @@ $nonce = wp_create_nonce( 'admin_test');
 
       // Save a JSON list when Save Linked Topics is clicked
 	   $(document).on("click", "#empty_previous_configs" , function() {
-		   var result = confirm("Are you sure this will empty all configs?");
+		   var result = confirm("Are you sure this will delete all settings?");
 		if (result) {
 			 $.LoadingOverlay("show");
-      
-		jsonString = [];
-          // Save this JSON to server
-          var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/saveLinkedTopics.php";
-          $.ajax({
+		var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/empty_manage_topic_settings.php";
+		 $.ajax({
             url: url,
             type: "POST",
-            data: {data : jsonString,security:"<?php echo $nonce ?>"},
+            data: {security:"<?php echo $nonce ?>"},
             dataType: "json",
             complete: function(){
-              // Save Hidden Topics
-              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/saveHiddenTopics.php";
-              $.ajax({
-                url: url,
-                type: "POST",
-                data: {data : jsonString,security:"<?php echo $nonce ?>"},
-                dataType: "json",
-                complete: function(){
-                  var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/savePteScopeTopics.php";
-                  $.ajax({
-                    url: url,
-                    type: "POST",
-                    data: {data : jsonString,security:"<?php echo $nonce ?>"},
-                    dataType: "json",
-                    complete: function(){
-                     
-				    	$.LoadingOverlay("hide");
-					  // alert('Config has been emptied successfully.');
-						
-                    }
-                  });
-                 
-                }
-              });
+            alert('All settings have been cleared successfully.');
+			  
             }
           });
-
-          // Update global vars
-          linkedTopicsOnLoad = null
-          hiddenTopicsOnLoad = null;
-          topicClassesOnLoad = null;
 		}
 				
 		 
