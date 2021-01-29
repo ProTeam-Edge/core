@@ -280,18 +280,17 @@ $nonce = wp_create_nonce( 'admin_test');
           success: function(data){
 		  if(data!='')	 
 		  {
-			  emptyresult = 0;
+			  
 			useReturnDataFriendly(data);
 		  }
 		  else
-			emptyresult = 1;
+			return false;
           },
           error: function() {
             //alert('No checkboxes and friendly fields set.');
           }
         });
-		if(emptyresult==0)
-		{
+		
         function useReturnDataFriendly(data){
             loadedFriendlyFields = data;
         };
@@ -321,7 +320,7 @@ $nonce = wp_create_nonce( 'admin_test');
         $.each(loadedFriendlyFields["hiddenCheckedBoxes"], function(index, value) {
           $("#"+value).prop( "checked", true );
         });
-		}
+		
       }
 
       function addAdditionalPropertyRows(topicName) {
@@ -340,19 +339,18 @@ $nonce = wp_create_nonce( 'admin_test');
           success: function(data){
 			  if(data!='')	 
 			  {
-				emptyresult = 0;
+				
 				useReturnDataFriendly(data);
 			  }
 			  else
-				emptyresult = 1;
-			  
+				return false;
+			 
           },
           error: function() {
             //alert('No additional properties set in config.');
           }
         });
-		if(emptyresult==0)
-		{
+
         function useReturnDataFriendly(data){
             loadedAdditionalProperties = data;
         };
@@ -419,9 +417,9 @@ $nonce = wp_create_nonce( 'admin_test');
 
           });
         }
-		}
+
         return out;
-		
+
       }
 
       function getSubproperties (type, d, item) {
