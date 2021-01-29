@@ -30,9 +30,9 @@ else
 {
 	$array['linked_topic']= '';
 }
-$sql = 'select * from alpn_manage_topic where hide_properties=1';
-$data1 = $wpdb->get_results($sql);
-if(!empty($data))
+$sql1 = 'select * from alpn_manage_topic where hide_properties=1';
+$data1 = $wpdb->get_results($sql1);
+if(!empty($data1))
 {
 	foreach($data1 as $vals1)
 	{
