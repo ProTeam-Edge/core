@@ -909,7 +909,105 @@ $nonce = wp_create_nonce( 'admin_test');
 		 
 
       });
+      function saveTopicConfig(id) {
+		  $.LoadingOverlay("show");
+          var topicClass = id; // Remove "save_topic_" from topic id
 
+          var friendlyFields = {};
+          var checkedBoxes = [];
+          var requiredCheckedBoxes = [];
+          var hiddenCheckedBoxes = [];
+
+          var topicPropertyTable = topicClass + "_friendly";
+
+          // Get a list of the friendly text boxes which aren't empty
+          var friendlyTextBoxes = $("."+topicPropertyTable).map(function () {
+            if (this.value.length > 0) {
+              return $(this).val();
+            }
+          }).get();
+
+          // Get friendly text box IDs
+          var friendlyTextBoxIDs= $("."+topicPropertyTable).map(function() {
+            if (this.value.length > 0) {
+              return $(this).attr("id");
+            }
+          }).get();
+
+          // Store ID:friendly field pairs
+          var i;
+          for (i = 0; i < friendlyTextBoxes.length; i++) {
+            friendlyFields[friendlyTextBoxIDs[i]] = friendlyTextBoxes[i];
+          }
+
+          // Get checkboxes under this topic class that are checked
+          var idSelector = function() { return this.id; };
+          var boxesChecked = $("."+topicClass+":checkbox:checked").map(idSelector).get();
+          var requiredBoxesChecked = $("."+topicClass+"_required:checkbox:checked").map(idSelector).get();
+          var hiddenBoxesChecked = $("."+topicClass+"_hidden:checkbox:checked").map(idSelector).get();
+
+          //var textFields = $(".friendly:input:").map(idSelector).get();
+          $.each(boxesChecked, function(index, value) {
+            // Add ID of boxes that are checked for saving to config
+            checkedBoxes.push(value.toLowerCase());
+          });
+
+          $.each(requiredBoxesChecked, function(index, value) {
+            // Add ID of required boxes that are checked for saving to config
+            requiredCheckedBoxes.push(value.toLowerCase());
+          });
+
+          $.each(hiddenBoxesChecked, function(index, value) {
+            // Add ID of hidden boxes that are checked for saving to config
+            hiddenCheckedBoxes.push(value.toLowerCase());
+          });
+
+          // Get additional property fields that have been added
+          //var nameSelector = function() { return this.name; };
+          var additionalProperties = {};
+          //var additionalPropIDs = dt.rows().nodes().to$().find('.additionalProperty').map(idSelector).get();
+          var additionalPropIDs = $(".additionalProperty").map(idSelector).get();
+          $.each(additionalPropIDs, function(index, value) {
+            // Add ID of additional property checkboxes along with their selected type and required/hidden checkboxes
+            // Get each of the checked boxes and their corresponding friendly text fields
+            var checkbox = document.querySelector('[id='+value+']');
+            friendly = $(checkbox).closest("tr").find('input[type="text"]').val();
+
+            // Get corresponding required checkbox
+            required = $(checkbox).closest("tr").find("#"+value.toLowerCase()+"_required").is(':checked');
+
+            // Get corresponding hidden checkbox
+            hidden = $(checkbox).closest("tr").find("#"+value.toLowerCase()+"_hidden").is(':checked');
+
+            //type = $(checkbox).closest("tr").find('input[type="hidden"]').val();
+            type = $(checkbox).closest("tr").find('input.ExpectedType:hidden').val();
+            schemaKey = $(checkbox).closest("tr").find('input.schemaKey:hidden').val();
+
+            additionalProperties[value.toLowerCase()] = Object.fromEntries(new Map([ ["friendly", friendly],["type", type.toLowerCase()],["name", value.toLowerCase()],["required", required.toString()],["schema_key", schemaKey],["hidden", hidden.toString()]]));
+          });
+
+          // Create config file to store checked boxes and friendly fields
+          var config = {};
+          config["topic_name"] = topicClass;
+          config["friendly_fields"] = friendlyFields;
+          config["checkedBoxes"] = checkedBoxes;
+          config["requiredCheckedBoxes"] = requiredCheckedBoxes;
+          config["hiddenCheckedBoxes"] = hiddenCheckedBoxes;
+          config["additionalProperties"] = additionalProperties;
+
+          var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/update_manage_topic_settings.php";
+          $.ajax({
+            url: url,
+            type: "POST",
+            data: {data : JSON.stringify(config),type:type,security:"<?php echo $nonce ?>"},
+            dataType: "json",
+            complete: function(){
+             // alert('Saving complete.');
+			  	$.LoadingOverlay("hide");
+            }
+          });
+
+	  }
       // Save Config JSON when "Save Prop. Config" is clicked
       $(document).on("click", ".saveTopicConfig" , function() {
 			$.LoadingOverlay("show");
