@@ -2348,7 +2348,12 @@ $nonce = wp_create_nonce( 'admin_test');
           hiddenTopicsOnLoad = hiddenTopicsChecked;
           topicClassesOnLoad = pteScopePairs;
 		 
-
+			console.log('linkedTopicsOnLoad');
+			console.log(linkedTopicsOnLoad);
+			console.log('hiddenTopicsOnLoad');
+			console.log(hiddenTopicsOnLoad);
+			console.log('topicClassesOnLoad');
+			console.log(topicClassesOnLoad);
       });
 
       // Save Config JSON when "Save Prop. Config" is clicked
