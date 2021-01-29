@@ -97,7 +97,6 @@ function my_menu_pages(){
     add_submenu_page('manage-topic-types', 'Manage Topic Types DB', 'Manage Topic Types DB', 'manage_options', 'manage-topic-types-db','manage_topic_types_db' );
 }
 function manage_topic_types_db() {
-	echo 'changes';
 	global $wpdb;
 
 	/* $inssql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,cdate,mdate)values("Airline","1","1","Name","1","'.time().'","'.time().'")';
