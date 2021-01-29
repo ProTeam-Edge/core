@@ -2810,7 +2810,7 @@ $nonce = wp_create_nonce( 'admin_test');
               });
 
               // Get all topic_class fields
-              var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/pteScopeConfig.json";
+             /*  var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/pteScopeConfig.json";
               var topicClasses;
               $.ajax({
                 url: url,
@@ -2836,7 +2836,7 @@ $nonce = wp_create_nonce( 'admin_test');
               // Fill all the topic_class fields
               $.each(topicClasses, function(key, value) {
                 dt.rows().nodes().to$().find("#"+key).val(value);
-              });
+              }); */
 
             }
         } );
