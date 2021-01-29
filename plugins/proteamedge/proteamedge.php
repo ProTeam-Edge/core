@@ -278,9 +278,8 @@ $nonce = wp_create_nonce( 'admin_test');
 			async: false,
 			cache: false,
           success: function(data){
-			  console.log(data);
-			  return false; 
-            //useReturnDataFriendly(data);
+		  if(data!='')	 
+          useReturnDataFriendly(data);
           },
           error: function() {
             //alert('No checkboxes and friendly fields set.');
@@ -322,15 +321,18 @@ $nonce = wp_create_nonce( 'admin_test');
       function addAdditionalPropertyRows(topicName) {
 
         var out = "";
-        var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/topicConfig/" + topicName + "_config.json";
+		var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/prefill_manage_topic_subfields.php";
+       // var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/topicConfig/" + topicName + "_config.json";
         var loadedAdditionalProperties;
         $.ajax({
-          url: url,
-          type: "GET",
-          dataType: "json",
-          async: false,
-          cache: false,
+           url: url,
+			type: "POST",
+			data: {topic_name:topicName,security:"<?php echo $nonce ?>"},
+			dataType: "json",
+			async: false,
+			cache: false,
           success: function(data){
+			  if(data!='')
             useReturnDataFriendly(data);
           },
           error: function() {
