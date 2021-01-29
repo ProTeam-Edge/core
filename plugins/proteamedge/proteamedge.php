@@ -266,6 +266,7 @@ $nonce = wp_create_nonce( 'admin_test');
       var linkedTopicsOnLoad = null;
       var hiddenTopicsOnLoad = null;
       var topicClassesOnLoad = null;
+	  $('#save_linked_topics').click();
       var dataTypes = ["Text","URL","Distance","QuantitativeValue","Boolean","Date","DateTime","Number","Time","Integer"];
 
       function fillRow (row) {
