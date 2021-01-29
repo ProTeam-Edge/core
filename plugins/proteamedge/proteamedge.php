@@ -1405,40 +1405,43 @@ $nonce = wp_create_nonce( 'admin_test');
                   topicClasses = data;
                   // Store list of linkedTopics to signify these in "ExpectedTypes"
                   topicClassesOnLoad = data;
-              };
-
-              // Fill all the topic_class fields
-              $.each(topicClasses, function(key1, value1) {
+				     $.each(topicClasses, function(key1, value1) {
 		
 				  key = value1.topic_name;
 				  value = value1.visibility_value;
                 dt.rows().nodes().to$().find("#"+key).val(value);
               });
+              };
+
+              // Fill all the topic_class fields
+           
 			  
               function useReturnData(data){
                   linkedTopics = data;
                   // Store list of linkedTopics to signify these in "ExpectedTypes"
                   linkedTopicsOnLoad = data;
-              };
-
-              // Now, check all the boxes
-              $.each(linkedTopics, function(index, linked_topic_checkbox_id) {
+				    $.each(linkedTopics, function(index, linked_topic_checkbox_id) {
                 dt.rows().nodes().to$().find("#"+linked_topic_checkbox_id).attr("checked", true);
 
                 //$("#"+linked_topic_checkbox_id).attr("checked", true);
               });
+              };
+
+              // Now, check all the boxes
+            
 			  
 			  
 			  function useReturnDataHidden(data){
                   hiddenTopics = data;
                   // Store list of linkedTopics to signify these in "ExpectedTypes"
                   hiddenTopicsOnLoad = data;
+				     $.each(hiddenTopics, function(index, hidden_topic_checkbox_id) {
+                dt.rows().nodes().to$().find("#"+hidden_topic_checkbox_id).attr("checked", true);
+              });
               };
 
               // Now, check all the boxes
-              $.each(hiddenTopics, function(index, hidden_topic_checkbox_id) {
-                dt.rows().nodes().to$().find("#"+hidden_topic_checkbox_id).attr("checked", true);
-              });
+           
 			  
 			  
 			
