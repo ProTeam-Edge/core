@@ -999,7 +999,7 @@ $nonce = wp_create_nonce( 'admin_test');
           $.ajax({
             url: url,
             type: "POST",
-            data: {data : JSON.stringify(config),type:type,security:"<?php echo $nonce ?>"},
+            data: {data : JSON.stringify(config),type:'child_fields',security:"<?php echo $nonce ?>"},
             dataType: "json",
             complete: function(){
              // alert('Saving complete.');
