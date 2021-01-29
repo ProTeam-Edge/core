@@ -345,7 +345,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			  }
 			  else
 				emptyresult = 1;
-			  },
+			  
           },
           error: function() {
             //alert('No additional properties set in config.');
