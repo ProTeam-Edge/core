@@ -568,10 +568,10 @@ $nonce = wp_create_nonce( 'admin_test');
                   if (dataTypes.includes(item["ExpectedTypes"].slice(18))) {
 					  	console.log('expected if')	
 					
-                    out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                    out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
-                    out += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
-                    out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
+                    out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                    out += "<td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
+                    out += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
+                    out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
                     out += "<td>" + typeName;
                     out += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + typeName + "'>";
                     out += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + item["ExpectedTypes"].slice(18) + "'>";
@@ -583,10 +583,10 @@ $nonce = wp_create_nonce( 'admin_test');
                 } else {
 				  	console.log('expected else')	
                   // It is a core or hidden topic, display a single text field
-                  out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                  out += "<td><input type='text' class='" + d.TopicName + "_friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
-                  out += "<td><input type='checkbox' class='" + d.TopicName + "_required" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_required" + "'></td>";
-                  out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_hidden" + "'></td>";
+                  out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                  out += "<td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
+                  out += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_required" + "'></td>";
+                  out += "<td><input type='checkbox' class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_hidden" + "'></td>";
                   out += "<td>" + typeName;
                   if (typeIsCore == true) {
                     out += "<div class='typeIsLinked'><input type='hidden' class='ExpectedType' value='core_" + typeName + "'></div>";
