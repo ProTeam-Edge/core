@@ -266,7 +266,7 @@ $nonce = wp_create_nonce( 'admin_test');
       var linkedTopicsOnLoad = null;
       var hiddenTopicsOnLoad = null;
       var topicClassesOnLoad = null;
-	  $('#save_linked_topics').click();
+	
       var dataTypes = ["Text","URL","Distance","QuantitativeValue","Boolean","Date","DateTime","Number","Time","Integer"];
 
       function fillRow (row) {
@@ -1367,10 +1367,17 @@ $nonce = wp_create_nonce( 'admin_test');
                 async: false,
                 cache: false,
                 success: function(data){
+				  if(data=='')
+				  {
+					  $('#save_linked_topics').click();
+				  }
+				  else
+				  {
                   useReturnData(data.linked_topic);
                   useReturnDataHidden(data.hidden_topic);
                   useReturnDataFriendly(data.friendly_name);
                   useReturnDataTopicClasses(data.topic_class);
+				  }
                   //linkedTopics = data;
                 },
                 error: function() {
