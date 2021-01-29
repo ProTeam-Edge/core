@@ -776,17 +776,17 @@ $nonce = wp_create_nonce( 'admin_test');
         $("div[id="+selectID+"_comment"+"]").html("A " + pteCoreType + ".");
 
         // Friendly
-        var friendlyHTML = "<input type='text' class='friendly' id='pte_" + pteCoreType + "_" + propertyCount + "friendly'>";
+        var friendlyHTML = "<input onblur='return additionalchild_settings_trigger(this)' type='text' class='friendly' id='pte_" + pteCoreType + "_" + propertyCount + "friendly'>";
         //var friendlyHTML = "<input type='text' class='friendly' id='pte_" + pteCoreType + "friendly'>";
         $("div[id="+selectID+"_friendly"+"]").html(friendlyHTML);
 
         // Required
-        var requiredHTML = "<input type='checkbox' class='" + topicName + "_required' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_required'>";
+        var requiredHTML = "<input onclick='return additionalchild_settings_trigger(this)' type='checkbox' class='" + topicName + "_required' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_required'>";
         //var requiredHTML = "<input type='checkbox' class='" + topicName + "_required' id='pte_" + pteCoreType.toLowerCase() + "_" + pteCoreType.toLowerCase() + "_required'>";
         $("div[id="+selectID+"_required"+"]").html(requiredHTML);
 
         // Hidden
-        var hiddenHTML = "<input type='checkbox' class='" + topicName + "_hidden' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_hidden'>";
+        var hiddenHTML = "<input onclick='return additionalchild_settings_trigger(this)' type='checkbox' class='" + topicName + "_hidden' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_hidden'>";
         //var hiddenHTML = "<input type='checkbox' class='" + topicName + "_hidden' id='pte_" + pteCoreType.toLowerCase() + "_" + pteCoreType.toLowerCase() + "_hidden'>";
         $("div[id="+selectID+"_hidden"+"]").html(hiddenHTML);
 
