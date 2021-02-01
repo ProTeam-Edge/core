@@ -421,10 +421,13 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 
       function getSubproperties (type, d, item) {
+		  var checked_ids = [];
 		 $('.linked_topic_checkbox:checkbox:checked').each(function () {
 			id= $(this).attr('id'); 
-     console.log('id allchecked')
-     console.log(id)
+			split_id = id.split('_');
+		  checked_ids.push(split_id[2]);
+		  console.log(checked_ids);
+		  console.log('checked_ids');
   });
 		 console.log('getSubproperties type');
 		 console.log(type);
