@@ -247,7 +247,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
 function pte_manage_interaction_proper($data) {
 
   alpn_log("Starting Manager interaction...");
-  alpn_log($data);
+//  alpn_log($data);
 
   $process = "";
   $processContext = $extraContext = array();
@@ -274,7 +274,7 @@ function pte_manage_interaction_proper($data) {
 
   $interactionFileName = __dir__ . "/interaction_registry/{$processTypeId}.php";
   include_once($interactionFileName);
-  $processSetupName = "pte_setup_interaction_" . $processTypeId;
+  $processSetupName = "pte_setup_interaction_" . $processTypeId;   //Function names need to be unique because mmultiple can be loaded. Classes!
   $processRegistryName = "pte_get_registry_" . $processTypeId;
   $process = $process ? $process : call_user_func($processSetupName);
   $registryArray = call_user_func($processRegistryName);
@@ -284,13 +284,12 @@ function pte_manage_interaction_proper($data) {
   $processContext = $processContext ? $processContext : array_merge(pte_get_process_context($processData), $extraContext);
 
   if ($process) {
-
     //TODO MARK BUSY HERE
     $registry = new DefaultBehaviorRegistry($registryArray);
     $engine = new ProcessEngine($registry);
     $tokens = $engine->getProcessTokens($process);
     if ($tokens) {
-      foreach ($tokens as $key => $value) {  //TODO switch to array first something...
+      foreach ($tokens as $key => $value) {  //TODO switch to array first something... I can't find the right function
         $token = $value;
         break;
       }
