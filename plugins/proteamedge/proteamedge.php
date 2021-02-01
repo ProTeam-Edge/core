@@ -1872,7 +1872,7 @@ $nonce = wp_create_nonce( 'admin_test');
             subPropertyOutput = data;
           },
           error: function() {
-            url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/tester.php?url=" + encodeURIComponent("http://schema.org/" + type.slice(18));
+            url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/tester.php?url=" + "http://schema.org/" + type.slice(18);
             $.ajax({
               url: url,
               type: "GET",
