@@ -429,7 +429,10 @@ $nonce = wp_create_nonce( 'admin_test');
 	
   });
    console.log('checked_ids');
+ 
     console.log(checked_ids);
+	  console.log('class name');
+    console.log( type.slice(18));
 		 console.log('getSubproperties type');
 		 console.log(type);
         var output="";
