@@ -5,7 +5,7 @@ use Formapro\Pvm\Token;
 use Formapro\Pvm\ProcessBuilder;
 use Formapro\Pvm\Exception\WaitExecutionException;
 
-function pte_setup_fax_received_process() {
+function pte_setup_interaction_fax_received() {
 
     $process = (new ProcessBuilder())
         ->createNode('fax_received', 'fax_received')->end()
@@ -15,7 +15,7 @@ function pte_setup_fax_received_process() {
 
 }
 
-function pte_get_fax_received_registry() {
+function pte_get_registry_fax_received() {
 
   $registryArray = array(
       'fax_received' => function(Token $token) {  //Node 1 - waiting for send

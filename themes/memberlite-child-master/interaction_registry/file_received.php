@@ -5,7 +5,7 @@ use Formapro\Pvm\Token;
 use Formapro\Pvm\ProcessBuilder;
 use Formapro\Pvm\Exception\WaitExecutionException;
 
-function pte_setup_file_received_process() {
+function pte_setup_interaction_file_received() {
 
     $process = (new ProcessBuilder())
         ->createNode('file_received', 'file_received')->end()
@@ -15,7 +15,7 @@ function pte_setup_file_received_process() {
 
 }
 
-function pte_get_file_received_registry() {
+function pte_get_registry_file_received() {
 
   $registryArray = array(
       'file_received' => function(Token $token) {  //Node 1 - waiting for send
