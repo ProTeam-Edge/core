@@ -3,8 +3,7 @@
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 include_once('pte_config.php');
 $schema_master_file = WP_CONTENT_DIR . "/plugins/proteamedge/schema.jsonId";
-echo $schema_master_file;
-die;
+
 if ($json = file_get_contents($schema_master_file)) {
     error_log("Got contents successfully.", 0);
     //echo "Got contents successfully.";
@@ -22,7 +21,9 @@ else {
     //echo "JSON Decode Failed.";
 }
 
-
+echo '<pre>';
+print_r($json);
+die;
 use Brick\StructuredData\Reader\RdfaLiteReader;
 use Brick\StructuredData\Reader\JsonLdReader;
 use Brick\StructuredData\HTMLReader;
