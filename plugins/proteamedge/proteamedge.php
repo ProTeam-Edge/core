@@ -426,9 +426,10 @@ $nonce = wp_create_nonce( 'admin_test');
 			id= $(this).attr('id'); 
 			split_id = id.split('_');
 		  checked_ids.push(split_id[2]);
-		  console.log(checked_ids);
-		  console.log('checked_ids');
+	
   });
+   console.log('checked_ids');
+    console.log(checked_ids);
 		 console.log('getSubproperties type');
 		 console.log(type);
         var output="";
