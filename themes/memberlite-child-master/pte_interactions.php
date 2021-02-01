@@ -247,7 +247,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
 function pte_manage_interaction_proper($data) {
 
   alpn_log("Starting Manager interaction...");
-  alpn_log($data);
+  //alpn_log($data);
 
   $process = "";
   $processContext = $extraContext = array();
@@ -359,7 +359,15 @@ function pte_manage_interaction_proper($data) {
       //alpn_log("Handling Thrown Exception in INTERACTIONS...{$processTypeId}");
 
     }
+
     $requestData = $token->getValue("process_context");
+
+    if (isset($requestData['restart_interaction']) && $requestData['restart_interaction']) {
+      //TODO implement restart this process here.
+      $process = pte_setup_proteam_invitation_process();  // <-- this needs to be interaction process specific
+    }
+
+
     $sync = isset($requestData['sync']) ? $requestData['sync'] : false;
     $requestData['modified_date'] = date ("Y-m-d H:i:s", time());
     if ($sync) {
