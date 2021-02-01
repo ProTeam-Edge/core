@@ -1,7 +1,7 @@
 <?php
 
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
-
+include_once('pte_config.php');
 $schema_master_file = WP_CONTENT_DIR . "/plugins/proteamedge/schema.jsonId";
 echo $schema_master_file;
 die;
