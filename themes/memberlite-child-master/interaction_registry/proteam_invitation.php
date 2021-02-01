@@ -5,7 +5,7 @@ use Formapro\Pvm\Token;
 use Formapro\Pvm\ProcessBuilder;
 use Formapro\Pvm\Exception\WaitExecutionException;
 
-function pte_setup_proteam_invitation_process() {
+function pte_setup_interaction_proteam_invitation() {
 
     $process = (new ProcessBuilder())
         ->createNode('request_sent', 'request_sent')->end()
@@ -19,7 +19,7 @@ function pte_setup_proteam_invitation_process() {
 
 }
 
-function pte_get_proteam_invitation_registry() {
+function pte_get_registry_proteam_invitation() {
 
   $registryArray = array(
       'request_sent' => function(Token $token) {  //Node 1 - waiting for send
@@ -62,6 +62,7 @@ function pte_get_proteam_invitation_registry() {
               		'process_type_id' => "proteam_invitation_received",
                   'owner_network_id' => $requestData['connected_network_id'] ? $requestData['connected_network_id'] : $requestData['connected_contact_topic_id_alt'],
               		'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $requestData['connected_contact_id_alt'],
+                  'extra_content' => true,
               		'process_data' => $newRequestData
               	);
               	$interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
@@ -223,6 +224,7 @@ function pte_get_proteam_invitation_registry() {
 
               //On this side, the interaction should be reset to before hitting send
               //How do we show feedback here and there?
+              //Replace with new proteam_invite so we are back at first node
 
 
               $token->setValue("process_context", $requestData);

@@ -5,7 +5,7 @@ use Formapro\Pvm\Token;
 use Formapro\Pvm\ProcessBuilder;
 use Formapro\Pvm\Exception\WaitExecutionException;
 
-function pte_setup_proteam_invitation_process() {
+function pte_setup_interaction_receive_fax() {
 
     $process = (new ProcessBuilder())
         ->createNode('request_sent', 'request_sent')->end()
@@ -19,7 +19,7 @@ function pte_setup_proteam_invitation_process() {
 
 }
 
-function pte_get_proteam_invitation_registry() {
+function pte_get_registry_receive_fax() {
 
   $registryArray = array(
       'request_sent' => function(Token $token) {  //Node 1 - waiting for send

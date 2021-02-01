@@ -257,6 +257,7 @@ function pte_manage_interaction_proper($data) {
   $processId = isset($data['process_id']) ? $data['process_id'] : '';
   $processData = isset($data['process_data']) ? $data['process_data'] : array();
   $processTypeId = isset($data['process_type_id']) ? $data['process_type_id'] : '';
+  $hasExtraContent = isset($data['extra_content']) && $data['extra_content'] ? true : false;
 
   $ownerNetworkId = isset($data['owner_network_id']) ? $data['owner_network_id'] : 0;
   $ownerId = isset($data['owner_id']) ? $data['owner_id'] : 0;
@@ -271,43 +272,14 @@ function pte_manage_interaction_proper($data) {
     $processContext = $processArray['process_context'];
   }
 
-  switch ($processTypeId) {  //TODO generalize to make widgets and interactions more extensible fully extensible.  ALSO TODO by moving includes here, can I overload function names? Gonna try next time.
-		case 'proteam_invitation':
-      include_once( __dir__ . "/interaction_registry/proteam_invitation.php" );
-      $process = $process ? $process : pte_setup_proteam_invitation_process();
-      $registryArray = pte_get_proteam_invitation_registry();
-		break;
-    case 'proteam_invitation_received':
-      include( __dir__ . "/interaction_registry/proteam_invitation_received.php" );
-			$process = $process ? $process : pte_setup_proteam_invitation_received_process();
-      $registryArray = pte_get_proteam_invitation_received_registry();
-      $extraContext = $processData;
-	  break;
-    case 'file_received':
-      include_once( __dir__ . "/interaction_registry/file_received.php" );
-			$process = $process ? $process : pte_setup_file_received_process();
-      $registryArray = pte_get_file_received_registry();
-      break;
-    case 'fax_received':
-      include_once( __dir__ . "/interaction_registry/fax_received.php" );
-			$process = $process ? $process : pte_setup_fax_received_process();
-      $registryArray = pte_get_fax_received_registry();
-      break;
-    case 'fax_send':
-      include_once( __dir__ . "/interaction_registry/fax_send.php" );
-			$process = $process ? $process : pte_setup_fax_send_process();
-      $registryArray = pte_get_fax_send_registry();
-	  break;
-    case 'email_send':
-      include_once( __dir__ . "/interaction_registry/email_send.php" );
-			$process = $process ? $process : pte_setup_email_send_process();
-      $registryArray = pte_get_email_send_registry();
-	  break;
-    case 'sms_send':
-      include_once( __dir__ . "/interaction_registry/sms_send.php" );
-			$process = $process ? $process : pte_setup_sms_send_process();
-      $registryArray = pte_get_sms_send_registry();
-	  break;
+  $interactionFileName = __dir__ . "/interaction_registry/{$processTypeId}.php";
+  include_once($interactionFileName);
+  $processSetupName = "pte_setup_interaction_" . $processTypeId;
+  $processRegistryName = "pte_get_registry_" . $processTypeId;
+  $process = $process ? $process : call_user_func($processSetupName);
+  $registryArray = call_user_func($processRegistryName);
+  if ($hasExtraContent) {
+    $extraContext = $processData;
   }
   $processContext = $processContext ? $processContext : array_merge(pte_get_process_context($processData), $extraContext);
 
@@ -359,7 +331,15 @@ function pte_manage_interaction_proper($data) {
       //alpn_log("Handling Thrown Exception in INTERACTIONS...{$processTypeId}");
 
     }
+
     $requestData = $token->getValue("process_context");
+
+    if (isset($requestData['restart_interaction']) && $requestData['restart_interaction']) {
+      //TODO implement restart this process here.
+      $process = pte_setup_proteam_invitation_process();  // <-- this needs to be interaction process specific
+    }
+
+
     $sync = isset($requestData['sync']) ? $requestData['sync'] : false;
     $requestData['modified_date'] = date ("Y-m-d H:i:s", time());
     if ($sync) {

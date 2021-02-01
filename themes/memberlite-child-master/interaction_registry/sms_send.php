@@ -5,7 +5,7 @@ use Formapro\Pvm\Token;
 use Formapro\Pvm\ProcessBuilder;
 use Formapro\Pvm\Exception\WaitExecutionException;
 
-function pte_setup_sms_send_process() {
+function pte_setup_interaction_sms_send() {
 
     $process = (new ProcessBuilder())
         ->createNode('send_sms', 'send_sms')->end()
@@ -18,7 +18,7 @@ function pte_setup_sms_send_process() {
 
 }
 
-function pte_get_sms_send_registry() {
+function pte_get_registry_sms_send() {
 
   $registryArray = array(
       'send_sms' => function(Token $token) {
