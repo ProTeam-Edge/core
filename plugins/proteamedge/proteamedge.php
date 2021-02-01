@@ -451,8 +451,9 @@ $nonce = wp_create_nonce( 'admin_test');
             });
           }
         });
-		console.log(subPropertyOutput);
 		console.log('subPropertyOutput');
+		console.log(subPropertyOutput);
+		
 		return false;
         var ii;
         for (ii = 0; ii < subPropertyOutput.length; ii++) {
