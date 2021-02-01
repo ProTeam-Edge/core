@@ -223,6 +223,7 @@ function pte_get_proteam_invitation_registry() {
 
               //On this side, the interaction should be reset to before hitting send
               //How do we show feedback here and there?
+              //Replace with new proteam_invite so we are back at first node
 
 
               $token->setValue("process_context", $requestData);

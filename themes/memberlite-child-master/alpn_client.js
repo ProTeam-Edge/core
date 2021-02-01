@@ -1216,9 +1216,12 @@ function pte_handle_interaction_recall(data){
 	var interactionCard = jQuery("div.alpn_interaction_cell[data-uid=" + data.process_id + "]");
 	var interactionCurrent = jQuery('#pte_interaction_current');
 
-	interactionUxContainer.animate({opacity: 0.1}, 250, function(){
-		interactionCurrent.html('YO DAWG');
-		interactionUxContainer.animate({opacity: 1}, 250, function(){
+	interactionUxContainer.css('pointer-events', 'none');
+	interactionUxContainer.animate({opacity: 0.1}, 200, function(){
+		interactionCurrent.html("<div class='pte_interaction_ux_message'>Interaction Recalled</div>");
+		interactionUxContainer.animate({opacity: 1}, 200, function(){
+			interactionUxContainer.css('pointer-events', 'auto');
+
 		});
 	});
 
