@@ -26,8 +26,8 @@ use Brick\StructuredData\Reader\JsonLdReader;
 use Brick\StructuredData\HTMLReader;
 use Brick\StructuredData\Item;
 
-$url = $_GET["url"];
-
+echo $url = $_GET["url"];
+die;
 // Define function to
 
 // Define function to get range (expected types) of a Property
