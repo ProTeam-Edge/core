@@ -428,8 +428,6 @@ $nonce = wp_create_nonce( 'admin_test');
 		  checked_ids.push(split_id[2]);
 	
   });
-  if($.inArray(type.slice(18), checked_ids) !== -1)
-  {
    console.log('checked_ids');
  
     console.log(checked_ids);
@@ -524,7 +522,6 @@ $nonce = wp_create_nonce( 'admin_test');
           }
         }
         return output;
-  }
       }
 
       function addRows ( row , output) {
