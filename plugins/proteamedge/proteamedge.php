@@ -451,7 +451,8 @@ $nonce = wp_create_nonce( 'admin_test');
             });
           }
         });
-
+		console.log(subPropertyOutput);
+		return false;
         var ii;
         for (ii = 0; ii < subPropertyOutput.length; ii++) {
           // Get sub property name
