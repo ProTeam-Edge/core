@@ -20,14 +20,15 @@ else {
     //echo "JSON Decode Failed.";
 }
 
+die;
 
 use Brick\StructuredData\Reader\RdfaLiteReader;
 use Brick\StructuredData\Reader\JsonLdReader;
 use Brick\StructuredData\HTMLReader;
 use Brick\StructuredData\Item;
 
-echo $url = $_GET["url"];
-die;
+$url = $_GET["url"];
+
 // Define function to
 
 // Define function to get range (expected types) of a Property
