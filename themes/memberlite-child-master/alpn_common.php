@@ -33,6 +33,9 @@ function pte_add_to_proteam($data) {
 		);
   $memberRights = isset($data['member_rights']) && $data['member_rights'] ? json_decode($data['member_rights'], true) : $defaultMemberRights;
 
+  $connectedType = isset($data['connected_type']) && $data['connected_type'] ? $data['connected_type'] : "external";
+  $processId = isset($data['process_id']) && $data['process_id'] ? $data['process_id'] : "";
+
 	$proTeamData = array( //TODO start IA and store processID
 		'owner_id' => $data['owner_id'],
 		'topic_id' => $data['topic_id'],  //topicContext
@@ -40,6 +43,8 @@ function pte_add_to_proteam($data) {
 		'wp_id' => $data['wp_id'],
 		'access_level' => $accessLevel,
 		'state' => $state,
+    'connected_type' => $connectedType,
+    'process_id' => $processId,
 		'member_rights' => json_encode($memberRights)
 	);
 	$wpdb->insert( 'alpn_proteams', $proTeamData );
@@ -1680,12 +1685,14 @@ function pte_proteam_state_change_sync($data){
   $ptState =  isset($data['state']) ? $data['state'] : 0;
   $ptId =  isset($data['proteam_row_id']) ? $data['proteam_row_id'] : 0;
   $ownerId = isset($data['owner_id']) ? $data['owner_id'] : 0;
+  $processId = isset($data['process_id']) ? $data['process_id'] : '';
 
 if ($connectedType && $ptState && $ptId) {
 
     $proTeamData = array(
       "connected_type" => $connectedType,
-      "state" => $ptState
+      "state" => $ptState,
+      "process_id" => $processId
     );
     $whereClause = array(
       "id" => $ptId

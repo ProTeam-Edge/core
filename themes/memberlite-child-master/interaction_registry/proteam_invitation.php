@@ -162,6 +162,7 @@ function pte_get_proteam_invitation_registry() {
               //creates a link between this topic and the connected user topic if link type.
               $connectedType = "join";
               $ptState = 30;
+
               if ($requestData['connection_link_type'] == 1) {  //Link type
                 pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData);
                 $connectedType = "link";
@@ -169,12 +170,13 @@ function pte_get_proteam_invitation_registry() {
               }
               //Update ProTeam with Join/Link type and Status.
               if (isset($requestData['proteam_row_id']) && $requestData['proteam_row_id']) {
-                alpn_log('Handling ProTeam Update...');
+                alpn_log('Handling ProTeam Update HERE!!!!...');
                 $data = array(
                   'connected_type' => $connectedType,
                   'state' => $ptState,
                   'proteam_row_id' => $requestData['proteam_row_id'],
-                  'owner_id' => $requestData['owner_id']
+                  'owner_id' => $requestData['owner_id'],
+                  'process_id' => $requestData['process_id']
                 );
                 pte_proteam_state_change_sync($data);
               }
@@ -186,7 +188,8 @@ function pte_get_proteam_invitation_registry() {
                 'connected_type' => 'none',
                 'state' => 90,  //declined
                 'proteam_row_id' => $requestData['proteam_row_id'],
-                'owner_id' => $requestData['owner_id']
+                'owner_id' => $requestData['owner_id'],
+                'process_id' => $requestData['process_id']
               );
               pte_proteam_state_change_sync($data);
               return;

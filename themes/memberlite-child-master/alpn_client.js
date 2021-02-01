@@ -1208,6 +1208,30 @@ function pte_handle_interaction_link(mapData){
 }
 
 
+function pte_handle_interaction_recall(data){
+
+	console.log('pte_handle_interaction_recall');
+
+	var interactionUxContainer = jQuery('#pte_interaction_outer_container');
+	var interactionCard = jQuery("div.alpn_interaction_cell[data-uid=" + data.process_id + "]");
+	var interactionCurrent = jQuery('#pte_interaction_current');
+
+	interactionUxContainer.animate({opacity: 0.1}, 250, function(){
+		interactionCurrent.html('YO DAWG');
+		interactionUxContainer.animate({opacity: 1}, 250, function(){
+		});
+	});
+
+	console.log(data.process_id);
+	console.log(interactionUxContainer);
+	console.log(interactionCard);
+	console.log(data);
+
+
+
+
+}
+
 function pte_show_process_ux(processId) {
 
 	console.log('Getting Process UX...', processId);
@@ -1984,7 +2008,14 @@ function pte_handle_sync(data){
 	        statusArea.fadeIn();
 	    });
 		break;
+		case 'interaction_recall':
+			console.log("Handling interaction_recall...");
 
+			pte_handle_interaction_recall(syncPayload);
+
+
+
+		break;
 		case 'interaction_update':
 			console.log("Handling interaction_update...");
 			wpDataTables.table_interactions.fnFilterClear();
