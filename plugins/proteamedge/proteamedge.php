@@ -575,7 +575,8 @@ $nonce = wp_create_nonce( 'admin_test');
 
                     }
                   } else { // It is a core or hidden type, display a single text field
-				  	console.log('expected = 1')	
+				      out += getSubproperties(type,d,item);
+				  	/* console.log('expected = 1')	
                     out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'>core topic<input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                     out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
                     out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
@@ -588,7 +589,7 @@ $nonce = wp_create_nonce( 'admin_test');
                       out += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='" + type.slice(18) + "'></div>";
                     }
                     out += "<div><input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'>";
-                    out += "</div></td></tr>";
+                    out += "</div></td></tr>"; */
                   }
                 });
 
