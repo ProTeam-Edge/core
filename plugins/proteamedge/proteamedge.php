@@ -428,13 +428,7 @@ $nonce = wp_create_nonce( 'admin_test');
 		  checked_ids.push(split_id[2]);
 	
   });
-   console.log('checked_ids');
- 
-    console.log(checked_ids);
-	  console.log('class name');
-    console.log( type.slice(18));
-		 console.log('getSubproperties type');
-		 console.log(type);
+
         var output="";
         var subPropertyOutput;
         var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
@@ -475,6 +469,8 @@ $nonce = wp_create_nonce( 'admin_test');
             var expectedTypes = subItem["ExpectedTypes"].split(', ');
             if (expectedTypes.length > 1) {
               $.each(expectedTypes, function(index, subType) {
+				  if(dataTypes.includes(subType.slice(18)))
+			 {
 				console.log('if');
                 output += "<tr><td class='subProperty'>if sub<input type='checkbox' onclick='return child_settings_trigger(this)' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "'></td>";
                 output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' onblur='return child_settings_trigger(this)'  id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "friendly'></td>";
@@ -495,8 +491,9 @@ $nonce = wp_create_nonce( 'admin_test');
                 }
                 output += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "'>";
                 output += "</div></td></tr>";
+			 }
               });
-
+			
 
             } else {
 			 if($.inArray( type.slice(18), checked_ids)!== -1)
