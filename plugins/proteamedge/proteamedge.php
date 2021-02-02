@@ -471,6 +471,8 @@ $nonce = wp_create_nonce( 'admin_test');
               $.each(expectedTypes, function(index, subType) {
 				  if(dataTypes.includes(subType.slice(18)))
 			 {
+				 if($.inArray( type.slice(18), checked_ids)!== -1)
+				{
 				console.log('if');
                 output += "<tr><td class='subProperty'>if sub<input type='checkbox' onclick='return child_settings_trigger(this)' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "'></td>";
                 output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' onblur='return child_settings_trigger(this)'  id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "friendly'></td>";
@@ -491,6 +493,7 @@ $nonce = wp_create_nonce( 'admin_test');
                 }
                 output += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "'>";
                 output += "</div></td></tr>";
+				}
 			 }
               });
 			
