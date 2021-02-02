@@ -428,7 +428,7 @@ $nonce = wp_create_nonce( 'admin_test');
 		  checked_ids.push(split_id[2]);
 	
 			});
-		var primary_types = ['Time','Text','DateTime','Number','Date','Boolean'];
+		var primary_types = ['Time','Text','DateTime','Number','Date','Boolean','URL'];
 		
         var output="";
         var subPropertyOutput;
