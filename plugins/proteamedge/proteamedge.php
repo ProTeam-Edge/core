@@ -429,7 +429,7 @@ $nonce = wp_create_nonce( 'admin_test');
 	
 			});
 		var primary_types = ['Time','Text','DateTime','Number','Date','Boolean','URL'];
-		
+		console.log(primary_types)
         var output="";
         var subPropertyOutput;
         var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
@@ -471,6 +471,9 @@ $nonce = wp_create_nonce( 'admin_test');
             if (expectedTypes.length > 1) {
               $.each(expectedTypes, function(index, subType) {
 				console.log('if');
+				var checktype = $.inArray( subType.slice(18), primary_types);
+				console.log('checktype')
+				console.log(checktype)
 				 if($.inArray( subType.slice(18), primary_types)!== -1)
 			 {
 				/*  if($.inArray( type.slice(18), checked_ids)!== -1)
