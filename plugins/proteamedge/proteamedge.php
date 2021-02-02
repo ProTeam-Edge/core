@@ -434,6 +434,7 @@ $nonce = wp_create_nonce( 'admin_test');
 		console.log('checked_ids');
 		console.log('merged123');
 		console.log(merged);
+		return false;
         var output="";
         var subPropertyOutput;
         var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
