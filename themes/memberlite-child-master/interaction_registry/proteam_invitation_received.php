@@ -52,9 +52,7 @@ function pte_get_registry_proteam_invitation_received() {
               "sync_payload" => $requestData
             );
             pte_manage_user_sync($data);
-
-            exit; //STOP because client did its thing already TODO Test this
-
+            return;
           }
 
           if ($buttonOperation == 'accept' || $buttonOperation == 'decline') {
@@ -174,7 +172,11 @@ function pte_get_registry_proteam_invitation_received() {
           $requestData['message_lines'] =  array(
               "message_view_only"
             );
+
           $requestData['sync'] = true;
+          if ($requestData['request_operation'] == 'recall_interaction') {
+            $requestData['sync'] = false;
+          }
           $requestData['requires_user_attention'] = false;
           $token->setValue("process_context", $requestData);
           return true;
