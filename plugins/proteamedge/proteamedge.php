@@ -474,7 +474,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
             // Check if subProperty has multiple types
             var expectedTypes = subItem["ExpectedTypes"].split(', ');
-			
+			console.log(expectedTypes)
 
             if (expectedTypes.length > 1) {
 			if(primary_types.some((val) => expectedTypes.indexOf(val) !== -1))
