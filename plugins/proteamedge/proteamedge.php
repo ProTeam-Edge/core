@@ -472,6 +472,7 @@ $nonce = wp_create_nonce( 'admin_test');
               $.each(expectedTypes, function(index, subType) {
 				console.log('if');
 				var checktype = $.inArray( subType.slice(18), primary_types);
+				console.log( subType.slice(18))
 				console.log('checktype')
 				console.log(checktype)
 				 if($.inArray( subType.slice(18), primary_types)!== -1)
