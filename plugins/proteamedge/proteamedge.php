@@ -219,7 +219,7 @@ $nonce = wp_create_nonce( 'admin_test');
     </style>
   </head>
   <body>
-   <h1>Manage Topic Types 1</h1>  
+   <h1>Manage Topic Types 1</h1>   
     <div style="overflow:hidden;display:none"><button class="button" id="save_linked_topics">Save Topic-level Config</button></div>
     <div style="overflow:hidden"><button class="button" id="empty_previous_configs">Clear Saved Settings From DB</button></div>
     <br>
