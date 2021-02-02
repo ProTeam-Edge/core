@@ -430,8 +430,8 @@ $nonce = wp_create_nonce( 'admin_test');
 			});
 		var primary_types = ['Time','Text','DateTime','Number','Date','Boolean','URL'];
 		merged =  primary_types.concat(checked_ids); 
-		console.log('merged123')
-		console.log(merged)
+		console.log('merged123');
+		console.log(merged);
         var output="";
         var subPropertyOutput;
         var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
