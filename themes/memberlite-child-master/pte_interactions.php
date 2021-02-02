@@ -321,23 +321,14 @@ function pte_manage_interaction_proper($data) {
     }
 
     $token->setValue("process_context", $processContext);  //store context with new data with each token
+
     try {
       $engine->proceed($token);
     } catch (\Throwable $e) {
-      //TODO Check for waitException fallthrought versus others for hardening
       $exMsg = $e->getMessage();
-
-      //alpn_log("Handling Thrown Exception in INTERACTIONS...{$processTypeId}");
-
     }
 
     $requestData = $token->getValue("process_context");
-
-    if (isset($requestData['restart_interaction']) && $requestData['restart_interaction']) {
-      //TODO implement restart this process here.
-      $process = pte_setup_proteam_invitation_process();  // <-- this needs to be interaction process specific
-    }
-
 
     $sync = isset($requestData['sync']) ? $requestData['sync'] : false;
     $requestData['modified_date'] = date ("Y-m-d H:i:s", time());
@@ -350,6 +341,29 @@ function pte_manage_interaction_proper($data) {
       );
       pte_manage_user_sync($data);
       $requestData['sync'] =  false;
+    }
+
+    //TODO implement restart this process here.
+
+    alpn_log('About to do IT');
+    alpn_log($requestData);
+
+    if (isset($requestData['restart_interaction']) && $requestData['restart_interaction']) {
+
+      alpn_log('DOING IT');
+
+      $requestData = array(
+        'owner_network_id' => $requestData['owner_network_id'],
+        'alt_id' => $requestData['alt_id'],
+        'interacts_with_id' => $requestData['interacts_with_id'],
+        'expiration_minutes' => $requestData['expiration_minutes'],
+        'requires_user_attention' => $requestData['requires_user_attention'],
+        'network_id' => $requestData['network_id'],
+        'topic_id' => $requestData['topic_id'],
+        'network_important' => $requestData['network_important'],
+        'topic_important' => $requestData['topic_important']
+      );
+      $process = call_user_func($processSetupName);
     }
     pte_save_process($process, $requestData);
 

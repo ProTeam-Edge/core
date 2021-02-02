@@ -207,6 +207,7 @@ function pte_get_registry_proteam_invitation() {
               throw new WaitExecutionException();
             break;
             case 'recall':
+
               alpn_log('Handling Recall...');
 
               $newRequestData = array(
@@ -221,6 +222,8 @@ function pte_get_registry_proteam_invitation() {
                 'process_data' => $newRequestData
               );
               $interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
+
+              $requestData['restart_interaction'] = true;
 
               //On this side, the interaction should be reset to before hitting send
               //How do we show feedback here and there?
