@@ -651,11 +651,17 @@ $nonce = wp_create_nonce( 'admin_test');
               first_level_propertyClass = 'first_level_property';
             }
             // Get an array of expected types (for use later if there are multiple)
+			var getextypes = [];
             var expectedTypes = item["ExpectedTypes"].split(', ');
-		
+			
             if (true) {
               if (expectedTypes.length > 1) {
-				if(dataTypes.some((val) => expectedTypes.indexOf(val) !== -1))
+				  var fixedurls = [];
+					$.each(expectedTypes, function( index, value ) {
+					type = value.slice(18);
+					fixedurls.push(type)
+					});
+				if(dataTypes.some((val) => fixedurls.indexOf(val) !== -1))
 				{
 					console.log('primary found')
 				}
