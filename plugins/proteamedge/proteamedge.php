@@ -429,7 +429,8 @@ $nonce = wp_create_nonce( 'admin_test');
 	
 			});
 		var primary_types = ['Time','Text','DateTime','Number','Date','Boolean','URL'];
-		console.log(primary_types)
+		merged =  $.merge( checked_ids, primary_types );
+		console.log(merged)
         var output="";
         var subPropertyOutput;
         var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
@@ -475,7 +476,7 @@ $nonce = wp_create_nonce( 'admin_test');
 				console.log( subType.slice(18))
 				console.log('checktype')
 				console.log(checktype)
-				 if($.inArray( subType.slice(18), primary_types)!== -1)
+				 if($.inArray( subType.slice(18), merged)!== -1)
 			 {
 				/*  if($.inArray( type.slice(18), checked_ids)!== -1)
 			 {  */
@@ -504,7 +505,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
 
             } else {
-			 if($.inArray(subItem["ExpectedTypes"].slice(18), primary_types)!== -1)
+			 if($.inArray(subItem["ExpectedTypes"].slice(18), merged)!== -1)
 			 {
 				/* if($.inArray( type.slice(18), checked_ids)!== -1)
 			 {  */
