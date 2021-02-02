@@ -22,6 +22,8 @@ function pte_get_registry_proteam_invitation_received() {
   $registryArray = array(
       'request_sent' => function(Token $token) {  //Node 1 - waiting for send
 
+          global $wpdb;
+
           $requestData = $token->getValue("process_context");
 
           $requestData['interaction_type_name'] = "Team Invite";
@@ -40,6 +42,9 @@ function pte_get_registry_proteam_invitation_received() {
           if ($requestOperation == 'recall_interaction') {
             alpn_log('Interaction Received Recall Interaction');
 
+            $whereClause = array('process_id' => $requestData['process_id']);
+            $wpdb->delete( 'alpn_interactions', $whereClause);
+
             $data = array(
               "sync_type" => "add_update_section",
               "sync_section" => "interaction_recall",
@@ -47,10 +52,6 @@ function pte_get_registry_proteam_invitation_received() {
               "sync_payload" => $requestData
             );
             pte_manage_user_sync($data);
-
-            //delete received side of interaction this one.
-
-
 
             exit; //STOP because client did its thing already TODO Test this
 
