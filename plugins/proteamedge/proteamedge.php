@@ -419,7 +419,111 @@ $nonce = wp_create_nonce( 'admin_test');
         return out;
 
       }
+ function getSubproperties1 (type, d, item) {
+		  var checked_ids = [];
+		dt.rows().nodes().to$().find(".linked_topic_checkbox:checkbox:checked").each(function(){
+			id= $(this).attr('id'); 
+			split_id = id.split('_');
+		  checked_ids.push(split_id[2]);
+	
+  });
 
+        var output="";
+        var subPropertyOutput;
+        var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/classes/" + type.slice(18) + ".jsonld";
+        $.ajax({
+          url: url,
+          type: "GET",
+          dataType: "json",
+          async: false,
+          cache: false,
+          success: function(data){
+            //output = JSON.stringify(data);
+            subPropertyOutput = data;
+          },
+          error: function() {
+            url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/tester.php?url=" + encodeURIComponent("http://schema.org/" + type.slice(18));
+            $.ajax({
+              url: url,
+              type: "GET",
+              dataType: "json",
+              async: false,
+              cache: false,
+              success: function(data){
+                //output = JSON.stringify(data);
+                subPropertyOutput = data;
+              }
+            });
+          }
+        });
+		
+        var ii;
+        for (ii = 0; ii < subPropertyOutput.length; ii++) {
+          // Get sub property name
+          var subItem = subPropertyOutput[ii];
+          if (subItem["FirstLevel"] == "True") {
+            // Append only first level properties
+
+            // Check if subProperty has multiple types
+            var expectedTypes = subItem["ExpectedTypes"].split(', ');
+            if (expectedTypes.length > 1) {
+              $.each(expectedTypes, function(index, subType) {
+				  if(dataTypes.includes(subType.slice(18)))
+			 {
+				 if($.inArray( type.slice(18), checked_ids)!== -1)
+				{
+				console.log('if');
+                output += "<tr><td class='subProperty'>if sub<input type='checkbox' onclick='return child_settings_trigger(this)' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "'></td>";
+                output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' onblur='return child_settings_trigger(this)'  id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "friendly'></td>";
+                output += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "_required" + "'></td>";
+                output += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + " subpropertyhidden' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "_hidden" + "'></td>";
+                output += "<td>" + subType.slice(18);
+                //output += "<input type='hidden' class='ExpectedType' value='" + subType.slice(18) + "'>";
+                if (dataTypes.includes(subType.slice(18))) {
+                  output += "<div class='typeIsDataType'>";
+                  output += "<input type='hidden' class='ExpectedType' value='" + subType.slice(18) + "'>";
+                } else if (linkedTopicsOnLoad.includes("linked_topic_"+subType.slice(18))) { // Core type
+                  output += "<div class='typeIsCore'>";
+                  output += "<input type='hidden' class='ExpectedType' value='core_" + subType.slice(18) + "'>";
+                } else if (hiddenTopicsOnLoad.includes("hidden_topic_"+subType.slice(18))) { // Hidden type
+                  output += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='hidden_" + subType.slice(18) + "'></div>";
+                } else {
+                  output += "<div><input type='hidden' class='ExpectedType' value='" + subType.slice(18) + "'>";
+                }
+                output += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "'>";
+                output += "</div></td></tr>";
+				}
+			 }
+              });
+			
+
+            } else {
+			 if($.inArray( type.slice(18), checked_ids)!== -1)
+			 {
+              output += "<tr><td class='subProperty'>else sub<input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "'></td>";
+              output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' onblur='return child_settings_trigger(this)'  id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "friendly'></td>";
+              output += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
+              output += "<td><input type='checkbox' class='" + d.TopicName + "_hidden" + " subpropertyhidden' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subItem["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
+              output += "<td>" + subItem["ExpectedTypes"].slice(18);
+              //output += "<input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
+              if (dataTypes.includes(subItem["ExpectedTypes"].slice(18))) {
+                output += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
+              } else if (linkedTopicsOnLoad.includes("linked_topic_"+subItem["ExpectedTypes"].slice(18))) { // Core type
+                output += "<div class='typeIsCore'><input type='hidden' class='ExpectedType' value='core_" + subItem["ExpectedTypes"].slice(18) + "'>";
+              } else if (hiddenTopicsOnLoad.includes("hidden_topic_"+subItem["ExpectedTypes"].slice(18))) { // Hidden type
+                output += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='hidden_" + subItem["ExpectedTypes"].slice(18) + "'>";
+              } else {
+                output += "<div><input type='hidden' class='ExpectedType' value='" + subItem["ExpectedTypes"].slice(18) + "'>";
+              }
+              output += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subItem["ExpectedTypes"].slice(18) + "'>";
+              output += "</div></td></tr>";
+            }
+			}
+
+          }
+        }
+        return output;
+      }
       function getSubproperties (type, d, item) {
 		  var checked_ids = [];
 		dt.rows().nodes().to$().find(".linked_topic_checkbox:checkbox:checked").each(function(){
@@ -575,7 +679,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
                     }
                   } else { // It is a core or hidden type, display a single text field
-				      out += getSubproperties(type,d,item);
+				      out += getSubproperties1(type,d,item);
 				  	/* console.log('expected = 1')	
                     out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'>core topic<input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                     out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
