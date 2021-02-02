@@ -429,7 +429,9 @@ $nonce = wp_create_nonce( 'admin_test');
 	
 			});
 		var primary_types = ['Time','Text','DateTime','Number','Date','Boolean','URL'];
-		merged =  primary_types.concat(checked_ids); 
+		merged =  checked_ids.concat(primary_types); 
+		console.log(checked_ids);
+		console.log('checked_ids');
 		console.log('merged123');
 		console.log(merged);
         var output="";
