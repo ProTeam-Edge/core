@@ -655,8 +655,14 @@ $nonce = wp_create_nonce( 'admin_test');
 		
             if (true) {
               if (expectedTypes.length > 1) {
-				  if(dataTypes.some((val) => expectedTypes.indexOf(val) !== -1))
-				  {
+				if(dataTypes.some((val) => expectedTypes.indexOf(val) !== -1))
+				{
+					console.log('primary found')
+				}
+				else
+				{
+					console.log('primary not found')
+				}
 				console.log('expected type more then 1')	
                 // Multiple types for a given property
                 $.each(expectedTypes, function(index, type) {
@@ -681,7 +687,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
                     }
                   } else { // It is a core or hidden type, display a single text field
-				     // out += getSubproperties1(type,d,item);
+				      out += getSubproperties1(type,d,item);
 				  	/* console.log('expected = 1')	
                     out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'>core topic<input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                     out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
@@ -698,51 +704,7 @@ $nonce = wp_create_nonce( 'admin_test');
                     out += "</div></td></tr>"; */
                   }
                 });
-				  }
-				  else
-				  {
-					  console.log('expected type more then 1')	
-                // Multiple types for a given property
-                $.each(expectedTypes, function(index, type) {
-					
-                  // Check if the type is a core topic
-                  var typeIsCore = linkedTopicsOnLoad.includes("linked_topic_"+type.slice(18));
-                  var typeIsHidden = hiddenTopicsOnLoad.includes("hidden_topic_"+type.slice(18));
-			
-					if ((typeIsCore == false) && (typeIsHidden == false)) { // Not a core nor hidden type
-                    if (dataTypes.includes(type.slice(18))) { // Render basic datatypes like this
-                      out += "<tr><td class='" + first_level_propertyClass + "'>if parent<input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                      out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + type.slice(18) + "_" + "friendly'></td>";
-                      out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
-                      out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_hidden" + "'></td>";
-                      out += "<td>" + type.slice(18);
-                      out += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + type.slice(18) + "'>";
-                      out += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'>";
-                      out += "</div></td></tr>";
-                    } else { // If not a basic datatype, get subproperty fields
 
-                      out += getSubproperties(type,d,item);
-
-                    }
-                  } else { // It is a core or hidden type, display a single text field
-				    out += getSubproperties1(type,d,item);
-				  	/* console.log('expected = 1')	
-                    out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'>core topic<input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                    out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
-                    out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
-                    out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_hidden" + "'></td>";
-                    out += "<td>" + type.slice(18);
-                    if (typeIsCore == true) {
-                      out += "<div class='typeIsLinked'><input type='hidden' class='ExpectedType' value='core_" + type.slice(18) + "'></div>";
-                    }
-                    if (typeIsHidden == true) {
-                      out += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='" + type.slice(18) + "'></div>";
-                    }
-                    out += "<div><input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'>";
-                    out += "</div></td></tr>"; */
-                  }
-                });
-				  }
               } else { // We only have one type
 			  
 			
