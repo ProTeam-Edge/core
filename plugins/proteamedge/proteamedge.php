@@ -474,15 +474,13 @@ $nonce = wp_create_nonce( 'admin_test');
 
             // Check if subProperty has multiple types
             var expectedTypes = subItem["ExpectedTypes"].split(', ');
-			console.log('expectedTypes.length')
+			console.log('expectedTypes.length)
 			console.log(expectedTypes.length)
 
             if (expectedTypes.length > 1) {
-			if(primary_types.some((val) => expectedTypes.indexOf(val) !== -1))
-			{
+			
 				  $.each(expectedTypes, function(index, subType) {
-				if($.inArray(subType.slice(18), primary_types)!== -1)
-			 {
+				
                 output += "<tr><td class='subProperty'>if<input type='checkbox' onclick='return child_settings_trigger(this)' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "'></td>";
                 output += "<td>" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "</td><td>" + subItem["Comment"] + "</td><td><input type='text' class='" + d.TopicName + "_friendly subpropertyfriendly' onblur='return child_settings_trigger(this)'  id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "friendly'></td>";
                 output += "<td><input type='checkbox' class='" + d.TopicName + "_required subpropertyrequired" + "' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "_required" + "'></td>";
@@ -504,11 +502,7 @@ $nonce = wp_create_nonce( 'admin_test');
                 output += "</div></td></tr>";
 			 }
               });
-			}
-			else
-			{
-			}
-            
+			
 
 
             } else {
