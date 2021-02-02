@@ -430,6 +430,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			});
 		var primary_types = ['Time','Text','DateTime','Number','Date','Boolean','URL'];
 		merged =  $.merge( checked_ids, primary_types );
+		console.log('merged')
 		console.log(merged)
         var output="";
         var subPropertyOutput;
