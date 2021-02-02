@@ -480,10 +480,10 @@ $nonce = wp_create_nonce( 'admin_test');
 				/* console.log( subType.slice(18))
 				console.log('checktype')
 				console.log(checktype) */
-				 if($.inArray(type.slice(18), merged)!== -1)
+				/*  if($.inArray(type.slice(18), merged)!== -1)
 			 {
 				 	 if($.inArray( subType.slice(18), primary_types)!== -1)
-			 {
+			 { */
 				/*  if($.inArray( type.slice(18), checked_ids)!== -1)
 			 {  */
                 output += "<tr><td class='subProperty'><input type='checkbox' onclick='return child_settings_trigger(this)' class='" + d.TopicName + " subpropertycheckbox' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_" + subItem["Label"].toLowerCase() + "_" + subType.slice(18).toLowerCase() + "'></td>";
@@ -506,16 +506,16 @@ $nonce = wp_create_nonce( 'admin_test');
                 output += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subType.slice(18) + "'>";
                 output += "</div></td></tr>";
 			/*  } */
-			 }
-			 }
+			/*  }
+			 } */
               });
 
 
             } else {
-			 if($.inArray(type.slice(18), merged)!== -1)
+			 /* if($.inArray(type.slice(18), merged)!== -1)
 			 {
 				  if($.inArray(subItem["ExpectedTypes"].slice(18), primary_types)!== -1)
-			 {
+			 { */
 				/* if($.inArray( type.slice(18), checked_ids)!== -1)
 			 {  */
 				
@@ -537,8 +537,8 @@ $nonce = wp_create_nonce( 'admin_test');
               output += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "_" + subItem["Label"] + "_" + subItem["ExpectedTypes"].slice(18) + "'>";
               output += "</div></td></tr>";
             /* } */
-			 }
-			 }
+			 /* }
+			 } */
 		  }
 
           }
