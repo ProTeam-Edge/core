@@ -422,7 +422,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
       function getSubproperties (type, d, item) {
 		  var checked_ids = [];
-		 $('.linked_topic_checkbox:checkbox:checked').each(function () {
+		dt.rows().nodes().to$().find(".linked_topic_checkbox:checkbox:checked").each(function(){
 			id= $(this).attr('id'); 
 			split_id = id.split('_');
 		  checked_ids.push(split_id[2]);
