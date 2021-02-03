@@ -1531,6 +1531,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			  
 			  
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
+					console.log($(this).is(':checked'));
 					 field_type = 'linked_topic';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
 					 if($(this).is(':checked') ){
@@ -1544,12 +1545,7 @@ $nonce = wp_create_nonce( 'admin_test');
 							
 					 }
 					update_manage_topic_settings(field_type,topic_name,value);
-					 if($(this).is(':checked') ){
-						 value = 1;
-					 }
-					 else{
-						  location.reload();
-					 }
+					
 					 
 					
 				});
