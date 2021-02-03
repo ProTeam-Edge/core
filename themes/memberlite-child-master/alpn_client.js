@@ -1214,16 +1214,19 @@ function pte_handle_interaction_recall(data){
 
 	var interactionUxContainer = jQuery('#pte_interaction_outer_container');
 	var interactionCard = jQuery("div.alpn_interaction_cell[data-uid=" + data.process_id + "]");
+	var interactionMessage = jQuery('#pte_interaction_ux_message');
 	var interactionCurrent = jQuery('#pte_interaction_current');
 
-	interactionUxContainer.css('pointer-events', 'none');
-	interactionUxContainer.animate({opacity: 0.1}, 200, function(){
-		interactionCurrent.html("<div class='pte_interaction_ux_message'>Interaction Recalled</div>");
-		interactionUxContainer.animate({opacity: 1}, 200, function(){
-			interactionUxContainer.css('pointer-events', 'auto');
 
-		});
+	interactionUxContainer.css('pointer-events', 'none');
+	interactionCurrent.animate({opacity: 0.45}, 200, function(){
 	});
+	interactionMessage.fadeIn(200);
+
+
+
+//	interactionUxContainer.css('pointer-events', 'auto');
+
 
 	console.log(data.process_id);
 	console.log(interactionUxContainer);
@@ -1240,6 +1243,9 @@ function pte_show_process_ux(processId) {
 	console.log('Getting Process UX...', processId);
 
 	var alpnSectionAlert = jQuery('#alpn_section_alert');
+	var interactionOuterContainer = jQuery('#pte_interaction_outer_container');
+	var interactionCurrent = jQuery('#pte_interaction_current');
+	var interactionUxMessage = jQuery('#pte_interaction_ux_message');
 	var interactionWaitIndicator = jQuery('#interaction_wait_indicator');
 
 	var security = specialObj.security;
@@ -1259,6 +1265,8 @@ function pte_show_process_ux(processId) {
 				var processUx = jQuery("#pte_interaction_current");
 				processUx.html(html);
 				alpnSectionAlert.css('pointer-events', 'auto');
+				interactionCurrent.css('opacity', 1);
+				interactionUxMessage.hide();
 				interactionWaitIndicator.hide();
 			},
 			error: function() {
@@ -1267,8 +1275,6 @@ function pte_show_process_ux(processId) {
 			}
 		})
 	} else {
-
-
 		//Interaction Box Zero
 
 		var availableImages = 3;
@@ -1277,10 +1283,11 @@ function pte_show_process_ux(processId) {
 		var imageUrl = ppCdnBase + "pte_inbox_background_image_" + randomNumber.slice(-4)  + ".png";
 		var html  = "<div id='pte_interactions_message'>";
 				html += "<img id='pte_interactions_message_image' src='" + imageUrl + "'>";
-
 		    html += "</div>";
 		processUx.html(html);
 		alpnSectionAlert.css('pointer-events', 'auto');
+		interactionCurrent.css('opacity', 1);
+		interactionUxMessage.hide();
 		interactionWaitIndicator.hide();
 	}
 }
@@ -2016,11 +2023,23 @@ function pte_handle_sync(data){
 
 			pte_handle_interaction_recall(syncPayload);
 
+		break;
+		case 'interaction_item_update':
+			console.log("Handling interaction_item_update...");
+			console.log(syncPayload);
+
+			var processId = syncPayload.process_id;
+			var informationPanelMessage = jQuery("div#pte_interaction_information_panel[data-pid=" + processId + "]").find('div.pte_updated_message');
+			informationPanelMessage.html('Updated - date/time').fadeIn();
+			//pte_updated_message
 
 
 		break;
 		case 'interaction_update':
 			console.log("Handling interaction_update...");
+			if (typeof syncPayload.restart_interaction != "undefined" && syncPayload.restart_interaction) {
+				pte_selected_interaction_process_id = syncPayload.new_interaction_process_id;
+			}
 			wpDataTables.table_interactions.fnFilterClear();
 		break;
 

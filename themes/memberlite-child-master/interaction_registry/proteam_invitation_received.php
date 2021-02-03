@@ -42,9 +42,6 @@ function pte_get_registry_proteam_invitation_received() {
           if ($requestOperation == 'recall_interaction') {
             alpn_log('Interaction Received Recall Interaction');
 
-            $whereClause = array('process_id' => $requestData['process_id']);
-            $wpdb->delete( 'alpn_interactions', $whereClause);
-
             $data = array(
               "sync_type" => "add_update_section",
               "sync_section" => "interaction_recall",
@@ -52,6 +49,22 @@ function pte_get_registry_proteam_invitation_received() {
               "sync_payload" => $requestData
             );
             pte_manage_user_sync($data);
+            $requestData['do_not_save_interaction'] = true;
+            $token->setValue("process_context", $requestData);
+            return;
+          }
+
+          if ($requestOperation == 'update_interaction') {
+            alpn_log('Interaction Received Update Interaction');
+
+            $data = array(
+              "sync_type" => "add_update_section",
+              "sync_section" => "interaction_item_update",
+              "sync_user_id" => $requestData['owner_id'],
+              "sync_payload" => $requestData
+            );
+            pte_manage_user_sync($data);
+            $token->setValue("process_context", $requestData);
             return;
           }
 
@@ -142,11 +155,9 @@ function pte_get_registry_proteam_invitation_received() {
           throw new WaitExecutionException();  //proper way to stop the process and wait
       },
       'handle_complete' => function(Token $token) {
-
           alpn_log("Handling Complete (Received)...");
           $requestData = $token->getValue("process_context");
           $requestData['interaction_type_status'] = "Complete";
-
           $requestData['interaction_complete'] = true;
           $requestData['widget_type_id'] = "information";
           $requestData['template_name'] = $token->getValue("template_name");
@@ -164,24 +175,21 @@ function pte_get_registry_proteam_invitation_received() {
           $requestData['content_lines'] =  array(
             "network_panel"
             );
-
           if ($requestData['button_operation'] == 'accept') {
             $requestData['content_lines'][] = 'topic_panel';
           }
-
           $requestData['message_lines'] =  array(
               "message_view_only"
             );
-
           $requestData['sync'] = true;
-          if ($requestData['request_operation'] == 'recall_interaction') {
+          if ($requestData['request_operation'] == 'recall_interaction' || $requestData['request_operation'] == 'update_interaction') {
             $requestData['sync'] = false;
           }
           $requestData['requires_user_attention'] = false;
+
           $token->setValue("process_context", $requestData);
           return true;
-
-    }
+        }
   );
 
 return $registryArray;
