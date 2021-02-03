@@ -1588,6 +1588,8 @@ $nonce = wp_create_nonce( 'admin_test');
 					 }
 					 else {
 						  value = 0;
+						  $(".addPropertyDropdown option[value='"+topic_name+"']").remove();
+
 					 }
 					update_manage_topic_settings(field_type,topic_name,value);
 					
