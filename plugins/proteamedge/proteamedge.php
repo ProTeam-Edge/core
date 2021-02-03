@@ -1546,7 +1546,12 @@ $nonce = wp_create_nonce( 'admin_test');
 					update_manage_topic_settings(field_type,topic_name,value);
 					 if(value==0)
 					 {
+						console.log('value is 0 reload');
 						 location.reload();
+					 }
+					 else
+					 {
+						 console.log('value is not 0 reload');
 					 }
 					
 				});
