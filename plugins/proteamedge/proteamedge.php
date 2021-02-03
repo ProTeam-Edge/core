@@ -1540,7 +1540,7 @@ $nonce = wp_create_nonce( 'admin_test');
 						  value = 0;
 						  var linked_text = 'linked_topic_'+topic_name;
 						//  $(".addPropertyDropdown option[value='"+linked_text+"']").remove();
-							if ($('.addPropertyDropdown').length) {
+							if (dt.rows().nodes().to$().find('.addPropertyDropdown').length) {
 								console.log('exist');
 							}
 							else
