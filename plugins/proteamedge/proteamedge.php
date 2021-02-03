@@ -1584,7 +1584,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			if(field_type=='linked_topic' && value==0)
 			{
 				var linked_text = 'linked_topic_'+topic_name;
-				 dt.rows().nodes().to$().find(".addPropertyDropdown option[value='linked_topic_Airline']").remove();
+				 dt.rows().nodes().to$().find('.addPropertyDropdown option[value="linked_topic_Airline"]').remove();
 				console.log('unchecked linked_topic removed');
 			}
             }
