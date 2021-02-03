@@ -249,6 +249,8 @@ function pte_manage_interaction_proper($data) {
   alpn_log("Starting Manager interaction...");
 //  alpn_log($data);
 
+  global $wpdb;
+
   $process = "";
   $processContext = $extraContext = array();
   $token = '';
@@ -330,43 +332,53 @@ function pte_manage_interaction_proper($data) {
 
     $requestData = $token->getValue("process_context");
 
-    $sync = isset($requestData['sync']) ? $requestData['sync'] : false;
-    $requestData['modified_date'] = date ("Y-m-d H:i:s", time());
-    if ($sync) {
-      $data = array(
-        "sync_type" => "add_update_section",
-        "sync_section" => "interaction_update",
-        "sync_user_id" => $ownerId,
-        "sync_payload" => $requestData
-      );
-      pte_manage_user_sync($data);
-      $requestData['sync'] =  false;
+    $recalled = isset($requestData['request_operation']) && $requestData['request_operation'] == 'recall_interaction' ? true : false;
+    if ($recalled) {
+      alpn_log('Deleting because recalled...' . $requestData['process_id']);
+
+      $whereClause = array('process_id' => $requestData['process_id']);
+      $wpdb->delete( 'alpn_interactions', $whereClause);
+
+    } else {
+
+      alpn_log('SAVING PROCESS...' . $requestData['process_id']);
+
+      if (isset($requestData['restart_interaction']) && $requestData['restart_interaction']) { //TODO start a new one and delete the old one rather than
+        alpn_log('Restarting Process...' . $requestData['process_id']);
+        $newData = array(
+          'process_id' => "",
+          'process_type_id' => $requestData['process_type_id'],
+          'owner_network_id' => $requestData['owner_network_id'],
+          'owner_id' =>$requestData['owner_id'],
+          'process_data' => array(
+              'topic_id' => $requestData['topic_id'],
+              'interaction_network_id' => $requestData['interaction_network_id'],
+              'proteam_row_id' => $requestData['proteam_row_id']
+          )
+        );
+        $newProcess = pte_manage_interaction_proper($newData);  //start new interaction targeting $ownerId
+        $requestData['new_interaction_process_id'] = $newProcess['process_id'];
+
+        $whereClause = array('process_id' => $requestData['process_id']);
+        $wpdb->delete( 'alpn_interactions', $whereClause);
+
+      } else { //save existing process
+        pte_save_process($process, $requestData);
+      }
+
+      $sync = isset($requestData['sync']) ? $requestData['sync'] : false;
+      $requestData['modified_date'] = date ("Y-m-d H:i:s", time());
+      if ($sync) {
+        $data = array(
+          "sync_type" => "add_update_section",
+          "sync_section" => "interaction_update",
+          "sync_user_id" => $ownerId,
+          "sync_payload" => $requestData
+        );
+        pte_manage_user_sync($data);
+      }
+
     }
-
-    //TODO implement restart this process here.
-
-    alpn_log('About to do IT');
-    alpn_log($requestData);
-
-    if (isset($requestData['restart_interaction']) && $requestData['restart_interaction']) {
-
-      alpn_log('DOING IT');
-
-      $requestData = array(
-        'owner_network_id' => $requestData['owner_network_id'],
-        'alt_id' => $requestData['alt_id'],
-        'interacts_with_id' => $requestData['interacts_with_id'],
-        'expiration_minutes' => $requestData['expiration_minutes'],
-        'requires_user_attention' => $requestData['requires_user_attention'],
-        'network_id' => $requestData['network_id'],
-        'topic_id' => $requestData['topic_id'],
-        'network_important' => $requestData['network_important'],
-        'topic_important' => $requestData['topic_important']
-      );
-      $process = call_user_func($processSetupName);
-    }
-    pte_save_process($process, $requestData);
-
   } else { //TODO Handle No process
 
   }

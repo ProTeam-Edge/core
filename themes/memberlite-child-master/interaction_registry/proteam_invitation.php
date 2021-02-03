@@ -198,10 +198,21 @@ function pte_get_registry_proteam_invitation() {
             case 'update':
               alpn_log('Handling Update...');
 
-              //update title and message in interaction here.
-              //Send a message to the other interaction. at $requestData['interacts_with_id']
-              //Both sides show updated.
-
+              $requestData['updated_date'] = date ("Y-m-d H:i:s", time());
+              $newRequestData = array(
+                'request_operation' => "update_interaction",
+                'new_message_title' => $requestData["message_title"],
+                'new_message_body' => $requestData["message_body"],
+                'updated_date' => $requestData['updated_date']
+              );
+              $data = array(
+                'process_id' => $requestData['interacts_with_id'],
+                'process_type_id' => "proteam_invitation_received",
+                'owner_network_id' => $requestData['connected_network_id'] ? $requestData['connected_network_id'] : $requestData['connected_contact_topic_id_alt'],
+                'owner_id' => $requestData['connected_id'] ? $requestData['connected_id'] : $requestData['connected_contact_id_alt'],
+                'process_data' => $newRequestData
+              );
+              $interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
 
               $token->setValue("process_context", $requestData);
               throw new WaitExecutionException();

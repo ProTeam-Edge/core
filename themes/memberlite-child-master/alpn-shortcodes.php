@@ -366,6 +366,7 @@ function usernetwork_shortcode($attr) {
 			$html .= "<div id='alpn_section_alert'>
 
 					 <div id='pte_interaction_outer_container'>
+					 	<div id='pte_interaction_ux_message' class='pte_interaction_ux_message'>Interaction Recalled</div>
 					 	<div id='pte_interaction_current'>
  					 	</div>
 					 </div>

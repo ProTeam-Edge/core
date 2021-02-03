@@ -70,10 +70,11 @@ function pte_make_interaction_editor_ux($uxMeta) {
 		";
 
 	if ($interactionComplete) {$html .= "<div class='pte_importance_progress_bg_done_editor'><i class='far fa-check pte_interaction_complete_editor'></i></div>";}
+
 	$html .="
 			</div>
 			</div>
-			<div id='pte_interaction_information_panel'>
+			<div id='pte_interaction_information_panel' data-pid='{$processId}'>
 			";
 
 	switch ($widgetTypeId) {  //TODO generalize to make widgets and interactions more extensible
@@ -553,9 +554,12 @@ function pte_make_message_line ($lineType, $uxMeta) {
 	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : "";
 	$topicName = 	isset($uxMeta['topic_name']) ? $uxMeta['topic_name'] : "";
 	$templateName =	isset($uxMeta['template_name']) ? $uxMeta['template_name'] : "";
+	$processId =	isset($uxMeta['process_id']) ? $uxMeta['process_id'] : "";
 
 	$messageTitle =	isset($uxMeta['message_title']) && $uxMeta['message_title'] ? $uxMeta['message_title'] : "-";
 	$messageBody =	isset($uxMeta['message_body']) && $uxMeta['message_body'] ? $uxMeta['message_body'] : "-";
+
+	$updatedString =	isset($uxMeta['updated_date']) && $uxMeta['updated_date'] ? $uxMeta['updated_date'] : "";
 
 	$sendType = "<span class='pte_internal_link' data-topic-id='{$topicId}' data-operation='topic_info' onclick='pte_handle_interaction_link_object(this);'>{$topicName}</span>"; //TODO this needs to change based on type
 
@@ -565,6 +569,7 @@ function pte_make_message_line ($lineType, $uxMeta) {
 									{$messageTitle}
 								</div>
 								<textarea class='pte_interaction_message_body' readonly>{$messageBody}</textarea>
+								<div class='pte_updated_message'>{$updatedString}</div>
 						";
 		break;
 		case 'message_editable_new':
@@ -572,6 +577,7 @@ function pte_make_message_line ($lineType, $uxMeta) {
 			$html = 	"{$buttonLineHtml}
 								 <input type='text' id='pte_message_title_field' placeholder='Message Title...'></input>
 								 <textarea id='pte_message_body_area' placeholder='Message Body...'></textarea>
+								 <div class='pte_updated_message'>{$updatedString}</div>
 						";
 		break;
 
@@ -580,6 +586,7 @@ function pte_make_message_line ($lineType, $uxMeta) {
 		$html = 	"{$buttonLineHtml}
 							 <input type='text' id='pte_message_title_field' value='{$messageTitle}' placeholder='Message Title...'></input>
 							 <textarea id='pte_message_body_area' placeholder='Message Body...'>{$messageBody}</textarea>
+							 <div class='pte_updated_message'>{$updatedString}</div>
 					";
 	break;
 

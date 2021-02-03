@@ -1718,7 +1718,7 @@ if ($connectedType && $ptState && $ptId) {
 function pte_manage_user_sync($data){   ///Must be a user and have a wpid
 
   alpn_log("pte_manage_user_sync...");
-  alpn_log($data);
+  //alpn_log($data);
 
   global $wpdb;
 
