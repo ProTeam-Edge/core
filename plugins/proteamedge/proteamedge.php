@@ -1543,6 +1543,10 @@ $nonce = wp_create_nonce( 'admin_test');
 							if ($('.addPropertyDropdown').length) {
 								console.log('exist');
 							}
+							else
+							{
+								console.log('doesnt exist');
+							}
 					 }
 					update_manage_topic_settings(field_type,topic_name,value);
 					
