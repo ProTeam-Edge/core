@@ -350,7 +350,8 @@ $nonce = wp_create_nonce( 'admin_test');
             var propertyCount = value["name"].split("_")[2];
             // Update global property count
             addPropertyCount = parseInt(propertyCount, 10);
-
+			console.log('pteCoreType');
+			console.log(pteCoreType);
 
             // Checkbox
             out += "<tr><td><input type='checkbox' class='"+topicName+" additionalProperty' name='"+ topicName + "_addProperty_" + propertyCount + "_checkbox' id='" + value["name"] + "'></td>";
