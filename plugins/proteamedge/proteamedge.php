@@ -1528,7 +1528,9 @@ $nonce = wp_create_nonce( 'admin_test');
 			  
 			  
 			
-			  
+			  $( document ).on( "change", ":checkbox", function () {
+				alert( "Handler for .change() called." );
+			  });
 			  
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
 					alert("linked_topic_checkbox clicked")
