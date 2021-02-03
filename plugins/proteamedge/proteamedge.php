@@ -361,10 +361,8 @@ $nonce = wp_create_nonce( 'admin_test');
 			coreTopicDropdownHTML += "<option value=''>Please Select</option>";
             $.each(linkedTopicsOnLoad, function(index, value) {
               valueParsed = value.split("_")[2];
-			  var check_exist = 0;
               // Add these to dropdown options
               if (valueParsed == pteCoreType) {
-				var check_exist = 1;
                 coreTopicDropdownHTML += "<option value='" + value + "' selected>";
               } else {
                 coreTopicDropdownHTML += "<option value='" + value + "'>";
@@ -376,26 +374,14 @@ $nonce = wp_create_nonce( 'admin_test');
 
             // Comment
             out += "<td><div id='" + topicName + "_addProperty_" + propertyCount + "_comment" +"'>";
-			if(check_exist==1)
             out += "A " + pteCoreType + ".";
             out += "</div></td>";
-			
-			if(check_exist==1)
-			{
-				 var friendlyHTML = "<input onblur='return additionalchild_settings_trigger(this)' type='text' class='friendly' id='pte_" + pteCoreType + "_" + propertyCount + "friendly' value='" + value["friendly"] + "'>";
-				out += "<td><div id='" + topicName + "_addProperty_" + propertyCount + "_friendly" +"'>";
-				out += friendlyHTML;
-				out += "</div></td>";
-			}
-			else
-			{
-				 var friendlyHTML = "<input onblur='return additionalchild_settings_trigger(this)' type='text' class='friendly' id='pte_" + pteCoreType + "_" + propertyCount + "friendly' value=''>";
-				out += "<td><div id='" + topicName + "_addProperty_" + propertyCount + "_friendly" +"'>";
-				out += friendlyHTML;
-				out += "</div></td>";
-			}
+
             // Friendly
-           
+            var friendlyHTML = "<input onblur='return additionalchild_settings_trigger(this)' type='text' class='friendly' id='pte_" + pteCoreType + "_" + propertyCount + "friendly' value='" + value["friendly"] + "'>";
+            out += "<td><div id='" + topicName + "_addProperty_" + propertyCount + "_friendly" +"'>";
+            out += friendlyHTML;
+            out += "</div></td>";
 
             // Required
             var requiredHTML = "<input type='checkbox' onclick='return additionalchild_settings_trigger(this)' class='" + topicName + "_required' id='pte_" + pteCoreType.toLowerCase() + "_" + propertyCount + "_" + pteCoreType.toLowerCase() + "_required'>";
