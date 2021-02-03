@@ -1528,24 +1528,16 @@ $nonce = wp_create_nonce( 'admin_test');
 			  
 			  
 			
-			  $( document ).on( "change", ":checkbox", function () {
-				alert( "Handler for .change() called." );
-			  });
+			  
 			  
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
-					alert("linked_topic_checkbox clicked")
-					console.log($(this).is(':checked'));
-					 field_type = 'linked_topic';
+				 field_type = 'linked_topic';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
 					 if($(this).is(':checked') ){
 						 value = 1;
 					 }
 					 else {
 						  value = 0;
-						  var linked_text = 'linked_topic_'+topic_name;
-						//  $(".addPropertyDropdown option[value='"+linked_text+"']").remove();
-						
-							
 					 }
 					update_manage_topic_settings(field_type,topic_name,value);
 					
