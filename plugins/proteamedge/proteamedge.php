@@ -417,10 +417,10 @@ $nonce = wp_create_nonce( 'admin_test');
             out += "</div></td>";
 
             out += "</tr>";
-
+			 }
           });
 		  }}
-		  }
+		 
           },
           error: function() {
             //alert('No additional properties set in config.');
