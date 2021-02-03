@@ -947,6 +947,7 @@ $nonce = wp_create_nonce( 'admin_test');
             complete: function(){
             alert('All settings have been cleared successfully.');
 			  $.LoadingOverlay("hide"); 
+			  location.reload();
             }
           });
 		}
