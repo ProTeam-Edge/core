@@ -1531,6 +1531,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			  
 			  
 				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
+					alert("linked_topic_checkbox clicked")
 					console.log($(this).is(':checked'));
 					 field_type = 'linked_topic';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
