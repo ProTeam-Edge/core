@@ -346,13 +346,20 @@ $nonce = wp_create_nonce( 'admin_test');
             loadedAdditionalProperties = data;
 			     if (typeof loadedAdditionalProperties !== 'undefined') {
           $.each(loadedAdditionalProperties["additionalProperties"], function(key, value) {
+			  	var selected_array = [];
+			  $.each(linkedTopicsOnLoad, function(index, value) {
+              valueParsed = value.split("_")[2];
+			 selected_array.push(valueParsed);
+            });
+		
             var pteCoreType = value["schema_key"].split("_")[3];
             var propertyCount = value["name"].split("_")[2];
             // Update global property count
             addPropertyCount = parseInt(propertyCount, 10);
 			console.log('pteCoreType');
 			console.log(pteCoreType);
-
+			if(selected_array.includes(pteCoreType))
+			{
             // Checkbox
             out += "<tr><td><input type='checkbox' class='"+topicName+" additionalProperty' name='"+ topicName + "_addProperty_" + propertyCount + "_checkbox' id='" + value["name"] + "'></td>";
 
@@ -361,12 +368,9 @@ $nonce = wp_create_nonce( 'admin_test');
             var valueParsed = "";
 			coreTopicDropdownHTML += "<option value=''>Please Select</option>";
 			
-			var selected_array = [];
+		
 			
-			$.each(linkedTopicsOnLoad, function(index, value) {
-              valueParsed = value.split("_")[2];
-			 selected_array.push(valueParsed);
-            });
+			
 			console.log('selected_array')
 			console.log(selected_array)
             $.each(linkedTopicsOnLoad, function(index, value) {
@@ -416,6 +420,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
           });
 		  }}
+		  }
           },
           error: function() {
             //alert('No additional properties set in config.');
