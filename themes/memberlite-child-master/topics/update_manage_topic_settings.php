@@ -51,11 +51,11 @@ if($field_type=='child_fields') {
 	$child_fields = $value ;
 }
 if(empty($data)) {
-	$sql = 'insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,child_fields,cdate,mdate)values("'.$topic_name.'","'.$core_topic.'","'.$hide_properties.'","'.$friendly_name.'","'.$visibility.'","'.$child_fields.'","'.time().'","'.time().'")';
+	$sql = "insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,child_fields,cdate,mdate)values('".$topic_name."','".$core_topic."','".$hide_properties."','".$friendly_name."','".$visibility."','".$child_fields."','".time()."','".time()."')";
 	
 }
 else {
-	echo $sql = 'update alpn_manage_topic set core_topic="'.$core_topic.'",hide_properties="'.$hide_properties.'",friendly_name="'.$friendly_name.'",visibility="'.$visibility.'",mdate="'.time().'" , child_fields="'.$child_fields.'" where topic_name="'.$topic_name.'"';
+	echo $sql = "update alpn_manage_topic set core_topic='".$core_topic."',hide_properties='".$hide_properties."',friendly_name='".$friendly_name."',visibility='".$visibility."',mdate='".time()."' , child_fields='".$child_fields."' where topic_name='".$topic_name."'";
 }
 $data = $wpdb->query($sql);
 ?>
