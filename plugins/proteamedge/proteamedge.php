@@ -1539,8 +1539,10 @@ $nonce = wp_create_nonce( 'admin_test');
 					 else {
 						  value = 0;
 						  var linked_text = 'linked_topic_'+topic_name;
-						  $(".addPropertyDropdown option[value='"+linked_text+"']").remove();
-
+						//  $(".addPropertyDropdown option[value='"+linked_text+"']").remove();
+							if ($('.addPropertyDropdown').length) {
+								console.log('exist');
+							}
 					 }
 					update_manage_topic_settings(field_type,topic_name,value);
 					
