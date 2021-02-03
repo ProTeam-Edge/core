@@ -1544,15 +1544,13 @@ $nonce = wp_create_nonce( 'admin_test');
 							
 					 }
 					update_manage_topic_settings(field_type,topic_name,value);
-					 if(value==0)
-					 {
-						console.log('value is 0 reload');
-						 location.reload();
+					 if($(this).is(':checked') ){
+						 value = 1;
 					 }
-					 else
-					 {
-						 console.log('value is not 0 reload');
+					 else{
+						  location.reload();
 					 }
+					 
 					
 				});
 				dt.rows().nodes().to$().find(".hidden_topic_checkbox").click(function(){
