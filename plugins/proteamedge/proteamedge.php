@@ -1581,6 +1581,10 @@ $nonce = wp_create_nonce( 'admin_test');
             data: {field_type : field_type,topic_name:topic_name,value:value,security:"<?php echo $nonce ?>"},
             complete: function(){
             prefill_manage_topic_fields_seperate();
+			if(field_type=='linked_topic' && value==0)
+			{
+				console.log('unchecked linked_topic reached');
+			}
             }
           });
 		}
