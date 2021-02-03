@@ -1583,7 +1583,7 @@ $nonce = wp_create_nonce( 'admin_test');
             prefill_manage_topic_fields_seperate();
 			if(field_type=='linked_topic' && value==0)
 			{
-				
+				location.reload();
 			}
             }
           });
