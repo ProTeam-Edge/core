@@ -1586,7 +1586,7 @@ $nonce = wp_create_nonce( 'admin_test');
 				var linked_text = 'linked_topic_'+topic_name;
 				$("#classes").on("each", ".addPropertyDropdown", function(){
 				console.log(this);
-				console.log('reached here');
+				console.log('reached here update_manage_topic_settings');
 }); /* $(".addPropertyDropdown option[value='"+linked_text+"']").remove();
 				console.log('unchecked linked_topic removed'); */
 			}
