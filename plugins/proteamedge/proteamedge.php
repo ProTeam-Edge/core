@@ -1439,7 +1439,140 @@ $nonce = wp_create_nonce( 'admin_test');
             }
           });
       });
+	function prefill_manage_topic_fields_seperate() {
+		  var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/prefill_manage_topic_fields.php";
+              var linkedTopics;
+			  var hiddenTopics;
+              $.ajax({
+                url: url,
+                type: "POST",
+                data: {security:"<?php echo $nonce ?>"},
+                dataType: "json",
+                async: false,
+                cache: false,
+                success: function(data){
+					console.log('data.linked_topic');
+					console.log(data.linked_topic);
+					console.log('data.hidden_topic');
+					console.log(data.hidden_topic);
+				 
+                  useReturnData(data.linked_topic);
+                  useReturnDataHidden(data.hidden_topic);
+                  useReturnDataFriendly(data.friendly_name);
+                  useReturnDataTopicClasses(data.topic_class);
+				  
+                  //linkedTopics = data;
+                },
+                error: function() {
+                 // alert('Error getting linked topics.');
+                }
+              });
+				 function useReturnDataFriendly(data){
+                   $.each(data, function(key, value){
+					$('.linked_topic_checkbox').each(function(){
+						linked_topic_id_string = $(this).attr('id');
+						split_linked_topic_id =  linked_topic_id_string.split('_');
+						linked_topic_id =  split_linked_topic_id[2];
+						topic_name = value.topic_name;
+						friendly_name = value.friendly_name;
+						if(linked_topic_id==topic_name)
+						{
+						dt.rows().nodes().to$().find("#"+linked_topic_id_string).parent().parent().find(".friendly_name").val(friendly_name);
 
+						}
+						
+					})
+				});
+              };
+			  function useReturnDataTopicClasses(data){
+                  topicClasses = data;
+                  // Store list of linkedTopics to signify these in "ExpectedTypes"
+                  topicClassesOnLoad = data;
+				     $.each(topicClasses, function(key1, value1) {
+		
+				  key = value1.topic_name;
+				  value = value1.visibility_value;
+                dt.rows().nodes().to$().find("#"+key).val(value);
+              });
+              };
+
+              // Fill all the topic_class fields
+           
+			  
+              function useReturnData(data){
+                  linkedTopics = data;
+                  // Store list of linkedTopics to signify these in "ExpectedTypes"
+                  linkedTopicsOnLoad = data;
+				    $.each(linkedTopics, function(index, linked_topic_checkbox_id) {
+                dt.rows().nodes().to$().find("#"+linked_topic_checkbox_id).attr("checked", true);
+
+                //$("#"+linked_topic_checkbox_id).attr("checked", true);
+              });
+              };
+
+              // Now, check all the boxes
+            
+			  
+			  
+			  function useReturnDataHidden(data){
+                  hiddenTopics = data;
+                  // Store list of linkedTopics to signify these in "ExpectedTypes"
+                  hiddenTopicsOnLoad = data;
+				     $.each(hiddenTopics, function(index, hidden_topic_checkbox_id) {
+                dt.rows().nodes().to$().find("#"+hidden_topic_checkbox_id).attr("checked", true);
+              });
+              };
+
+              // Now, check all the boxes
+           
+			  
+			  
+			
+			  
+			  
+				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
+					 field_type = 'linked_topic';
+					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
+					 if($(this).is(':checked') ){
+						 value = 1;
+					 }
+					 else {
+						  value = 0;
+						  $(".addPropertyDropdown option[value='"+topic_name+"']").remove();
+
+					 }
+					update_manage_topic_settings(field_type,topic_name,value);
+					
+				});
+				dt.rows().nodes().to$().find(".hidden_topic_checkbox").click(function(){
+					 field_type = 'hidden_topic';
+					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
+					 if($(this).is(':checked') ){
+						 value = 1;
+					 }
+					 else {
+						  value = 0;
+					 }
+					update_manage_topic_settings(field_type,topic_name,value);
+					
+				});
+				dt.rows().nodes().to$().find(".topic_class").on('change',function(){
+					 field_type = 'visibility';
+					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
+					 value = $(this).val();
+					update_manage_topic_settings(field_type,topic_name,value);
+					
+				});
+				dt.rows().nodes().to$().find("input[type='text']").blur(function(){
+					 field_type = 'friendly_name';
+					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
+					 value = $(this).val();
+					update_manage_topic_settings(field_type,topic_name,value);
+				});
+				
+              
+
+	}
 
 	function update_manage_topic_settings(field_type,topic_name,value){
 			$.ajax({
