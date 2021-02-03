@@ -1539,8 +1539,10 @@ $nonce = wp_create_nonce( 'admin_test');
 					 else {
 						  value = 0;
 						  var linked_text = 'linked_topic_'+topic_name;
-						  console.log(linked_text)
-						  dt.rows().nodes().to$().find(".addPropertyDropdown").html('dfdsf');
+						 
+						  dt.rows().nodes().to$().find(".addPropertyDropdown").each(function(){
+							  console.log('found')
+						  });
 
 					 }
 					update_manage_topic_settings(field_type,topic_name,value);
