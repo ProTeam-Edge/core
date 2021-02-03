@@ -1539,10 +1539,7 @@ $nonce = wp_create_nonce( 'admin_test');
 					 else {
 						  value = 0;
 						  var linked_text = 'linked_topic_'+topic_name;
-						 
-						  dt.rows().nodes().to$().find(".addPropertyDropdown").each(function(){
-							  console.log('found')
-						  });
+						  $(".addPropertyDropdown option[value='"+linked_text+"']").remove();
 
 					 }
 					update_manage_topic_settings(field_type,topic_name,value);
