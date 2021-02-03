@@ -1584,8 +1584,11 @@ $nonce = wp_create_nonce( 'admin_test');
 			if(field_type=='linked_topic' && value==0)
 			{
 				var linked_text = 'linked_topic_'+topic_name;
-				 $(".addPropertyDropdown option[value='"+linked_text+"']").remove();
-				console.log('unchecked linked_topic removed');
+				$("#classes").on("each", ".addPropertyDropdown", function(){
+				console.log(this);
+				console.log('reached here');
+}); /* $(".addPropertyDropdown option[value='"+linked_text+"']").remove();
+				console.log('unchecked linked_topic removed'); */
 			}
             }
           });
