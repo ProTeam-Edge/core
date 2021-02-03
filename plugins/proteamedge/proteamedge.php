@@ -1530,7 +1530,7 @@ $nonce = wp_create_nonce( 'admin_test');
 			
 			  
 			  
-				dt.rows().nodes().to$().find(".linked_topic_checkbox").click(function(){
+				dt.rows().nodes().to$().find(".linked_topic_checkbox").change(function(){
 					console.log($(this).is(':checked'));
 					 field_type = 'linked_topic';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
@@ -1549,7 +1549,7 @@ $nonce = wp_create_nonce( 'admin_test');
 					 
 					
 				});
-				dt.rows().nodes().to$().find(".hidden_topic_checkbox").click(function(){
+				dt.rows().nodes().to$().find(".hidden_topic_checkbox").change(function(){
 					 field_type = 'hidden_topic';
 					 topic_name = $(this).parent().parent().find("td:eq(1)").text();
 					 if($(this).is(':checked') ){
