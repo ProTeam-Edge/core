@@ -779,7 +779,7 @@ $nonce = wp_create_nonce( 'admin_test');
               }
             }
         }
-		out  = '';
+
 		
 		out += sortTable(out);
         // If we have some additional property rows, add those here
@@ -798,7 +798,7 @@ $nonce = wp_create_nonce( 'admin_test');
 	function sortTable(out){
 	
  final_output = '';
-	final_output = "<table id='Airline_properties'><thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
+	
 	 var rows =$(out).find('tbody  tr').get(); 
 
 	rows.sort(function(a, b) {
