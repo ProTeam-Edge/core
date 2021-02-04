@@ -795,7 +795,7 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 	function sortTable(out){
 
-
+	final_output = '';
 	 var rows =$(out).find('tbody  tr').get(); 
 	 console.log(rows);
 	 console.log('rows found');
@@ -816,9 +816,11 @@ $nonce = wp_create_nonce( 'admin_test');
 
 	  });
 	  $.each(rows, function(index, row) {
-  console.log(row)
-  console.log('order')
-  });
+			final_output +=row;
+	  });
+	  console.log(final_output);
+	  console.log('final_output');
+	  return final_output;
 }
       function format ( row ) {
 		  
