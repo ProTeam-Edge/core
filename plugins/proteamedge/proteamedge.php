@@ -823,7 +823,8 @@ $nonce = wp_create_nonce( 'admin_test');
 		 if(index==0)
 		 {
 			  console.log(row)
-			  console.log('first row')
+			  console.log('br');
+			  console.log(row[0]);
 		 }
 		
 	
