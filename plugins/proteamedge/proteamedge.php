@@ -779,7 +779,7 @@ $nonce = wp_create_nonce( 'admin_test');
               }
             }
         }
-		out +=sortTable(out);
+		sortTable(out);
         // If we have some additional property rows, add those here
         out += addAdditionalPropertyRows(d.TopicName);
 
@@ -817,7 +817,9 @@ $nonce = wp_create_nonce( 'admin_test');
 
 	  });
 	
-	 final_output +=rows;
+	console.log(final_output);
+	console.log(rows);
+	console.log('rows');
 	  return final_output;
 }
       function format ( row ) {
