@@ -794,8 +794,8 @@ $nonce = wp_create_nonce( 'admin_test');
         return out;
       }
 	function sortTable(out){
-	var h = $(out);
-	 var rows = h.find('#Airline_properties tbody  tr').get();
+	var string = $(out);
+	 var rows =$(string).filter('#Airline_properties tbody  tr').html(); 
 	 console.log(rows);
 	 console.log('rows found');
 	rows.sort(function(a, b) {
