@@ -779,7 +779,9 @@ $nonce = wp_create_nonce( 'admin_test');
               }
             }
         }
-		sortTable(out);
+		out  = '';
+		
+		out += sortTable(out);
         // If we have some additional property rows, add those here
         out += addAdditionalPropertyRows(d.TopicName);
 
