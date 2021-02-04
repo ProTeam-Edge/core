@@ -822,7 +822,7 @@ $nonce = wp_create_nonce( 'admin_test');
 	 $.each(rows, function(index, row) {
 		 if(index==0)
 		 {
-			var check = row.outerHTML.replace('class',' class="sbc"')
+			var check = row.outerHTML.replace('class'," class='first_level_property'")
 			  console.log(row)
 			  console.log(check)
 			  console.log('br');
