@@ -820,6 +820,13 @@ $nonce = wp_create_nonce( 'admin_test');
 	  });
 	  console.log('rows loop')
 	 $.each(rows, function(index, row) {
+		 if(index==0)
+		 {
+			  console.log(row)
+			  console.log('first row')
+		 }
+		
+	
     final_output +=row.outerHTML;
     });
 		
