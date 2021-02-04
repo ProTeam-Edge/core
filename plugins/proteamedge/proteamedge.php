@@ -796,7 +796,7 @@ $nonce = wp_create_nonce( 'admin_test');
 	function sortTable(out){
 		console.log(out);
 		console.log('output sort');
-	 var rows = out.text().find('#Airline_properties tbody  tr').get();
+	 var rows = $.out.text().find('#Airline_properties tbody  tr').get();
 	 console.log(rows);
 	 console.log('rows found');
 	rows.sort(function(a, b) {
