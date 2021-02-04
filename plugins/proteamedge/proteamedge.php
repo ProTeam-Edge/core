@@ -794,7 +794,7 @@ $nonce = wp_create_nonce( 'admin_test');
         return out;
       }
 	function sortTable(out){
-	trarr = [];
+	
  final_output = '';
 	final_output = "<table id='Airline_properties'><thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
 	 var rows =$(out).find('tbody  tr').get(); 
@@ -818,10 +818,9 @@ $nonce = wp_create_nonce( 'admin_test');
 	  });
 	  console.log('rows loop')
 	 $.each(rows, function(index, row) {
-    trarr.push(row)
+    final_output +=row.outerHTML;
     });
-		console.log(trarr);
-				console.log('trarr');
+		
 		console.log(final_output);
 		console.log('final_output 2');
 	  return final_output;
