@@ -822,8 +822,9 @@ $nonce = wp_create_nonce( 'admin_test');
 	 $.each(rows, function(index, row) {
 		 if(index==0)
 		 {
-			 row.outerHTML.replace('class',' class="sbc"')
+			var check = row.outerHTML.replace('class',' class="sbc"')
 			  console.log(row)
+			  console.log(check)
 			  console.log('br');
 			  console.log(row[0]);
 		 }
