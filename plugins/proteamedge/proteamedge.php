@@ -827,10 +827,11 @@ $nonce = wp_create_nonce( 'admin_test');
 			  console.log(check)
 			  console.log('br');
 			  console.log(row[0]);
+			    final_output +=check;
 		 }
-		
-	
-    final_output +=row.outerHTML;
+		else
+			final_output +=row.outerHTML;
+    
     });
 		
 		console.log(final_output);
