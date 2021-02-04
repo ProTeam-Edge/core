@@ -1820,6 +1820,7 @@ $nonce = wp_create_nonce( 'admin_test');
 				return false;
 			
 			} */
+			console.log('click reached');
 			var tr = $(this).closest('tr');
 			$.LoadingOverlay("show");
 			setTimeout(function(){ processrows(tr) }, 1000);
