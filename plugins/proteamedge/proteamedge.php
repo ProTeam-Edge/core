@@ -821,7 +821,7 @@ $nonce = wp_create_nonce( 'admin_test');
       final_output += row.text();;
     });
 		console.log(final_output);
-		console.log('final_output');
+		console.log('final_output 1');
 	  return final_output;
 }
       function format ( row ) {
