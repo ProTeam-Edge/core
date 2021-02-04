@@ -1797,6 +1797,7 @@ $nonce = wp_create_nonce( 'admin_test');
 
                 // Remove from the 'open' array
                 detailRows.splice( idx, 1 );
+				$.LoadingOverlay("hide");
             }
             else {
                 tr.addClass( 'details' );
