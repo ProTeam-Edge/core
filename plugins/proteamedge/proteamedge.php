@@ -818,9 +818,10 @@ $nonce = wp_create_nonce( 'admin_test');
 	  });
 	  console.log('row')
 	 $.each(rows, function(index, row) {
-       console.log(row);
+      final_output += row;
     });
-
+		console.log(final_output);
+		console.log('final_output');
 	  return final_output;
 }
       function format ( row ) {
