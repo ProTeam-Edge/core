@@ -790,6 +790,8 @@ $nonce = wp_create_nonce( 'admin_test');
 		
 		$.LoadingOverlay("hide");
 		//alert('Success rows have been added successfully.');
+		console.log(out);
+		console.log('out');
         return out;
       }
 
@@ -2354,8 +2356,7 @@ $nonce = wp_create_nonce( 'admin_test');
 		$.LoadingOverlay("hide");
 		//alert('Success rows have been added successfully.');
 		
-		console.log(out);
-		console.log('out');
+		
 		
         return out;
       }
