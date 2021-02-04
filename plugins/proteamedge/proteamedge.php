@@ -656,6 +656,7 @@ $nonce = wp_create_nonce( 'admin_test');
         var d = row.data();
 
         var par = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
+        var abc = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
 
 		var out = '';		
         // Add rows to table
@@ -781,7 +782,7 @@ $nonce = wp_create_nonce( 'admin_test');
         }
 
 		
-		out += sortTable(par);
+		out += sortTable(par,abc);
         // If we have some additional property rows, add those here
         out += addAdditionalPropertyRows(d.TopicName);
 
@@ -795,9 +796,9 @@ $nonce = wp_create_nonce( 'admin_test');
 		
         return out;
       }
-	function sortTable(out){
+	function sortTable(out,abc){
 	
- final_output = '';
+ final_output = abc;
 	
 	 var rows =$(out).find('tbody  tr').get(); 
 
