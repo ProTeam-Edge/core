@@ -794,7 +794,8 @@ $nonce = wp_create_nonce( 'admin_test');
         return out;
       }
 	function sortTable(out){
-
+ console.log(out);
+ console.log('out before');
 	final_output = '';
 	 var rows =$(out).find('tbody  tr').get(); 
 	 console.log(rows);
