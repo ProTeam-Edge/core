@@ -779,7 +779,7 @@ $nonce = wp_create_nonce( 'admin_test');
               }
             }
         }
-		sortTable();
+		sortTable(out);
         // If we have some additional property rows, add those here
         out += addAdditionalPropertyRows(d.TopicName);
 
@@ -790,32 +790,32 @@ $nonce = wp_create_nonce( 'admin_test');
 		
 		$.LoadingOverlay("hide");
 		//alert('Success rows have been added successfully.');
-		console.log(out);
-		console.log('out');
+		
         return out;
       }
 	function sortTable(out){
-  var rows =   dt.rows().nodes().to$().find("#Airline_properties tbody  tr").get();
+		console.log(out);
+		console.log('output sort');
+	 var rows = $(out).find('#Airline_properties tbody  tr').get();
+	rows.sort(function(a, b) {
 
-  rows.sort(function(a, b) {
+	  var A = $(a).children('td').eq(1).text().toUpperCase();
+	  var B = $(b).children('td').eq(1).text().toUpperCase();
 
-  var A = $(a).children('td').eq(1).text().toUpperCase();
-  var B = $(b).children('td').eq(1).text().toUpperCase();
+	  if(A < B) {
+		return -1;
+	  }
 
-  if(A < B) {
-    return -1;
-  }
+	  if(A > B) {
+		return 1;
+	  }
 
-  if(A > B) {
-    return 1;
-  }
+	  return 0;
 
-  return 0;
-
-  });
-
-  $.each(rows, function(index, row) {
-    dt.rows().nodes().to$().find("#Airline_properties tbody  tr").children('tbody').append(row);
+	  });
+	  $.each(rows, function(index, row) {
+  console.log(row)
+  console.log('order')
   });
 }
       function format ( row ) {
