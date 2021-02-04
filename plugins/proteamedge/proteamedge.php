@@ -797,6 +797,8 @@ $nonce = wp_create_nonce( 'admin_test');
 		console.log(out);
 		console.log('output sort');
 	 var rows = $(out).find('#Airline_properties tbody  tr').get();
+	 console.log(rows);
+	 console.log('rows found');
 	rows.sort(function(a, b) {
 
 	  var A = $(a).children('td').eq(1).text().toUpperCase();
