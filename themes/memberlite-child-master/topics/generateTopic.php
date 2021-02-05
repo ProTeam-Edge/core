@@ -26,7 +26,8 @@ if($passed==0)
   // Make sure POST data is stored as an array; typecast it as such
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
- $end = end($post);
+  $field_map = $post['field_map'];
+ $end = end($field_map);
 	echo '<pre>';
 	print_r($end);
 	echo  $count = count($post['field_map']);
