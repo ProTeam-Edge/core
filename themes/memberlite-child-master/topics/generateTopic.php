@@ -28,7 +28,7 @@ if($passed==0)
   $topicFriendlyName = $post["topic_friendly_name"];
 	echo '<pre>';
 	print_r($post);
-	echo  $count = count($post);
+	echo  $count = count($post['field_map']);
   	$addition_array = array();
 	$addition_array['pte_modified_date']['id']=10;
 	$addition_array['pte_modified_date']['friendly']="Added Date";
