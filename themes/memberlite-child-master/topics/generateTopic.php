@@ -26,9 +26,9 @@ if($passed==0)
   // Make sure POST data is stored as an array; typecast it as such
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
-  echo '<pre>';
+ /*  echo '<pre>';
   print_r($post);
-  die;
+  die; */
 
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
