@@ -3452,6 +3452,8 @@ $site_url = site_url();
               <a class='pte_link_button' onclick='pte_get_part(\"html\");'>Get HTML</a>
             </div>
             <textarea id='pte_topic_part_text_output' class='pte_topic_part_textarea' readonly></textarea>
+			<h3>Save Extra Fields JSON</h3>
+            <textarea id='save_extra_fields' class='save_extra_fields'></textarea>
           </div>
     ";
 
