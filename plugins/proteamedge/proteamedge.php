@@ -1651,6 +1651,7 @@ $nonce = wp_create_nonce( 'admin_test');
       $(document).ready(function() {
 
         dt = $('#classes').DataTable( {
+			 "order": [[ 1, "asc" ]],
           "processing": true,
           "ajax": {
             "url": "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/topics/getClasses.php",
@@ -1664,8 +1665,7 @@ $nonce = wp_create_nonce( 'admin_test');
               "orderable": false
             },
             { "data": "TopicName",
-			"sortOrder": 'asc',
-			"orderable": true			},
+					},
             { "data": "Comment" },
             { "data": "LinkedTopic",
               "class": "dt-body-center",
