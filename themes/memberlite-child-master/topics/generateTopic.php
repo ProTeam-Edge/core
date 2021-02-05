@@ -58,10 +58,10 @@ if($passed==0)
 	$addition_array['pte_image_logo']['schema_key']="pte_image_URL";
 	$addition_array['pte_image_logo']['hidden']="false";
 	$addition_array['pte_image_logo']['hidden_print']="true";
-
+	$object_array = (object) $addition_array;
   echo '<pre>';
   print_r($post);
-	print_r($addition_array);
+	print_r($object_array);
  /*  echo '<pre>';
   print_r($post);
   die; */
