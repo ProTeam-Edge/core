@@ -62,19 +62,20 @@ if($passed==0)
 
 	$obj_merged = (object) array_merge((array) $field_map, (array) $addition_array);
 
-
+echo '<pre>';
+print_r($obj_merged);
 	
-$final_array = array();
+/* $final_array = array();
   foreach($post as $vals)
   {
 	  $final_array = $vals;
 	  $final_array['field_map'] = $obj_merged;
-  }
+  } */
 
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
  // file_put_contents('generatedTopics/'.$topicFriendlyName.'_main.json', json_encode($post_data));
-  file_put_contents($root.$topicFriendlyName.'_main.json', json_encode($final_array));
+  file_put_contents($root.$topicFriendlyName.'_main.json', json_encode($post_data));
   //file_put_contents('generatedTopics/tester.txt',$topicName);
   echo 'yay';
 ?>
