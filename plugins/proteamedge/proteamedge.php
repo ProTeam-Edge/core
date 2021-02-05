@@ -3453,7 +3453,8 @@ $site_url = site_url();
             </div>
             <textarea id='pte_topic_part_text_output' class='pte_topic_part_textarea' readonly></textarea>
 			<h3>Save Extra Fields JSON</h3>
-            <textarea id='save_extra_fields' class='save_extra_fields'></textarea>
+			<br/>
+            <textarea id='save_extra_fields' class='pte_topic_part_textarea'></textarea>
           </div>
     ";
 
