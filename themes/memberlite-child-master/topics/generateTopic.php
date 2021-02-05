@@ -63,7 +63,7 @@ if($passed==0)
 	$obj_merged = (object) array_merge((array) $field_map, (array) $addition_array);
 
 echo '<pre>';
-print_r($post_data);
+print_r($post);
 print_r($obj_merged);
 	
 /* $final_array = array();
