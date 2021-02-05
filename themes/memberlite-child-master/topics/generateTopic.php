@@ -26,7 +26,9 @@ if($passed==0)
   // Make sure POST data is stored as an array; typecast it as such
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
- echo  $count = count($topicFriendlyName);
+	echo '<pre>';
+	print_r($post);
+	echo  $count = count($post);
   	$addition_array = array();
 	$addition_array['pte_modified_date']['id']=10;
 	$addition_array['pte_modified_date']['friendly']="Added Date";
@@ -54,6 +56,8 @@ if($passed==0)
 	$addition_array['pte_image_logo']['schema_key']="pte_image_URL";
 	$addition_array['pte_image_logo']['hidden']="false";
 	$addition_array['pte_image_logo']['hidden_print']="true";
+	
+	print_r($addition_array);
  /*  echo '<pre>';
   print_r($post);
   die; */
