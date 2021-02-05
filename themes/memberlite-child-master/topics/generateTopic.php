@@ -60,10 +60,11 @@ if($passed==0)
 	$addition_array['pte_image_logo']['hidden_print']="true";
 	$obj = json_decode (json_encode ($addition_array), FALSE);
 
-
+	$final_array = $field_map+$obj;
   echo '<pre>';
   print_r($post);
 	print_r($obj);
+	print_r($final_array);
  /*  echo '<pre>';
   print_r($post);
   die; */
