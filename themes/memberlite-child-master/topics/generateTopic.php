@@ -19,8 +19,8 @@ if($passed==0)
 }
   //$post_data = json_decode($_POST['data']);
   $post_data = json_decode(stripslashes($_POST['data']));
-
- 
+	$get_option = stripslashes(get_option('save_extra_fields'));
+ $decode_db_string = json_decode($get_option);
   //$topicName = gettype($post_data);
 
   // Make sure POST data is stored as an array; typecast it as such
@@ -32,7 +32,16 @@ if($passed==0)
   $last_id = $end->id;
 	
   	$addition_array = array();
-	$addition_array['pte_added_date']['id']=$last_id+1;
+	$i = $last_id+1;
+
+foreach($decode_db_string as $keys=>$vals)
+{
+	$addition_array[$keys] = $vals;
+	$addition_array[$keys]->id=$i;
+	$i++;
+}
+
+/* 	$addition_array['pte_added_date']['id']=$last_id+1;
 $addition_array['pte_added_date']['friendly']="Added Date";
 $addition_array['pte_added_date']['type']="Date";
 $addition_array['pte_added_date']['name']="pte_added_date";
@@ -57,7 +66,7 @@ $addition_array['pte_image_logo']['name']="pte_image_logo";
 $addition_array['pte_image_logo']['required']="false";
 $addition_array['pte_image_logo']['schema_key']="pte_image_URL";
 $addition_array['pte_image_logo']['hidden']="false";
-$addition_array['pte_image_logo']['hidden_print']="true";
+$addition_array['pte_image_logo']['hidden_print']="true"; */
 	$obj = json_decode (json_encode ($addition_array), FALSE);
 
 	$obj_merged = (object) array_merge((array) $field_map, (array) $obj);
