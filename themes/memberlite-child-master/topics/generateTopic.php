@@ -60,7 +60,9 @@ if($passed==0)
 	$addition_array['pte_image_logo']['hidden']="false";
 	$addition_array['pte_image_logo']['hidden_print']="true";
 	
-	print_r($addition_array);
+	$object = (object) $addition_array;
+	$both = $post+$object;
+	print_r($both);
  /*  echo '<pre>';
   print_r($post);
   die; */
