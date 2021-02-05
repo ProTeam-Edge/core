@@ -8,7 +8,7 @@ if(!is_user_logged_in() ) {
 $passed = 0;
 $nonce  = $_POST["security"];
 $save_extra_fields  = $_POST["save_extra_fields"];
-$verify = wp_verify_nonce($nonce, 'admin_test' );
+$verify = wp_verify_nonce($nonce, 'form-generate' );
 if($verify==1) {
 	$passed = 1;
 }
