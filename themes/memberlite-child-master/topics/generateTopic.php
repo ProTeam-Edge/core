@@ -20,7 +20,8 @@ if($passed==0)
   //$post_data = json_decode($_POST['data']);
   $post_data = json_decode(stripslashes($_POST['data']));
 
-  //$topicName = $post_data["topic_name"];
+  $topicName = $post_data["topic_name"];
+  $lowertopicName = strtolower($post_data["topic_name"]);
   //$topicName = gettype($post_data);
 
   // Make sure POST data is stored as an array; typecast it as such
@@ -32,32 +33,32 @@ if($passed==0)
   $last_id = $end->id;
 	
   	$addition_array = array();
-	$addition_array['pte_modified_date']['id']=$last_id+1;
-	$addition_array['pte_modified_date']['friendly']="Added Date";
-	$addition_array['pte_modified_date']['type']="Date";
-	$addition_array['pte_modified_date']['name']="pte_added_date";
-	$addition_array['pte_modified_date']['required']="false";
-	$addition_array['pte_modified_date']['schema_key']="pte_added_Date";
-	$addition_array['pte_modified_date']['hidden']="false";
-	$addition_array['pte_modified_date']['hidden_print']="true";
+	$addition_array[''.$lowertopicName.'_modified_date']['id']=$last_id+1;
+	$addition_array[''.$lowertopicName.'_modified_date']['friendly']="Added Date";
+	$addition_array[''.$lowertopicName.'_modified_date']['type']="Date";
+	$addition_array[''.$lowertopicName.'_modified_date']['name']="pte_added_date";
+	$addition_array[''.$lowertopicName.'_modified_date']['required']="false";
+	$addition_array[''.$lowertopicName.'_modified_date']['schema_key']="pte_added_Date";
+	$addition_array[''.$lowertopicName.'_modified_date']['hidden']="false";
+	$addition_array[''.$lowertopicName.'_modified_date']['hidden_print']="true";
 	
-	$addition_array['pte_added_date']['id']=$last_id+2;
-	$addition_array['pte_added_date']['friendly']="Modified Date";
-	$addition_array['pte_added_date']['type']="Date";
-	$addition_array['pte_added_date']['name']="pte_modified_date";
-	$addition_array['pte_added_date']['required']="false";
-	$addition_array['pte_added_date']['schema_key']="pte_modified_Date";
-	$addition_array['pte_added_date']['hidden']="false";
-	$addition_array['pte_added_date']['hidden_print']="true";
+	$addition_array[''.$lowertopicName.'_added_date']['id']=$last_id+2;
+	$addition_array[''.$lowertopicName.'_added_date']['friendly']="Modified Date";
+	$addition_array[''.$lowertopicName.'_added_date']['type']="Date";
+	$addition_array[''.$lowertopicName.'_added_date']['name']="pte_modified_date";
+	$addition_array[''.$lowertopicName.'_added_date']['required']="false";
+	$addition_array[''.$lowertopicName.'_added_date']['schema_key']="pte_modified_Date";
+	$addition_array[''.$lowertopicName.'_added_date']['hidden']="false";
+	$addition_array[''.$lowertopicName.'_added_date']['hidden_print']="true";
 	
-	$addition_array['pte_image_logo']['id']=$last_id+3;
-	$addition_array['pte_image_logo']['friendly']="Image/Logo";
-	$addition_array['pte_image_logo']['type']="image";
-	$addition_array['pte_image_logo']['name']="pte_image_logo";
-	$addition_array['pte_image_logo']['required']="false";
-	$addition_array['pte_image_logo']['schema_key']="pte_image_URL";
-	$addition_array['pte_image_logo']['hidden']="false";
-	$addition_array['pte_image_logo']['hidden_print']="true";
+	$addition_array[''.$lowertopicName.'_image_logo']['id']=$last_id+3;
+	$addition_array[''.$lowertopicName.'_image_logo']['friendly']="Image/Logo";
+	$addition_array[''.$lowertopicName.'_image_logo']['type']="image";
+	$addition_array[''.$lowertopicName.'_image_logo']['name']="pte_image_logo";
+	$addition_array[''.$lowertopicName.'_image_logo']['required']="false";
+	$addition_array[''.$lowertopicName.'_image_logo']['schema_key']="pte_image_URL";
+	$addition_array[''.$lowertopicName.'_image_logo']['hidden']="false";
+	$addition_array[''.$lowertopicName.'_image_logo']['hidden_print']="true";
 	$obj = json_decode (json_encode ($addition_array), FALSE);
 
 	$obj_merged = (object) array_merge((array) $field_map, (array) $obj);
