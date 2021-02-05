@@ -60,10 +60,14 @@ if($passed==0)
 	$addition_array['pte_image_logo']['hidden_print']="true";
 	$obj = json_decode (json_encode ($addition_array), FALSE);
 
-	$obj_merged = (object) array_merge((array) $field_map, (array) $addition_array);
+	$obj_merged = (object) array_merge((array) $field_map, (array) $obj);
 
-print_r($post);
-print_r($obj_merged);
+ $final_array = array();
+foreach($post as $keys=>$vals)
+{
+  $final_array[$keys] = $post->$keys;
+  $final_array['field_map'] = $obj_merged;
+}  
 	
 /* $final_array = array();
   foreach($post as $vals)
@@ -79,7 +83,7 @@ print_r($final_array); */
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
  // file_put_contents('generatedTopics/'.$topicFriendlyName.'_main.json', json_encode($post_data));
-  file_put_contents($root.$topicFriendlyName.'_main.json', json_encode($post_data));
+  file_put_contents($root.$topicFriendlyName.'_main.json', json_encode($final_array));
   //file_put_contents('generatedTopics/tester.txt',$topicName);
   echo 'yay';
 ?>
