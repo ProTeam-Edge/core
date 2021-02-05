@@ -20,9 +20,7 @@ if($passed==0)
   //$post_data = json_decode($_POST['data']);
   $post_data = json_decode(stripslashes($_POST['data']));
 
-  $topicName = $post_data["topic_name"];
-  echo $lowertopicName = strtolower($post_data["topic_name"]);
-  die;
+ 
   //$topicName = gettype($post_data);
 
   // Make sure POST data is stored as an array; typecast it as such
