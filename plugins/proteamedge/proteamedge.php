@@ -655,7 +655,7 @@ $nonce = wp_create_nonce( 'admin_test');
 		
         var d = row.data();
 
-        var par = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
+        var out = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
         var abc = "<table id='" + d.TopicName + "_properties'>" + "<thead><th></th><th>Label</th><th>Comment</th><th>Friendly Property Name</th><th>Required</th><th>Hidden</th><th>ExpectedTypes</th></thead>";
 
 		var out = '';		
@@ -690,21 +690,21 @@ $nonce = wp_create_nonce( 'admin_test');
 			
 					if ((typeIsCore == false) && (typeIsHidden == false)) { // Not a core nor hidden type
                     if (dataTypes.includes(type.slice(18))) { // Render basic datatypes like this
-                      par += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                      par += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + type.slice(18) + "_" + "friendly'></td>";
-                      par += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
-                      par += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_hidden" + "'></td>";
-                      par += "<td>" + type.slice(18);
-                      par += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + type.slice(18) + "'>";
-                      par += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'>";
-                      par += "</div></td></tr>";
+                      out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                      out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + type.slice(18) + "_" + "friendly'></td>";
+                      out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_required" + "'></td>";
+                      out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "_hidden" + "'></td>";
+                      out += "<td>" + type.slice(18);
+                      out += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + type.slice(18) + "'>";
+                      out += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'>";
+                      out += "</div></td></tr>";
                     } else { // If not a basic datatype, get subproperty fields
 
-                      par += getSubproperties(type,d,item);
+                      out += getSubproperties(type,d,item);
 
                     }
                   } else { // It is a core or hidden type, display a single text field
-				      par += getSubproperties1(type,d,item);
+				      out += getSubproperties1(type,d,item);
 				  	/* console.log('expected = 1')	
                     out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'>core topic<input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + type.slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
                     out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
@@ -747,34 +747,34 @@ $nonce = wp_create_nonce( 'admin_test');
                   if (dataTypes.includes(item["ExpectedTypes"].slice(18))) {
 					  	console.log('expected if')	
 					
-                    par += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                    par += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
-                    par += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
-                    par += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
-                    par += "<td>" + typeName;
-                    par += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + typeName + "'>";
-                    par += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + item["ExpectedTypes"].slice(18) + "'>";
-                    par += "</div></td></tr>";
+                    out += "<tr><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                    out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
+                    out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_required" + "'></td>";
+                    out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + item["ExpectedTypes"].slice(18).toLowerCase() + "_hidden" + "'></td>";
+                    out += "<td>" + typeName;
+                    out += "<div class='typeIsDataType'><input type='hidden' class='ExpectedType' value='" + typeName + "'>";
+                    out += "<input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + item["ExpectedTypes"].slice(18) + "'>";
+                    out += "</div></td></tr>";
                     //out += "<tr class='propertyTable'><td><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td><td><input type='text' class='friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td><td>" + item["ExpectedTypes"] + "</td></tr>";
                   } else { // Otherwise display all subproperties
-                    par += getSubproperties(type,d,item);
+                    out += getSubproperties(type,d,item);
                   }
                 } else {
 				  	console.log('expected else')	
                   // It is a core or hidden topic, display a single text field
-                  par += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
-                  par += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
-                  par += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_required" + "'></td>";
-                  par += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_hidden" + "'></td>";
-                  par += "<td>" + typeName;
+                  out += "<tr class='propertyTable'><td class='" + first_level_propertyClass + "'><input type='checkbox' class='" + d.TopicName + " subpropertycheckbox' onclick='return child_settings_trigger(this)'  id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td>";
+                  out += "<td><input type='text' onblur='return child_settings_trigger(this)'  class='" + d.TopicName + "_friendly subpropertyfriendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td>";
+                  out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_required subpropertyrequired" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_required" + "'></td>";
+                  out += "<td><input type='checkbox' onclick='return child_settings_trigger(this)'  class='" + d.TopicName + "_hidden subpropertyhidden" + "' id='" + d.TopicName.toLowerCase() + "_" + item["Label"].toLowerCase() + "_" + typeName.toLowerCase() + "_hidden" + "'></td>";
+                  out += "<td>" + typeName;
                   if (typeIsCore == true) {
-                    par += "<div class='typeIsLinked'><input type='hidden' class='ExpectedType' value='core_" + typeName + "'></div>";
+                    out += "<div class='typeIsLinked'><input type='hidden' class='ExpectedType' value='core_" + typeName + "'></div>";
                   }
                   if (typeIsHidden == true) {
-                    par += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='hidden_" + typeName + "'></div>";
+                    out += "<div class='typeIsHidden'><input type='hidden' class='ExpectedType' value='hidden_" + typeName + "'></div>";
                   }
-                  par += "<div><input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + typeName + "'></div>";
-                  par += "</td></tr>";
+                  out += "<div><input type='hidden' class='schemaKey' value='" + d.TopicName + "_" + item["Label"] + "_" + typeName + "'></div>";
+                  out += "</td></tr>";
                   //out += "<tr><td class='propertyTable'><input type='checkbox' class='" + d.TopicName + "' id='" + d.TopicName + "_" + item["Label"] + "_" + type.slice(18) + "'></td><td>" + item["Label"] + "</td><td>" + item["Comment"] + "</td><td><input type='text' class='friendly' id='" + d.TopicName + "_" + item["Label"] + "friendly'></td><td>" + type + "<div class='typeIsLinked'></div></td></tr>";
                 }
               }
@@ -782,7 +782,7 @@ $nonce = wp_create_nonce( 'admin_test');
         }
 
 		
-		out += sortTable(par,abc);
+		//out += sortTable(par,abc);
         // If we have some additional property rows, add those here
         out += addAdditionalPropertyRows(d.TopicName);
 
