@@ -26,7 +26,34 @@ if($passed==0)
   // Make sure POST data is stored as an array; typecast it as such
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
-  
+ echo  $count = count($topicFriendlyName);
+  	$addition_array = array();
+	$addition_array['pte_modified_date']['id']=10;
+	$addition_array['pte_modified_date']['friendly']="Added Date";
+	$addition_array['pte_modified_date']['type']="Date";
+	$addition_array['pte_modified_date']['name']="pte_added_date";
+	$addition_array['pte_modified_date']['required']="false";
+	$addition_array['pte_modified_date']['schema_key']="pte_added_Date";
+	$addition_array['pte_modified_date']['hidden']="false";
+	$addition_array['pte_modified_date']['hidden_print']="true";
+	
+	$addition_array['pte_added_date']['id']=11;
+	$addition_array['pte_added_date']['friendly']="Modified Date";
+	$addition_array['pte_added_date']['type']="Date";
+	$addition_array['pte_added_date']['name']="pte_modified_date";
+	$addition_array['pte_added_date']['required']="false";
+	$addition_array['pte_added_date']['schema_key']="pte_modified_Date";
+	$addition_array['pte_added_date']['hidden']="false";
+	$addition_array['pte_added_date']['hidden_print']="true";
+	
+	$addition_array['pte_image_logo']['id']=12;
+	$addition_array['pte_image_logo']['friendly']="Image/Logo";
+	$addition_array['pte_image_logo']['type']="image";
+	$addition_array['pte_image_logo']['name']="pte_image_logo";
+	$addition_array['pte_image_logo']['required']="false";
+	$addition_array['pte_image_logo']['schema_key']="pte_image_URL";
+	$addition_array['pte_image_logo']['hidden']="false";
+	$addition_array['pte_image_logo']['hidden_print']="true";
  /*  echo '<pre>';
   print_r($post);
   die; */
