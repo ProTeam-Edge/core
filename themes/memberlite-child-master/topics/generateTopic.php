@@ -27,7 +27,7 @@ if($passed==0)
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
   echo '<pre>';
-  print_r($post)
+  print_r($post);
   die;
 
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
