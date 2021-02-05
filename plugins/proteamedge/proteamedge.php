@@ -3438,12 +3438,10 @@ $site_url = site_url();
 						alert('JSON has been saved successfully.');
 					}
             		},
-            		error: function() {
-            		
-            		}
+            	
             	});
 			  }
-		  })
+		  }
           
             function pte_get_part(type){
               var fieldContents = jQuery('#pte_topic_part_text_input').val();
