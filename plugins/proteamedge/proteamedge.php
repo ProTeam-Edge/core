@@ -1663,7 +1663,8 @@ $nonce = wp_create_nonce( 'admin_test');
               "defaultContent": "",
               "orderable": false
             },
-            { "data": "TopicName" },
+            { "data": "TopicName",
+			"sortOrder": 'asc'			},
             { "data": "Comment" },
             { "data": "LinkedTopic",
               "class": "dt-body-center",
