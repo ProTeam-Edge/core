@@ -62,9 +62,10 @@ if($passed==0)
 
 	$obj_merged = (object) array_merge((array) $field_map, (array) $addition_array);
 
-
+print_r($post);
+print_r($obj_merged);
 	
-$final_array = array();
+/* $final_array = array();
   foreach($post as $vals)
   {
 	  $final_array['topic_name'] = $vals['topic_name'];
@@ -73,7 +74,7 @@ $final_array = array();
 	 
   } 
 echo '<pre>';
-print_r($final_array);
+print_r($final_array); */
 
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
