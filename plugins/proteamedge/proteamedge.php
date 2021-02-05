@@ -3415,7 +3415,36 @@ $site_url = site_url();
             }
           </style>
           <script>
-            var alpn_templatedir = '{$rootUrl}';
+		  var alpn_templatedir = '{$rootUrl}';
+		  jQuery('.update_extra_fields').click(function(){
+			  var save_extra_fields = $('#save_extra_fields').val();
+			  if(save_extra_fields=='')
+			  {
+				  alert('Please input extra fields JSON and try again.');
+				  return false;
+			  }
+			  else
+			  {
+				  jQuery.ajax({
+            		url: alpn_templatedir + 'topics/saveExtra.php',
+            		type: 'POST',
+            		data: {
+            			save_extra_fields: save_extra_fields,
+            			security: '".$nonce."',
+            		},
+            		success: function(data) {
+					if(data=='1')
+					{
+						alert('JSON has been saved successfully.');
+					}
+            		},
+            		error: function() {
+            		
+            		}
+            	});
+			  }
+		  })
+          
             function pte_get_part(type){
               var fieldContents = jQuery('#pte_topic_part_text_input').val();
               //console.log(fieldContents)
