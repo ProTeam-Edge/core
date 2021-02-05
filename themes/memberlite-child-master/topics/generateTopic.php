@@ -70,7 +70,7 @@ $final_array = array();
 	  $final_array['topic_name'] = $vals['topic_name'];
 	  $final_array['topic_friendly_name'] = $vals['topic_friendly_name'];
 	  $final_array['topic_class'] = $vals['topic_class'];
-	  $final_array['field_map'] = $obj_merged;
+	 
   } 
 echo '<pre>';
 print_r($final_array);
