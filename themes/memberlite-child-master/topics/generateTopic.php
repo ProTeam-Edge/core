@@ -26,8 +26,9 @@ if($passed==0)
   // Make sure POST data is stored as an array; typecast it as such
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
+ $end = end($post);
 	echo '<pre>';
-	print_r($post);
+	print_r($end);
 	echo  $count = count($post['field_map']);
   	$addition_array = array();
 	$addition_array['pte_modified_date']['id']=10;
