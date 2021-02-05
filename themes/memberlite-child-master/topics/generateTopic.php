@@ -27,11 +27,10 @@ if($passed==0)
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
   $field_map = $post['field_map'];
-  echo '<pre>';
-  print_r($field_map);
+
   $end = end($field_map);
   $last_id = $end->id;
-	$count = count($post['field_map']);
+	
   	$addition_array = array();
 	$addition_array['pte_modified_date']['id']=$last_id+1;
 	$addition_array['pte_modified_date']['friendly']="Added Date";
@@ -59,10 +58,10 @@ if($passed==0)
 	$addition_array['pte_image_logo']['schema_key']="pte_image_URL";
 	$addition_array['pte_image_logo']['hidden']="false";
 	$addition_array['pte_image_logo']['hidden_print']="true";
-	
-	$object = (object) $addition_array;
-	$both = $post+$object;
-	print_r($both);
+
+  echo '<pre>';
+  print_r($post);
+	print_r($addition_array);
  /*  echo '<pre>';
   print_r($post);
   die; */
