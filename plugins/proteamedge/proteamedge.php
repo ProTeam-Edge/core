@@ -3455,6 +3455,8 @@ $site_url = site_url();
 			<h3>Save Extra Fields JSON</h3>
 			<br/>
             <textarea id='save_extra_fields' class='pte_topic_part_textarea'></textarea>
+			<br/>
+			<input type='button' class='update_extra' value='Update'>
           </div>
     ";
 
