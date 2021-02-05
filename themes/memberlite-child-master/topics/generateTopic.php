@@ -65,6 +65,7 @@ if($passed==0)
   print_r($post);
 	print_r($obj);
 	print_r($final_array);
+	print_r('$final_array');
  /*  echo '<pre>';
   print_r($post);
   die; */
