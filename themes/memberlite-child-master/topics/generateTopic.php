@@ -63,11 +63,12 @@ if($passed==0)
 	$obj_merged = (object) array_merge((array) $field_map, (array) $addition_array);
 
 
-	print_r($obj_merged);
+	
 
- /*  echo '<pre>';
+   echo '<pre>';
   print_r($post);
-  die; */
+  print_r($obj_merged);
+  die; 
 
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
