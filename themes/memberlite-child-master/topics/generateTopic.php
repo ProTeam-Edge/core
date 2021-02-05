@@ -68,8 +68,7 @@ foreach($post as $keys=>$vals)
   $final_array[$keys] = $post[$keys];
   $final_array['field_map'] = $obj_merged;
 }  
-	echo '<pre>';
-	print_r($final_array);
+
 	
 /* $final_array = array();
   foreach($post as $vals)
