@@ -27,12 +27,13 @@ if($passed==0)
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
   $field_map = $post['field_map'];
- $end = end($field_map);
-	echo '<pre>';
-	print_r($end);
-	echo  $count = count($post['field_map']);
+  echo '<pre>';
+  print_r($field_map);
+  $end = end($field_map);
+  $last_id = $end->id;
+	$count = count($post['field_map']);
   	$addition_array = array();
-	$addition_array['pte_modified_date']['id']=10;
+	$addition_array['pte_modified_date']['id']=$last_id+1;
 	$addition_array['pte_modified_date']['friendly']="Added Date";
 	$addition_array['pte_modified_date']['type']="Date";
 	$addition_array['pte_modified_date']['name']="pte_added_date";
@@ -41,7 +42,7 @@ if($passed==0)
 	$addition_array['pte_modified_date']['hidden']="false";
 	$addition_array['pte_modified_date']['hidden_print']="true";
 	
-	$addition_array['pte_added_date']['id']=11;
+	$addition_array['pte_added_date']['id']=$last_id+2;
 	$addition_array['pte_added_date']['friendly']="Modified Date";
 	$addition_array['pte_added_date']['type']="Date";
 	$addition_array['pte_added_date']['name']="pte_modified_date";
@@ -50,7 +51,7 @@ if($passed==0)
 	$addition_array['pte_added_date']['hidden']="false";
 	$addition_array['pte_added_date']['hidden_print']="true";
 	
-	$addition_array['pte_image_logo']['id']=12;
+	$addition_array['pte_image_logo']['id']=$last_id+3;
 	$addition_array['pte_image_logo']['friendly']="Image/Logo";
 	$addition_array['pte_image_logo']['type']="image";
 	$addition_array['pte_image_logo']['name']="pte_image_logo";
