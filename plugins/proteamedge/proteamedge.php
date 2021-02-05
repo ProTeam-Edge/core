@@ -3456,6 +3456,7 @@ $site_url = site_url();
 			<br/>
             <textarea id='save_extra_fields' class='pte_topic_part_textarea'></textarea>
 			<br/>
+			<br/>
 			<input type='button' class='update_extra' value='Update'>
           </div>
     ";
