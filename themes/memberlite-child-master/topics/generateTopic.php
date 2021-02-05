@@ -86,9 +86,9 @@ foreach($post as $keys=>$vals)
 	  $final_array['topic_friendly_name'] = $vals['topic_friendly_name'];
 	  $final_array['topic_class'] = $vals['topic_class'];
 	 
-  } 
+  }  */
 echo '<pre>';
-print_r($final_array); */
+print_r($final_array);
 
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
