@@ -26,6 +26,7 @@ if($passed==0)
   // Make sure POST data is stored as an array; typecast it as such
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
+  
  /*  echo '<pre>';
   print_r($post);
   die; */
