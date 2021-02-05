@@ -3416,7 +3416,7 @@ $site_url = site_url();
           </style>
           <script>
 		  var alpn_templatedir = '{$rootUrl}';
-		  jQuery('.update_extra_fields').click(function(){
+		 function save_extra_fields(){
 			  var save_extra_fields = $('#save_extra_fields').val();
 			  if(save_extra_fields=='')
 			  {
@@ -3485,7 +3485,7 @@ $site_url = site_url();
 			<br/>
             <textarea id='save_extra_fields' class='pte_topic_part_textarea'></textarea>
 			
-			<a style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)' class='update_extra_fields'>Update</a>
+			<a onclick='return save_extra_fields()' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)' class='update_extra_fields'>Update</a>
           </div>
     ";
 
