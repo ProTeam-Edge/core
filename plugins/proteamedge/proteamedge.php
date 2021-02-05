@@ -3417,7 +3417,7 @@ $site_url = site_url();
           <script>
 		  var alpn_templatedir = '{$rootUrl}';
 		 function save_extra_fields(){
-			  var save_extra_fields = $('#save_extra_fields').val();
+			  var save_extra_fields = jQuery('#save_extra_fields').val();
 			  if(save_extra_fields=='')
 			  {
 				  alert('Please input extra fields JSON and try again.');
