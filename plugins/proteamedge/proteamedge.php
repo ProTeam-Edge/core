@@ -3376,7 +3376,7 @@ $nonce = wp_create_nonce( 'form-generate' );
 
 $site_url = site_url();
     $rootUrl = "".$site_url."/wp-content/themes/memberlite-child-master/";
-	$get_option = get_option('save_extra_fields');
+	$get_option = stripslashes(get_option('save_extra_fields'));
     echo "<h1>ProTeam Edge Topic Parts</h1>";
     $html = "";
     $html .= "
