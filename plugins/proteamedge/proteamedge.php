@@ -3376,6 +3376,7 @@ $nonce = wp_create_nonce( 'form-generate' );
 
 $site_url = site_url();
     $rootUrl = "".$site_url."/wp-content/themes/memberlite-child-master/";
+	$get_option = get_option('save_extra_fields');
     echo "<h1>ProTeam Edge Topic Parts</h1>";
     $html = "";
     $html .= "
@@ -3481,7 +3482,7 @@ $site_url = site_url();
             <textarea id='pte_topic_part_text_output' class='pte_topic_part_textarea' readonly></textarea>
 			<h3>Save Extra Fields JSON</h3>
 			<br/>
-            <textarea id='save_extra_fields' class='pte_topic_part_textarea'></textarea>
+            <textarea id='save_extra_fields' class='pte_topic_part_textarea'>".$get_option."</textarea>
 			
 			<a onclick='return save_extra_fields()' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)' class='update_extra_fields'>Update</a>
           </div>
