@@ -1,6 +1,5 @@
 <?php
-echo '<pre>';
-print_r($_SERVER);	
+include($_SERVER['DOCUMENT_ROOT'].'/wp-blog-header.php');
 
 
 echo '<pre>';
