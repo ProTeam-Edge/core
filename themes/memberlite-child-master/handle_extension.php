@@ -1,8 +1,7 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
-$input = file_get_contents('php://input');
-$data = json_decode($input);
-pp($data);
+
+
 
 ?>
 
@@ -21,11 +20,21 @@ pp($data);
 				font-weight: bold;
 			}
 		</style>
+		<script>
+		var results = document.getElementById('results'),
+         
+
+        // Listen to messages from parent window
+        bindEvent(window, 'message', function (e) {
+            results.innerHTML = e.data;
+        });
+		</script>
 	</head>
 
 	<body>
 		<div id = "root" >
 			<div class='pte_dialog_title'>ProTeam Edge File Uploader</div>
+			<div id="resilts"></div>
 		</div>
 		<script src = "main.js" ></script>
 	</body>
