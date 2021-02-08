@@ -26,6 +26,8 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
         // Listen to messages from parent window
         bindEvent(window, 'message', function (e) {
+			console.log('message')
+			console.log(e);
             results.innerHTML = e.data;
         });
 		</script>
