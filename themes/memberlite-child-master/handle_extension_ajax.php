@@ -2,7 +2,7 @@
 require_once($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 $passed = 0;
 $nonce  = $_POST["security"];
-$verify = wp_verify_nonce($nonce, 'admin_test' );
+$verify = wp_verify_nonce($nonce, 'handle_extension' );
 if($verify==1) 
 {
 	$passed = 1;
