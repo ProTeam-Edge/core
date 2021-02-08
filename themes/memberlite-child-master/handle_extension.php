@@ -34,9 +34,9 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
         // Listen to messages from parent window
         bindEvent(window, 'message', function (e) {
 			var results = document.getElementById('results');
-			console.log('message')
-			console.log(e);
-            results.innerHTML = e.data;
+			str = JSON.stringify(e.data, null, 4); // (Optional) beautiful indented output.
+
+            results.innerHTML = str;
         });
 		</script>
 	</head>
