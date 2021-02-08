@@ -41,7 +41,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 			data.append('name', e.data.data.file_name);
 
 			var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/handle_extension_ajax.php";
-		
+			$("#results").html('')
 
 			  $.ajax({
             url: url,
