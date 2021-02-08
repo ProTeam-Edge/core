@@ -82,9 +82,9 @@ function storePdf($pdfSettings){
 	}
 }
 
-function pte_date_to_js($sourceDateTime){
+function pte_date_to_js($sourceDateTime, $prefix=''){
   $shortId = pte_get_short_id();
-  return "<div id='{$shortId}'><script>pte_date_to_js('{$sourceDateTime}', '{$shortId}');</script></div>";
+  return "<div id='{$shortId}'><script>pte_date_to_js('{$sourceDateTime}', '{$shortId}', '{$prefix}');</script></div>";
 }
 
 function pte_map_extract($theMap){
@@ -182,6 +182,84 @@ function pte_name_extract($theMap){
     $extractedNames[$key] = isset($value['friendly']) ? $value['friendly'] : $key;
  }
   return ($extractedNames);
+}
+
+
+function pte_file_interaction_away($processId) {
+
+  alpn_log('pte_file_interaction_away');
+
+  global $wpdb;
+  $uxMeta = array();
+
+  $results = $wpdb->get_results(
+  	$wpdb->prepare("SELECT ux_meta FROM alpn_interactions WHERE process_id = %s", $processId)
+   );
+
+   if (isset($results[0])) {
+  	 $interactionDetails = $results[0];
+  	 $uxMeta = json_decode($interactionDetails->ux_meta, true);
+  	 $fileInteractionOperation = isset($uxMeta['interaction_file_away_handling']) ? $uxMeta['interaction_file_away_handling'] : false;
+
+  	 switch ($fileInteractionOperation) {
+
+  		case 'delete_interaction':
+  			alpn_log('delete_interaction');
+
+  			$whereClause['process_id'] = $processId;
+  			$wpdb->delete( 'alpn_interactions', $whereClause );
+   		break;
+  		case 'archive_interaction':
+  			alpn_log('archive_interaction');
+
+        $interactionData = array(
+          "state" => "filed"
+        );
+        $whereClause['process_id'] = $processId;
+        $wpdb->update( 'alpn_interactions', $interactionData, $whereClause );    
+
+  		break;
+
+  		case 'decline_archive_interaction':
+  			alpn_log('decline_archive_interaction');
+
+  		break;
+  	}
+
+   }
+
+   return $uxMeta;
+}
+
+
+function pte_remove_proteam_member($rowToDelete) {
+
+  alpn_log('pte_remove_proteam_member');
+
+  global $wpdb;
+  $ptRow = array();
+
+  $proTeamMemberResults = $wpdb->get_results(
+  	$wpdb->prepare("SELECT id, topic_id, wp_id, process_id FROM alpn_proteams WHERE id = %d", $rowToDelete)
+   );
+
+  if (isset($proTeamMemberResults[0])) {
+
+  	$ptRow = $proTeamMemberResults[0];
+  	$wpId = $ptRow->wp_id;
+  	$topicId = $ptRow->topic_id;
+
+  	$deletedChannelToo = false;
+  	if ($wpId) {
+  		$data = array(
+  			'topic_id' => $topicId,
+  			'user_id' => $wpId
+  		);
+  		$deletedChannelToo = pte_manage_cc_groups("delete_member", $data);   //TODO handle async. Takes several seconds.
+  	}
+  	$deleteResults = $wpdb->delete('alpn_proteams', array('id' => $rowToDelete));
+  }
+  return (array)$ptRow;
 }
 
 function pte_filename_sanitizer($name) {

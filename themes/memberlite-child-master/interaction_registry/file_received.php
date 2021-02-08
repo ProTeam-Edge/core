@@ -28,6 +28,8 @@ function pte_get_registry_file_received() {
             $requestData['interaction_to_from_name'] = $requestData['static_name'];
             $requestData['interaction_regarding'] = $requestData['topic_name'];
             $requestData['interaction_vault_link'] = "";
+            $requestData['interaction_file_away_handling'] = "archive_interaction";
+
 
             $requestData['template_name'] = "";
             $requestData['view_link_file_type'] = "File";

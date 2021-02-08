@@ -35,6 +35,8 @@ function pte_get_registry_email_send() {
             $requestData['interaction_to_from_name'] = "";
             $requestData['interaction_regarding'] = $requestData['topic_name'];
             $requestData['interaction_vault_link'] = "";
+            $requestData['interaction_file_away_handling'] = "delete_interaction";
+
 
             $emailContactTopicId =  $token->getValue("send_email_address_id");
 
@@ -141,6 +143,7 @@ function pte_get_registry_email_send() {
           $requestData['static_name'] = $requestData["send_email_address_name"];
           $requestData['interaction_type_status'] = "URL Sent by Email";
           $requestData['interaction_complete'] = true;
+          $requestData['interaction_file_away_handling'] = "archive_interaction";
 
           $requestData['widget_type_id'] = "information";
           $requestData['template_name'] = $token->getValue("template_name");

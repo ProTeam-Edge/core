@@ -43,7 +43,6 @@ function wpf_dev_process_before( $entry, $form_data ) {
 // add nonce field before submit button for all wpforms
 add_action( 'wpforms_process_before', 'wpf_dev_process_before', 10, 2 );
 function wpf_dev_display_submit_before( $form_data ) {
-
    return wp_nonce_field( 'wp_form_nonce', 'wp_form_nonce' );
 }
 add_action( 'wpforms_display_submit_before', 'wpf_dev_display_submit_before', 10, 1 );
@@ -53,7 +52,6 @@ $cookie_name = 'pmpro_visit';
 $cookie_value = '0';
 $cookie_secure = 'secure';
 $cookie_httponly = 'HTTPOnly';
-
 setcookie($cookie_name, $cookie_value, (time()+3600), '/',$domainName, $cookie_secure, $cookie_httponly);
 
 add_filter( 'nonce_life','modify_timeslot' );  //4 - 8 hours. Default is 24 hours
@@ -63,8 +61,6 @@ return 48 * 3600;
 
 include('alpn-shortcodes.php');
 include('alpn_common.php');
-include('alpn_data.php');
-//include('pte_interactions.php');
 include('pte_messaging.php');
 
 $wpdb_readonly = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,'sky0001654.mdb0001643.db.skysql.net:5003');  //TODO use this connection anywhere that isn't susceptible to master/slave, add/update lag. Coming from add/update, pass in JSON. use different connection
@@ -98,7 +94,6 @@ function memberlite_child_switch_theme_update_mods() {
 add_action( 'switch_theme', 'memberlite_child_switch_theme_update_mods' );
 
 function alpn_select2_enqueue_styles() {
-
     wp_enqueue_style( 'alpn_uppy', 'https://transloadit.edgly.net/releases/uppy/v1.18.0/uppy.min.css' );
     wp_enqueue_style( 'pte_doka', get_template_directory_uri() . '-child-master/doka/bin/browser/doka.min.css');
     wp_enqueue_style( 'alpn_select2', get_template_directory_uri() . '-child-master/dist/css/select2.min.css' );
@@ -170,7 +165,7 @@ function alpn_load_script(){
         'ajaxurl'   => admin_url( 'admin-ajax.php' ),
         'security'  => wp_create_nonce( 'alpn_script' )
     );
-	 wp_localize_script( 'alpn_script', 'specialObj', $local_arr );
+	  wp_localize_script( 'alpn_script', 'specialObj', $local_arr );
     wp_enqueue_script( 'alpn_script' );
 
     wp_register_script(
@@ -339,15 +334,14 @@ add_filter("pmpro_checkout_confirm_password", "__return_false");  //remove email
 function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets up default topics and sample data.
 	global $wpdb;
 	$now = date ("Y-m-d H:i:s", time());
-  $formId = pte_create_default_topics($user_id, true);   //with sample data
 
+  $formId = pte_create_default_topics($user_id, true);   //with sample data
 	$entry = array(
 		'id' => $formId,  //source user template type  Using custom TT
 		'new_owner' => $user_id,
 		'fields' => array()
 	);
 	alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
-
 
 }
 add_action('user_register', 'sync_alpn_user_info_on_register');
@@ -534,7 +528,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 				} else { //add
 
           if ($topicSchemaKey == "Person") {$topicData['image_handle'] = "pte_icon_letter_n.png";}  //Dor new user until they edit
-					
+
           $data = array();
           $topicData['last_op'] = "add";
           $topicData['created_date'] = $now;

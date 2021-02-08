@@ -34,6 +34,8 @@ function pte_get_registry_sms_send() {
             $requestData['interaction_to_from_name'] = "";
             $requestData['interaction_regarding'] = $requestData['topic_name'];
             $requestData['interaction_vault_link'] = "";
+            $requestData['interaction_file_away_handling'] = "delete_interaction";
+
 
             $mobileContactTopicId =  $token->getValue("send_email_address_id");  //TODO generalize since it is used across fax, sms, email.
 
@@ -137,6 +139,8 @@ function pte_get_registry_sms_send() {
 
           alpn_log('HANDLING SENT SMS');
           $requestData = $token->getValue("process_context");
+          $requestData['interaction_file_away_handling'] = "archive_interaction";
+
 
           $requestData['interaction_to_from_name'] = $requestData["send_email_address_name"];
           $requestData['static_name'] = $requestData["send_email_address_name"];

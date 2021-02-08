@@ -28,7 +28,7 @@ function pte_get_registry_fax_received() {
             $requestData['interaction_to_from_name'] =  $requestData['formatted_number'];
             $requestData['interaction_regarding'] = $requestData['topic_name'];
             $requestData['interaction_vault_link'] = "";
-
+            $requestData['interaction_file_away_handling'] = "archive_interaction";
 
             $requestData['fax_field_fax_number'] = $token->getValue("formatted_number");
             $pageCountString = $requestData["page_count_string"];

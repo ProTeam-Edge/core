@@ -34,7 +34,14 @@ function pte_get_registry_proteam_invitation() {
             $requestData['interaction_to_from_name'] = $requestData['network_name'];
             $requestData['interaction_regarding'] = $requestData['topic_name'];
             $requestData['interaction_vault_link'] = "";
+            $requestData['interaction_file_away_handling'] = "delete_interaction";
             $requestData['to_from'] = 'To';
+
+            //Update ProTeam Record with Process ID.
+            $proTeamData = array("process_id" => $requestData['process_id']);
+            $whereClause = array("id" => $requestData['proteam_row_id']);
+            $wpdb->update( "alpn_proteams", $proTeamData, $whereClause );
+
 
             if ($token->getValue("message_title")) { //As long as there is a title, we can send.
 
@@ -129,7 +136,7 @@ function pte_get_registry_proteam_invitation() {
           global $wpdb;
 
           $requestData = $token->getValue("process_context");
-
+          $requestData['interaction_file_away_handling'] = "archive_interaction";
           $buttonOperation = $token->getValue("button_operation");
 
           switch ($buttonOperation) {
@@ -201,8 +208,8 @@ function pte_get_registry_proteam_invitation() {
               $requestData['updated_date'] = date ("Y-m-d H:i:s", time());
               $newRequestData = array(
                 'request_operation' => "update_interaction",
-                'new_message_title' => $requestData["message_title"],
-                'new_message_body' => $requestData["message_body"],
+                'message_title' => $requestData["message_title"],
+                'message_body' => $requestData["message_body"],
                 'updated_date' => $requestData['updated_date']
               );
               $data = array(

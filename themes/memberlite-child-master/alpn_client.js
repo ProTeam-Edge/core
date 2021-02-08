@@ -1220,38 +1220,22 @@ function pte_handle_interaction_recall(data){
 
 	interactionUxContainer.css('pointer-events', 'none');
 	interactionCurrent.animate({opacity: 0.45}, 200, function(){
+		interactionUxContainer.css('pointer-events', 'auto');
 	});
 	interactionMessage.fadeIn(200);
-
-
-
-//	interactionUxContainer.css('pointer-events', 'auto');
-
-
-	console.log(data.process_id);
-	console.log(interactionUxContainer);
-	console.log(interactionCard);
-	console.log(data);
-
-
-
-
 }
 
 function pte_show_process_ux(processId) {
 
 	console.log('Getting Process UX...', processId);
 
-	var alpnSectionAlert = jQuery('#alpn_section_alert');
 	var interactionOuterContainer = jQuery('#pte_interaction_outer_container');
 	var interactionCurrent = jQuery('#pte_interaction_current');
 	var interactionUxMessage = jQuery('#pte_interaction_ux_message');
-	var interactionWaitIndicator = jQuery('#interaction_wait_indicator');
 
 	var security = specialObj.security;
 	if (processId) {
-		alpnSectionAlert.css('pointer-events', 'none');
-		interactionWaitIndicator.show();
+		pte_interaction_wait_indicator('start');
 		jQuery.ajax({
 			url: alpn_templatedir + 'pte_get_interaction_ux.php',
 			type: 'POST',
@@ -1264,10 +1248,11 @@ function pte_show_process_ux(processId) {
 			success: function(html) {
 				var processUx = jQuery("#pte_interaction_current");
 				processUx.html(html);
-				alpnSectionAlert.css('pointer-events', 'auto');
+
 				interactionCurrent.css('opacity', 1);
 				interactionUxMessage.hide();
-				interactionWaitIndicator.hide();
+				pte_interaction_wait_indicator('stop');
+
 			},
 			error: function() {
 				console.log('problem getting interation');
@@ -1276,7 +1261,6 @@ function pte_show_process_ux(processId) {
 		})
 	} else {
 		//Interaction Box Zero
-
 		var availableImages = 3;
 		var processUx = jQuery("#pte_interaction_current");
 		var randomNumber = "0000" + (Math.floor(Math.random() * availableImages) + 1);
@@ -1285,10 +1269,9 @@ function pte_show_process_ux(processId) {
 				html += "<img id='pte_interactions_message_image' src='" + imageUrl + "'>";
 		    html += "</div>";
 		processUx.html(html);
-		alpnSectionAlert.css('pointer-events', 'auto');
+		pte_interaction_wait_indicator('stop')
 		interactionCurrent.css('opacity', 1);
 		interactionUxMessage.hide();
-		interactionWaitIndicator.hide();
 	}
 }
 
@@ -1398,10 +1381,7 @@ console.log('pte_handle_interaction_selected...');
 
 function pte_handle_active_filed_change(tObj){
 
-	var alpnSectionAlert = jQuery('#alpn_section_alert');
-	var interactionWaitIndicator = jQuery('#interaction_wait_indicator');
-	alpnSectionAlert.css('pointer-events', 'none');
-	interactionWaitIndicator.show();
+	pte_interaction_wait_indicator('start');
 
 	var security = specialObj.security;
 	var jObj = jQuery(tObj);
@@ -1452,11 +1432,27 @@ function pte_handle_active_filed_change(tObj){
 	})
 }
 
+function pte_interaction_wait_indicator(operation = 'stop') {
+	var alpnSectionAlert = jQuery('#alpn_section_alert');
+	var interactionWaitIndicator = jQuery('#interaction_wait_indicator');
+	if (operation == 'stop') {
+		alpnSectionAlert.css('pointer-events', 'auto');
+		interactionWaitIndicator.hide();
+	} else {
+		alpnSectionAlert.css('pointer-events', 'none');
+		interactionWaitIndicator.show();
+	}
+}
+
 function pte_handle_file_away(tObj){
+
 	console.log('pte_handle_file_away...');
 	var jObj = jQuery(tObj);
 	var processId = jObj.data('pid');
 	var security = specialObj.security;
+
+	pte_interaction_wait_indicator('start');
+
 	jQuery.ajax({
 		url: alpn_templatedir + 'pte_file_interaction_away.php',
 		type: 'POST',
@@ -1469,6 +1465,8 @@ function pte_handle_file_away(tObj){
 			pte_select_first_interaction = true;
 			pte_handle_interaction_skip_table_reselect = false;
 			wpDataTables.table_interactions.fnFilterClear();
+			pte_interaction_wait_indicator('stop');
+
 },
 		error: function() {
 			console.log('problem getting interation table');
@@ -1809,9 +1807,9 @@ function alpn_handle_topic_type_table() {
 	}
 }
 
-function pte_date_to_js(sourceDateTime, destinationDivId){
+function pte_date_to_js(sourceDateTime, destinationDivId, prefixString=''){
 	var sourcedate = dayjs(sourceDateTime).utc(true).local();
-	jQuery('#' + destinationDivId).html(sourcedate.format('MMM D, YYYY, h:mma'));
+	jQuery('#' + destinationDivId).html(prefixString + sourcedate.format('MMM D, YYYY, h:mma'));
 }
 
 function alpn_handle_vault_table() {
@@ -2018,6 +2016,16 @@ function pte_handle_sync(data){
 	        statusArea.fadeIn();
 	    });
 		break;
+
+		case 'proteam_card_delete':
+			console.log("Handling ProTeam Card Delete...");
+			var ptId = syncPayload.proteam_row_id;
+			var proTeamCard =  jQuery('div.proteam_user_panel[data-id=' + ptId + ']');
+			proTeamCard.fadeOut(250, function(){
+				proTeamCard.remove();
+			});
+		break;
+
 		case 'interaction_recall':
 			console.log("Handling interaction_recall...");
 
@@ -2026,14 +2034,23 @@ function pte_handle_sync(data){
 		break;
 		case 'interaction_item_update':
 			console.log("Handling interaction_item_update...");
-			console.log(syncPayload);
 
 			var processId = syncPayload.process_id;
-			var informationPanelMessage = jQuery("div#pte_interaction_information_panel[data-pid=" + processId + "]").find('div.pte_updated_message');
-			informationPanelMessage.html('Updated - date/time').fadeIn();
-			//pte_updated_message
+			var messageTitle = syncPayload.message_title;
+			var messageBody = syncPayload.message_body;
 
+			var updatedDate = dayjs(syncPayload.updated_date).utc(true).local().format('MMM D, YYYY h:mm A');
+			var informationPanel = jQuery("div#pte_interaction_information_panel[data-pid=" + processId + "]");
 
+			var informationPanelMessage = informationPanel.find('div.pte_updated_message');
+			var informationPanelMessageTitle = informationPanel.find('input#pte_message_title_field');
+			var informationPanelMessageTitleStatic = informationPanel.find('div#pte_message_title_field_static');
+			var informationPanelMessageBody = informationPanel.find('textarea#pte_message_body_area');
+
+			informationPanelMessage.html('Updated: ' + updatedDate).fadeIn();
+			informationPanelMessageTitle.val(messageTitle);
+			informationPanelMessageTitleStatic.html(messageTitle);
+			informationPanelMessageBody.val(messageBody);
 		break;
 		case 'interaction_update':
 			console.log("Handling interaction_update...");
@@ -2185,7 +2202,10 @@ jQuery( document ).ready( function(){
 						console.log('Twilio');
 						console.log(userContext);
 
-						syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
+						if (typeof syncClient != "object") {
+							syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
+						}
+
 						syncClient.map(alpn_sync_id).then(function (map) {
 						  map.on('itemAdded', function(item) {
 								var descriptor = item.item.descriptor;
@@ -4238,7 +4258,9 @@ function alpn_vault_control(operation) {
 	}
 }
 
+//REMOVE ProTeam Member
 function alpn_proteam_member_delete(proTeamRowId) {
+
 	var security = specialObj.security;
 	var html = "<div id='alpn_replace_me_" + proTeamRowId + "' style='text-align: center; height: 40px;'><img src='" + alpn_templatedir + "pdf/web/images/loading-icon.gif'></div>";
 	jQuery('#pte_proteam_item_' + proTeamRowId).replaceWith(html);
@@ -4247,10 +4269,14 @@ function alpn_proteam_member_delete(proTeamRowId) {
 		type: 'POST',
 		data: {
 			"rowToDelete": proTeamRowId,
-			"security": security,
+			"security": security
 		},
 		dataType: "json",
 		success: function(json) {
+
+			console.log('Deleted Rights');
+			console.log(json);
+
 			var deletedChannelToo = json.deleted_channel_too;
 
 			if (deletedChannelToo) {  //Channel gone, clear chat window by messaging iframe.

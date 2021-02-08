@@ -33,11 +33,11 @@ function pte_get_registry_proteam_invitation_received() {
           $requestData['interaction_to_from_name'] = $requestData["network_name"];
           $requestData['interaction_regarding'] = $requestData['topic_name'];
           $requestData['interaction_vault_link'] = "";
-
+          $requestData['interaction_file_away_handling'] = "decline_archive_interaction";
           $requestData['to_from'] = 'From';
 
-          $buttonOperation = $token->getValue("button_operation");
-          $requestOperation = $token->getValue("request_operation");
+          $buttonOperation = $requestData['button_operation'];
+          $requestOperation = $requestData['request_operation'];
 
           if ($requestOperation == 'recall_interaction') {
             alpn_log('Interaction Received Recall Interaction');
@@ -64,11 +64,14 @@ function pte_get_registry_proteam_invitation_received() {
               "sync_payload" => $requestData
             );
             pte_manage_user_sync($data);
+
+            $requestData['request_operation'] = '';
             $token->setValue("process_context", $requestData);
-            return;
+            throw new WaitExecutionException();  //proper way to stop the process and wait
           }
 
           if ($buttonOperation == 'accept' || $buttonOperation == 'decline') {
+
             if ($buttonOperation == 'accept') {
               alpn_log('Interaction Received Handle Setting Up ProTeam Relationship.');
               $connectionLinkType = $token->getValue("connection_link_type");
@@ -83,21 +86,7 @@ function pte_get_registry_proteam_invitation_received() {
                   $connectedType = 'link';
                 break;
                 case '2': //Create and Link to New Topic  -- NOT IMPLEMENTED IN FIRST RELEASE
-
-                  // Create New Topic
-                  $formId = "aaa"; //From drop down list of acceptable Topic Types.
-                  $userId = "xyz"; // the user who owns this topic
-                  $entry = array(
-                    'id' => $formId,  //source user template type  Using custom TT
-                    'new_owner' => $userId,
-                    'fields' => array()  //required fields?
-                  );
-                  alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
-                  //Need insert_id.
-                  $connectedState = '40';
-                  $connectedType = 'link';
-                  //TODO Update Topics
-
+                  //alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
                 break;
               }
 
@@ -113,8 +102,17 @@ function pte_get_registry_proteam_invitation_received() {
                 'member_rights' => false  //TODO uses default until we want to specify something here.
               );
               $proTeamRowId = pte_add_to_proteam($proTeamData);
-              // Refresh ProTeam cause ASYNC?
+              $requestData['proteam_row_id'] = $proTeamRowId;
+              }
 
+              if ($buttonOperation == 'decline') {
+                alpn_log('Interaction Received Handle Decline.');
+                //Save and File Away
+
+
+
+
+                return;
               }
 
               //TODO only do this stuff if all the setup worked for this guy above?
@@ -157,6 +155,7 @@ function pte_get_registry_proteam_invitation_received() {
       'handle_complete' => function(Token $token) {
           alpn_log("Handling Complete (Received)...");
           $requestData = $token->getValue("process_context");
+          $requestData['interaction_file_away_handling'] = "archive_interaction";
           $requestData['interaction_type_status'] = "Complete";
           $requestData['interaction_complete'] = true;
           $requestData['widget_type_id'] = "information";

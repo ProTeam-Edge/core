@@ -341,8 +341,6 @@ function pte_manage_interaction_proper($data) {
 
     } else {
 
-      alpn_log('SAVING PROCESS...' . $requestData['process_id']);
-
       if (isset($requestData['restart_interaction']) && $requestData['restart_interaction']) { //TODO start a new one and delete the old one rather than
         alpn_log('Restarting Process...' . $requestData['process_id']);
         $newData = array(

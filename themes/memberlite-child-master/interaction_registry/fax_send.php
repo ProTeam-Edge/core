@@ -35,6 +35,7 @@ function pte_get_registry_fax_send() {
             $requestData['interaction_to_from_name'] = "";
             $requestData['interaction_regarding'] = $requestData['topic_name'];
             $requestData['interaction_vault_link'] = "";
+            $requestData['interaction_file_away_handling'] = "delete_interaction";
 
             $requestData['view_link_file_type'] = "File";
             $requestData['to_from'] = 'To';
@@ -80,6 +81,7 @@ function pte_get_registry_fax_send() {
       'fax_decision' => function(Token $token) {
 
           $requestData = $token->getValue("process_context");
+          $requestData['interaction_file_away_handling'] = "archive_interaction";
 
           $requestData['interaction_type_status'] = "Sending...";
           $requestData['interaction_to_from_name'] = $requestData['fax_field_fax_number'];
