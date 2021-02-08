@@ -34,6 +34,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 	<body>
 		<div id = "root" >
 			<div class='pte_dialog_title'>ProTeam Edge File Uploader</div>
+			<h3>Result</h3>
 			<div id="results"></div>
 		</div>
 		<script src = "main.js" ></script>
