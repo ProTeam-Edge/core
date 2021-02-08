@@ -21,7 +21,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 			}
 		</style>
 		<script>
-		var results = document.getElementById('results'),
+		var results = document.getElementById('results');
          
 
         // Listen to messages from parent window
