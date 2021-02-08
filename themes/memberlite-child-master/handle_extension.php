@@ -34,15 +34,15 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
         // Listen to messages from parent window
         bindEvent(window, 'message', function (e) {
-
+			console.log('e.data.blob');
+			console.log(e.data.blob);
 			var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/handle_extension_ajax.php";
-			 var data = new FormData();
-			data.append('file', e.data.blob);
+		
 
 			  $.ajax({
             url: url,
             type: "POST",
-            data: {data:data,},
+            data: {},
             dataType: "json",
             complete: function(){
              // alert('Saving complete.');
