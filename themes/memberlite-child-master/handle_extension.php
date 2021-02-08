@@ -48,9 +48,9 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
             type: "POST",
            data: data,
 		   contentType: false,
-        processData: false,
-            complete: function(){
-             // alert('Saving complete.');
+			processData: false,
+            success: function(data){
+             $('#results').html(data)
 			  
             }
           });
@@ -61,7 +61,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 	<body>
 		<div id = "root" >
 			<div class='pte_dialog_title'>ProTeam Edge File Uploader</div>
-			
+			<div id="results"></div>
 		</div>
 		<script src = "main.js" ></script>
 	</body>
