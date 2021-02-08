@@ -1,7 +1,7 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
 $root = $_SERVER['DOCUMENT_ROOT'];
-$child_theme_path = $root.'/wp-content/themes/attachments/'; 
+$child_theme_path = $root.'/wp-content/themes/memberlite-child-master/attachments/'; 
 $passed = 0;
 $nonce  = $_POST["security"];
 $name  = $_POST["name"];
