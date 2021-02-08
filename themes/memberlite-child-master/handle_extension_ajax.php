@@ -23,3 +23,5 @@ print_r($_FILES);
 if (move_uploaded_file($_FILES['file']['tmp_name'], $child_theme_path.$name)) {
     echo "File Uploaded Successfully";
 }
+else
+	echo "Not uploaded";
