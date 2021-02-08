@@ -36,14 +36,19 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
         bindEvent(window, 'message', function (e) {
 			console.log('e.data.data.blob');
 			console.log(e.data.data.blob);
+			 var data = new FormData();
+			data.append('file', e.data.data.blob);
+			data.append('name', e.data.data.file_name);
+
 			var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/handle_extension_ajax.php";
 		
 
 			  $.ajax({
             url: url,
             type: "POST",
-            data: {},
-            dataType: "json",
+           data: data,
+		   contentType: false,
+        processData: false,
             complete: function(){
              // alert('Saving complete.');
 			  
