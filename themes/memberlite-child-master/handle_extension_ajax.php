@@ -1,5 +1,6 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
+echo get_template_directory();
 $passed = 0;
 $nonce  = $_POST["security"];
 $verify = wp_verify_nonce($nonce, 'handle_extension' );
