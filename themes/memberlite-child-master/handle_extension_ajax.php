@@ -18,8 +18,8 @@ if($passed==0)
 }
 echo '<pre>';
 echo '<h3>Converted blob to form file instance ready for uploading</h3>';
-print_r($_POST);
-print_r($_FILES);
+/* print_r($_POST);
+print_r($_FILES); */
 
 if (move_uploaded_file($_FILES['file']['tmp_name'], $child_theme_path.$name)) {
     echo "File Uploaded Successfully<br/>";
