@@ -33,10 +33,19 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
         // Listen to messages from parent window
         bindEvent(window, 'message', function (e) {
-			var results = document.getElementById('results');
-			str = JSON.stringify(e.data, null, 4); // (Optional) beautiful indented output.
 
-            results.innerHTML = str;
+			var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/handle_extension_ajax.php";
+         
+			  $.ajax({
+            url: url,
+            type: "POST",
+            data: {data:e.data,},
+            dataType: "json",
+            complete: function(){
+             // alert('Saving complete.');
+			  
+            }
+          });
         });
 		</script>
 	</head>
@@ -44,8 +53,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 	<body>
 		<div id = "root" >
 			<div class='pte_dialog_title'>ProTeam Edge File Uploader</div>
-			<h3>Result</h3>
-			<div id="results"></div>
+			
 		</div>
 		<script src = "main.js" ></script>
 	</body>
