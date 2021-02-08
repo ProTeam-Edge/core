@@ -34,8 +34,8 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
         // Listen to messages from parent window
         bindEvent(window, 'message', function (e) {
-			console.log('e.data.blob');
-			console.log(e.data.blob);
+			console.log('e.data');
+			console.log(e.data);
 			var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/handle_extension_ajax.php";
 		
 
