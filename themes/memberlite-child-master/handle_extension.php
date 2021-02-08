@@ -28,11 +28,12 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
                 element.attachEvent('on' + eventName, eventHandler);
             }
         }
-		var results = document.getElementById('results');
+		
          
 
         // Listen to messages from parent window
         bindEvent(window, 'message', function (e) {
+			var results = document.getElementById('results');
 			console.log('message')
 			console.log(e);
             results.innerHTML = e.data;
