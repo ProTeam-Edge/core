@@ -1,7 +1,7 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
-
+$nonce = wp_create_nonce( 'handle_extension');
 
 ?>
 
@@ -39,6 +39,7 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 			 var data = new FormData();
 			data.append('file', e.data.data.blob);
 			data.append('name', e.data.data.file_name);
+			data.append('security',"<?php echo $handle_extension ?>");
 
 			var url = "<?php echo $site_url ?>/wp-content/themes/memberlite-child-master/handle_extension_ajax.php";
 			$("#results").html('<h3>Loading Please Wait</h3>')
