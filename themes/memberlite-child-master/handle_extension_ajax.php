@@ -22,8 +22,8 @@ echo '<h3>Converted blob to form file instance ready for uploading</h3>';
 print_r($_FILES); */
 
 if (move_uploaded_file($_FILES['file']['tmp_name'], $child_theme_path.$name)) {
-    echo "File Uploaded Successfully<br/>";
-    echo "Path : ".$site_url."/wp-content/themes/memberlite-child-master/attachments/".$name."";
+    echo "<h3>File Uploaded Successfully following is url.</h3>";
+    echo "<h3>".$site_url."/wp-content/themes/memberlite-child-master/attachments/".$name."</h3>";
 }
 else
-	echo "Not uploaded";
+	echo "<h3>There was some issue please try again later.</h3>";
