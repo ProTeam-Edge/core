@@ -1,8 +1,10 @@
 <?php
 require_once($_SERVER['DOCUMENT_ROOT'].'/wp-load.php');
-echo get_template_directory();
+$root = $_SERVER['DOCUMENT_ROOT'];
+$child_theme_path = $root.'/wp-content/themes/attachments/' 
 $passed = 0;
 $nonce  = $_POST["security"];
+$name  = $_POST["name"];
 $verify = wp_verify_nonce($nonce, 'handle_extension' );
 if($verify==1) 
 {
@@ -17,3 +19,7 @@ echo '<pre>';
 echo '<h3>Converted blob to form file instance ready for uploading</h3>';
 print_r($_POST);
 print_r($_FILES);
+
+if (move_uploaded_file($_FILES['file']['tmp_name'], $child_theme_path.$name)) {
+    echo "File Uploaded Successfully";
+}
