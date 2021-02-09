@@ -3416,7 +3416,7 @@ $site_url = site_url();
 		  var alpn_templatedir = '{$rootUrl}';
 		  function save_alpn(element) {
 			  var data = element.val();
-			  var textclass = element.attr('class');
+			  var textclass = element.attr('id');
 			  jQuery.ajax({
             		url: alpn_templatedir + 'topics/saveAlpn.php',
             		type: 'POST',
@@ -3506,13 +3506,13 @@ $site_url = site_url();
 			<div style='width:100%'>
 			<h3>alpn_about_source JSON</h3>
 		
-            <textarea id='alpn_about_source_textarea' class='alpn_about_source'>".$get_option_alpn_about_source."</textarea>
+            <textarea id='alpn_about_source' class='pte_topic_part_textarea'>".$get_option_alpn_about_source."</textarea>
 			<a onclick='return save_alpn(this)' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
 			</div>
 			<div style='width:100%'>
 			<h3>alpn_name_source JSON</h3>
 		
-            <textarea id='alpn_name_source_textarea' class='alpn_name_source'>".$get_option_alpn_name_source."</textarea>
+            <textarea id='alpn_name_source' class='pte_topic_part_textarea'>".$get_option_alpn_name_source."</textarea>
 			<a onclick='return save_alpn(this)' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
 			</div>
           </div>
