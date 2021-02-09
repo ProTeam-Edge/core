@@ -80,6 +80,9 @@ if(!empty($alpn_data->alpn_about_source))
 {
 	$about_source = $alpn_data->alpn_about_source;
 	$alpn_about_source_obj = json_decode($about_source,true);
+	echo '<pre>';
+	print_r($alpn_about_source_obj);
+	die;
 	$alpn_about_source_obj_final = json_decode (json_encode ($alpn_about_source_obj->alpn_about_source), FALSE);
 	$final_array['alpn_about_source'] = $alpn_about_source_obj_final;
 }
