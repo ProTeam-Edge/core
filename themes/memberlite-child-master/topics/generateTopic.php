@@ -81,13 +81,16 @@ $addition_array['pte_image_logo']['hidden_print']="true"; */
  $final_array = array();
  if(!empty($alpn_about_data))
 {
-  $alpn_about_source_obj = json_decode (json_encode ($alpn_about_data), FALSE);	 
+  $alpn_about_source_obj = json_decode (json_encode ($alpn_about_data->alpn_about_source), FALSE);
+echo '<pre>';
+print_r($alpn_about_source_obj);
+die;
   $final_array['alpn_about_source'] = $alpn_about_source_obj->alpn_about_source;
 }
 if(!empty($alpn_name_data))
 {
 	$alpn_name_data_obj = json_decode (json_encode ($alpn_name_data), FALSE);	
-  $final_array['alpn_name_source'] = $alpn_about_data->alpn_name_source;
+  $final_array['alpn_name_source'] = $alpn_name_data_obj->alpn_name_source;
 }
 foreach($post as $keys=>$vals)
 {
