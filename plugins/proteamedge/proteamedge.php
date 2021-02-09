@@ -3417,9 +3417,9 @@ $site_url = site_url();
 		  jQuery(document).ready(function(){
 			   jQuery('.submit_alpn').click(function(){
 			  id = jQuery(this).attr('rel');
-			  var data = jQuery('#'+id+'').val();
+			  var save_alpn = jQuery('#'+id+'').val();
 			  var textclass = id;
-			  if(data=='')
+			  if(save_alpn=='')
 			  {
 				  alert('Please input valid JSON for '+textclass+' and try again.');
 				  return false;
