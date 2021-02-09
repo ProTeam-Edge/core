@@ -106,9 +106,7 @@ $final_array['field_map'] = $obj_merged;
 	  $final_array['topic_class'] = $vals['topic_class'];
 	 
   }  */
- echo '<pre>';
-print_r($final_array); 
-die;
+
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
  // file_put_contents('generatedTopics/'.$topicFriendlyName.'_main.json', json_encode($post_data));
