@@ -1534,7 +1534,17 @@ $nonce = wp_create_nonce( 'admin_test');
 					
 						topic_name = value.topic_name;
 						alpn_about_source = value.alpn_about_source;
+						dt.rows().nodes().to$().find("#alpn_about_source_"+topic_name).val(alpn_about_source);
 						
+					
+				});
+              };
+			   function useReturnAlpn_name_source(data){
+                   $.each(data, function(key, value){
+					
+						topic_name = value.topic_name;
+						alpn_name_source_ = value.alpn_name_source_;
+						dt.rows().nodes().to$().find("#alpn_name_source_"+topic_name).val(alpn_name_source_);
 						
 					
 				});
