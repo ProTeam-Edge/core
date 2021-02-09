@@ -3415,8 +3415,9 @@ $site_url = site_url();
           <script>
 		  var alpn_templatedir = '{$rootUrl}';
 		  function save_alpn(element) {
-			  var data = element.val();
-			   var textclass = element.attr('id');
+			  id = element.attr('rel');
+			  var data = jQuery('#'+id+'').val();
+			  var textclass = id;
 			  if(data=='')
 			  {
 				  alert('Please input valid JSON and for '+textclass+' and try again.');
@@ -3513,13 +3514,13 @@ $site_url = site_url();
 			<h3>alpn_about_source JSON</h3>
 		
             <textarea id='alpn_about_source' class='pte_topic_part_textarea'>".$get_option_alpn_about_source."</textarea>
-			<a onclick='return save_alpn(this)' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
+			<a onclick='return save_alpn(this)' rel='alpn_about_source' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
 			</div>
 			<div style='width:100%'>
 			<h3>alpn_name_source JSON</h3>
 		
             <textarea id='alpn_name_source' class='pte_topic_part_textarea'>".$get_option_alpn_name_source."</textarea>
-			<a onclick='return save_alpn(this)' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
+			<a onclick='return save_alpn(this)'  rel='alpn_name_source'  style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
 			</div>
           </div>
     ";
