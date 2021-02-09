@@ -1,6 +1,7 @@
 <?php
   // Get data from POST
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
+global $wpdb;
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
@@ -21,8 +22,12 @@ if($passed==0)
   $post_data = json_decode(stripslashes($_POST['data']));
 	$get_option = stripslashes(get_option('save_extra_fields'));
  $decode_db_string = json_decode($get_option);
+ echo '<pre>';
+ print_r($post_data);
+ die;
   //$topicName = gettype($post_data);
-
+$topicName  =  $post_data['topic_name'];
+$select_alpn_about = 'select alpn_about_source from alpn_manage_topic where topic_name = "'.$topicName.'"';
   // Make sure POST data is stored as an array; typecast it as such
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
