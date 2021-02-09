@@ -25,7 +25,14 @@ if($passed==0)
 
   //$topicName = gettype($post_data);
 $topicName  =  $post_data->topic_name;
-$select_alpn_about = 'select alpn_about_source from alpn_manage_topic where topic_name = "'.$topicName.'"';
+$alpn_about_sql = 'select alpn_about_source from alpn_manage_topic where topic_name = "'.$topicName.'"';
+$alpn_about_data = $wpdb->get_row($alpn_about_sql);
+$alpn_name_sql = 'select alpn_name_source from alpn_manage_topic where topic_name = "'.$topicName.'"';
+$alpn_name_data = $wpdb->get_row($alpn_name_sql);
+echo '<pre>';
+print_r($alpn_about_data);
+print_r($alpn_name_data);
+die;
   // Make sure POST data is stored as an array; typecast it as such
   $post = (array) $post_data;
   $topicFriendlyName = $post["topic_friendly_name"];
