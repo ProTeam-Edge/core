@@ -1543,8 +1543,8 @@ $nonce = wp_create_nonce( 'admin_test');
                    $.each(data, function(key, value){
 					
 						topic_name = value.topic_name;
-						alpn_name_source_ = value.alpn_name_source_;
-						dt.rows().nodes().to$().find("#alpn_name_source_"+topic_name).val(alpn_name_source_);
+						alpn_name_source = value.alpn_name_source;
+						dt.rows().nodes().to$().find("#alpn_name_source_"+topic_name).val(alpn_name_source);
 						
 					
 				});
