@@ -1164,7 +1164,7 @@ $nonce = wp_create_nonce( 'admin_test');
           $.each(additionalPropIDs, function(index, value) {
             // Add ID of additional property checkboxes along with their selected type and required/hidden checkboxes
             // Get each of the checked boxes and their corresponding friendly text fields
-            var checkbox = document.querySelector('[id='+value+']');
+            var checkbox = document.querySelector('[id="'+value+'"]');
             friendly = $(checkbox).closest("tr").find('input[type="text"]').val();
 
             // Get corresponding required checkbox
@@ -1264,7 +1264,7 @@ $nonce = wp_create_nonce( 'admin_test');
           $.each(additionalPropIDs, function(index, value) {
             // Add ID of additional property checkboxes along with their selected type and required/hidden checkboxes
             // Get each of the checked boxes and their corresponding friendly text fields
-            var checkbox = document.querySelector('[id='+value+']');
+            var checkbox = document.querySelector('[id="'+value+'"]');
             friendly = $(checkbox).closest("tr").find('input[type="text"]').val();
 
             // Get corresponding required checkbox
@@ -1395,7 +1395,7 @@ $nonce = wp_create_nonce( 'admin_test');
           //var textFields = $(".friendly:input:").map(idSelector).get();
           $.each(boxesChecked, function(index, value) {
             // Get each of the checked boxes and their corresponding friendly text fields
-            var checkbox = document.querySelector('[id='+value+']');
+            var checkbox = document.querySelector('[id="'+value+'"]');
             textOut = $(checkbox).closest("tr").find('input[type="text"]').val();
             textFields.push(textOut);
 
