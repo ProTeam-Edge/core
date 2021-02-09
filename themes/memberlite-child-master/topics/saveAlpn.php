@@ -17,5 +17,5 @@ if($passed==0) {
 	echo 'Not a valid request.';
 	die;
 }
-echo $update = update_option('save_extra_fields',$save_extra_fields);
+echo $update = update_option('textclass',$save_alpn);
 ?>
