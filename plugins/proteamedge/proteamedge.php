@@ -229,9 +229,9 @@ $nonce = wp_create_nonce( 'admin_test');
             <th></th>
             <th>TopicName</th>
             <th>Comment</th>
-            <th>Core Topic</th>
-            <th>Hide Properties</th>
-            <th>Friendly Name</th>
+            <th>Topic Settings</th>
+            <th></th>
+            <th></th>
             <th>Visibility</th>
             <th>Generate</th>
          
