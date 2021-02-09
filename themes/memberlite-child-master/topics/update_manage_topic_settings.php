@@ -25,6 +25,8 @@ if(empty($data)) {
 	$hide_properties = 0;
 	$friendly_name = '';
 	$child_fields = '';
+	$alpn_about_source = '';
+	$alpn_name_source = '';
 	$visibility = 'topic';
 }
 else {
@@ -33,6 +35,8 @@ else {
 	$friendly_name = $data->friendly_name;
 	$child_fields = $data->child_fields;
 	$visibility =  $data->visibility;
+	$alpn_about_source =  $data->alpn_about_source;
+	$alpn_name_source =  $data->alpn_name_source;
 }
 
 if($field_type=='linked_topic') {
@@ -50,12 +54,20 @@ if($field_type=='visibility') {
 if($field_type=='child_fields') {
 	$child_fields = $value ;
 }
+if($field_type=='alpn_about_source') {
+	$alpn_about_source = $value ;
+}
+if($field_type=='alpn_name_source') {
+	$alpn_name_source = $value ;
+}
+
+
 if(empty($data)) {
-	$sql = "insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,child_fields,cdate,mdate)values('".$topic_name."','".$core_topic."','".$hide_properties."','".$friendly_name."','".$visibility."','".$child_fields."','".time()."','".time()."')";
+	$sql = "insert into alpn_manage_topic(topic_name,core_topic,hide_properties,friendly_name,visibility,child_fields,alpn_about_source,alpn_name_source,cdate,mdate)values('".$topic_name."','".$core_topic."','".$hide_properties."','".$friendly_name."','".$visibility."','".$child_fields."','".$alpn_about_source."','".$alpn_name_source."','".time()."','".time()."')";
 	
 }
 else {
-	$sql = "update alpn_manage_topic set core_topic='".$core_topic."',hide_properties='".$hide_properties."',friendly_name='".$friendly_name."',visibility='".$visibility."',mdate='".time()."' , child_fields='".$child_fields."' where topic_name='".$topic_name."'";
+	$sql = "update alpn_manage_topic set core_topic='".$core_topic."',hide_properties='".$hide_properties."',friendly_name='".$friendly_name."',visibility='".$visibility."',mdate='".time()."' , child_fields='".$child_fields."' ,alpn_about_source='".$alpn_about_source."' ,alpn_name_source='".$alpn_name_source."' where topic_name='".$topic_name."'";
 }
 $data = $wpdb->query($sql);
 ?>
