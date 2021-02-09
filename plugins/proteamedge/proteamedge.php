@@ -3416,7 +3416,13 @@ $site_url = site_url();
 		  var alpn_templatedir = '{$rootUrl}';
 		  function save_alpn(element) {
 			  var data = element.val();
-			  var textclass = element.attr('id');
+			   var textclass = element.attr('id');
+			  if(data=='')
+			  {
+				  alert('Please input valid JSON and for '+textclass+' and try again.');
+				  return false;
+			  }
+			 
 			  jQuery.ajax({
             		url: alpn_templatedir + 'topics/saveAlpn.php',
             		type: 'POST',
