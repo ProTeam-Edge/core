@@ -76,14 +76,14 @@ foreach($decode_db_string as $keys=>$vals)
 	$obj = json_decode (json_encode ($addition_array), FALSE);
 	$obj_merged = (object) array_merge((array) $field_map, (array) $obj);
 	$final_array = array();
-if(!empty($alpn_data->alpn_about_source))
+if(isset($alpn_data->alpn_about_source) && !empty($alpn_data->alpn_about_source))
 {
 	$about_source = $alpn_data->alpn_about_source;
 	$alpn_about_source_obj = json_decode($about_source,true);
 	$alpn_about_source_obj_final = json_decode (json_encode ($alpn_about_source_obj['alpn_about_source']), FALSE);
 	$final_array['alpn_about_source'] =  (object) $alpn_about_source_obj_final;
 }
-if(!empty($alpn_data->alpn_name_source))
+if(isset($alpn_data->alpn_name_source) && !empty($alpn_data->alpn_name_source))
 {
 	$name_source = $alpn_data->alpn_name_source;
 	$alpn_name_source_obj = json_decode($name_source,true);
