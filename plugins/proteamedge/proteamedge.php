@@ -3475,19 +3475,19 @@ $site_url = site_url();
               <a class='pte_link_button' onclick='pte_get_part(\"html\");'>Get HTML</a>
             </div>
             <textarea id='pte_topic_part_text_output' class='pte_topic_part_textarea' readonly></textarea>
-			<div>
+			<div style='width:100%'>
 			<h3>Save Extra Fields JSON</h3>
 		
             <textarea id='save_extra_fields' class='pte_topic_part_textarea'>".$get_option."</textarea>
 			<a onclick='return save_extra_fields()' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)' class='update_extra_fields'>Update</a>
 			</div>
-			<div>
+			<div style='width:100%'>
 			<h3>alpn_about_source JSON</h3>
 		
             <textarea id='alpn_about_source_textarea' class='pte_topic_part_textarea'></textarea>
 			<a onclick='return save_alpn(this)' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
 			</div>
-			<div>
+			<div style='width:100%'>
 			<h3>alpn_name_source JSON</h3>
 		
             <textarea id='alpn_name_source_textarea' class='pte_topic_part_textarea'></textarea>
