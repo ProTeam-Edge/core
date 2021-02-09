@@ -3421,7 +3421,7 @@ $site_url = site_url();
 			  var textclass = id;
 			  if(data=='')
 			  {
-				  alert('Please input valid JSON and for '+textclass+' and try again.');
+				  alert('Please input valid JSON for '+textclass+' and try again.');
 				  return false;
 			  }
 			  
