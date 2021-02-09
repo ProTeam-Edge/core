@@ -85,9 +85,17 @@ $addition_array['pte_image_logo']['hidden_print']="true"; */
 foreach($post as $keys=>$vals)
 {
   $final_array[$keys] = $post[$keys];
-  $final_array['field_map'] = $obj_merged;
-}  
 
+}  
+if(!empty($alpn_about_data))
+{
+  $final_array['alpn_about_source'] = $alpn_about_data->alpn_about_source;
+}
+if(!empty($alpn_name_data))
+{
+  $final_array['alpn_name_data'] = $alpn_about_data->alpn_name_data;
+}
+$final_array['field_map'] = $obj_merged;
 	
 /* $final_array = array();
   foreach($post as $vals)
@@ -97,9 +105,9 @@ foreach($post as $keys=>$vals)
 	  $final_array['topic_class'] = $vals['topic_class'];
 	 
   }  */
-/* echo '<pre>';
-print_r($final_array); */
-
+ echo '<pre>';
+print_r($final_array); 
+die;
 $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/topics/generatedTopics/';
   // Save list of linked topics to server
  // file_put_contents('generatedTopics/'.$topicFriendlyName.'_main.json', json_encode($post_data));
