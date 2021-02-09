@@ -232,7 +232,7 @@ $nonce = wp_create_nonce( 'admin_test');
             <th>Topic Settings</th>
             <th></th>
             <th></th>
-            <th>Visibility</th>
+            <th></th>
             <th>Generate</th>
          
           </tr>
