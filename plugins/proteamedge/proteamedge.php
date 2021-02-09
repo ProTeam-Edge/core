@@ -1520,6 +1520,8 @@ $nonce = wp_create_nonce( 'admin_test');
                   useReturnDataHidden(data.hidden_topic);
                   useReturnDataFriendly(data.friendly_name);
                   useReturnDataTopicClasses(data.topic_class);
+                  useReturnAlpn_about_source(data.alpn_about_source);
+                  useReturnAlpn_name_source(data.alpn_name_source);
 				  
                   //linkedTopics = data;
                 },
@@ -1527,6 +1529,16 @@ $nonce = wp_create_nonce( 'admin_test');
                  // alert('Error getting linked topics.');
                 }
               });
+			   function useReturnAlpn_about_source(data){
+                   $.each(data, function(key, value){
+					
+						topic_name = value.topic_name;
+						alpn_about_source = value.alpn_about_source;
+						
+						
+					
+				});
+              };
 				 function useReturnDataFriendly(data){
                    $.each(data, function(key, value){
 					$('.linked_topic_checkbox').each(function(){
