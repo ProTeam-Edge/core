@@ -229,9 +229,10 @@ $nonce = wp_create_nonce( 'admin_test');
             <th></th>
             <th>TopicName</th>
             <th>Comment</th>
-            <th>Topic Settings</th>
-
-            <th></th>
+            <th>Core Topic</th>
+            <th>Hide Properties</th>
+            <th>Friendly Name</th>
+            <th>Visibility</th>
             <th>Generate</th>
          
           </tr>
@@ -3039,8 +3040,8 @@ $nonce = wp_create_nonce( 'admin_test');
             { "data": "HiddenTopic",
               "class": "dt-body-center",
               "orderable": false},
-            { "data": "Friendly",
-          
+            { "data": null,
+              "defaultContent": "<input type='text'>",
               "orderable": false },
             { "data": "topic_class",
               "orderable": false },
