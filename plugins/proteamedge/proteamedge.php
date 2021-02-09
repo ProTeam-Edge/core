@@ -231,6 +231,7 @@ $nonce = wp_create_nonce( 'admin_test');
             <th>Comment</th>
             <th>Topic Settings</th>
             <th></th>
+            <th></th>
    
             <th>Generate</th>
          
@@ -1672,6 +1673,8 @@ $nonce = wp_create_nonce( 'admin_test');
    
   
             { "data": "topic_class",
+              "orderable": false },
+			     { "data": "extra_fields",
               "orderable": false },
             { "data": "Generate",
               "orderable": false },
