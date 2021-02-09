@@ -30,8 +30,8 @@ foreach ($data["@graph"] as $value) {
     $temp = array();
     $temp["TopicName"] = substr($value["@id"], 18);
     $temp["Comment"] = $value["rdfs:comment"];
-    $temp["LinkedTopic"] = "<input type='checkbox' class='linked_topic_checkbox' id='linked_topic_" . substr($value["@id"], 18) . "'>";
-    $temp["HiddenTopic"] = "<input type='checkbox' class='hidden_topic_checkbox' id='hidden_topic_" . substr($value["@id"], 18) . "'>";
+    $temp["LinkedTopic"] = "<input type='checkbox' class='linked_topic_checkbox' id='linked_topic_" . substr($value["@id"], 18) . "'><br/><input type='checkbox' class='hidden_topic_checkbox' id='hidden_topic_" . substr($value["@id"], 18) . "'>";
+     
     $temp["topic_class"] = "<select class='topic_class' id='topic_class_" . substr($value["@id"], 18) . "'><option value='topic' selected>Topic Type</option><option value='link'>Topic Link Type</option><option value='record'>Topic Link Record Type</option></select>";
     $temp["Generate"] = "<button class='disabled' id='add_topic_" . substr($value["@id"], 18) . "'>Generate Topic</button>";
     $temp["SaveConfig"] = "<button class='saveTopicConfig' id='save_topic_" . substr($value["@id"], 18) . "'>Save<br>Prop. Config</button>";
