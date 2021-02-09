@@ -87,7 +87,7 @@ if(!empty($alpn_data->alpn_name_source))
 {
 	$name_source = $alpn_data->alpn_name_source;
 	$alpn_name_source_obj = json_decode($name_source,true);
-	$alpn_name_source_obj_final = json_decode (json_encode ($alpn_name_source_obj['alpn_about_source']), FALSE);
+	$alpn_name_source_obj_final = json_decode (json_encode ($alpn_name_source_obj['alpn_name_source']), FALSE);
 	$final_array['alpn_name_source'] = $alpn_name_source_obj_final;
 }
 foreach($post as $keys=>$vals)
