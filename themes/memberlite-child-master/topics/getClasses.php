@@ -32,7 +32,7 @@ foreach ($data["@graph"] as $value) {
     $temp["Comment"] = $value["rdfs:comment"];
     $temp["LinkedTopic"] = "<input type='checkbox' class='linked_topic_checkbox' id='linked_topic_" . substr($value["@id"], 18) . "'><br/><br/><br/><input type='checkbox' class='hidden_topic_checkbox' id='hidden_topic_" . substr($value["@id"], 18) . "'>";
     $temp["HiddenTopic"] = "&nbsp;";
-    $temp["extra_fields"] = "<textarea></textarea></br><textarea></textarea>";
+    $temp["extra_fields"] = "<textarea class='all_area' data='alpn_about_source' rel='".substr($value["@id"], 18)."'></textarea></br><textarea class='all_area' data='alpn_name_source' rel='".substr($value["@id"], 18)."'></textarea>";
     $temp["topic_class"] = "<input type='text' class='friendly_name'>
 	<br/><br/><br/><select class='topic_class' id='topic_class_" . substr($value["@id"], 18) . "'><option value='topic' selected>Topic Type</option><option value='link'>Topic Link Type</option><option value='record'>Topic Link Record Type</option></select>";
     $temp["Generate"] = "<button class='disabled' id='add_topic_" . substr($value["@id"], 18) . "'>Generate Topic</button>";
