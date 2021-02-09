@@ -81,8 +81,10 @@ $addition_array['pte_image_logo']['hidden_print']="true"; */
  $final_array = array();
  if(!empty($alpn_about_data))
 {
-  $alpn_about_source_obj = json_decode ($alpn_about_data->alpn_about_source);
 echo '<pre>';
+print_r($alpn_about_data);
+  $alpn_about_source_obj = json_decode ($alpn_about_data->alpn_about_source);
+
 print_r($alpn_about_source_obj);
 die;
   $final_array['alpn_about_source'] = $alpn_about_source_obj->alpn_about_source;
