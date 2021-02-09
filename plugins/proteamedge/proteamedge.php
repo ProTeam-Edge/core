@@ -1674,7 +1674,7 @@ $nonce = wp_create_nonce( 'admin_test');
   
             { "data": "topic_class",
               "orderable": false },
-			     { "data": "extra_fields",
+			  { "data": "extra_fields",
               "orderable": false },
             { "data": "Generate",
               "orderable": false },
