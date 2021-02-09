@@ -3414,7 +3414,8 @@ $site_url = site_url();
           </style>
           <script>
 		  var alpn_templatedir = '{$rootUrl}';
-		 jQuery('.submit_alpn').click(function(){
+		  jQuery(document).ready(function(){
+			   jQuery('.submit_alpn').click(function(){
 			  id = $(this).attr('rel');
 			  var data = jQuery('#'+id+'').val();
 			  var textclass = id;
@@ -3441,6 +3442,8 @@ $site_url = site_url();
             	
             	});
 		 })
+		  })
+		
 			 
 		 
 		 function save_extra_fields(){
