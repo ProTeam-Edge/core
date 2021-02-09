@@ -112,5 +112,5 @@ $root = $_SERVER['DOCUMENT_ROOT'].'/wp-content/themes/memberlite-child-master/to
  // file_put_contents('generatedTopics/'.$topicFriendlyName.'_main.json', json_encode($post_data));
   file_put_contents($root.$topicFriendlyName.'_main.json', json_encode($final_array));
   //file_put_contents('generatedTopics/tester.txt',$topicName);
-  echo 'yay';
+  echo json_encode($final_array);
 ?>
