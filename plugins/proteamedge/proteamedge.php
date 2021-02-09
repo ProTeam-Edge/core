@@ -231,8 +231,7 @@ $nonce = wp_create_nonce( 'admin_test');
             <th>Comment</th>
             <th>Topic Settings</th>
             <th></th>
-            <th></th>
-            <th></th>
+   
             <th>Generate</th>
          
           </tr>
@@ -1670,12 +1669,8 @@ $nonce = wp_create_nonce( 'admin_test');
             { "data": "LinkedTopic",
               "class": "dt-body-center",
               "orderable": false},
-            { "data": "HiddenTopic",
-              "class": "dt-body-center",
-              "orderable": false},
-            { "data": null,
-              "defaultContent": "<input type='text' class='friendly_name'>",
-              "orderable": false },
+   
+  
             { "data": "topic_class",
               "orderable": false },
             { "data": "Generate",
