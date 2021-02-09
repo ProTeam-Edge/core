@@ -50,6 +50,20 @@ foreach($data as $keys=>$vals)
 	$array['friendly_name'][$keys]['topic_name'] = $vals->topic_name;
 	$array['friendly_name'][$keys]['friendly_name'] = $vals->friendly_name;
 }
+$sql = 'select * from alpn_manage_topic where alpn_about_source!=""';
+$data = $wpdb->get_results($sql);
+foreach($data as $keys=>$vals)
+{
+	$array['alpn_about_source'][$keys]['topic_name'] = $vals->topic_name;
+	$array['alpn_about_source'][$keys]['alpn_about_source'] = $vals->alpn_about_source;
+}
+$sql = 'select * from alpn_manage_topic where alpn_name_source!=""';
+$data = $wpdb->get_results($sql);
+foreach($data as $keys=>$vals)
+{
+	$array['alpn_name_source'][$keys]['topic_name'] = $vals->topic_name;
+	$array['alpn_name_source'][$keys]['alpn_name_source'] = $vals->alpn_name_source;
+}
 $sql = 'select * from alpn_manage_topic where visibility!=""';
 $data = $wpdb->get_results($sql);
 foreach($data as $keys=>$vals)
