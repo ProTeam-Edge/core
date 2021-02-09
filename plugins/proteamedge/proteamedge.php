@@ -3372,8 +3372,6 @@ $nonce = wp_create_nonce( 'form-generate' );
 $site_url = site_url();
     $rootUrl = "".$site_url."/wp-content/themes/memberlite-child-master/";
 	$get_option = stripslashes(get_option('save_extra_fields'));
-	$get_option_alpn_about_source = stripslashes(get_option('alpn_about_source'));
-	$get_option_alpn_name_source = stripslashes(get_option('alpn_name_source'));
     echo "<h1>ProTeam Edge Topic Parts</h1>";
     $html = "";
     $html .= "
@@ -3414,38 +3412,6 @@ $site_url = site_url();
           </style>
           <script>
 		  var alpn_templatedir = '{$rootUrl}';
-		  jQuery(document).ready(function(){
-			   jQuery('.submit_alpn').click(function(){
-			  id = jQuery(this).attr('rel');
-			  var save_alpn = jQuery('#'+id+'').val();
-			  var textclass = id;
-			  if(save_alpn=='')
-			  {
-				  alert('Please input valid JSON for '+textclass+' and try again.');
-				  return false;
-			  }
-			  
-			  jQuery.ajax({
-            		url: alpn_templatedir + 'topics/saveAlpn.php',
-            		type: 'POST',
-            		data: {
-            			save_alpn: save_alpn,
-            			textclass: textclass,
-            			security: '".$nonce."',
-            		},
-            		success: function(data) {
-					if(data=='1')
-					{
-						alert('JSON has been saved successfully.');
-					}
-            		},
-            	
-            	});
-		 })
-		  })
-		
-			 
-		 
 		 function save_extra_fields(){
 			  var save_extra_fields = jQuery('#save_extra_fields').val();
 			  if(save_extra_fields=='')
@@ -3509,24 +3475,11 @@ $site_url = site_url();
               <a class='pte_link_button' onclick='pte_get_part(\"html\");'>Get HTML</a>
             </div>
             <textarea id='pte_topic_part_text_output' class='pte_topic_part_textarea' readonly></textarea>
-			<div style='width:100%'>
 			<h3>Save Extra Fields JSON</h3>
-		
+			<br/>
             <textarea id='save_extra_fields' class='pte_topic_part_textarea'>".$get_option."</textarea>
+			
 			<a onclick='return save_extra_fields()' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)' class='update_extra_fields'>Update</a>
-			</div>
-			<div style='width:100%'>
-			<h3>alpn_about_source JSON</h3>
-		
-            <textarea id='alpn_about_source' class='pte_topic_part_textarea'>".$get_option_alpn_about_source."</textarea>
-			<a class='submit_alpn' rel='alpn_about_source' style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
-			</div>
-			<div style='width:100%'>
-			<h3>alpn_name_source JSON</h3>
-		
-            <textarea id='alpn_name_source' class='pte_topic_part_textarea'>".$get_option_alpn_name_source."</textarea>
-			<a class='submit_alpn' rel='alpn_name_source'  style='color: rgb(0, 116, 187);cursor: pointer;text-decoration:none;margin:5px 0 0 10px;' href='javascript:void(0)'>Update</a>
-			</div>
           </div>
     ";
 
