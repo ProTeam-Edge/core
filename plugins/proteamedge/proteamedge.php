@@ -1817,7 +1817,12 @@ $nonce = wp_create_nonce( 'admin_test');
 					update_manage_topic_settings(field_type,topic_name,value);
 				});
 				
-              
+              dt.rows().nodes().to$().find(".all_area").blur(function(){
+					field_type = $(this).attr('data');
+					topic_name = $(this).attr(rel);
+					value = $(this).val();
+					update_manage_topic_settings(field_type,topic_name,value);
+				});
 
              
               
