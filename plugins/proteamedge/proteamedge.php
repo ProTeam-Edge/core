@@ -3416,7 +3416,7 @@ $site_url = site_url();
 		  var alpn_templatedir = '{$rootUrl}';
 		  jQuery(document).ready(function(){
 			   jQuery('.submit_alpn').click(function(){
-			  id = $(this).attr('rel');
+			  id = jQuery(this).attr('rel');
 			  var data = jQuery('#'+id+'').val();
 			  var textclass = id;
 			  if(data=='')
