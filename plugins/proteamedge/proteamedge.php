@@ -3039,7 +3039,7 @@ $nonce = wp_create_nonce( 'admin_test');
             { "data": "HiddenTopic",
               "class": "dt-body-center",
               "orderable": false},
-            { "data": null,
+            { "data": "Friendly",
               "defaultContent": "<input type='text'>",
               "orderable": false },
             { "data": "topic_class",
