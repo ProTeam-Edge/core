@@ -3037,9 +3037,7 @@ $nonce = wp_create_nonce( 'admin_test');
               "class": "dt-body-center",
               "orderable": false},
           
-            { "data": null,
-              "defaultContent": "<input type='text'>",
-              "orderable": false },
+         
             { "data": "topic_class",
               "orderable": false },
             { "data": "Generate",
