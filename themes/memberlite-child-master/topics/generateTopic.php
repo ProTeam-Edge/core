@@ -79,21 +79,22 @@ $addition_array['pte_image_logo']['hidden_print']="true"; */
 	$obj_merged = (object) array_merge((array) $field_map, (array) $obj);
 
  $final_array = array();
+ if(!empty($alpn_about_data))
+{
+  $alpn_about_source_obj = json_decode (json_encode ($alpn_about_data), FALSE);	 
+  $final_array['alpn_about_source'] = $alpn_about_source_obj->alpn_about_source;
+}
+if(!empty($alpn_name_data))
+{
+	$alpn_name_data_obj = json_decode (json_encode ($alpn_name_data), FALSE);	
+  $final_array['alpn_name_source'] = $alpn_about_data->alpn_name_source;
+}
 foreach($post as $keys=>$vals)
 {
   $final_array[$keys] = $post[$keys];
 
 }  
-if(!empty($alpn_about_data))
-{
-  $alpn_about_source_obj = json_decode (json_encode ($alpn_about_data->alpn_about_source), FALSE);	 
-  $final_array['alpn_about_source'] = $alpn_about_source_obj->alpn_about_source;
-}
-if(!empty($alpn_name_data))
-{
-	$alpn_name_data_obj = json_decode (json_encode ($alpn_name_data->alpn_name_source), FALSE);	
-  $final_array['alpn_name_source'] = $alpn_about_data->alpn_name_source;
-}
+
 $final_array['field_map'] = $obj_merged;
 	
 /* $final_array = array();
