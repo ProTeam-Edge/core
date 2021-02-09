@@ -1664,8 +1664,7 @@ $nonce = wp_create_nonce( 'admin_test');
               "defaultContent": "",
               "orderable": false
             },
-            { "data": "TopicName",
-					},
+            { "data": "TopicName" },
             { "data": "Comment" },
             { "data": "LinkedTopic",
               "class": "dt-body-center",
@@ -1673,13 +1672,15 @@ $nonce = wp_create_nonce( 'admin_test');
             { "data": "HiddenTopic",
               "class": "dt-body-center",
               "orderable": false},
-            { "data": null,
-              "defaultContent": "<input type='text' class='friendly_name'>",
+            { "data": "Friendly",
+          
               "orderable": false },
             { "data": "topic_class",
               "orderable": false },
             { "data": "Generate",
               "orderable": false },
+            { "data": "SaveConfig",
+              "orderable": false }
          
           ],
 			
