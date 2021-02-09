@@ -1484,8 +1484,7 @@ $nonce = wp_create_nonce( 'admin_test');
             data: {data : JSON.stringify(fileContents),security:"<?php echo $nonce ?>"},
             dataType: "json",
             complete: function(html){
-				var response = JSON.stringify(html);
-             alert(''+response+'');
+             alert('Success');
               // Save this JSON to server
               // var url = "/wp-content/themes/memberlite-child-master/topics/generateTopicConfig.php";
               // $.ajax({
