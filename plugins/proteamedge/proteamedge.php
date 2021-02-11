@@ -1328,7 +1328,7 @@ $nonce = wp_create_nonce( 'admin_test');
       }
 		
       // Post a JSON list to a PHP file when "Generate Topic" button is clicked
-      $(document).on("click", ".disabled" , function() {
+      $(document).on("click", ".generate_topic" , function() {
 
           var fileContents = {};  // Create top-level array to add items to
           var field_map = {};     // Create array to hold fields
