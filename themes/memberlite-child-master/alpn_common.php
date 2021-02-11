@@ -216,7 +216,7 @@ function pte_file_interaction_away($processId) {
           "state" => "filed"
         );
         $whereClause['process_id'] = $processId;
-        $wpdb->update( 'alpn_interactions', $interactionData, $whereClause );    
+        $wpdb->update( 'alpn_interactions', $interactionData, $whereClause );
 
   		break;
 
@@ -585,11 +585,16 @@ function pte_topic_type_copy ($sourceTopicTypeId, $newOwnerId) {
     return false;
   }
 
-  function pte_create_topic($formId, $ownerId, $data) {
-
+  function pte_create_topic($formId, $ownerId, $data, $iconImage = '', $logoImage = '') {
     alpn_log('pte_create_topic');
-
-
+    $entry = array(
+      'id' => $formId,  //source user template type  Using custom TT
+      'owner_id' => $ownerId,
+      'fields' => $data,
+      'icon_image' => $iconImage,
+      'logo_image' => $logoImage
+    );
+    return alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
   }
 
 
@@ -623,40 +628,113 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
           $coreUserFormId = $value->form_id;
         }
         if ($createSampleData && $value->type_key == $topicTypeMap['core_contact']) {
+          $iconImage = '6d906171ee3c42c492d350f52a0056d1.jpg';
           $sampleContact1 = array(
             0 => "{}",
             4 => "Miranda",
             2 => "Chang",
-            6 => "Champion",
+            6 => "Fiduciary",
             5 => "38",
             1 => "adipiscing@eratVivamusnisi.org",
             10 => "https://linkedin.com/arbella32",
             8 => "(873) 800-0488",
             3 => "(373) 235-8276",
             7 => "#aginglife",
-            9 => "Conubia nostra, per inceptos hymenaeos. Mauris ut quam vel sapien"
+            9 => "Expert in the field."
           );
-          pte_create_topic($value->form_id, $newOwnerId, $sampleContact1);
-        }
-        if ($createSampleData && $value->type_key == $topicTypeMap['core_person']) {
-          $samplePerson1 = array(
+          $sampleContact1Id = pte_create_topic($value->form_id, $newOwnerId, $sampleContact1, $iconImage);
+          $iconImage = 'b98c23c4d0c2447f83183d394ac8e211.jpg';
+          $sampleContact2 = array(
             0 => "{}",
             4 => "Rudyard",
             2 => "Lambert",
-            6 => "Principal",
+            6 => "Geriatrician",
             5 => "40",
             1 => "laoreet@Suspendisse.org",
             10 => "https://linkedin.com/lambertr01",
             8 => "(778) 275-6832",
             3 => "(357) 293-7409",
             7 => "#concierge #medical",
-            9 => "Pharetra. Nam ac nulla. In tincidunt congue"
+            9 => "Primary contact of Suspendisse medical team."
           );
-          pte_create_topic($value->form_id, $newOwnerId, $samplePerson1);
+          $sampleContact2Id = pte_create_topic($value->form_id, $newOwnerId, $sampleContact2, $iconImage);
+        }
+        if ($createSampleData && $value->type_key == $topicTypeMap['core_person']) {
+          $iconImage = '03d5606550d740de82b9120a16c38ac1.jpg';
+          $samplePerson1 = array(
+            0 => "{}",
+            4 => "Harriet",
+            2 => "Kalinski",
+            6 => "Customer",
+            5 => "41",
+            1 => "hkalinski12@xfinity.com",
+            10 => "",
+            8 => "(227) 555-6832",
+            3 => "",
+            7 => "#caregiving #meds",
+            9 => "Sweet lady requires regular help with meds. Has 24/7 care."
+          );
+          $samplePerson1Id = pte_create_topic($value->form_id, $newOwnerId, $samplePerson1, $iconImage);
+        }
+        if ($createSampleData && $value->type_key == $topicTypeMap['core_organization']) {
+          $iconImage = '91d3a2bf8d404858a4799b9f78850ba8.png';
+          $logoImage = 'c7791a4c74dc43e9897035d2b1e53536.png';
+          $sampleOrganization1 = array(
+            0 => "{}",
+            7 => "Acme Corporation",
+            5 => "(619) 555-1233",
+            3 => "(619) 345-5533",
+            2 => "info@acmecorp.cc",
+            8 => "https://acmecorp.cc",
+            6 => "Maker of fine rockets and associated gear."
+          );
+          $sampleOrganization1Id = pte_create_topic($value->form_id, $newOwnerId, $sampleOrganization1, $iconImage, $logoImage);
+        }
+        if ($createSampleData && $value->type_key == $topicTypeMap['core_general']) {
+          $iconImage = '9deaa5a2e2b84bc590daa2c1a409d481.png';
+          $sampleGeneral1 = array(
+            0 => "{}",
+            2 => "White Paper Research",
+            1 => "A place to organize and discuss our findings and recommendations."
+          );
+          pte_create_topic($value->form_id, $newOwnerId, $sampleGeneral1, $iconImage);
+        }
+        if ($createSampleData && $value->type_key == $topicTypeMap['core_place']) {
+          $samplePlace1 = array(
+            0 => "{}",
+            8 => "Home",
+            4 => "1029 Summer Breeze Street",
+            1 => "San Diego",
+            2 => "CA",
+            3 => "96192",
+            6 => "(619) 555-3957",
+            5 => "(619) 555-3850",
+            7 => "Main Residence",
+            9 => ""
+          );
+          $samplePlace1Id = pte_create_topic($value->form_id, $newOwnerId, $samplePlace1);
+          $samplePlace2 = array(
+            0 => "{}",
+            8 => "Office",
+            4 => "222 Borderline Avenue, Suite B",
+            1 => "San Diego",
+            2 => "CA",
+            3 => "96193",
+            6 => "(619) 555-9385",
+            5 => "(619) 555-6854",
+            7 => "Headquarters",
+            9 => ""
+          );
+          $samplePlace2Id = pte_create_topic($value->form_id, $newOwnerId, $samplePlace2);
         }
       }
     }
-    return $coreUserFormId;
+    return array(  //TODO rework this ugly thing
+      'core_user_form_id' => $coreUserFormId,
+      'sample_place_id_1' => $samplePlace1Id,
+      'sample_place_id_2' => $samplePlace2Id,
+      'sample_organization_id_1' => $sampleOrganization1Id
+    );
 }
 
 
@@ -1479,6 +1557,7 @@ function pte_manage_topic_link($operation, $requestData, $subjectToken = 'pte_ex
     case "add_edit_topic_bidirectional_link":
       $ownerId = isset($requestData['owner_id']) ? $requestData['owner_id'] : 0;  //context is the other person.
       $topicId = isset($requestData['topic_id']) ? $requestData['topic_id'] : 0;
+      $listDefault = isset($requestData['list_default']) && $requestData['list_default'] ? $requestData['list_default'] : 'no';
       $connectedId = isset($requestData['connected_id']) ? $requestData['connected_id'] : 0;
       $connectionLinkTopicId = isset($requestData['connection_link_topic_id']) ? $requestData['connection_link_topic_id'] : 0;
       $results = $wpdb->get_results(
@@ -1490,7 +1569,8 @@ function pte_manage_topic_link($operation, $requestData, $subjectToken = 'pte_ex
            'owner_topic_id_1' => $topicId,
            'owner_id_2' => $connectedId,
            'owner_topic_id_2' => $connectionLinkTopicId,
-           'subject_token' => $subjectToken
+           'subject_token' => $subjectToken,
+           'list_default' => $listDefault
          );
          $wpdb->insert( 'alpn_topic_links', $rowData ); //new link
          //TODO can we reduce db hits?

@@ -19,16 +19,17 @@ function usernetwork_shortcode($attr) {
 		$ownerNetworkId = get_user_meta( $userID, 'pte_user_network_id', true ); //Owners Topic ID
 		$specialType = 'user';
 		$results = $wpdb->get_results(
-			$wpdb->prepare("SELECT concat(JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_givenname')), ' ', JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_familyname'))) AS owner_nice_name, t.dom_id, t.id, t.image_handle, t.name, t.sync_id, t.topic_type_id AS user_topic_type_id, tt.id AS contact_topic_type_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.owner_id = %d AND tt.special = 'contact' WHERE t.owner_id = %d AND t.special = 'user';", $userID, $userID)
+			$wpdb->prepare("SELECT JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_givenname')) AS owner_givenname, JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_familyname')) AS owner_familyname, t.dom_id, t.id, t.image_handle, t.name, t.sync_id, t.topic_type_id AS user_topic_type_id, tt.id AS contact_topic_type_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.owner_id = %d AND tt.special = 'contact' WHERE t.owner_id = %d AND t.special = 'user';", $userID, $userID)
 		);
 		if (isset($results[0])) {
+
 			$userTopicId = $results[0]->id;
 			$userTopicTypeId = $results[0]->user_topic_type_id;
 			$contactTopicTypeId = $results[0]->contact_topic_type_id;
 			$userImageHandle = $results[0]->image_handle;
 			$domId = $results[0]->dom_id;
 			$userName = $results[0]->name;
-			$userDisplayName = addslashes($results[0]->owner_nice_name);
+			$userDisplayName = addslashes(trim($results[0]->owner_givenname . ' ' . $results[0]->owner_familyname));
 			$syncId = $results[0]->sync_id;
 			$standardColorCount = PTE_STANDARD_COLOR_COUNT;
 		} else {
@@ -438,10 +439,12 @@ function usernetwork_shortcode($attr) {
 				$profileImage = "<i class='far fa-address-card alpn_icon_left' style='font-size: 20px;  line-height: 34px;' title='About Me'></i>";
 			}
 
+			$newMember = $results[0]->owner_familyname ? 'no' : 'yes';
+
 			$html .= "
 			<div class='alpn_user_outer' onclick='alpn_mission_control(\"select_by_mode\", \"{$domId}\");'>
 				<div id='alpn_me_field'>
-					<div id='alpn_field_{$domId}' class='alpn_user_container' data-uid='{$domId}' data-topic-id='{$userTopicId}'>
+					<div id='alpn_field_{$domId}' class='alpn_user_container' data-uid='{$domId}' data-topic-id='{$userTopicId}' data-nm='{$newMember}'>
 						Personal
 					</div>
 					<div id='alpn_me_icon' style='float: right; max-height: 34px;'>

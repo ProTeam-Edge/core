@@ -3901,7 +3901,8 @@ span[aria-labelledby^="select2-alpn_select2_small_"] {
 
 .pte_notification_message{
 	font-size: 12px;
-	line-height: 35px;
+	line-height: 15px;
+	align-self: center;
 	color: #606060;
 	max-width: calc(100% - 40px);
 	flex-basis: calc(100% - 40px);

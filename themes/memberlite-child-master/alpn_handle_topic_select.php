@@ -300,14 +300,14 @@ $settingsAccordion = "
 	</div>
 	</div>
 	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showImportanceAccordions};' title='Adjust Topic Importance'>VIP Topics</button>
-	<div class='pte_panel' style='display: {$showImportanceAccordions};' data-height='175px'>
+	<div class='pte_panel pte_extra_margin_after' style='display: {$showImportanceAccordions};' data-height='175px'>
 		<div class='pte_important_topic_container'>
 			<div class='pte_important_list_dropdown_container'><div class='pte_important_list_dropdown_inner'>{$topicOptions}</div></div>
 			<ul id='pte_important_topic' class='pte_important_topic_scrolling_list'>{$importantTopicItems}</ul>
 	</div>
 	</div>
-	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showImportanceAccordions};' title='Adjust Importance Values'>Type</button>
-	<div class='pte_panel pte_extra_margin_after' style='display: {$showImportanceAccordions};' data-height='175px'>
+	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: none;' title='Adjust Importance Values'>Type</button>
+	<div class='pte_panel pte_extra_margin_after' style='display: none;' data-height='175px'>
 		{$interactionTypeSliders}
 	</div>
 	{$inboundRoutingTitle}
@@ -316,7 +316,7 @@ $settingsAccordion = "
 		{$emailUx}
 	</div>
 	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showFaxAccordian};' title='Manage Fax Routes'>Fax</button>
-	<div class='pte_panel pte_extra_margin_after' style='display: {$showFaxAccordian};' data-height='175px'>
+	<div class='pte_panel s' style='display: {$showFaxAccordian};' data-height='175px'>
 		{$faxUx}
 	</div>
 	{$importContactsTitle}
