@@ -80,19 +80,25 @@ if(isset($alpn_data->alpn_about_source) && !empty($alpn_data->alpn_about_source)
 {
 	$about_source = $alpn_data->alpn_about_source;
 	$alpn_about_source_obj = json_decode($about_source,true);
-	$alpn_about_source_obj_final = json_decode (json_encode ($alpn_about_source_obj['alpn_about_source']), FALSE);
-	$final_array['alpn_about_source'] =  (object) $alpn_about_source_obj_final;
+	foreach($alpn_about_source_obj as $k=>$v){
+		$fval = json_decode (json_encode ($v), FALSE);
+		$final_array[$k] =(object) $fval;
+	}
+
 }
 if(isset($alpn_data->alpn_name_source) && !empty($alpn_data->alpn_name_source))
 {
 	$name_source = $alpn_data->alpn_name_source;
 	$alpn_name_source_obj = json_decode($name_source,true);
-	echo '<pre>';
-	print_r($alpn_name_source_obj);
-	die;
-	$alpn_name_source_obj_final = json_decode (json_encode ($alpn_name_source_obj['alpn_name_source']), FALSE);
-	$final_array['alpn_name_source'] = (object) $alpn_name_source_obj_final;
+	foreach($alpn_name_source_obj as $k=>$v){
+		$fval = json_decode (json_encode ($v), FALSE);
+		$final_array[$k] =(object) $fval;
+	}
+
 }
+echo '<pre>';
+print_r($final_array);
+die;
 foreach($post as $keys=>$vals)
 {
   $final_array[$keys] = $post[$keys];
