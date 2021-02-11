@@ -335,7 +335,7 @@ function alpn_handle_extra_table(extraKey) {
 	var subjectToken;
 	var ownerName;
 
-	console.log(tableData);
+	//sconsole.log(tableData);
 
 	for (i=0; i< tableData.length; i++) {
 		rowData = tableData[i];
@@ -2391,9 +2391,6 @@ jQuery( document ).ready( function(){
 						function(){ //Handle Error
 							console.log("Error Initializing Topic Type Table..."); //TODO Handle Error
 						});
-
-
-
 			}
 
 			//Initialize Topic  Editor
@@ -3371,6 +3368,10 @@ function pte_show_message(color, type, message, handler, parms) {
 	var typeStr='';
 	if (type == 'confirm') {
 		typeStr += "<div class='pte_message_confirmation_container'><i class='far fa-check-circle pte_message_confirmation_icon' title='Confirm Delete' onclick='" + handler + "(\"yes\", " + parms + ");'></i><i title='Cancel' class='far fa-times-circle pte_message_confirmation_icon' onclick='" + handler + "(\"no\", " + parms + ");'></i></div>";
+	}
+
+	if (type == 'ok') {
+		typeStr += "";
 	}
 
 	var msToDraw = 0;
@@ -5322,6 +5323,11 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 					var mapData = pte_make_map_data('replace_me');
 					pte_manage_history(mapData);
 					//TODO update icon with new image_handle data if needed.
+					var newUser = jQuery("div#alpn_field_" + uniqueRecId);
+					if (newUser.data('nm') == 'yes') { //Put them in edit mode for their topic. Tell em something
+						pte_show_message('green', 'ok', 'Welcome to ProTeam Edge. Please complete and save your personal profile. Keeping it updated is a good idea because your contacts will see this information.');
+						newUser.data('nm', 'no');
+					}
 				},
 				error: function() {
 					//TODO
@@ -5352,10 +5358,18 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 		case 'select_topic':
 			pte_active_tabs = []; //reset all row-selected state for tabs
-
-
 			pte_selected_report_template = '';  //TODO unless switching between types
 
+			var pteSelectedType = alpn_select_type(uniqueRecId);
+			if (pteSelectedType == 'user') {
+				console.log("Selecting User Topic");
+				var newUser = jQuery("div#alpn_field_" + uniqueRecId);
+				if (newUser.data('nm') == 'yes') { //Put them in edit mode for their topic. Tell em something
+					alpn_mission_control('edit_topic', uniqueRecId);
+					alpn_handle_select(uniqueRecId);
+					return;
+				}
+			}
 			alpn_handle_select(uniqueRecId);
 			pte_start_chat("unique_record_id", uniqueRecId);
 

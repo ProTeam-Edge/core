@@ -335,13 +335,51 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 	global $wpdb;
 	$now = date ("Y-m-d H:i:s", time());
 
-  $formId = pte_create_default_topics($user_id, true);   //with sample data
+  $defaultTopicData = pte_create_default_topics($user_id, true);   //with sample data
+	$coreUserFormId = $defaultTopicData['core_user_form_id'];
+	$samplePlace1Id = $defaultTopicData['sample_place_id_1'];
+	$samplePlace2Id = $defaultTopicData['sample_place_id_2'];
+	$sampleOrganization1Id = $defaultTopicData['sample_organization_id_1'];
+
+
+
 	$entry = array(
-		'id' => $formId,  //source user template type  Using custom TT
+		'id' => $coreUserFormId,  //source user template type  Using custom TT
 		'new_owner' => $user_id,
 		'fields' => array()
 	);
-	alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
+	$newUserTopicId = alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
+	//Create linkS
+	$subjectToken = 'pte_place';
+	$linkData = array(
+		'owner_id' => $user_id,
+		'topic_id' => $newUserTopicId,
+		'connected_id' => $user_id,
+		'connection_link_topic_id' => $samplePlace1Id,
+		'subject_token' => $subjectToken,
+		'list_default' => 'no'
+	);
+	pte_manage_topic_link('add_edit_topic_bidirectional_link', $linkData, $subjectToken);
+	$linkData = array(
+		'owner_id' => $user_id,
+		'topic_id' => $newUserTopicId,
+		'connected_id' => $user_id,
+		'connection_link_topic_id' => $samplePlace2Id,
+		'subject_token' => $subjectToken,
+		'list_default' => 'yes'
+	);
+	pte_manage_topic_link('add_edit_topic_bidirectional_link', $linkData, $subjectToken);
+
+	$subjectToken = 'pte_organization';
+	$linkData = array(
+		'owner_id' => $user_id,
+		'topic_id' => $newUserTopicId,
+		'connected_id' => $user_id,
+		'connection_link_topic_id' => $sampleOrganization1Id,
+		'subject_token' => $subjectToken,
+		'list_default' => 'yes'
+	);
+	pte_manage_topic_link('add_edit_topic_bidirectional_link', $linkData, $subjectToken);
 
 }
 add_action('user_register', 'sync_alpn_user_info_on_register');
@@ -415,15 +453,23 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
   //alpn_log('alpn_handle_topic_add_edit_TEXTAREAFIELDS');
   //alpn_log($fieldsAll);
 
-	if (isset($entry['new_owner'])) {
-		$userId = $entry['new_owner'];
-    $userInfo = get_userdata($userId);
-    $userEmail = $userInfo->user_email;
+	if (isset($entry['new_owner']) && $entry['new_owner']) {
+		alpn_log('New Owner');
+
+		$userInfo = get_user_by('id', $entry['new_owner']);
+
+	} else if (isset($entry['owner_id']) && $entry['owner_id']) {
+		alpn_log('New Topic Passing in owner_id');
+
+		$userInfo = get_user_by('id', $entry['owner_id']);
 	} else {
+		alpn_log('Logged in User');
+
 		$userInfo = wp_get_current_user();
-		$userId = $userInfo->data->ID;
-		$userEmail = $userInfo->data->user_email;
 	}
+
+	$userId = $userInfo->data->ID;
+	$userEmail = $userInfo->data->user_email;
 
   $type = 'form';
 	$now = date ("Y-m-d H:i:s", time());
@@ -525,9 +571,17 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
             );
             pte_manage_user_sync($data);
           }
+
 				} else { //add
 
-          if ($topicSchemaKey == "Person") {$topicData['image_handle'] = "pte_icon_letter_n.png";}  //Dor new user until they edit
+					if (isset($entry['icon_image']) && $entry['icon_image']) {
+						$topicData['image_handle'] = $entry['icon_image'];
+					} else if ($topicSchemaKey == "Person") {
+						$topicData['image_handle'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? "pte_icon_letter_" . strtolower(substr($mappedFields['person_givenname'], 0, 1)) . ".png" : "pte_icon_letter_n.png";
+					}
+					if (isset($entry['logo_image']) && $entry['logo_image']) {
+						$topicData['logo_handle'] = $entry['logo_image'];
+					}
 
           $data = array();
           $topicData['last_op'] = "add";
@@ -559,6 +613,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
           }
 
           if ($topicTypeSpecial == 'user') { //Add user but don't create CHAT channels or CHAT members -- JIT
+
             $data['owner_id'] = $userId;
             $data['topic_id'] = $row_id;
             $data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
