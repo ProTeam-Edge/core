@@ -80,23 +80,16 @@ if(isset($alpn_data->alpn_about_source) && !empty($alpn_data->alpn_about_source)
 {
 	$about_source = $alpn_data->alpn_about_source;
 	$alpn_about_source_obj = json_decode($about_source,true);
-	foreach($alpn_about_source_obj as $k=>$v){
-		$fval = json_decode (json_encode ($v), FALSE);
-		$final_array[$k] =(object) $fval;
-	}
-
+	$alpn_about_source_obj_final = json_decode (json_encode ($alpn_about_source_obj['alpn_about_source']), FALSE);
+	$final_array['alpn_about_source'] =  (object) $alpn_about_source_obj_final;
 }
 if(isset($alpn_data->alpn_name_source) && !empty($alpn_data->alpn_name_source))
 {
 	$name_source = $alpn_data->alpn_name_source;
 	$alpn_name_source_obj = json_decode($name_source,true);
-	foreach($alpn_name_source_obj as $k=>$v){
-		$fval = json_decode (json_encode ($v), FALSE);
-		$final_array[$k] =(object) $fval;
-	}
-
+	$alpn_name_source_obj_final = json_decode (json_encode ($alpn_name_source_obj['alpn_name_source']), FALSE);
+	$final_array['alpn_name_source'] = (object) $alpn_name_source_obj_final;
 }
-
 foreach($post as $keys=>$vals)
 {
   $final_array[$keys] = $post[$keys];
