@@ -87,6 +87,9 @@ if(isset($alpn_data->alpn_name_source) && !empty($alpn_data->alpn_name_source))
 {
 	$name_source = $alpn_data->alpn_name_source;
 	$alpn_name_source_obj = json_decode($name_source,true);
+	echo '<pre>';
+	print_r($alpn_name_source_obj);
+	die;
 	$alpn_name_source_obj_final = json_decode (json_encode ($alpn_name_source_obj['alpn_name_source']), FALSE);
 	$final_array['alpn_name_source'] = (object) $alpn_name_source_obj_final;
 }
