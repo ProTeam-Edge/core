@@ -96,9 +96,7 @@ if(isset($alpn_data->alpn_name_source) && !empty($alpn_data->alpn_name_source))
 	}
 
 }
-echo '<pre>';
-print_r($final_array);
-die;
+
 foreach($post as $keys=>$vals)
 {
   $final_array[$keys] = $post[$keys];
