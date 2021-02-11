@@ -36,7 +36,7 @@ foreach ($data["@graph"] as $value) {
     height: 100px;' id='alpn_about_source_".substr($value["@id"], 18)."' placeholder='alpn_about_source' class='all_area' data='alpn_about_source' rel='".substr($value["@id"], 18)."'></textarea></br><textarea style='width: 400px;height: 100px;'  id='alpn_name_source_".substr($value["@id"], 18)."'   placeholder='alpn_name_source' class='all_area' data='alpn_name_source' rel='".substr($value["@id"], 18)."'></textarea>";
     $temp["topic_class"] = "<input type='text' class='friendly_name'>
 	<br/><br/><br/><select class='topic_class' id='topic_class_" . substr($value["@id"], 18) . "'><option value='topic' selected>Topic Type</option><option value='link'>Topic Link Type</option><option value='record'>Topic Link Record Type</option></select>";
-    $temp["Generate"] = "<button class='disabled' id='add_topic_" . substr($value["@id"], 18) . "'>Generate Topic</button>";
+    $temp["Generate"] = "<button class='disabled generate_topic' id='add_topic_" . substr($value["@id"], 18) . "'>Generate Topic</button>";
     $temp["SaveConfig"] = "<button class='saveTopicConfig' id='save_topic_" . substr($value["@id"], 18) . "'>Save<br>Prop. Config</button>";
     array_push($classes, $temp);
   }
