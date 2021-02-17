@@ -35,5 +35,5 @@ if(!empty($email) && !empty($password))
 else {
 	$response = array('success' => 0, 'message'=>'Not a valid input.');
 }
-echo $response;
+echo json_encode($response);
 ?>
