@@ -20,7 +20,7 @@ if(!empty($email) && !empty($password))
 	}
 	else {
 		if ( $user && wp_check_password( $password, $verify->data->user_pass, $verify->ID ) ) {
-			$hash = md5('proteamedge'.$verify->data->user_pass.$verify->ID);
+			$hash = md5('proteamedge'.$verify->data->user_pass.$verify->ID.time());
 			$data['ID'] = $verify->ID;
 			$data['username'] = $verify->data->username;
 			$data['email'] = $verify->data->email;
