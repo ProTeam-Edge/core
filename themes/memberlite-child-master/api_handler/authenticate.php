@@ -12,6 +12,12 @@ global $wpdb;
 $email = $data->email;
 $password = $data->password_field;
 $verify = get_user_by('email',$email );
-echo '<pre>';
-print_r($verify);
+if(empty($verify)) {
+	$response = array('success' => 0, 'message'=>'Not a valid user.');
+}
+else {
+	echo '<pre>';
+	print_r($verify);
+}
+echo $response;
 ?>
