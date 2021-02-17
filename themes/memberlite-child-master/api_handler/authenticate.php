@@ -9,6 +9,7 @@ $data = json_decode($input);
 
 //Wordpress authentication
 global $wpdb;
+$data = array();
 $email = $data->email;
 $password = $data->password_field;
 if(!empty($email) && !empty($password))
@@ -20,7 +21,12 @@ if(!empty($email) && !empty($password))
 	else {
 		if ( $user && wp_check_password( $password, $verify->data->user_pass, $verify->ID ) ) {
 			$hash = md5('proteamedge'.$verify->data->user_pass.$verify->ID);
-			$response = array('success' => 1, 'message'=>'User found successfully.','token'=>$hash);
+			$data['ID'] = $verify->ID;
+			$data['username'] = $verify->data->username;
+			$data['email'] = $verify->data->email;
+			$data['token'] = $hash;
+			$update_option = update_option('api_request_token_'.$verify->ID.'',$hash);
+			$response = array('success' => 1, 'message'=>'User found successfully.','token'=>$data);
 		} else {
 			$response = array('success' => 0, 'message'=>'Please input correct password and try again');
 		}
