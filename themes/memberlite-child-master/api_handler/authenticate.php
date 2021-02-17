@@ -11,13 +11,23 @@ $data = json_decode($input);
 global $wpdb;
 $email = $data->email;
 $password = $data->password_field;
-$verify = get_user_by('email',$email );
-if(empty($verify)) {
-	$response = array('success' => 0, 'message'=>'Not a valid user.');
+if(!empty($email) && !empty($password))
+{
+	$verify = get_user_by('email',$email );
+	if(empty($verify)) {
+		$response = array('success' => 0, 'message'=>'Not a valid user.');
+	}
+	else {
+		if ( $user && wp_check_password( $password, $verify->data->user_pass, $verify->ID ) ) {
+			$hash = md5('proteamedge'.$verify->data->user_pass.$verify->ID);
+			$response = array('success' => 1, 'message'=>'User found successfully.','token'=>$hash);
+		} else {
+			$response = array('success' => 0, 'message'=>'Please input correct password and try again');
+		}
+	}
 }
 else {
-	echo '<pre>';
-	print_r($verify);
+	$response = array('success' => 0, 'message'=>'Not a valid input.');
 }
 echo $response;
 ?>
