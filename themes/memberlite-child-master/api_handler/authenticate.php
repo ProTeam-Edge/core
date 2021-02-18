@@ -19,14 +19,12 @@ if(!empty($email) && !empty($password))
 		$response = array('success' => 0, 'message'=>'Not a valid user.');
 	} 
 	else {
-		echo '<pre>';
-		print_r($verify);
-		die;
+		
 		if ( $verify && wp_check_password( $password, $verify->data->user_pass, $verify->ID ) ) {
-			$hash = md5('proteamedge'.$verify->data->username.$verify->ID.time());
+			$hash = md5('proteamedge'.$verify->data->user_login.$verify->ID.time());
 			$response_data['ID'] = $verify->ID;
-			$response_data['username'] = $verify->data->username;
-			$response_data['email'] = $verify->data->email;
+			$response_data['username'] = $verify->data->user_login;
+			$response_data['email'] = $verify->data->user_email;
 			$response_data['token'] = $hash;
 			$update_option = update_option('api_request_token_'.$verify->ID.'',$hash);
 			$response = array('success' => 1, 'message'=>'User found successfully.','data'=>$response_data);
