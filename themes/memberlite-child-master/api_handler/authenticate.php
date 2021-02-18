@@ -27,14 +27,14 @@ if(!empty($email) && !empty($password))
 			$response_data['email'] = $verify->data->user_email;
 			$response_data['token'] = $hash;
 			$update_option = update_option('api_request_token_'.$verify->ID.'',$hash);
-			$response = array('success' => 1, 'message'=>'Success authentication successfull.','data'=>$response_data);
+			$response = array('success' => 1, 'message'=>'Login Success! Redirecting..','data'=>$response_data);
 		} else {
-			$response = array('success' => 0, 'message'=>'Please input correct password and try again');
+			$response = array('success' => 0, 'message'=>'Your email and password do not match.');
 		}
 	}
 }
 else {
-	$response = array('success' => 0, 'message'=>'Not a valid input.');
+	$response = array('success' => 0, 'message'=>'No account found with this email address.');
 }
 echo json_encode($response);
 ?>
