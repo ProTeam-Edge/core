@@ -19,8 +19,11 @@ if(!empty($email) && !empty($password))
 		$response = array('success' => 0, 'message'=>'Not a valid user.');
 	} 
 	else {
+		echo '<pre>';
+		print_r($verify);
+		die;
 		if ( $verify && wp_check_password( $password, $verify->data->user_pass, $verify->ID ) ) {
-			$hash = md5('proteamedge'.$verify->data->user_pass.$verify->ID.time());
+			$hash = md5('proteamedge'.$verify->data->username.$verify->ID.time());
 			$response_data['ID'] = $verify->ID;
 			$response_data['username'] = $verify->data->username;
 			$response_data['email'] = $verify->data->email;
