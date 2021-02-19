@@ -16,7 +16,7 @@ if(!empty($email) && !empty($password))
 {
 	$verify = get_user_by('email',$email );
 	if(empty($verify)) {
-		$response = array('success' => 0, 'message'=>'Error missing required parameters.');
+		$response = array('success' => 0, 'message'=>'No account found with this email address.');
 	} 
 	else {
 		
@@ -34,7 +34,8 @@ if(!empty($email) && !empty($password))
 	}
 }
 else {
-	$response = array('success' => 0, 'message'=>'No account found with this email address.');
+	$response = array('success' => 0, 'message'=>'Error missing required parameters.');
 }
+
 echo json_encode($response);
 ?>
