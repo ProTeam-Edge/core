@@ -5,6 +5,8 @@ $root = $_SERVER['DOCUMENT_ROOT'];
 
 $input = file_get_contents('php://input');
 $data = json_decode($input);
+print_r($data);
+die;
 if(isset($data->username))
 {
 $username = $data->username;
