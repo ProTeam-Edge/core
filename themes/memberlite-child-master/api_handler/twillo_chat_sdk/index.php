@@ -11,6 +11,7 @@ $data = json_decode($input);
 if(!empty($data))
 {
 	$username = $data->username;
+	$identity =$username;
 	$token = new AccessToken(
     $twilioAccountSid,
     $twilioApiKey,
