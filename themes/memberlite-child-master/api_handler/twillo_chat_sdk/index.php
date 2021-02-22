@@ -8,7 +8,24 @@ use Twilio\Jwt\Grants\ChatGrant;
 
 $input = file_get_contents('php://input');
 $data = json_decode($input);
+if(!empty($data))
+{
+	$username = $data->username;
+	$token = new AccessToken(
+    $twilioAccountSid,
+    $twilioApiKey,
+    $twilioApiSecret,
+    3600,
+    $identity
+);
 
-echo '<pre>';
-print_r($data);
-die;
+	// Create Chat grant
+	$chatGrant = new ChatGrant();
+	$chatGrant->setServiceSid($serviceSid);
+
+	// Add grant to token
+	$token->addGrant($chatGrant);
+
+	// render token to string
+	echo $token->toJWT();
+}
