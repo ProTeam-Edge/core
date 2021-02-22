@@ -8,6 +8,11 @@ use Twilio\Jwt\Grants\ChatGrant;
 
 $input = file_get_contents('php://input');
 $data = json_decode($input);
+$twilioAccountSid = 'AC9ff1cc4c98a58c86d4e1942034ec6d41';
+$twilioApiKey = 'SK4f18b268558283cb58ed64093a083acc';
+$twilioApiSecret = 'nrDvX76GLS39xq3JPxovT2gXPHxNnkYr';
+
+$serviceSid = 'IS0e86f36674e9492c8aede1549c216784';
 if(!empty($data))
 {
 	$username = $data->username;
