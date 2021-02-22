@@ -1,15 +1,15 @@
 <?php
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
-echo '<pre>';
-print_r($_SERVER);
-DIE;
+$root = $_SERVER['DOCUMENT_ROOT'];
 
 $input = file_get_contents('php://input');
 $data = json_decode($input);
+if(isset($data->username))
+{
 $username = $data->username;
 // Get the PHP helper library from https://twilio.com/docs/libraries/php
-require_once 'E:/Development/wamp64/www/twillo/vendor/autoload.php'; // Loads the library
+require_once ''.$root.'/wp-content/themes/memberlite-child-master/api_handler/twillo_chat_sdk/vendor/autoload.php'; // Loads the library
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\ChatGrant;
 
@@ -41,3 +41,7 @@ $token->addGrant($chatGrant);
 
 // render token to string
 echo $token->toJWT();
+}
+else {
+echo 'No params found.';
+}
