@@ -5,13 +5,11 @@ $root = $_SERVER['DOCUMENT_ROOT'];
 
 $input = file_get_contents('php://input');
 $data = json_decode($input);
-print_r($data);
-die;
-if(isset($data->username))
-{
+if(isset($data) && !empty($data)){
 $username = $data->username;
+
 // Get the PHP helper library from https://twilio.com/docs/libraries/php
-require_once ''.$root.'/wp-content/themes/memberlite-child-master/api_handler/twillo_chat_sdk/vendor/autoload.php'; // Loads the library
+require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/twillo_chat_sdk/vendor/autoload.php'; // Loads the library
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\ChatGrant;
 
@@ -43,7 +41,4 @@ $token->addGrant($chatGrant);
 
 // render token to string
 echo $token->toJWT();
-}
-else {
-echo 'No params found.';
 }
