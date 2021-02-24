@@ -22,7 +22,7 @@ if(!empty($email) && !empty($password))
 		
 		if ( $verify && wp_check_password( $password, $verify->data->user_pass, $verify->ID ) ) {
 			$hash = md5('proteamedge'.$verify->data->user_login.$verify->ID.time());
-			$response_data['ID'] = $verify->ID;
+			$response_data['ID'] = strval($verify->ID);
 			$response_data['username'] = $verify->data->user_login;
 			$response_data['email'] = $verify->data->user_email;
 			$response_data['token'] = $hash;
