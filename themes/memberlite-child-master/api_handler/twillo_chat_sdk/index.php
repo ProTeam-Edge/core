@@ -37,7 +37,7 @@ if(!empty($data))
 
 	// render token to string
 	echo json_encode(array(
-    'identity' => $userID,
+    'identity' => $username,
     'token' => $token->toJWT()
 ));
 }
