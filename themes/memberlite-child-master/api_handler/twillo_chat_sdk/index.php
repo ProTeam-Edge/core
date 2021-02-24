@@ -1,5 +1,4 @@
 <?php
-include('/var/www/html/proteamedge/public/wp-blog-header.php');
 include_once('../../pte_config.php');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
@@ -18,7 +17,6 @@ $serviceSid = CHATSERVICESID;
 if(!empty($data))
 {
 	$username = $data->username;
-	$user_obj = get_user_by('id', $username);
 	$identity =$username;
 	$token = new AccessToken(
     $twilioAccountSid,
@@ -36,8 +34,5 @@ if(!empty($data))
 	$token->addGrant($chatGrant);
 
 	// render token to string
-	echo json_encode(array(
-    'identity' => $username,
-    'token' => $token->toJWT()
-));
+	echo $token->toJWT();
 }
