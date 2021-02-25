@@ -13,6 +13,7 @@ if(isset( $data->id) && !empty($data->id)) {
 	$token =AUTHTOKEN;
 	$cservice =CHATSERVICESID;
 	$twilio = new Client($sid, $token);
+	$call= 1;
 	//$call = $twilio->chat->v2->services($cservice)->channels($id)->delete();
 	if($call==1) {
 		$response = array('success' => 1, 'message'=>'Channel deleted.');
