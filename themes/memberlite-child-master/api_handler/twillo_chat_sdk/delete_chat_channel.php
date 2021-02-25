@@ -7,7 +7,7 @@ require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/twill
 use Twilio\Rest\Client;
 $sid = ACCOUNT_SID;
 $token =APIKEY;
-$cservice =CHATSERVICESID;
+$cservice ="";
 $twilio = new Client($sid, $token);
 
 $response = $twilio->chat->v2->services($cservice)
