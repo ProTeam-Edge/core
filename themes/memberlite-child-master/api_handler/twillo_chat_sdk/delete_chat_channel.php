@@ -8,7 +8,9 @@ use Twilio\Rest\Client;
 $sid = ACCOUNT_SID;
 $token =APIKEY;
 $twilio = new Client($sid, $token);
-
+echo '<pre>';
+print_r($twilio);
+die;
 /* $response = $twilio->chat->v2->services(CHATSERVICESID)
                  ->channels("CHc12cfcabc00f4d3c8fb4cab900868de7")
                  ->delete();
