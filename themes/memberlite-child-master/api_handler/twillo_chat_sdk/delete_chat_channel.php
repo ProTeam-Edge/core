@@ -6,8 +6,8 @@ $root = $_SERVER['DOCUMENT_ROOT'];
 require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/twillo_chat_sdk/vendor/autoload.php';
 use Twilio\Rest\Client;
 $sid = ACCOUNT_SID;
-$token =APIKEY;
-$cservice ="";
+$token =AUTHTOKEN;
+$cservice =CHATSERVICESID;
 $twilio = new Client($sid, $token);
 
 $response = $twilio->chat->v2->services($cservice)
