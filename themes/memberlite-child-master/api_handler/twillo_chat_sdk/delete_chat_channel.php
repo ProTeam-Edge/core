@@ -7,9 +7,10 @@ require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/twill
 use Twilio\Rest\Client;
 $sid = ACCOUNT_SID;
 $token =APIKEY;
+$cservice =CHATSERVICESID;
 $twilio = new Client($sid, $token);
 
-$response = $twilio->chat->v2->services(CHATSERVICESID)
+$response = $twilio->chat->v2->services($cservice)
                  ->channels("CHc12cfcabc00f4d3c8fb4cab900868de7")
                  ->delete();
 				 echo '<pre>';
