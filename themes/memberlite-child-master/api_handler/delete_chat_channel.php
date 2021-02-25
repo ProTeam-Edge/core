@@ -1,5 +1,5 @@
 <?php 
-include_once('../../pte_config.php');
+include_once('../pte_config.php');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
 $root = $_SERVER['DOCUMENT_ROOT'];
