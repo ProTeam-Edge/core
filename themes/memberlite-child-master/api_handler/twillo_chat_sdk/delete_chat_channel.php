@@ -9,9 +9,9 @@ $sid = ACCOUNT_SID;
 $token =APIKEY;
 $twilio = new Client($sid, $token);
 
-$response = $twilio->chat->v2->services(CHATSERVICESID)
+/* $response = $twilio->chat->v2->services(CHATSERVICESID)
                  ->channels("CHc12cfcabc00f4d3c8fb4cab900868de7")
                  ->delete();
 				 echo '<pre>';
-				 print_r($response);
+				 print_r($response); */
 ?>
