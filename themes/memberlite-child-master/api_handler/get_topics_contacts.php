@@ -9,7 +9,7 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 //$id = $data->id;
 $id = $_REQUEST['id'];
-$sql = 'select * from alpn_topics where special = "contact" and connected_topic_id = "'.$id.'"';
+$sql = 'select * from alpn_topics where connected_id = "'.$id.'"';
 $data = $wpdb->get_results($sql);
 echo '<pre>';
 print_r($data);
