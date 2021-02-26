@@ -11,7 +11,7 @@ $data = json_decode($input);
 $id = $_REQUEST['id'];
 $sql = 'select * from alpn_topics where owner_id = "'.$id.'" and special = "contact"';
 $result = $wpdb->get_results($sql);
-$array = array();
+$array = $response= array();
 if(!empty($result) {
 	foreach($result as $val) {
 		$array[$val->id]['name'] = $val->name;
