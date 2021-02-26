@@ -11,7 +11,10 @@ $data = json_decode($input);
 $id = $_REQUEST['id'];
 $sql = 'select * from alpn_topics where owner_id = "'.$id.'" and special = "contact"';
 $result = $wpdb->get_results($sql);
-$array = $response= array();
+echo '<pre>';
+print_r($result);
+die;
+/* $array = $response= array();
 if(!empty($result) {
 	foreach($result as $val) {
 		$array[$val->id]['name'] = $val->name;
@@ -20,4 +23,4 @@ if(!empty($result) {
 } else {
 	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array);
 }
-echo json_encode($response);
+echo json_encode($response); */
