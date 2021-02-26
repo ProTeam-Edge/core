@@ -14,7 +14,7 @@ $result = $wpdb->get_results($sql);
 $array = array();
 if(!empty($result) {
 	foreach($result as $val) {
-		$array[$val->id]['name'] = $val->name];
+		$array[$val->id]['name'] = $val->name;
 	}
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array);
 } else {
