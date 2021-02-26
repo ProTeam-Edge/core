@@ -10,10 +10,10 @@ $data = json_decode($input);
 //$id = $data->id;
 $id = $_REQUEST['id'];
 $sql = 'select * from alpn_topics where owner_id = "'.$id.'" and special = "contact"';
-$data = $wpdb->get_results($sql);
+$result = $wpdb->get_results($sql);
 $array = array();
-if(!empty($data) {
-	foreach($data as $val) {
+if(!empty($result) {
+	foreach($result as $val) {
 		$array[$val->id]['name'] = $val->name];
 	}
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array);
