@@ -9,13 +9,14 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
 
-$sql = 'select * from alpn_topics where owner_id = "'.$id.'" and special = "contact"';
+$sql = 'select users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.owner_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact"';
 $result = $wpdb->get_results($sql);
 
 $array = $response= array();
 if(!empty($result)) {
 	foreach($result as $val) {
 		$array[$val->id]['name'] = $val->name;
+		$array[$val->id]['id'] = $val->id;
 	}
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array);
 } else {
