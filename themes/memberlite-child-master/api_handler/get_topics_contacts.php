@@ -7,8 +7,8 @@ $root = $_SERVER['DOCUMENT_ROOT'];
 global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
-//$id = $data->id;
-$id = $_REQUEST['id'];
+$id = $data->id;
+
 $sql = 'select * from alpn_topics where owner_id = "'.$id.'" and special = "contact"';
 $result = $wpdb->get_results($sql);
 
