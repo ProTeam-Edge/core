@@ -13,7 +13,7 @@ $sql = 'select  topics.about as about, topics.channel_id as channel_id, topics.s
 $result = $wpdb->get_results($sql);
 
 $sql1 = 'select  topics.about as about, topics.channel_id as channel_id, topics.special as type where topics.owner_id = "'.$id.'" and topics.special = "topic" ';
-$result1 = $wpdb->get_results($sql);
+$result1 = $wpdb->get_results($sql1);
 
 $array = $response= array();
 function striptags($string) {
