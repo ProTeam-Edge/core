@@ -48,17 +48,17 @@ if(!empty($result) || !empty($result1)) {
 	}
 	$count = count($array);
 	if(!empty($result1)) {
-		foreach($result1 as $val) {
+		foreach($result1 as $val1) {
 			$count++;
 			$about = 'No about to show here';
-			if(isset( $val->about) && !empty( $val->about))
+			if(isset( $val1->about) && !empty( $val1->about))
 			{
 				$about = striptags($val->about);
 			}
-			$array['topic'][$count]['name'] = $val->name;
-			$array['topic'][$count]['channel_id'] = $val->channel_id;
-			$array['topic'][$count]['about'] = $val->about;
-			$array['topic'][$count]['id'] = $val->id;
+			$array['topic'][$count]['name'] = $val1->name;
+			$array['topic'][$count]['channel_id'] = $val1->channel_id;
+			$array['topic'][$count]['about'] = $val1->about;
+			$array['topic'][$count]['id'] = $val1->id;
 			
 		}
 	}
