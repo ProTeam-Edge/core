@@ -9,7 +9,8 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
 
-$sql = 'select  topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics left join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" || topics.special = "topic"';
+echo $sql = 'select  topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics left join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" || topics.special = "topic"';
+die;
 $result = $wpdb->get_results($sql);
 
 $array = $response= array();
