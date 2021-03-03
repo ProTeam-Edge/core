@@ -9,10 +9,13 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
 $sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' and sync_id !=''";
-$results = $wpdb->get_row($sql,ARRAY_A);
+$results = $wpdb->get_row($sql);
 $topic_content = '';
 if(isset($results->topic_content) && !empty($results->topic_content))
 {
+	echo '<pre>';
+	print_r($results->topic_content);
+	die;
 $topic_content_response = json_decode($results->topic_content);
 $topic_content = json_encode($topic_content_response, JSON_UNESCAPED_SLASHES);
 
