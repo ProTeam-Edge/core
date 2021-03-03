@@ -50,7 +50,7 @@ if(!empty($result) || !empty($result1)) {
 
 	if(!empty($result1)) {
 		foreach($result1 as $val1) {
-			$count++;
+			$m = 0;
 			$about = 'No about to show here';
 			if(isset( $val1->about) && !empty( $val1->about))
 			{
@@ -60,7 +60,7 @@ if(!empty($result) || !empty($result1)) {
 			$array['topic'][$count]['channel_id'] = $val1->channel_id;
 			$array['topic'][$count]['about'] = $val1->about;
 			$array['topic'][$count]['id'] = $val1->id;
-			
+			$m++;
 		}
 	}
 
