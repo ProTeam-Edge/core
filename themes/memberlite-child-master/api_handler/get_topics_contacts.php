@@ -12,7 +12,7 @@ $id = $data->id;
 $sql = 'select  topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
 $result = $wpdb->get_results($sql);
 
-$sql1 = 'select name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" ';
+$sql1 = 'select name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" and name!="" ';
 $result1 = $wpdb->get_results($sql1);
 
 $array = $response= array();
@@ -47,9 +47,7 @@ if(!empty($result) || !empty($result1)) {
 		}
 	}
 	$count = count($array);
-	echo '<pre>';
-	print_r($result1);
-	die;
+	
 	if(!empty($result1)) {
 		foreach($result1 as $val1) {
 			$m = 0;
