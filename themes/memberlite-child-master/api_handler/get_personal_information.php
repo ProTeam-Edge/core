@@ -14,7 +14,7 @@ $topic_content = '';
 if(isset($results->topic_content) && !empty($results->topic_content))
 {
 	echo '<pre>';
-	print_r($results->topic_content);
+	print_r(json_decode($results->topic_content));
 	die;
 $topic_content_response = json_decode($results->topic_content);
 $topic_content = json_encode($topic_content_response, JSON_UNESCAPED_SLASHES);
