@@ -8,7 +8,7 @@ global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
-echo $sql = "SELECT t.*, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t2.image_handle AS profile_handle FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t.connected_id = t2.owner_id WHERE  t.owner_id = '".$id."' AND t.special='user'";
+$sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' and sync_id !=''";
 $results = $wpdb->get_results($sql);
  echo '<pre>';
  print_r($results);
