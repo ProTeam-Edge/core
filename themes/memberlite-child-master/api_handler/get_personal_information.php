@@ -10,7 +10,12 @@ $data = json_decode($input);
 $id = $data->id;
 $sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' and sync_id !=''";
 $results = $wpdb->get_row($sql);
-$topic_content = json_decode($results->topic_content, true);  
-echo '<pre>';
-print_r($topic_content);
-die;
+$topic_content = '';
+if(isset($results->topic_content) && !empty($results->topic_content))
+$topic_content = json_decode($results->topic_content, true);
+if(!empty($topic_content))
+$response = array('success' => 1, 'message'=>'Success topics found.','data'=>$topic_content);
+else
+$response = array('success' => 0, 'message'=>'No contacts found.','data'=>"");
+
+echo json_encode($response); 
