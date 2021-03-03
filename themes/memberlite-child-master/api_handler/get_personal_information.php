@@ -17,15 +17,38 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 	$topic_content_response = json_decode($results->topic_content);
 	if(!empty($topic_content_response))
 	{
+		$job_title = $job_email = $job_url = $telephone = $faxnumber = $knowsabout = $description = 'None';
 		$array['person_givenname'] =$topic_content_response->person_givenname;
 		$array['person_familyname'] =$topic_content_response->person_familyname;
-		$array['person_jobtitle'] =$topic_content_response->person_jobtitle;
-		$array['person_email'] =$topic_content_response->person_email;
-		$array['person_url'] =$topic_content_response->person_url;
-		$array['person_telephone'] =$topic_content_response->person_telephone;
-		$array['person_faxnumber'] =$topic_content_response->person_faxnumber;
-		$array['person_knowsabout'] =$topic_content_response->person_knowsabout;
-		$array['person_description'] =$topic_content_response->person_description;
+		if(isset($topic_content_response->person_jobtitle) && !empty($topic_content_response->person_jobtitle))
+		$job_title = $topic_content_response->person_jobtitle;
+		if(isset($topic_content_response->person_email) && !empty($topic_content_response->person_email))
+		$job_email = $topic_content_response->person_email;
+		if(isset($topic_content_response->person_url) && !empty($topic_content_response->person_url))
+		$job_url = $topic_content_response->person_url;
+		if(isset($topic_content_response->person_telephone) && !empty($topic_content_response->person_telephone))
+		{
+		$telephone = $topic_content_response->person_telephone;
+		}
+		if(isset($topic_content_response->person_faxnumber) && !empty($topic_content_response->person_faxnumber))
+		{
+		$faxnumber = $topic_content_response->person_faxnumber;
+		}
+		if(isset($topic_content_response->person_knowsabout) && !empty($topic_content_response->person_knowsabout))
+		{
+		$knowsabout = $topic_content_response->person_knowsabout;
+		}
+		if(isset($topic_content_response->person_description) && !empty($topic_content_response->person_description))
+		{
+		$description = $topic_content_response->person_description;
+		}
+		$array['person_jobtitle'] =$job_title;
+		$array['person_email'] =$job_email;
+		$array['person_url'] =$job_url;
+		$array['person_telephone'] =$telephone;
+		$array['person_faxnumber'] =$faxnumber;
+		$array['person_knowsabout'] =$knowsabout;
+		$array['person_description'] =$description;
 	}
 }
 if(!empty($array))
