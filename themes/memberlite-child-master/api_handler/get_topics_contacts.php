@@ -56,10 +56,10 @@ if(!empty($result) || !empty($result1)) {
 			{
 				$about = striptags($val1->about);
 			}
-			$array['topic'][$count]['name'] = $val1->name;
-			$array['topic'][$count]['channel_id'] = $val1->channel_id;
-			$array['topic'][$count]['about'] = $val1->about;
-			$array['topic'][$count]['id'] = $val1->id;
+			$array['topic'][$m]['name'] = $val1->name;
+			$array['topic'][$m]['channel_id'] = $val1->channel_id;
+			$array['topic'][$m]['about'] = $val1->about;
+			$array['topic'][$m]['id'] = $val1->id;
 			$m++;
 		}
 	}
