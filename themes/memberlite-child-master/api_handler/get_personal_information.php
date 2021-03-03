@@ -12,7 +12,11 @@ $sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' 
 $results = $wpdb->get_row($sql);
 $topic_content = '';
 if(isset($results->topic_content) && !empty($results->topic_content))
-$topic_content = $results->topic_content;
+{
+$topic_content_response = json_decode($results->topic_content);
+$topic_content = json_encode($topic_content_response, JSON_UNESCAPED_SLASHES);
+
+}
 if(!empty($topic_content))
 $response = array('success' => 1, 'message'=>'Success topics found.','data'=>$topic_content);
 else
