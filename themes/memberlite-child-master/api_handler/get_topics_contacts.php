@@ -12,7 +12,7 @@ $id = $data->id;
 $sql = 'select  topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
 $result = $wpdb->get_results($sql);
 
-$sql1 = 'select about as about, channel_id as channel_id, special as type from alpn_topics where owner_id = "'.$id.'" and special = "topic" ';
+$sql1 = 'select name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" ';
 $result1 = $wpdb->get_results($sql1);
 
 $array = $response= array();
@@ -41,7 +41,7 @@ if(!empty($result) || !empty($result1)) {
 			}
 			$array['contact'][$i]['name'] = $val->name;
 			$array['contact'][$i]['channel_id'] = $val->channel_id;
-			$array['contact'][$i]['about'] = $val->about;
+			$array['contact'][$i]['about'] = $about;
 			$array['contact'][$i]['id'] = $val->id;
 			$i++;
 		}
@@ -58,7 +58,7 @@ if(!empty($result) || !empty($result1)) {
 			}
 			$array['topic'][$m]['name'] = $val1->name;
 			$array['topic'][$m]['channel_id'] = $val1->channel_id;
-			$array['topic'][$m]['about'] = $val1->about;
+			$array['topic'][$m]['about'] = $about;
 			$array['topic'][$m]['id'] = $val1->id;
 			$m++;
 		}
