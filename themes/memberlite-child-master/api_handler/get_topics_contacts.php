@@ -12,7 +12,7 @@ $id = $data->id;
 $sql = 'select  topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
 $result = $wpdb->get_results($sql);
 
-$sql1 = 'select  topics.about as about, topics.channel_id as channel_id, topics.special as type where topics.owner_id = "'.$id.'" and topics.special = "topic" ';
+$sql1 = 'select about as about, channel_id as channel_id, special as type from alpn_topics where topics.owner_id = "'.$id.'" and topics.special = "topic" ';
 $result1 = $wpdb->get_results($sql1);
 
 $array = $response= array();
