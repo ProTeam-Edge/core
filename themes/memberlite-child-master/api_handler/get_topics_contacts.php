@@ -43,7 +43,7 @@ if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 			if(isset( $val->about) && !empty( $val->about)){
 				$about = striptags($val->about);
 			}
-			if(isset($val->image)) {
+			if(isset($val->image) && !empty($val->image)) {
 				$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image;
 			}
 			$array['contact'][$i]['name'] = $val->name;
@@ -64,7 +64,7 @@ if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 			{
 				$about1 = striptags($val1->about);
 			}
-			if(isset($val1->image)) {
+			if(isset($val1->image) && !empty($val1->image)) {
 				$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val1->image;
 			}
 			$array['topic'][$m]['name'] = $val1->name;
