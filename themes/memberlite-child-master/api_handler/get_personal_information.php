@@ -17,6 +17,9 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 	$topic_content_response = json_decode($results->topic_content);
 	if(!empty($topic_content_response))
 	{
+		echo '<pre>';
+		print_r($topic_content_response);
+		
 		$job_title = $job_email = $job_url = $telephone = $faxnumber = $knowsabout = $description = 'None';
 		$array['person_givenname'] =$topic_content_response->person_givenname;
 		$array['person_familyname'] =$topic_content_response->person_familyname;
