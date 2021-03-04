@@ -9,7 +9,7 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
 
-$sql = 'select  topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
+$sql = 'select  topics.image_handle as image ,topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
 $result = $wpdb->get_results($sql);
 
 $sql1 = 'select name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" and name!="" ';
@@ -35,11 +35,15 @@ if(!empty($result) || !empty($result1)) {
 	if(!empty($result)) {
 		foreach($result as $val) {
 			$about = 'No about to show here';
-			if(isset( $val->about) && !empty( $val->about))
-			{
+			$final_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
+			if(isset( $val->about) && !empty( $val->about)){
 				$about = striptags($val->about);
 			}
+			if(isset($val->image)) {
+				$final_image = $val->image;
+			}
 			$array['contact'][$i]['name'] = $val->name;
+			$array['contact'][$i]['image'] = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image.'';
 			$array['contact'][$i]['channel_id'] = $val->channel_id;
 			$array['contact'][$i]['about'] = $about;
 			$array['contact'][$i]['id'] = $val->id;
