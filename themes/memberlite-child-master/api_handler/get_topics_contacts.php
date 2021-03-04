@@ -12,7 +12,7 @@ $id = $data->id;
 $sql = 'select  topics.image_handle as image ,topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
 $result = $wpdb->get_results($sql);
 
-$sql1 = 'select name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" and name!="" ';
+$sql1 = 'select image_handle as image ,name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" and name!="" ';
 $result1 = $wpdb->get_results($sql1);
 
 $array = $response= array();
@@ -30,12 +30,13 @@ if (strlen($string) > 50) {
 }
 return $string;
 }
+$final_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
 if(!empty($result) || !empty($result1)) {
 	$i = 0;
 	if(!empty($result)) {
 		foreach($result as $val) {
 			$about = 'No about to show here';
-			$final_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
+			
 			if(isset( $val->about) && !empty( $val->about)){
 				$about = striptags($val->about);
 			}
@@ -60,7 +61,11 @@ if(!empty($result) || !empty($result1)) {
 			{
 				$about1 = striptags($val1->about);
 			}
+			if(isset($val1->image)) {
+				$final_image = $val1->image;
+			}
 			$array['topic'][$m]['name'] = $val1->name;
+			$array['topic'][$m]['image'] = $final_image;
 			$array['topic'][$m]['channel_id'] = $val1->channel_id;
 			$array['topic'][$m]['about'] = $about1;
 			$array['topic'][$m]['id'] = $val1->id;
