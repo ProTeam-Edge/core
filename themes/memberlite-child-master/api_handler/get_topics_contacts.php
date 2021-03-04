@@ -77,7 +77,7 @@ if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 	}
 
 	 if(isset($get_user_data->logo_handle)) {
-		$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->image_handle;
+		$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->logo_handle;
 	}
 	$array['user_image'] = $final_image; 
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array);
