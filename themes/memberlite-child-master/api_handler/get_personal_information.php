@@ -26,7 +26,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		}
 		
 		$array['person_givenname'] =$topic_content_response->person_givenname;
-		$array['carrier'] =$carrier;
+		$array['occupation'] =$carrier;
 		$array['person_familyname'] =$topic_content_response->person_familyname;
 		if(isset($topic_content_response->person_jobtitle) && !empty($topic_content_response->person_jobtitle))
 		$job_title = $topic_content_response->person_jobtitle;
