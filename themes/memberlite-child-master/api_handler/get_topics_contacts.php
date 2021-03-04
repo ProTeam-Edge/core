@@ -50,7 +50,7 @@ if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 				$contact_image = $base_image;
 			}
 			$array['contact'][$i]['name'] = $val->name;
-			$array['contact'][$i]['image'] = $final_image;
+			$array['contact'][$i]['image'] = $contact_image;
 			$array['contact'][$i]['channel_id'] = $val->channel_id;
 			$array['contact'][$i]['about'] = $about;
 			$array['contact'][$i]['id'] = $val->id;
