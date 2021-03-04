@@ -66,7 +66,7 @@ if(!empty($result) || !empty($result1)) {
 			}
 			$array['topic'][$m]['name'] = $val1->name;
 			$array['topic'][$m]['image'] = $final_image;
-			$array['topic'][$m]['channel_id'] = $val1->channel_id;
+			$array['topic'][$m]['channel_id'] = 'https://storage.googleapis.com/pte_media_store_1/'.$val1->channel_id;
 			$array['topic'][$m]['about'] = $about1;
 			$array['topic'][$m]['id'] = $val1->id;
 			$m++;
