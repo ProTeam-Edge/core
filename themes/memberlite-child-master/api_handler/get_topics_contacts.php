@@ -34,10 +34,10 @@ if (strlen($string) > 50) {
 return $string;
 }
 $final_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
-if(!empty($result) || !empty($result1)) {
+if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 	$i = 0;
-	if(!empty($result)) {
-		foreach($result as $val) {
+	if(!empty($get_contacts_data)) {
+		foreach($get_contacts_data as $val) {
 			$about = 'No about to show here';
 			
 			if(isset( $val->about) && !empty( $val->about)){
@@ -56,8 +56,8 @@ if(!empty($result) || !empty($result1)) {
 	}
 	$count = count($array);
 	
-	if(!empty($result1)) {
-		foreach($result1 as $val1) {
+	if(!empty($get_topic_data)) {
+		foreach($get_topic_data as $val1) {
 			$m = 0;
 			$about1 = 'No about to show here';
 			if(isset( $val1->about) && !empty( $val1->about))
@@ -75,12 +75,11 @@ if(!empty($result) || !empty($result1)) {
 			$m++;
 		}
 	}
-	echo '<pre>';
-	print_r($get_user_data);
-	/* if(isset($get_user_data->image_handle)) {
+
+	 if(isset($get_user_data->image_handle)) {
 		$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->image_handle;
 	}
-	$array['user_image'] = $final_image; */
+	$array['user_image'] = $final_image; 
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array);
 } else {
 	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array);
