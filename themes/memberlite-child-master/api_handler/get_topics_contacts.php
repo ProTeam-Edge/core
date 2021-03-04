@@ -33,7 +33,7 @@ if (strlen($string) > 50) {
 }
 return $string;
 }
-$final_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
+$base_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
 if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 	$i = 0;
 	if(!empty($get_contacts_data)) {
@@ -44,7 +44,10 @@ if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 				$about = striptags($val->about);
 			}
 			if(isset($val->image) && !empty($val->image)) {
-				$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image;
+				$contact_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image;
+			}
+			else {
+				$contact_image = $base_image;
 			}
 			$array['contact'][$i]['name'] = $val->name;
 			$array['contact'][$i]['image'] = $final_image;
@@ -65,10 +68,13 @@ if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 				$about1 = striptags($val1->about);
 			}
 			if(isset($val1->image) && !empty($val1->image)) {
-				$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val1->image;
+				$topic_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val1->image;
+			}
+			else {
+				$topic_image = $base_image;
 			}
 			$array['topic'][$m]['name'] = $val1->name;
-			$array['topic'][$m]['image'] = $final_image;
+			$array['topic'][$m]['image'] = $topic_image;
 			$array['topic'][$m]['channel_id'] = $val1->channel_id;
 			$array['topic'][$m]['about'] = $about1;
 			$array['topic'][$m]['id'] = $val1->id;
@@ -77,9 +83,12 @@ if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 	}
 
 	 if(isset($get_user_data->logo_handle)) {
-		$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->logo_handle;
+		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->logo_handle;
 	}
-	$array['user_image'] = $final_image; 
+	else {
+		$user_image = $base_image;
+	}
+	$array['user_image'] = $user_image; 
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array);
 } else {
 	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array);
