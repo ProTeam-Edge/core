@@ -12,10 +12,10 @@ $id = $data->id;
 $get_user_sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' and sync_id !=''";
 $get_user_data = $wpdb->get_row($get_user_sql);
 
-$get_contacts_sql = 'select  topics.image_handle as logo_handle ,topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
+$get_contacts_sql = 'select  topics.logo_handle as image ,topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
 $get_contacts_data = $wpdb->get_results($get_contacts_sql);
 
-$get_topic_sql = 'select image_handle as logo_handle ,name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" and name!="" ';
+$get_topic_sql = 'select logo_handle as image ,name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" and name!="" ';
 $get_topic_data = $wpdb->get_results($get_topic_sql);
 
 $array = $response= array();
