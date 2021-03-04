@@ -75,10 +75,12 @@ if(!empty($result) || !empty($result1)) {
 			$m++;
 		}
 	}
-	if(isset($get_user_data->image_handle)) {
+	echo '<pre>';
+	print_r($get_user_data);
+	/* if(isset($get_user_data->image_handle)) {
 		$final_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->image_handle;
 	}
-	$array['user_image'] = $final_image;
+	$array['user_image'] = $final_image; */
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array);
 } else {
 	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array);
