@@ -12,9 +12,7 @@ $sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' 
 $results = $wpdb->get_row($sql);
 $topic_content = '';
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
-echo '<pre>';
-print_r($businessTypesList);
-die;
+
 $array = array();
 if(isset($results->topic_content) && !empty($results->topic_content))
 {
@@ -22,9 +20,13 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 	if(!empty($topic_content_response))
 	{
 		$job_title = $job_email = $job_url = $telephone = $faxnumber = $knowsabout = $carrier =  $description = 'None' ;
-		$carrier_id = $topic_content_response->person_hasoccupation_occupation_occupationalcategory;
+		if(isset($topic_content_response->person_hasoccupation_occupation_occupationalcategory) && !empty($topic_content_response->person_hasoccupation_occupation_occupationalcategory)){
+			$carrier_id = $topic_content_response->person_hasoccupation_occupation_occupationalcategory;
+			$carrier = $businessTypesList[$carrier_id];
+		}
+		
 		$array['person_givenname'] =$topic_content_response->person_givenname;
-		$array['carrier'] =$topic_content_response->person_hasoccupation_occupation_occupationalcategory;
+		$array['carrier'] =$carrier;
 		$array['person_familyname'] =$topic_content_response->person_familyname;
 		if(isset($topic_content_response->person_jobtitle) && !empty($topic_content_response->person_jobtitle))
 		$job_title = $topic_content_response->person_jobtitle;
