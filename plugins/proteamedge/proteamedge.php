@@ -23,10 +23,10 @@ function proteam_app() {
 	$title = $body = '';
 	if(isset($_POST['submit'])) {
 		if(isset($_POST['title'])) {
-			$title = $_POST['title']
+			$title = $_POST['title'];
 		}
 		if(isset($_POST['body'])) {
-			$body = $_POST['body']
+			$body = $_POST['body'];
 		}
 		if(!empty($register_ids)) {
 			$msg = array
