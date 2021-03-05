@@ -47,10 +47,10 @@ function proteam_app() {
 			curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
 			$result = curl_exec($ch );
 			curl_close( $ch );
-			echo '<script>Success notification sent</script>';
+			echo '<script>alert("Success notification sent")</script>';
 		}
 		else {
-			echo '<script>No device ids found.</script>';
+			echo '<script>alert("No device ids found.")</script>';
 		}
 		wp_redirect($redirect_url);
 	}
