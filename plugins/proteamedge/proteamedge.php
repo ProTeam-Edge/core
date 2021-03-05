@@ -23,16 +23,18 @@ function proteam_app() {
 	$data = $wpdb->get_results($sql);
 	?>
 	<h2>Push notifications to proteam app</h2>
+	<form method="POST">
 	<table>
 	<tr><td>Username</td><td>Email</td><td></td></tr>
 	<?php 
 	foreach($data as $vals) {
 		?>
-		<tr><td><?php echo $vals->user_login ?></td><td><?php echo $vals->user_email ?></td><td></td></tr>
+		<tr><td><?php echo $vals->user_login ?></td><td><?php echo $vals->user_email ?></td><td><input value="<?php echo $vals->device_token ?>" name="register_ids" type="checkbox"></td></tr>
 		<?php
 	}
 	?>
 	</table>
+	</form>
 	<?php
 }
 function download_schema_types() {
