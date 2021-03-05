@@ -7,6 +7,7 @@ $root = $_SERVER['DOCUMENT_ROOT'];
 global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
+$id = $data->uid;
 $device_token = $data->device_token;
 
 $update_sql= "update wp_users set device_token ='".$device_token."'  where ID =".$id." ";
