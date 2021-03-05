@@ -20,12 +20,19 @@ function firebased_push_notifications(){
 function proteam_app() {
 	$redirect_url = site_url().'/wp-admin/admin.php?page=proteam-app';
 	$firebased_key = 'AAAAAzCVXJg:APA91bHVoQrFxoia9FlJvPKFqWAR79-pS2HPjMGjMYgfvEm5juF2OAnIncUc8fL_2p6QuUJGDgtGQ2yZ6MCYzCbuWF6K-PMWw2dzCOdacXV-2_lMslS-N6JFGjUEAnRt8yotd8xNwJca';
+	$title = $body = '';
 	if(isset($_POST['submit'])) {
+		if(isset($_POST['title'])) {
+			$title = $_POST['title']
+		}
+		if(isset($_POST['body'])) {
+			$body = $_POST['body']
+		}
 		if(!empty($register_ids)) {
 			$msg = array
 			(
-				'title' 	=> 'Here is a title',
-				'body' 	=> 'Here is a title',
+				'title' 	=> $_POST['title'],
+				'body' 	=> $_POST['body'],
 			);
 			$fields = array
 			(
@@ -48,11 +55,12 @@ function proteam_app() {
 			$result = curl_exec($ch );
 			curl_close( $ch );
 			echo '<script>alert("Success notification sent")</script>';
+			wp_redirect($redirect_url);
 		}
 		else {
 			echo '<script>alert("No device ids found.")</script>';
 		}
-		wp_redirect($redirect_url);
+		
 	}
 	
 	global $wpdb;
@@ -73,9 +81,9 @@ function proteam_app() {
 	</table>
 	<table>
 		<tr><td>Notification Title</td></tr>
-		<tr><td><input required style="width:250px" type="text" name="title"></td></tr>
+		<tr><td><input value="<?php echo $title ?>" required style="width:250px" type="text" name="title"></td></tr>
 		<tr><td>Notification Body</td></tr>
-		<tr><td><textarea required rows="4" cols="50" name="body"></textarea></td></tr>
+		<tr><td><textarea required rows="4" cols="50" name="body"><?php echo $body ?></textarea></td></tr>
 	</table>
 	<input type="submit" name="submit" value="Send Notification">
 	</form>
