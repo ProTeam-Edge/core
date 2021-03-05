@@ -67,9 +67,9 @@ function proteam_app() {
 	</table>
 	<table>
 		<tr><td>Title</td></tr>
-		<tr><td><input type="text" name="title"></td></tr>
+		<tr><td><input style="width:250px" type="text" name="title"></td></tr>
 		<tr><td>Body</td></tr>
-		<tr><td><textarea name="body"></textarea></td></tr>
+		<tr><td><textarea rows="4" cols="50" name="body"></textarea></td></tr>
 	</table>
 	<input type="submit" name="submit" value="Send Notification">
 	</form>
