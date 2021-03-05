@@ -56,7 +56,7 @@ function proteam_app() {
 	<h2>Push notifications to proteam app</h2>
 	<form method="POST">
 	<table>
-	<tr><td>Username</td><td></td></tr>
+	<tr><td>Select Users</td><td></td></tr>
 	<?php 
 	foreach($data as $vals) {
 		?>
@@ -66,9 +66,9 @@ function proteam_app() {
 	?>
 	</table>
 	<table>
-		<tr><td>Title</td></tr>
+		<tr><td>Notification Title</td></tr>
 		<tr><td><input style="width:250px" type="text" name="title"></td></tr>
-		<tr><td>Body</td></tr>
+		<tr><td>Notification Body</td></tr>
 		<tr><td><textarea rows="4" cols="50" name="body"></textarea></td></tr>
 	</table>
 	<input type="submit" name="submit" value="Send Notification">
