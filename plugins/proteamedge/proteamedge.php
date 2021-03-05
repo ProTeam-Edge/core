@@ -18,7 +18,22 @@ function firebased_push_notifications(){
   
 }
 function proteam_app() {
-	echo 'tewst';
+	global $wpdb;
+	$sql = 'select * from wp_users';
+	$data = $get_results($sql);
+	?>
+	<h2>Push notifications to proteam app</h2>
+	<table>
+	<tr><td>Username</td><td>Email</td><td></td></tr>
+	<?php 
+	foreach($data as $vals) {
+		?>
+		<tr><td><?php echo $vals->user_login ?></td><td><?php echo $vals->email ?></td><td></td></tr>
+		<?php
+	}
+	?>
+	</table>
+	<?php
 }
 function download_schema_types() {
     // Initialize a file URL to the variable
