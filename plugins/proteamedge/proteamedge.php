@@ -28,7 +28,8 @@ function proteam_app() {
 		if(isset($_POST['body'])) {
 			$body = $_POST['body'];
 		}
-		if(!empty($register_ids)) {
+		if(isset($_POST['register_ids']) && !empty($_POST['register_ids'])) {
+			$register_ids = $_POST['register_ids'];
 			$msg = array
 			(
 				'title' 	=> $_POST['title'],
