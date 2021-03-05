@@ -18,6 +18,37 @@ function firebased_push_notifications(){
   
 }
 function proteam_app() {
+	$firebased_key = 'AAAAAzCVXJg:APA91bHVoQrFxoia9FlJvPKFqWAR79-pS2HPjMGjMYgfvEm5juF2OAnIncUc8fL_2p6QuUJGDgtGQ2yZ6MCYzCbuWF6K-PMWw2dzCOdacXV-2_lMslS-N6JFGjUEAnRt8yotd8xNwJca';
+	if(isset($_POST['submit'])) {
+		$msg = array
+		(
+			'title' 	=> 'Here is a title',
+			'body' 	=> 'Here is a title',
+		);
+		$fields = array
+		(
+			'registration_ids' 	=> $registrationIds,
+			'notification'			=> $msg
+		);
+		 
+		$headers = array
+		(
+			'Authorization: key=' .$firebased_key,
+			'Content-Type: application/json'
+		);
+		$ch = curl_init();
+		curl_setopt( $ch,CURLOPT_URL, 'https://fcm.googleapis.com/fcm/send' );
+		curl_setopt( $ch,CURLOPT_POST, true );
+		curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+		curl_setopt( $ch,CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+		curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+		$result = curl_exec($ch );
+		curl_close( $ch );
+
+		echo $result;
+	}
+	
 	global $wpdb;
 	$sql = 'select * from wp_users';
 	$data = $wpdb->get_results($sql);
@@ -34,6 +65,13 @@ function proteam_app() {
 	}
 	?>
 	</table>
+	<table>
+		<tr><td>Title</td></tr>
+		<tr><td><input type="text" name="title"></td></tr>
+		<tr><td>Body</td></tr>
+		<tr><td><textarea name="body"></textarea></td></tr>
+	</table>
+	<input type="submit" name="submit" value="Send Notification">
 	</form>
 	<?php
 }
