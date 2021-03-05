@@ -20,7 +20,7 @@ function firebased_push_notifications(){
 function proteam_app() {
 	global $wpdb;
 	$sql = 'select * from wp_users';
-	$data = $get_results($sql);
+	$data = $wpdb->get_results($sql);
 	?>
 	<h2>Push notifications to proteam app</h2>
 	<table>
