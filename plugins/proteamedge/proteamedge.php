@@ -68,14 +68,21 @@ function proteam_app() {
 	$sql = 'select * from wp_users where device_token !=""';
 	$data = $wpdb->get_results($sql);
 	?>
+	<script>
+	jQuery(document).ready(function(){
+		$("#select_all").click(function(){
+			$('.all_checkbox').click();
+		})
+	})
+	</script>
 	<h2>Push notifications to proteam app</h2>
 	<form method="POST">
 	<table>
-	<tr><td>Select Users</td><td></td></tr>
+	<tr><td>Select Users</td><td><input id="select_all" type="checkbox"></td></tr>
 	<?php 
 	foreach($data as $vals) {
 		?>
-		<tr><td><?php echo $vals->user_login ?></td><td><input value="<?php echo $vals->device_token ?>" name="register_ids[]" type="checkbox"></td></tr>
+		<tr><td><?php echo $vals->user_login ?></td><td><input class="all_checkbox" value="<?php echo $vals->device_token ?>" name="register_ids[]" type="checkbox"></td></tr>
 		<?php
 	}
 	?>
