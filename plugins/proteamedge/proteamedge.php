@@ -11,6 +11,12 @@
 use Brick\StructuredData\Reader\RdfaLiteReader;
 use Brick\StructuredData\HTMLReader;
 use Brick\StructuredData\Item;
+ add_shortcode('SENDER_VIEW','sender_view');
+ 
+ function sender_view() {
+	 return ;
+	 
+ }
 function download_schema_types() {
     // Initialize a file URL to the variable
     $url = 'https://schema.org/version/latest/schemaorg-current-http.jsonld';
