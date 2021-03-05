@@ -18,6 +18,7 @@ function firebased_push_notifications(){
   
 }
 function proteam_app() {
+	$redirect_url = site_url().'/wp-admin/admin.php?page=proteam-app';
 	$firebased_key = 'AAAAAzCVXJg:APA91bHVoQrFxoia9FlJvPKFqWAR79-pS2HPjMGjMYgfvEm5juF2OAnIncUc8fL_2p6QuUJGDgtGQ2yZ6MCYzCbuWF6K-PMWw2dzCOdacXV-2_lMslS-N6JFGjUEAnRt8yotd8xNwJca';
 	if(isset($_POST['submit'])) {
 		if(!empty($register_ids)) {
@@ -51,6 +52,7 @@ function proteam_app() {
 		else {
 			echo '<script>No device ids found.</script>';
 		}
+		wp_redirect($redirect_url);
 	}
 	
 	global $wpdb;
