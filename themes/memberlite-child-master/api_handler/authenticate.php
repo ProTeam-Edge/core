@@ -12,6 +12,7 @@ global $wpdb;
 $response_data = array();
 $email = $data->email;
 $password = $data->password_field;
+$device_token = $data->device_token;
 if(!empty($email) && !empty($password))
 {
 	$verify = get_user_by('email',$email );
@@ -27,6 +28,8 @@ if(!empty($email) && !empty($password))
 			$response_data['email'] = $verify->data->user_email;
 			$response_data['token'] = $hash;
 			$update_option = update_option('api_request_token_'.$verify->ID.'',$hash);
+			$update_sql= "update wp_users set device_token ='".$device_token."'  where ID =".$verify->ID." ";
+			$update_data = $wpdb->query($update_sql);
 			$response = array('success' => 1, 'message'=>'Login Success! Redirecting..','data'=>$response_data);
 		} else {
 			$response = array('success' => 0, 'message'=>'Your email and password do not match.');
