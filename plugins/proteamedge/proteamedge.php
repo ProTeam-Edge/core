@@ -22,12 +22,12 @@ function proteam_app() {
 	$firebased_key = 'AAAAAzCVXJg:APA91bHVoQrFxoia9FlJvPKFqWAR79-pS2HPjMGjMYgfvEm5juF2OAnIncUc8fL_2p6QuUJGDgtGQ2yZ6MCYzCbuWF6K-PMWw2dzCOdacXV-2_lMslS-N6JFGjUEAnRt8yotd8xNwJca';
 	$title = $body = '';
 	if(isset($_POST['submit'])) {
-		if(isset($_POST['title'])) {
+		/* if(isset($_POST['title'])) {
 			$title = $_POST['title'];
 		}
 		if(isset($_POST['body'])) {
 			$body = $_POST['body'];
-		}
+		} */
 		if(isset($_POST['register_ids']) && !empty($_POST['register_ids'])) {
 			$register_ids = $_POST['register_ids'];
 			$msg = array
