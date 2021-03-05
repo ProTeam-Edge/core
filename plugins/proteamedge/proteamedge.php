@@ -28,7 +28,7 @@ function proteam_app() {
 	<?php 
 	foreach($data as $vals) {
 		?>
-		<tr><td><?php echo $vals->user_login ?></td><td><?php echo $vals->email ?></td><td></td></tr>
+		<tr><td><?php echo $vals->user_login ?></td><td><?php echo $vals->user_email ?></td><td></td></tr>
 		<?php
 	}
 	?>
