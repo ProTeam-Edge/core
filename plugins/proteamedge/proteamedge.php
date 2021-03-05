@@ -70,8 +70,8 @@ function proteam_app() {
 	?>
 	<script>
 	jQuery(document).ready(function(){
-		$("#select_all").click(function(){
-			$('.all_checkbox').click();
+		jQuery("#select_all").click(function(){
+			jQuery('.all_checkbox').click();
 		})
 	})
 	</script>
