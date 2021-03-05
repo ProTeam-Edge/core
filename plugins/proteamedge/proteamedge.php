@@ -11,12 +11,15 @@
 use Brick\StructuredData\Reader\RdfaLiteReader;
 use Brick\StructuredData\HTMLReader;
 use Brick\StructuredData\Item;
- add_shortcode('SENDER_VIEW','sender_view');
- 
- function sender_view() {
-	 return ;
-	 
- }
+add_action('admin_menu', 'firebased_push_notifications');
+function firebased_push_notifications(){
+    add_menu_page('Proteam APP', 'Proteam APP', 'manage_options', 'proteam-app', 'proteam_app' );
+    add_submenu_page('proteam-app', 'Push Notifications Android', 'Push Notifications Android', 'manage_options', 'proteam-app' );
+  
+}
+function proteam_app() {
+	echo 'tewst';
+}
 function download_schema_types() {
     // Initialize a file URL to the variable
     $url = 'https://schema.org/version/latest/schemaorg-current-http.jsonld';
