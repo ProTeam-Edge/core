@@ -10,7 +10,7 @@ $data = json_decode($input);
 $device_token = $data->device_token;
 
 $update_sql= "update wp_users set device_token ='".$device_token."'  where ID =".$id." ";
-$update_data = $wpdb->get_row($update_sql);
+$update_data = $wpdb->query($update_sql);
 if($update_data)
 	$response = array('success' => 1, 'message'=>'Updated token successfully.','data'=>'1');
 else
