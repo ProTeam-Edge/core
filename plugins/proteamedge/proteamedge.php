@@ -58,7 +58,7 @@ function proteam_app() {
 			wp_redirect($redirect_url);
 		}
 		else {
-			echo '<script>alert("No device ids found.")</script>';
+			echo '<script>alert("No device ids found. Either device ids are not submitted to db or you have not selected any user.")</script>';
 		}
 		
 	}
