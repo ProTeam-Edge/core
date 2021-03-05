@@ -65,7 +65,7 @@ function proteam_app() {
 	}
 	
 	global $wpdb;
-	$sql = 'select * from wp_users';
+	$sql = 'select * from wp_users where device_token !=""';
 	$data = $wpdb->get_results($sql);
 	?>
 	<h2>Push notifications to proteam app</h2>
