@@ -21,9 +21,7 @@ $get_topic_data = $wpdb->get_results($get_topic_sql);
 $final_sql = 'SELECT t.id, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id = '.$id.' and t.name!=""  UNION
 SELECT t.id, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, "" AS connected_id, "" AS connected_image_handle, "" AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE t.channel_id <> "" AND p.wp_id = '.$id.' ';
 $final_data = $wpdb->get_results($final_sql);
-echo '<pre>';
-print_r($final_data);
-die;
+
 $array = $response= array();
 function striptags($string) {
 	$string = strip_tags($string);
@@ -40,7 +38,16 @@ if (strlen($string) > 50) {
 return $string;
 }
 $base_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
-if(!empty($get_contacts_data) || !empty($get_topic_data)) {
+if(!empty($final_data)) {
+		foreach($final_data as $val) {
+			$array[$val->special][$i]['name'] = $val->name;
+			$array['contact'][$i]['image'] = $val->image_handle;
+			$array['contact'][$i]['channel_id'] = $val->channel_id;
+			$array['contact'][$i]['about'] = $about;
+			$array['contact'][$i]['id'] = $val->id;
+		}
+}
+/* if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 	$i = 0;
 	if(!empty($get_contacts_data)) {
 		foreach($get_contacts_data as $val) {
@@ -86,7 +93,7 @@ if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 			$array['topic'][$m]['id'] = $val1->id;
 			$m++;
 		}
-	}
+	} */
 
 	 if(isset($get_user_data->logo_handle)) {
 		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->logo_handle;
