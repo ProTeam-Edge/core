@@ -47,10 +47,10 @@ if(!empty($final_data)) {
 				$contact_image = $base_image;
 			}
 			$array[$val->special][$i]['name'] = $val->name;
-			$array['contact'][$i]['image'] = $contact_image;
-			$array['contact'][$i]['channel_id'] = $val->channel_id;
-			$array['contact'][$i]['about'] = 'test';
-			$array['contact'][$i]['id'] = $val->id;
+			$array[$val->special][$i]['image'] = $contact_image;
+			$array[$val->special][$i]['channel_id'] = $val->channel_id;
+			$array[$val->special][$i]['about'] = 'test';
+			$array[$val->special][$i]['id'] = $val->id;
 		}
 }
 /* if(!empty($get_contacts_data) || !empty($get_topic_data)) {
