@@ -77,56 +77,6 @@ if(!empty($final_data)) {
 				}
 		}
 
-/* if(!empty($get_contacts_data) || !empty($get_topic_data)) {
-	$i = 0;
-	if(!empty($get_contacts_data)) {
-		foreach($get_contacts_data as $val) {
-			$about = 'No about to show here';
-			
-			if(isset( $val->about) && !empty( $val->about)){
-				$about = striptags($val->about);
-			}
-			if(isset($val->image) && !empty($val->image)) {
-				$contact_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image;
-			}
-			else {
-				$contact_image = $base_image;
-			}
-			$array['contact'][$i]['name'] = $val->name;
-			$array['contact'][$i]['image'] = $contact_image;
-			$array['contact'][$i]['channel_id'] = $val->channel_id;
-			$array['contact'][$i]['about'] = $about;
-			$array['contact'][$i]['id'] = $val->id;
-			$i++;
-		}
-	}
-	$count = count($array);
-	
-	if(!empty($get_topic_data)) {
-		foreach($get_topic_data as $val1) {
-			$m = 0;
-			$about1 = 'No about to show here';
-			if(isset( $val1->about) && !empty( $val1->about))
-			{
-				$about1 = striptags($val1->about);
-			}
-			if(isset($val1->image) && !empty($val1->image)) {
-				$topic_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val1->image;
-			}
-			else {
-				$topic_image = $base_image;
-			}
-			$array['topic'][$m]['name'] = $val1->name;
-			$array['topic'][$m]['image'] = $topic_image;
-			$array['topic'][$m]['channel_id'] = $val1->channel_id;
-			$array['topic'][$m]['about'] = $about1;
-			$array['topic'][$m]['id'] = $val1->id;
-			$m++;
-		}
-	} 
-}
-	*/
-
 	 if(isset($get_user_data->logo_handle)) {
 		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->logo_handle;
 	}
