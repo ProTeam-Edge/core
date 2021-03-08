@@ -49,7 +49,7 @@ if(!empty($final_data)) {
 			$array[$val->special][$i]['name'] = $val->name;
 			$array['contact'][$i]['image'] = $contact_image;
 			$array['contact'][$i]['channel_id'] = $val->channel_id;
-			$array['contact'][$i]['about'] = $about;
+			$array['contact'][$i]['about'] = 'test';
 			$array['contact'][$i]['id'] = $val->id;
 		}
 }
