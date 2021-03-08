@@ -18,9 +18,8 @@ $get_contacts_data = $wpdb->get_results($get_contacts_sql);
 $get_topic_sql = 'select logo_handle as image ,name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" and name!="" ';
 $get_topic_data = $wpdb->get_results($get_topic_sql);
 
-$final_sql = 'SELECT t.id, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id = '.$id.'
-UNION
-SELECT t.id, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, '' AS connected_id, '' AS connected_image_handle, '' AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE t.channel_id <> '' AND p.wp_id = '.$id.' ';
+$final_sql = 'SELECT t.id, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id = '.$id.' UNION
+SELECT t.id, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, "" AS connected_id, "" AS connected_image_handle, "" AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE t.channel_id <> "" AND p.wp_id = '.$id.' ';
 $final_data = $wpdb->get_results($final_sql);
 echo '<pre>';
 print_r($final_data);
