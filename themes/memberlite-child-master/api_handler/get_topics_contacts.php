@@ -54,7 +54,7 @@ if(!empty($final_data)) {
 			$array[$val->special][$i]['id'] = $val->id;
 			$i++;
 		}
-}
+
 /* if(!empty($get_contacts_data) || !empty($get_topic_data)) {
 	$i = 0;
 	if(!empty($get_contacts_data)) {
@@ -101,7 +101,9 @@ if(!empty($final_data)) {
 			$array['topic'][$m]['id'] = $val1->id;
 			$m++;
 		}
-	} */
+	} 
+}
+	*/
 
 	 if(isset($get_user_data->logo_handle)) {
 		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->logo_handle;
