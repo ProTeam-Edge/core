@@ -68,8 +68,8 @@ if(!empty($final_data)) {
 				}
 		}
 
-	 if(isset($final_sql[0]->image_handle)) {
-		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$final_sql[0]->image_handle;
+	 if(isset($final_data[0]->image_handle)) {
+		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$final_data[0]->image_handle;
 	}
 	else {
 		$user_image = $base_image;
