@@ -40,8 +40,14 @@ return $string;
 $base_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
 if(!empty($final_data)) {
 		foreach($final_data as $val) {
+			if(isset($val->image) && !empty($val->image)) {
+				$contact_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image;
+			}
+			else {
+				$contact_image = $base_image;
+			}
 			$array[$val->special][$i]['name'] = $val->name;
-			$array['contact'][$i]['image'] = $val->image_handle;
+			$array['contact'][$i]['image'] = $contact_image;
 			$array['contact'][$i]['channel_id'] = $val->channel_id;
 			$array['contact'][$i]['about'] = $about;
 			$array['contact'][$i]['id'] = $val->id;
