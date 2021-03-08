@@ -39,6 +39,7 @@ return $string;
 }
 $base_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
 if(!empty($final_data)) {
+	$i = 0;
 		foreach($final_data as $val) {
 			if(isset($val->image_handle) && !empty($val->image_handle)) {
 				$contact_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image_handle;
@@ -51,6 +52,7 @@ if(!empty($final_data)) {
 			$array[$val->special][$i]['channel_id'] = $val->channel_id;
 			$array[$val->special][$i]['about'] = 'test';
 			$array[$val->special][$i]['id'] = $val->id;
+			$i++;
 		}
 }
 /* if(!empty($get_contacts_data) || !empty($get_topic_data)) {
