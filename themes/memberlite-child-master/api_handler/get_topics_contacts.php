@@ -9,9 +9,6 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
 
-$get_user_sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' and sync_id !=''";
-$get_user_data = $wpdb->get_row($get_user_sql);
-
 $final_sql = 'SELECT t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id = '.$id.' and t.name!=""  UNION
 SELECT t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, "" AS connected_id, "" AS connected_image_handle, "" AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE t.channel_id <> "" AND p.wp_id = '.$id.' ';
 $final_data = $wpdb->get_results($final_sql);
@@ -71,8 +68,8 @@ if(!empty($final_data)) {
 				}
 		}
 
-	 if(isset($get_user_data->logo_handle)) {
-		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$get_user_data->logo_handle;
+	 if(isset($final_sql[0]->image_handle)) {
+		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$final_sql[0];
 	}
 	else {
 		$user_image = $base_image;
