@@ -64,7 +64,7 @@ if(!empty($final_data)) {
 				$array[$val->special][$increment_variable]['name'] = $val->name;
 				$array[$val->special][$increment_variable]['image'] = $contact_image;
 				$array[$val->special][$increment_variable]['channel_id'] = $val->channel_id;
-				$array[$val->special][$increment_variable]['about'] = 'test';
+				$array[$val->special][$increment_variable]['about'] = $about;
 				$array[$val->special][$increment_variable]['id'] = $val->id;
 				if($val->special=='topic'){
 					$t++;
