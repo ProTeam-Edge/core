@@ -12,12 +12,6 @@ $id = $data->id;
 $get_user_sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' and sync_id !=''";
 $get_user_data = $wpdb->get_row($get_user_sql);
 
-$get_contacts_sql = 'select  topics.logo_handle as image ,topics.about as about, topics.channel_id as channel_id, topics.special as type, users.user_login as name , users.ID as id from alpn_topics as topics inner join wp_users as users on topics.connected_id=users.ID where topics.owner_id = "'.$id.'" and topics.special = "contact" ';
-$get_contacts_data = $wpdb->get_results($get_contacts_sql);
-
-$get_topic_sql = 'select logo_handle as image ,name, about, channel_id, id from alpn_topics where owner_id = "'.$id.'" and special = "topic" and name!="" ';
-$get_topic_data = $wpdb->get_results($get_topic_sql);
-
 $final_sql = 'SELECT t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id = '.$id.' and t.name!=""  UNION
 SELECT t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, "" AS connected_id, "" AS connected_image_handle, "" AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE t.channel_id <> "" AND p.wp_id = '.$id.' ';
 $final_data = $wpdb->get_results($final_sql);
