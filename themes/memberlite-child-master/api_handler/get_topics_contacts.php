@@ -23,6 +23,7 @@ SELECT t.id, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, "" AS 
 $final_data = $wpdb->get_results($final_sql);
 echo '<pre>';
 print_r($final_data);
+die;
 $array = $response= array();
 function striptags($string) {
 	$string = strip_tags($string);
