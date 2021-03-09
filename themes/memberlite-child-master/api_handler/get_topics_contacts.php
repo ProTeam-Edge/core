@@ -8,7 +8,7 @@ global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
-
+echo 'test';
 $final_sql = 'SELECT t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id = '.$id.' and t.name!=""  UNION
 SELECT t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, "" AS connected_id, "" AS connected_image_handle, "" AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE t.channel_id <> "" AND p.wp_id = '.$id.' ';
 $final_data = $wpdb->get_results($final_sql);
