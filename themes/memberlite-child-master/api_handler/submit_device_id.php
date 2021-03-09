@@ -1,5 +1,4 @@
 <?php
-die('test');
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 include_once('../pte_config.php');
 header('Access-Control-Allow-Origin: *');
