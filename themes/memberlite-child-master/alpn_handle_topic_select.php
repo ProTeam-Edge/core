@@ -567,6 +567,9 @@ foreach ($topicTabs as $key => $value) {
 					});
 				</script>
 			";
+			echo $ownerTopicId;
+			echo '<br/>';
+			echo $subjectToken;
 			if (isset($topicClass) && $topicClass == 'record') {
 				$editButton = "<div class='pte_record_button_bar'><i id='pte_extra_edit_topic_button' class='far fa-pencil-alt pte_extra_button' title='Edit Topic' onclick='pte_edit_topic_link(\"{$newTypeKey}\");'></i></div>";
 				$tabTable =  $editButton . pte_get_create_linked_form ($ownerTopicId, $subjectToken, $newTypeKey);
