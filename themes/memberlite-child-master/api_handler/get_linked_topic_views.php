@@ -5,6 +5,7 @@ header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
 $root = $_SERVER['DOCUMENT_ROOT'];
 global $wpdb;
+$array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
@@ -12,13 +13,17 @@ $subject_token = $data->id;
 $offset = $data->offset;
 $sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT 10 OFFSET ".$offset."";
 $results = $wpdb->get_results($sql);
-echo '<pre>';
-print_r($results);
-die;
-
+if(!empty($results)) {
+	$i = 0;
+	foreach($results as $vals) {
+		$array[$i]['connected_topic_id'] =$vals->connected_topic_id;
+		$array[$i]['name'] =$vals->name;
+		$i++;
+	}
+}
 if(!empty($array))
-$response = array('success' => 1, 'message'=>'Success topics found.','data'=>$array);
+$response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
 else
-$response = array('success' => 0, 'message'=>'No contacts found.','data'=>"");
+$response = array('success' => 0, 'message'=>'No data found.','data'=>"");
 
 echo json_encode($response); 
