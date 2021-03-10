@@ -84,9 +84,13 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$array['organization_description'] =$organization_description;
 		}
 		else if($type=='pte_notedigitaldocument') {
-			echo '<pre>';
-			print_r($topic_content_response);
-			die;
+			$notedigitaldocument_headline = $notedigitaldocument_text =  'None' ;
+			if(isset($topic_content_response->notedigitaldocument_headline) && !empty($topic_content_response->notedigitaldocument_headline)) {
+				$notedigitaldocument_headline = $topic_content_response->notedigitaldocument_headline;
+			}
+			if(isset($topic_content_response->notedigitaldocument_text) && !empty($topic_content_response->notedigitaldocument_text)) {
+				$notedigitaldocument_text = $topic_content_response->notedigitaldocument_text;
+			}
 		}
 	}
 }
