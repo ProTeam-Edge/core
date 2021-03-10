@@ -9,7 +9,7 @@ $array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
-$limit = 1;
+$limit = 10;
 if( $data->current_page==0) {
 $offset = 0;
 $incremented_current_page = 1;
