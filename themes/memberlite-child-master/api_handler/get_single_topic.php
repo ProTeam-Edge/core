@@ -91,6 +91,8 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			if(isset($topic_content_response->notedigitaldocument_text) && !empty($topic_content_response->notedigitaldocument_text)) {
 				$notedigitaldocument_text = $topic_content_response->notedigitaldocument_text;
 			}
+			$array['notedigitaldocument_text'] =$notedigitaldocument_text;
+			$array['notedigitaldocument_headline'] =$notedigitaldocument_headline;
 		}
 	}
 }
