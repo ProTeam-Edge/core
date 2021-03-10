@@ -10,7 +10,7 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
 $type = $data->type;
-$subject_token = $data->subject_token;
+
 
 $sql = "SELECT * from alpn_topics where id = ".$id."";
 $results = $wpdb->get_row($sql);
