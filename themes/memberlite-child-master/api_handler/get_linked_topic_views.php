@@ -9,9 +9,17 @@ $array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
-$subject_token = $data->subject_token;
-$offset = $data->offset;
-$sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT 1 OFFSET ".$offset."";
+$limit = 1;
+if( $data->current_page==0) {
+$offset = 0;
+$current_page = 1;
+}
+else {
+	
+}
+
+
+$sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT ".$limit." OFFSET ".$offset."";
 $results = $wpdb->get_results($sql);
 $count = count($results);
 
@@ -28,6 +36,7 @@ if(!empty($results)) {
 
 $array['rows_count'] = $count;
 $array['total_count'] = $results1->total;
+$array['current_page'] = $current_page;
 if(!empty($array))
 $response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
 else
