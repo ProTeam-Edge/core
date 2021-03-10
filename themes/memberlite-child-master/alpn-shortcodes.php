@@ -419,14 +419,24 @@ function usernetwork_shortcode($attr) {
 		break;
 
 		case 'chat':
+
+			$audioOnOffHtml = "<div id='alpn_chat_audio_on_off' onclick='event.stopPropagation(); var data = {\"name\": \"pte_join_audio_current_channel\"}; pte_message_chat_window(data);'><img id='pte_chat_on_off_button' class='pte_chat_title_button' src='{$rootUrl}dist/assets/button_off.png' title='Turn on Audio'><div id='alpn_chat_audio_on_off_text'>OFF</div></div>";
+
+			$audioMuteUnmuteHtml = "<div id='alpn_chat_audio_mute' onclick='event.stopPropagation(); var data = {\"name\": \"pte_mute_current_channel\"}; pte_message_chat_window(data);'><img id='pte_chat_mute_button' class='pte_chat_title_button' src='{$rootUrl}dist/assets/button_mute_off.png' title='UnMute Audio'></div>";
+
 			$html =
 				"<div id='alpn_chat_panel' class='alpn_chat_panel'>
 				 	<div id='alpn_chat_title' class='alpn_chat_title'>
-						<div id='alpn_chat_title_left' class='alpn_chat_title_left'>
+						<div id='alpn_chat_title_title'>Conversations&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<span id='pte_chat_topic_name'>--</span></div>
+						<div id='alpn_chat_stats'>
+							<div id='alpn_chat_chat'>
+								Chat  &nbsp;&nbsp;<span id='pte_chat_selected_unread'>--</span>&nbsp; / &nbsp;<span id='pte_chat_total_unreads'>--</span>
+							</div>
+							<div id='alpn_chat_audio'>
+								<div id='alpn_chat_audio_status_area'>Audio  &nbsp;&nbsp;<span id='pte_active_audio_channels'>--</span></div>{$audioOnOffHtml}{$audioMuteUnmuteHtml}
+							</div>
 						</div>
-						<div id='alpn_chat_title_right' class='alpn_chat_title_right'>
-						</div>
-				 	</div>
+					</div>
 				 	<iframe id='alpn_chat_body' class='alpn_chat_body'></iframe>
 				</div>";
 		break;

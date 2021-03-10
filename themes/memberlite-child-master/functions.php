@@ -17,6 +17,8 @@
 include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 // verify added nonce before submission for wpforms
+use PascalDeVink\ShortUuid\ShortUuid;
+
 function wpf_dev_process_before( $entry, $form_data ) {
 
 	$passed = 0;
@@ -333,6 +335,8 @@ add_filter("pmpro_checkout_confirm_password", "__return_false");  //remove email
 
 function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets up default topics and sample data.
 	global $wpdb;
+	$shortUuid = new ShortUuid();
+
 	$now = date ("Y-m-d H:i:s", time());
 
   $defaultTopicData = pte_create_default_topics($user_id, true);   //with sample data
@@ -340,12 +344,14 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 	$samplePlace1Id = $defaultTopicData['sample_place_id_1'];
 	$samplePlace2Id = $defaultTopicData['sample_place_id_2'];
 	$sampleOrganization1Id = $defaultTopicData['sample_organization_id_1'];
+	$samplePerson1Id = $defaultTopicData['sample_person_id_1'];
+	$samplePerson1EmailId = $defaultTopicData['sample_person_email_id_1'];  //route
 
-
-
+	$userEmailRouteId = $shortUuid->uuid4();
 	$entry = array(
 		'id' => $coreUserFormId,  //source user template type  Using custom TT
 		'new_owner' => $user_id,
+		"create_email_route" => $userEmailRouteId,
 		'fields' => array()
 	);
 	$newUserTopicId = alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
@@ -381,6 +387,13 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 	);
 	pte_manage_topic_link('add_edit_topic_bidirectional_link', $linkData, $subjectToken);
 
+	//send Personalized Email Attachment to the new Topic
+	alpn_log('New User Sample Data -- Send some Emails here');
+	alpn_log($samplePerson1Id);
+	alpn_log($samplePerson1EmailId);
+	alpn_log($userEmailRouteId);
+
+
 }
 add_action('user_register', 'sync_alpn_user_info_on_register');
 
@@ -398,6 +411,7 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	//images
 	// MORE check
 	//WP Forms definitions in Posts
+	//
 
 	global $wpdb;
 
@@ -441,7 +455,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
   $returnDetails = array();
 
   alpn_log("alpn_handle_topic_add_edit");
-//  alpn_log($fields);
+  //alpn_log($fields);
 
   $fieldsAll = $fields;
   $row_id = $userEmail = '';
@@ -520,8 +534,26 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 				$last_record_id = array();
 				$topicMeta = array();
 
-				if (isset($mappedFields['person_email']) && $mappedFields['person_email']) {
-          $altId = $mappedFields['person_email'];  //Email
+				if (isset($mappedFields['person_email']) && $mappedFields['person_email']) {  //person only
+					//Check for contact only dupes and dissallow
+					$altId = $mappedFields['person_email'];  //Email
+					if (!$row_id && ($topicTypeSpecial == 'contact' || $topicTypeSpecial == 'user')) {     //
+						$existingPersonWithEmail = $wpdb->get_results(
+							$wpdb->prepare("SELECT id, name, owner_id, dom_id FROM alpn_topics WHERE alt_id = %s AND (special = 'contact' OR special = 'user') AND owner_id = %d", $altId, $userId)
+						 );
+						if (isset($existingPersonWithEmail[0])) { //pass data via user_meta. I can't figure out how to get data through wpforms.
+							$existingUserLink = "<span class='pte_topic_type_check_title_link' onclick='event.stopPropagation(); alpn_mission_control(\"select_by_mode\", \"{$existingPersonWithEmail[0]->dom_id}\")'>{$existingPersonWithEmail[0]->name}</span>";
+							$last_record_id['id'] = $userId;
+							$errorData = array(
+								"pte_error" => true,
+								"pte_error_id" => 100,
+								"pte_error_message" => "A contact with this unique email address already exists. Please follow this link: {$existingUserLink}"
+							);
+			        $last_record_id['last_return_to'] = json_encode($errorData);
+							$wpdb->replace( 'alpn_user_metadata', $last_record_id );
+							return;
+						}
+					}
 				}
 
         if ($topicTypeSpecial == 'user') { //User
@@ -530,22 +562,38 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 
 				//TODO Topic Meta. Network: user-editable status: prospect, active, trusted (need better name). Topic: type.
 				$topicData = array("alt_id" => $altId, "modified_date" => $now, "owner_id" => $userId, "topic_type_id" => $topicTypeId, "special" => $topicTypeSpecial, "name" => $topicName, "about" => $topicAbout, "topic_content" => json_encode($mappedFields), "topic_meta" => json_encode($topicMeta));
-
 				//TODO topics: lotsa other stats.
 
 				if ($row_id) { //EDIT
 
-          if ($topicSchemaKey == "Person") {  //Recalc the pretty first letter icon placeholder but only if the image isn't an icon yet. TODO any way to know this without hitting db again?
-            $userRow = $wpdb->get_results(
-              $wpdb->prepare("SELECT image_handle FROM alpn_topics WHERE id = %d", $row_id)
-             );
-            if (isset($userRow[0])) {
-              $currentImageHandle = $userRow[0]->image_handle;
-              if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
-                $topicData['image_handle'] = "pte_icon_letter_" . strtolower(substr($mappedFields['person_givenname'], 0, 1)) . ".png";
-              }
-            }
-          }
+					$pteMeta = array();  //Name and About are fields on the Topic. So if connected, we need to use the connected person's data. If connected, it won't blow away these. Prefer a more dynamic mechanism
+					if (isset($fields[0])) {
+						$pteMeta = json_decode($fields[0], true);
+						$connectedId = $pteMeta["connected_id"];
+						if ($connectedId) {
+							unset($topicData['name']);
+							unset($topicData['about']);
+							}
+					}
+					//handle image handle ans sync_id.
+					$syncId = "";
+					$topicRow = $wpdb->get_results(
+						$wpdb->prepare("SELECT image_handle, sync_id FROM alpn_topics WHERE id = %d", $row_id)
+					 );
+					if (isset($topicRow[0])) {
+						$tRow = $topicRow[0];
+						$currentImageHandle = $tRow->image_handle;
+						$syncId = $tRow->sync_id;
+						if ($topicSchemaKey == "Person") {
+							if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
+								$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . strtolower(substr($mappedFields['person_givenname'], 0, 1)) . ".png";
+							}
+						} else { //Reguler Topic
+							if ($currentImageHandle == "" ) {
+								$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . strtolower(substr($topicName, 0, 1)) . ".png";
+							}
+						}
+					}
 					$topicData['last_op'] = "edit";
 					$whereClause['id'] = $row_id;
 					$wpdb->update( 'alpn_topics', $topicData, $whereClause );
@@ -558,20 +606,40 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
             pte_manage_user_connection($topicData);
           }
           if ($topicTypeSpecial == 'user') { //update user
-
-            $data['user_id'] = $userId;
+						$data['sync_id'] = $syncId;
+						$data['owner_id'] = $userId;
+						$data['user_id'] = $userId;
+						$data['full_name'] = $topicName;
+            $data['image_handle'] = $currentImageHandle;
             $data['topic_id'] = $row_id;
             $data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
             pte_manage_cc_groups("update_user", $data);
 
+						// update Topic Name and About for all connected
+						$nameAboutData = array(
+							"name" => $topicName,
+							"about" => $topicAbout
+						);
+						$whereClause = array(
+							"connected_id" => $userId
+						);
+						$wpdb->update( 'alpn_topics', $nameAboutData, $whereClause );
+
             //update_user_meta( $userId, "pte_user_network_id",  $row_id); //SH  TODO probably don't need this so I commented it. Because once ID, always id.
-            $data = array(
-              "sync_type" => "return_create_sync_id",
-              "sync_payload" => array()
-            );
-            pte_manage_user_sync($data);
+            // $data = array(
+            //   "sync_type" => "return_create_sync_id",
+            //   "sync_payload" => array()
+            // );
+            // pte_manage_user_sync($data);
           }
 
+					if ($topicTypeSpecial == 'topic') { //update topic
+						$data['owner_id'] = $userId;
+            $data['image_handle'] = $currentImageHandle;
+            $data['topic_id'] = $row_id;
+            $data['topic_name'] = $topicName;
+            pte_manage_cc_groups("update_channel", $data);
+					}
 				} else { //add
 
 					if (isset($entry['icon_image']) && $entry['icon_image']) {
@@ -581,6 +649,10 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 					}
 					if (isset($entry['logo_image']) && $entry['logo_image']) {
 						$topicData['logo_handle'] = $entry['logo_image'];
+					}
+
+					if (isset($entry['create_email_route']) && $entry['create_email_route']) {  //When adding a user  .. I suppose special=user on add only happens first time.
+							$topicData['email_route_id'] = $entry['create_email_route'];
 					}
 
           $data = array();
@@ -613,18 +685,21 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
           }
 
           if ($topicTypeSpecial == 'user') { //Add user but don't create CHAT channels or CHAT members -- JIT
-
-            $data['owner_id'] = $userId;
-            $data['topic_id'] = $row_id;
-            $data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
-            pte_manage_cc_groups("add_user", $data);
-						update_user_meta( $userId, "pte_user_network_id",  $row_id);
-            $data = array(
+						$data = array(
               "sync_type" => "return_create_sync_id",
               "sync_user_id" => $userId,
               "sync_payload" => array()
             );
-            pte_manage_user_sync($data);
+            $syncId = pte_manage_user_sync($data);
+
+						$data['sync_id'] = $syncId;
+            $data['owner_id'] = $userId;
+						$data['user_id'] = $userId;
+            $data['topic_id'] = $row_id;
+						$data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
+            $data['full_name'] = $topicName;
+            pte_manage_cc_groups("add_user", $data);
+						update_user_meta( $userId, "pte_user_network_id",  $row_id);
 				}
       }
 				//Update last record metadata for UI/UX purposes

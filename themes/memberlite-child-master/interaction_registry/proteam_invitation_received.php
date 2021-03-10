@@ -108,10 +108,6 @@ function pte_get_registry_proteam_invitation_received() {
               if ($buttonOperation == 'decline') {
                 alpn_log('Interaction Received Handle Decline.');
                 //Save and File Away
-
-
-
-
                 return;
               }
 
