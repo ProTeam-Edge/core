@@ -11,7 +11,7 @@ $data = json_decode($input);
 $id = $data->id;
 $subject_token = $data->subject_token;
 $offset = $data->offset;
-$sql = "SELECT * from alpn_topics_linked_view where id = ".$id."";
+$sql = "SELECT * from alpn_topics where id = ".$id."";
 $results = $wpdb->get_row($sql);
 $array = array();
 if(isset($results->topic_content) && !empty($results->topic_content))
