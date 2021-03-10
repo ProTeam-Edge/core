@@ -11,7 +11,7 @@ $data = json_decode($input);
 $id = $data->id;
 $subject_token = $data->subject_token;
 $offset = $data->offset;
-$sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT 1 OFFSET ".$offset."";
+$sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT 10 OFFSET ".$offset."";
 $results = $wpdb->get_results($sql);
 
 $sql1 = "SELECT COUNT(*) as total from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."'";
