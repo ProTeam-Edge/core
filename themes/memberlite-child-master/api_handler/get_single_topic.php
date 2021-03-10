@@ -45,7 +45,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			if(isset($topic_content_response->place_url) && !empty($topic_content_response->place_url)) 
 				$place_url = $topic_content_response->place_url;
 			if(isset($topic_content_response->place_description) && !empty($topic_content_response->place_description)) 
-				$place_description = $topic_content_response->place_description;
+			$place_description = $topic_content_response->place_description;
 			$array['place_name'] =$place_name;
 			$array['place_streetaddress'] =$place_streetaddress;
 			$array['place_addresslocality'] =$place_addresslocality;
@@ -57,8 +57,31 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$array['place_description'] =$place_description; 
 		}
 		else if($type=='pte_organization') { 
-			echo '<pre>';
-			print_r($topic_content_response);
+			$organization_name = $organization_telephone = $organization_faxnumber = $organization_email = $organization_url = $organization_description =  'None' ;
+			if(isset($topic_content_response->organization_name) && !empty($topic_content_response->organization_name)) {
+				$organization_name = $topic_content_response->organization_name;
+			}
+			if(isset($topic_content_response->organization_telephone) && !empty($topic_content_response->organization_telephone)) {
+				$organization_telephone = $topic_content_response->organization_telephone;
+			}
+			if(isset($topic_content_response->organization_faxnumber) && !empty($topic_content_response->organization_faxnumber)) {
+				$organization_faxnumber = $topic_content_response->organization_faxnumber;
+			}
+			if(isset($topic_content_response->organization_email) && !empty($topic_content_response->organization_email)) {
+				$organization_email = $topic_content_response->organization_email;
+			}
+			if(isset($topic_content_response->organization_url) && !empty($topic_content_response->organization_url)) {
+				$organization_url = $topic_content_response->organization_url;
+			}
+			if(isset($topic_content_response->organization_description) && !empty($topic_content_response->organization_description)) {
+				$organization_description = $topic_content_response->organization_description;
+			}
+			$array['organization_name'] =$organization_name;
+			$array['organization_telephone'] =$organization_telephone;
+			$array['organization_faxnumber'] =$organization_faxnumber;
+			$array['organization_email'] =$organization_email;
+			$array['organization_url'] =$organization_url;
+			$array['organization_description'] =$organization_description;
 		}
 	}
 }
