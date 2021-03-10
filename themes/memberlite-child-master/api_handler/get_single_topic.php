@@ -86,6 +86,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		else if($type=='pte_notedigitaldocument') {
 			echo '<pre>';
 			print_r($topic_content_response);
+			die;
 		}
 	}
 }
