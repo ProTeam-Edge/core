@@ -15,7 +15,7 @@ $sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subje
 $results = $wpdb->get_results($sql);
 
 $sql1 = "SELECT COUNT(*) as total from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."'";
-$results1 = $wpdb->get_results($sql1);
+$results1 = $wpdb->get_row($sql1);
 if(!empty($results)) {
 	$i = 0; 
 	foreach($results as $vals) {
@@ -24,6 +24,8 @@ if(!empty($results)) {
 		$i++;
 	}
 }
+echo '<pre>';
+print_r($results1);
 $array['count'] = $results1->total;
 if(!empty($array))
 $response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
