@@ -590,7 +590,7 @@ foreach ($topicTabs as $key => $value) {
 				$tabTable =  $editButton . pte_get_create_linked_form ($ownerTopicId, $subjectToken, $newTypeKey);
 			} else {
 				$wpTable = do_shortcode("[wpdatatable id=8 var1='{$ownerTopicId}' var2='{$subjectToken}']");
-				$tabTable = "<div class='pte_tab_table_wrapper'>" .  $wpTable . "</div>";
+				$tabTable = "test<div class='pte_tab_table_wrapper'>" .  $wpTable . "</div>";
 				$tabTable = str_replace("table_{$tableCounter}", "table_tab_{$key}", $tabTable);
 				$tabTable = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $tabTable);
 				$tableCounter += 2;
@@ -601,7 +601,7 @@ foreach ($topicTabs as $key => $value) {
 	$tabPanels .= "
 		<div id='tabcontent_{$key}' data-tab-id='{$key}' class='pte_tabcontent'>
 			{$topicSelector}
-			{$tabTable}
+		tst	{$tabTable}
 			{$initializeTable}
 		<div>
 		{$tabHtml}
