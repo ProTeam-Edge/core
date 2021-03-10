@@ -9,7 +9,7 @@ $array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
-$subject_token = $data->id;
+$subject_token = $data->subject_token;
 $offset = $data->offset;
 $sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT 10 OFFSET ".$offset."";
 $results = $wpdb->get_results($sql);
