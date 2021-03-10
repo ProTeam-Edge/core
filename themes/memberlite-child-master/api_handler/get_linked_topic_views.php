@@ -17,10 +17,18 @@ $incremented_current_page = 1;
 else {
 	$incremented_current_page = $data->current_page+1;
 	$offset = $data->current_page*$limit;
+	$incremented_offset = $incremented_current_page*$limit;
 	
 }
 
 $subject_token = $data->subject_token;
+
+
+$incremented_sql = "SELECT COUNT(*) as total from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT ".$limit." OFFSET ".$incremented_offset."";
+$incremented_data = $wpdb->get_row($incremented_sql);
+$incremented_count = $incremented_data->total;
+
+
 $sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT ".$limit." OFFSET ".$offset."";
 $results = $wpdb->get_results($sql);
 $count = count($results);
@@ -39,6 +47,7 @@ if(!empty($results)) {
 $array['rows_count'] = $count;
 $array['total_count'] = $results1->total;
 $array['limit'] = $limit;
+$array['incremented_count'] = $incremented_count;
 $array['current_page'] = $incremented_current_page;
 if(!empty($array))
 $response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
