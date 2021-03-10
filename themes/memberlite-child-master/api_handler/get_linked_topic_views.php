@@ -16,7 +16,7 @@ $incremented_current_page = 1;
 }
 else {
 	$incremented_current_page = $data->current_page+1;
-	$offset = $increment_current_page*$limit;
+	$offset = $data->current_page*$limit;
 	
 }
 
