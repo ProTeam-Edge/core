@@ -26,7 +26,7 @@ if(!empty($results)) {
 	}
 }
 
-$array['rows_count'] = $results1->total;
+$array['rows_count'] = $count;
 $array['total_count'] = $results1->total;
 if(!empty($array))
 $response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
