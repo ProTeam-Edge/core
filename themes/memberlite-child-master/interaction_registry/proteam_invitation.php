@@ -160,9 +160,9 @@ function pte_get_registry_proteam_invitation() {
               //add user to chat group if they are a member. For the Topic.
               if ($requestData['connected_contact_status'] == 'connected_member') {   //add them as long as they are members.
                 $data = array(
-                  'owner_wp_id' => $requestData['owner_id'],
+                  'owner_id' => $requestData['owner_id'],
                   'topic_id' => $requestData['topic_id'],
-                  'user_id' => $requestData['connected_network_id']
+                  'user_id' => $requestData['connected_id']
                 );
                 pte_manage_cc_groups("add_member", $data);
               }

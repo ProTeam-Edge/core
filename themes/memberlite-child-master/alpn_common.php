@@ -585,25 +585,29 @@ function pte_topic_type_copy ($sourceTopicTypeId, $newOwnerId) {
     return false;
   }
 
-  function pte_create_topic($formId, $ownerId, $data, $iconImage = '', $logoImage = '') {
+  function pte_create_topic($formId, $ownerId, $data, $iconImage = '', $logoImage = '', $emailRoute = '') {
     alpn_log('pte_create_topic');
     $entry = array(
       'id' => $formId,  //source user template type  Using custom TT
       'owner_id' => $ownerId,
       'fields' => $data,
       'icon_image' => $iconImage,
-      'logo_image' => $logoImage
+      'logo_image' => $logoImage,
+      'create_email_route' => $emailRoute
     );
     return alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
   }
 
 
 function pte_create_default_topics($newOwnerId, $createSampleData = false) {
+
   global $wpdb;
+  $shortUuid = new ShortUuid();
   $topicState = "active";
   $coreUserFormId = "";
   $results = $wpdb->get_results($wpdb->prepare("SELECT * FROM alpn_topic_types WHERE topic_state = %s", $topicState));
   $topicTypeMap = array();
+
   foreach ($results as $key => $value) {   //prepare unique new ids for forthcoming tts Must include all required mappings for dupe.
     $newUuid = pte_get_short_id();
     $typeKey = $value->type_key;
@@ -633,12 +637,12 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
             0 => "{}",
             4 => "Miranda",
             2 => "Chang",
-            6 => "Fiduciary",
+            6 => "Fiduciary (sample)",
             5 => "38",
             1 => "adipiscing@eratVivamusnisi.org",
             10 => "https://linkedin.com/arbella32",
             8 => "(873) 800-0488",
-            3 => "(373) 235-8276",
+            3 => "(408) 357-2824",
             7 => "#aginglife",
             9 => "Expert in the field."
           );
@@ -648,12 +652,12 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
             0 => "{}",
             4 => "Rudyard",
             2 => "Lambert",
-            6 => "Geriatrician",
+            6 => "Geriatrician (sample)",
             5 => "40",
             1 => "laoreet@Suspendisse.org",
             10 => "https://linkedin.com/lambertr01",
             8 => "(778) 275-6832",
-            3 => "(357) 293-7409",
+            3 => "(408) 357-2824",
             7 => "#concierge #medical",
             9 => "Primary contact of Suspendisse medical team."
           );
@@ -665,7 +669,7 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
             0 => "{}",
             4 => "Harriet",
             2 => "Kalinski",
-            6 => "Customer",
+            6 => "Customer (sample)",
             5 => "41",
             1 => "hkalinski12@xfinity.com",
             10 => "",
@@ -674,7 +678,8 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
             7 => "#caregiving #meds",
             9 => "Sweet lady requires regular help with meds. Has 24/7 care."
           );
-          $samplePerson1Id = pte_create_topic($value->form_id, $newOwnerId, $samplePerson1, $iconImage);
+          $samplePerson1EmailId = $shortUuid->uuid4();
+          $samplePerson1Id = pte_create_topic($value->form_id, $newOwnerId, $samplePerson1, $iconImage, "", $samplePerson1EmailId);
         }
         if ($createSampleData && $value->type_key == $topicTypeMap['core_organization']) {
           $iconImage = '91d3a2bf8d404858a4799b9f78850ba8.png';
@@ -683,10 +688,10 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
             0 => "{}",
             7 => "Acme Corporation",
             5 => "(619) 555-1233",
-            3 => "(619) 345-5533",
+            3 => "(408) 357-2824",
             2 => "info@acmecorp.cc",
             8 => "https://acmecorp.cc",
-            6 => "Maker of fine rockets and associated gear."
+            6 => "Maker of fine rockets and associated gear. (sample)"
           );
           $sampleOrganization1Id = pte_create_topic($value->form_id, $newOwnerId, $sampleOrganization1, $iconImage, $logoImage);
         }
@@ -695,7 +700,7 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
           $sampleGeneral1 = array(
             0 => "{}",
             2 => "White Paper Research",
-            1 => "A place to organize and discuss our findings and recommendations."
+            1 => "A place to organize and discuss our findings and recommendations. (sample)"
           );
           pte_create_topic($value->form_id, $newOwnerId, $sampleGeneral1, $iconImage);
         }
@@ -708,8 +713,8 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
             2 => "CA",
             3 => "96192",
             6 => "(619) 555-3957",
-            5 => "(619) 555-3850",
-            7 => "Main Residence",
+            5 => "(408) 357-2824",
+            7 => "Main Residence (sample)",
             9 => ""
           );
           $samplePlace1Id = pte_create_topic($value->form_id, $newOwnerId, $samplePlace1);
@@ -721,8 +726,8 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
             2 => "CA",
             3 => "96193",
             6 => "(619) 555-9385",
-            5 => "(619) 555-6854",
-            7 => "Headquarters",
+            5 => "(408) 357-2824",
+            7 => "Headquarters (sample)",
             9 => ""
           );
           $samplePlace2Id = pte_create_topic($value->form_id, $newOwnerId, $samplePlace2);
@@ -733,7 +738,9 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
       'core_user_form_id' => $coreUserFormId,
       'sample_place_id_1' => $samplePlace1Id,
       'sample_place_id_2' => $samplePlace2Id,
-      'sample_organization_id_1' => $sampleOrganization1Id
+      'sample_organization_id_1' => $sampleOrganization1Id,
+      'sample_person_id_1' => $samplePerson1Id,
+      'sample_person_email_id_1' => $samplePerson1EmailId
     );
 }
 
@@ -1283,6 +1290,7 @@ function get_network_contact_topics($networkContactId) {
 function get_routing_email_addresses() {
 
   global $wpdb_readonly;
+  $domainName = PTE_HOST_DOMAIN_NAME;
   $emailAddresses = '';
   $userInfo = wp_get_current_user();
   $ownerId = $userInfo->data->ID;
@@ -1300,7 +1308,7 @@ function get_routing_email_addresses() {
       $topicName = $value->name;
 
       $dottedName = str_replace(array(', ', ',', "'", '"'), array('.', '.', "", ""), $topicName);
-      $emailAddress = "{$dottedName} - ProTeam Edge Topic <{$value->email_route_id}@files.proteamedge.com>";
+      $emailAddress = "{$dottedName} - ProTeam Edge Topic <{$value->email_route_id}@files.{$domainName}>";
 
       $emailAddresses .= "<li class='pte_important_topic_scrolling_list_item'>";
       $emailAddresses .= "<div class='pte_scrolling_item_left' title='Copy Email Address to Clipboard'><div class='pte_pstn_topic_list pte_topic_link' onclick='pte_topic_link_copy_string(\"Email\", \"{$emailAddress}\");'><i class='far fa-copy' style='margin-right: 5px;'></i>" . $topicName  . "</div></div>";
@@ -1564,7 +1572,8 @@ function pte_manage_topic_link($operation, $requestData, $subjectToken = 'pte_ex
       	$wpdb->prepare("SELECT id FROM alpn_topic_links WHERE owner_topic_id_1 = %s AND owner_topic_id_2 = %s AND subject_token = %s", $topicId, $connectionLinkTopicId, $subjectToken)
        );
        if (!isset($results[0])) {  //new insert
-         $rowData = array(
+
+         $rowData = array(      //TODO
            'owner_id_1' => $ownerId,
            'owner_topic_id_1' => $topicId,
            'owner_id_2' => $connectedId,
@@ -1911,13 +1920,47 @@ function pte_manage_user_sync($data){   ///Must be a user and have a wpid
   }
 
   switch ($syncType) {
+
+    case "update_all_sync_ids":
+
+      $results = $wpdb->get_results("SELECT id, owner_id, sync_id, name FROM alpn_topics where special = 'user'");
+
+      foreach($results as $value) {
+        pp("Handled " . $value->name);
+
+        if ($value->sync_id && $value->owner_id) {
+
+          try {
+            $sync_map = $twilio->sync->v1->services($syncServiceId)
+                                         ->syncMaps($value->sync_id)
+                                         ->update(array(
+                                           "uniqueName" => $value->owner_id
+                                         ));
+
+          } catch (Exception $e) {
+              $syncId = "Fail";
+              $response = array(
+                  'message' =>  $e->getMessage(),
+                  'code' => $e->getCode(),
+                  'error' => $e
+              );
+              alpn_log($response);
+          }
+        }
+      }
+
+      return;
+
+    break;
     case "return_create_sync_id":
     alpn_log("return_create_sync_id...");
     if (!$syncId) {
             try {
               $sync_map = $twilio->sync->v1->services($syncServiceId)
                                            ->syncMaps
-                                           ->create();
+                                           ->create(array(
+                                             "uniqueName" => $syncUserId
+                                           ));
               $syncId = $sync_map->sid;
               $topicData = array(
                 "sync_id" => $syncId
@@ -1997,7 +2040,7 @@ function pte_manage_user_connection($data){
   //TODO Handle exceptions, etc.
 
   alpn_log('pte_manage_user_connection...');
-  alpn_log($data);
+  //alpn_log($data);
 
   global $wpdb;
 
@@ -2009,6 +2052,7 @@ function pte_manage_user_connection($data){
 
     $contactId = $contactInfo->ID;
     $contactNetworkId = get_user_meta( $contactId, 'pte_user_network_id', true ); //Contact Topic ID
+
     $userId = isset($data['owner_wp_id']) ? $data['owner_wp_id'] : '';
     $userInfo = get_user_by('id', $userId);
     $userEmail =  $userInfo->data->user_email;
@@ -2032,8 +2076,11 @@ function pte_manage_user_connection($data){
 
            if (isset($user[0])) {
              $userTopicId = $user[0]->id;
+
              $data = array(
-         			'topic_id' => $userTopicId
+              'owner_id' => $userId,
+         			'topic_id' => $userTopicId,
+              "contact_id" => $contactId
            		);
          		$newChannelId = pte_manage_cc_groups("get_create_channel", $data);     //create a channel for contact. Adds contact. Stores channel for contact
 
@@ -2050,8 +2097,9 @@ function pte_manage_user_connection($data){
 
              $data = array(  //add contact to channel
               'topic_id' => $userTopicId,
-              'user_id' => $contactId
-            );
+              'user_id' => $contactId,
+              'owner_id' => $userId
+              );
             pte_manage_cc_groups("add_member", $data);
 
              //contact
@@ -2062,7 +2110,7 @@ function pte_manage_user_connection($data){
                'channel_id' => $newChannelId
              );
              $whereClause = array(
-               'id' => $results[0]->id
+               'id' => $connectedTopicId
              );
              $wpdb->update( 'alpn_topics', $topicData, $whereClause );
          }
@@ -2096,31 +2144,77 @@ function pte_manage_cc_groups($operation, $data) {
   }
 
   $topicId = isset($data['topic_id']) ? $data['topic_id'] : "";
-  $userId = isset($data['user_id']) ? $data['user_id'] : "";   //TODO This is contact topic ID, not wpidz
+  $userId = isset($data['user_id']) ? $data['user_id'] : "";   //WP ID CONNECTED ID
+  $syncId = isset($data['sync_id']) ? $data['sync_id'] : "";   //WP ID CONNECTED ID
   $topicName = isset($data['topic_name']) && $data['topic_name'] ? $data['topic_name'] : "New";
-  $imageHandle = isset($data['image_handle']) && $data['image_handle'] ? $data['image_handle'] : "pte_icon_letter_" . strtolower(substr($topicName, 0, 1));
-  $ownerId = (isset($data['owner_id']) && $data['owner_id']) ? $data['owner_id'] : $data['user_id'];
+  $fullName = isset($data['full_name']) && $data['full_name'] ? $data['full_name'] : "";
+  $imageHandle = isset($data['image_handle']) && $data['image_handle'] ? $data['image_handle'] : false;
+  $ownerId = (isset($data['owner_id']) && $data['owner_id']) ? $data['owner_id'] : "";
+  $contactId = (isset($data['contact_id']) && $data['contact_id']) ? $data['contact_id'] : false;
+  $channelIdToDelete = (isset($data['channel_id']) && $data['channel_id']) ? $data['channel_id'] : false;
 
 	switch ($operation) {
 
 //TODO Exceptions - rooms there that didn't get deleted causing issues,
-
+    case "update_channel_image":  //update channel with new name accounting for simple and shared topics.
+      alpn_log("UPDATING CHANNEL IMAGE");
+      $channelId = pte_manage_cc_groups("get_create_channel", $data);   //get or create for the first time.
+      $channelAttributes = array(
+        'image_handle' => $imageHandle
+      );
+      $channel = $twilio->chat->v2->services($chatServiceId)
+      ->channels($channelId)
+      ->update(array(
+          'attributes' => json_encode($channelAttributes)
+        )
+      );
+    break;
+    case "update_channel":  //update channel with new name accounting for simple and shared topics.
+      alpn_log("UPDATING CHANNEL");
+      $channelId = pte_manage_cc_groups("get_create_channel", $data);   //get or create for the first time.
+      $channelAttributes = array(
+        'image_handle' => $imageHandle,
+        'topic_owner_id' => $ownerId
+      );
+      $channel = $twilio->chat->v2->services($chatServiceId)
+      ->channels($channelId)
+      ->update(array(
+          'friendlyName' => $topicName,
+          'attributes' => json_encode($channelAttributes)
+        )
+      );
+    break;
 		case "get_create_channel":
 
     $channelId = "";
     if ($topicId && $ownerId) {
       $results = $wpdb->get_results(
-      	$wpdb->prepare("SELECT channel_id FROM alpn_topics WHERE id = %s", $topicId)
+      	$wpdb->prepare("SELECT channel_id, name, image_handle FROM alpn_topics WHERE id = %s", $topicId)
        );
       if (isset($results[0])) {
         $channelId = $results[0]->channel_id;
+        $channelName = $results[0]->name;
+        $imageHandle = $results[0]->image_handle;
         if (!$channelId) {
           try {
+            $channelAttributes = array(
+              'image_handle' => $imageHandle,
+              'topic_owner_id' => $ownerId
+            );
+            if ($contactId) {
+              $nameAttributes = array(
+                'owner_id' => $ownerId,
+                'contact_id' => $contactId
+              );
+              $channelName = json_encode($nameAttributes);
+            }
             $channel = $twilio->chat->v2->services($chatServiceId)
               ->channels
               ->create(array(
                 'type' => 'private',
-                'friendlyName' => $topicId
+                'friendlyName' => $channelName,
+                'attributes' => json_encode($channelAttributes),
+                'uniqueName' => $topicId
               ));
             $channelId = $channel->sid;
             $member = $twilio->chat->v2  //Add owner to new channel
@@ -2149,6 +2243,10 @@ function pte_manage_cc_groups($operation, $data) {
         }
       } else {
         //TODO HANDLE ERROR -- did not find Topic
+
+
+
+
       }
     } else {
       //TODO HANDLE ERROR -- No TopicID Found
@@ -2160,6 +2258,7 @@ function pte_manage_cc_groups($operation, $data) {
           ->channels($channelId)
           ->fetch();
       } catch (Exception $e) {
+
           $response = array(
               'message' =>  $e->getMessage(),
               'code' => $e->getCode(),
@@ -2167,6 +2266,7 @@ function pte_manage_cc_groups($operation, $data) {
           );
 
           if ($topicId) {
+            alpn_log('CLEARING CHANNEL');
             $topicData = array(
               "channel_id" => ""
             );
@@ -2200,7 +2300,7 @@ function pte_manage_cc_groups($operation, $data) {
             );
             alpn_log('add_member');
             alpn_log($response);
-            alpn_log('Not sure why this is happening -- should be deleted as a member');
+            alpn_log('Not sure why this is happening -- should be deleted as a member -- but shouldnt be a problem');
         }
     } else {   //TODO Handle error
 
@@ -2254,6 +2354,30 @@ function pte_manage_cc_groups($operation, $data) {
     return false;
     break;
 
+    case "delete_channel_by_channel_id":
+      alpn_log("About to delete channel by channel ID...");
+      if ($channelIdToDelete) {
+        try {
+          $channel = $twilio->chat->v2
+            ->services($chatServiceId)
+            ->channels($channelIdToDelete)
+            ->delete();
+            return true;
+        } catch (Exception $e) {
+            $response = array(
+                'message' =>  $e->getMessage(),
+                'code' => $e->getCode(),
+                'error' => $e
+            );
+            alpn_log('delete_channel_by_channel_id');
+            alpn_log($response);
+        }
+      } else { //TODO handle not channelID.
+
+
+      }
+      return false;
+    break;
 
 		case "delete_channel":
 
@@ -2295,9 +2419,11 @@ function pte_manage_cc_groups($operation, $data) {
         $user = $twilio->chat->v2->services($chatServiceId)
           ->users
           ->create($ownerId);
-        $imageHandle = "pte_icon_letter_" . strtolower(substr($topicName, 0, 1)) . ".png";  //TODO this is unused because of the change. Track down how to get an image for their chat
+        $imageHandle = "pte_icon_letter_n.png";  //TODO for new
         $attributes = json_encode(array(
-          "image_handle" => $imageHandle
+          "image_handle" => $imageHandle,
+          "full_name" => $fullName,
+          "sync_id" => $syncId
         ));
         $updates = array(
                         "attributes" => $attributes,
@@ -2320,17 +2446,55 @@ function pte_manage_cc_groups($operation, $data) {
       }
 
 		break;
+    case "update_all_user_attributes":
+
+      $results = $wpdb->get_results("SELECT id, owner_id, sync_id, name, image_handle FROM alpn_topics where special = 'user'");
+
+      foreach($results as $value) {
+
+        pp("Handled " . $value->name);
+
+        if ($value->owner_id) {
+
+          try {
+            $attributes = json_encode(array(
+              "image_handle" => $value->image_handle,
+              "full_name" => $value->name,
+              "sync_id" => $value->sync_id
+            ));
+            $updates = array(
+                            "attributes" => $attributes
+                           );
+
+            $user = $twilio->chat->v2
+              ->services($chatServiceId)
+              ->users($value->owner_id)
+              ->update($updates);
+              alpn_log("Updated user... " . $ownerId);
+
+          } catch (Exception $e) {
+              $response = array(
+                  'message' =>  $e->getMessage(),
+                  'code' => $e->getCode(),
+                  'error' => $e
+              );
+              alpn_log($response);
+          }
+        }
+      }
+
+    break;
 
     case "update_user":
-
-    $imageHandle = "pte_icon_letter_" . strtolower(substr($topicName, 0, 1)) . ".png";  //TODO this is unused because of the change. Track down how to get an image for their chat
-    $attributes = json_encode(array(
-      "image_handle" => $imageHandle
-    ));
-    $updates = array(
-                    "attributes" => $attributes,
-                    "friendlyName" => $topicName
-                   );
+      $attributes = json_encode(array(
+        "image_handle" => $imageHandle,
+        "full_name" => $fullName,
+        "sync_id" => $syncId
+      ));
+      $updates = array(
+                      "attributes" => $attributes,
+                      "friendlyName" => $topicName
+                     );
 
     $user = $twilio->chat->v2
       ->services($chatServiceId)

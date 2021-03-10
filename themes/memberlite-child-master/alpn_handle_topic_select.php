@@ -8,11 +8,29 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 // $webhookData = json_decode($webhook, true);
 // pp($webhookData);
 
+//pp(get_user_meta( '40', 'pte_user_network_id', true ));
+
+$data = array(
+  "sync_type" => "update_all_sync_ids",
+  "sync_payload" => array()
+);
+//pte_manage_user_sync($data);
+
+
+
+//pte_manage_cc_groups("update_all_user_attributes", array());
+
+
+
+$data = array(  //add contact to channel
+ 'channel_id' => 'CHd72168c48bc942c0bce2d3906665e07c'
+ );
+//pte_manage_cc_groups("delete_channel_by_channel_id", $data);
 
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
-
+$domainName = PTE_HOST_DOMAIN_NAME;
 
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
@@ -261,12 +279,12 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 if ($topicEmailRoute || $topicFaxRoute) {
 	$topicFaxRouteFormatted = pte_format_pstn_number($topicFaxRoute);
 	$dottedName = str_replace(array(', ', ',', "'", '"'), array('.', '.', "", ""), $topicName);
-	$emailAddress = "{$dottedName} - ProTeam Edge Topic <{$topicEmailRoute}@files.proteamedge.com>";
+	$emailAddress = "{$dottedName} - ProTeam Edge Topic <{$topicEmailRoute}@files.{$domainName}>";
 	$emailRouteHtml = $topicEmailRoute ? "<div title='Copy Email Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Email\", \"{$emailAddress}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Email</div>" : "";
 	$faxHtml = $topicFaxRoute ? "<div title='Copy Fax Number Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Fax Number\", \"{$topicFaxRoute}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Fax: {$topicFaxRouteFormatted}</div>" : "";
 	$routes = "
 			<div class='pte_route_container'>
-				<div class='pte_route_container_title'>Receive Files to this Topic</div>
+				<div class='pte_route_container_title'>Route Files to this Topic by</div>
 				{$emailRouteHtml}
 				{$faxHtml}
 			</div>
@@ -281,15 +299,15 @@ $importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte
 
 $settingsAccordion = "
 	{$imageTitle}
-	<button id='pte_topic_logo_accordion' class='pte_accordion' style='display: {$showLogoAccordion};' title='Change {$friendlyLogoNameHtml}'>{$friendlyLogoNameHtml}</button>
-	<div class='pte_panel' data-height='325px' style='display: {$showLogoAccordion}; '>
-		<div id='pte_profile_logo_selector' style='height: 100%; width: 100%;'></div>
-		<div id='pte_profile_logo_crop' style='height: 100%; width: 100%; display: none;'></div>
-	</div>
 	<button id='pte_topic_photo_accordion' class='pte_accordion'  style='display: {$showIconAccordian};' title='Change Personal Topic Icon'>{$profilePicTitle}</button>
-	<div class='pte_panel pte_extra_margin_after' data-height='325px' style='display: {$showIconAccordian};' >
+	<div class='pte_panel' data-height='325px' style='display: {$showIconAccordian};' >
 		<div id='pte_profile_image_selector' style='height: 100%; width: 100%;'></div>
 		<div id='pte_profile_image_crop' style='height: 100%; width: 100%; display: none;'></div>
+	</div>
+	<button id='pte_topic_logo_accordion' class='pte_accordion' style='display: {$showLogoAccordion};' title='Change {$friendlyLogoNameHtml}'>{$friendlyLogoNameHtml}</button>
+	<div class='pte_panel pte_extra_margin_after' data-height='325px' style='display: {$showLogoAccordion}; '>
+		<div id='pte_profile_logo_selector' style='height: 100%; width: 100%;'></div>
+		<div id='pte_profile_logo_crop' style='height: 100%; width: 100%; display: none;'></div>
 	</div>
 	{$interActionImportanceTitle}
 	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showImportanceAccordions};' title='Adjust Contact Importance'>VIP Contacts</button>

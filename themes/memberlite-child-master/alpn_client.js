@@ -250,7 +250,7 @@ function handleButtonState(toState, tabId, tButton) {
 	}
 }
 
-function pte_extra_control_table(domId){
+function pte_extra_control_table(domId){   //actually element
 
 	var uid = domId.data('uid');
 	var extraSelectedRow =  domId.closest('tr');
@@ -401,8 +401,9 @@ function alpn_handle_extra_table(extraKey) {
 				}
 			}
 		}
+
 		cellObj.parent().click(function(){
-				var domId = jQuery(this).find('div:first');
+			var domId = jQuery(this).find('div:first');
 				pte_extra_control_table(domId);
 		});
 		 pte_topic_link = jQuery("div#tabcontent_" + extraKey + " #" + pte_topic_link_id);
@@ -1304,6 +1305,30 @@ function pte_handle_remove_list_item(item) {
 	}
 }
 
+
+function pte_get_active_video_rooms() {
+
+	var security = specialObj.security;
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'pte_get_twilio_video_rooms.php',
+		type: 'POST',
+		data: {
+				"security": security
+		},
+		dataType: "json",
+		success: function(json) {
+			json.name = "pte_video_rooms_initial_list";
+			pte_message_chat_window(json)
+		},
+		error: function() {
+			console.log('Failed Getting Twilio Video Rooms...');
+		}
+	});
+
+
+}
+
 function pte_add_to_important_topics(type, data) {
 
 	var topicId = 0;
@@ -1686,6 +1711,39 @@ function pte_interactions_table() {
 	}
 }
 
+function pte_select_new_topic_from_id(topicId, channelOwnerId = 0) {
+	console.log('Selecting Topic From ID...', topicId, channelOwnerId);
+
+		var security = specialObj.security;
+		jQuery.ajax({
+			url: alpn_templatedir + 'alpn_handle_get_topic_channel.php',
+			type: 'GET',
+			data: {
+				index_type: "topic_id",
+				channel_owner_id: channelOwnerId,
+				record_id: topicId,
+				security: security,
+			},
+			dataType: "json",
+			success: function(json) {
+				console.log('RETURNING FROM GET CHANNEL...');
+				console.log(json);
+				if (typeof json[0] != "undefined") {
+					var domId = json[0].dom_id;
+					alpn_mission_control('select_by_mode', domId);
+				} else {
+					console.log('Topic Not Found...');
+				}
+
+			},
+			error: function() {
+				console.log('problem getting domId');
+			//TODO
+			}
+		})
+
+}
+
 function pte_handle_select_template (formId, editorMode) {
 	var security = specialObj.security;
 	jQuery.ajax({
@@ -1900,6 +1958,9 @@ function alpn_handle_vault_table() {
 
 function pte_start_chat(indexType, recordId){
 	//TODO start chat on topic changes but not mode changes.
+
+	console.log('STARTING CHAT...');
+
 	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'alpn_handle_get_topic_channel.php',
@@ -1911,10 +1972,13 @@ function pte_start_chat(indexType, recordId){
 		},
 		dataType: "json",
 		success: function(json) {
+
 			if (typeof json[0] != "undefined") {
 				var data = json[0];
 				data['name'] = 'pte_chat_message';
 				pte_message_chat_window(data);
+
+
 			} else {
 				console.log("Topic ID for Chat Not Found..." + recordId);
 			}
@@ -1926,36 +1990,11 @@ function pte_start_chat(indexType, recordId){
 	})
 }
 
-function pte_update_chat_title(event) {
-
-	var data = event.data.activeChannelMeta;
-	var name = data.name;
-
-	if (name == "pte_channel_started") {
-		var topicName = data.topic_name;
-		var imageUrl = ppCdnBase + (data.profile_handle ? data.profile_handle : data.image_handle);
-	} else {    //pte_channel_stop
-		var topicName = "";
-		var imageUrl = "";
-	}
-
-//TODO pte_audio_active class pulse animation on icon fa-times-circle
-
-	jQuery("#alpn_chat_title_left").html("Chat:<i id='' class='far fa-comments' style='margin-left: 20px; margin-right: 5px;'></i>23");
-	jQuery("#alpn_chat_title_right").html("Audio:<i id='' class='far fa-user-friends' style='margin-left: 20px; margin-right: 5px;'></i>3<span style='margin-left: 40px;'></span><i id='' class='far fa-plus-circle' title='Join Audio Channel' style=''></i><span style='margin-left: 20px;'><i id='' class='far fa-microphone' style='' title='Mute Audio'></i></span>");
-}
-
 function	pte_message_chat_window(data){
 		var name = data.name;
 		document.querySelector( "#alpn_chat_body" ).contentWindow.postMessage({ name, data }, "*" );
 }
 
-function pte_handle_chat_window_message(event){
-
-	console.log("Chat: Received message...");
-	console.log(event);
-
-}
 
 function alpn_moveActivitySection(){ //Repositions alerts under topics on HD or less.
 
@@ -1984,23 +2023,67 @@ function alpn_resizeAll(){
 	alpn_moveActivitySection();
 }
 
-function alpn_resizeChat() { //Centered on the work
+function alpn_resizeChat() { //Centered on the window
 
 	if (pte_external == false) {
-		var containerLeft = jQuery('#alpn_main_container').position().left;
-		var containerWidth = jQuery('#alpn_main_container').parent().width();
+		var windowWidth = jQuery(window).width();
 		var panelWidth = jQuery('#alpn_chat_panel').width();
-		var panelLeft = containerLeft + ((containerWidth - panelWidth) / 2);
+		var panelLeft = (windowWidth - panelWidth) / 2;
+
+		// var containerLeft = jQuery('#alpn_main_container').position().left;
+		// var containerWidth = jQuery('#alpn_main_container').parent().width();
+		// var panelWidth = jQuery('#alpn_chat_panel').width();
+		// var panelLeft = containerLeft + ((containerWidth - panelWidth) / 2);
 
 		jQuery("#alpn_chat_panel").css('left', panelLeft);
 	}
 }
 
-function pte_handle_sync(data){
-	console.log("Handling Sync...");
-	//console.log(data);
+function pte_send_sync(activeChannelMeta){
+	var notificationMember = activeChannelMeta.notifications_member_sync_id;
+	if (typeof syncClient == "object") {
+			//console.log("Syncing to ", notificationMember);
+				syncClient.map(notificationMember).then(function(map){
+					map.update('pte_video_room_event_notifications', activeChannelMeta)
+				  .then(function(item) {
+				    //console.log('Map Item update() successful, new value:', item.value);
+				  })
+				  .catch(function(error) {
+				    console.error('Map Item update() failed', error);
+  				});
+				});
+	}
+}
+
+function pte_handle_sync(data, item = false){
+
+	  //console.log("Handling Sync");
+
+	if (item) { //Migrate to this. I think. How it is supposed to work.
+
+		var itemObj = item.item;
+		var itemKey = itemObj.key;
+		var itemData = itemObj.value;
+
+		// console.log(itemObj);
+		// console.log(itemKey);
+		// console.log(itemData);
+
+
+		switch(itemKey) {
+			case 'pte_video_room_event_notifications':
+				data.name = itemKey;
+				pte_message_chat_window(data);
+				return; //no need to go further
+			break;
+		}
+	}
+
 	var syncSection = data.sync_section;
 	var syncPayload = data.sync_payload;
+
+	//console.log("SYNCING SECTION - ", syncSection);
+
 	switch(syncSection) {
 		case 'proteam_card_update':
 		 var topicStates = {'10': "Added", '20': "Invite Sent", '30': "Joined", '40': "Linked", '80': "Email Sent", '90': "Declined"};
@@ -2073,23 +2156,71 @@ function pte_handle_sync(data){
 			wpDataTables.table_interactions.fnFilterClear();
 		break;
 	}
-	console.log(syncPayload);
+	//console.log(syncPayload);
 }
 
 ( function () {
 	window.addEventListener( "message", ( event ) => {
+		// console.log("RECEIVED MESSAGE FROM CHILD...");
+		// console.log(event);
 		var name = event.data.name;
+		var activeChannelMeta = event.data.activeChannelMetaSnapshot;
+		var channelName;
+
 		switch(name) {
-			case 'pte_channel_started':
-				pte_update_chat_title(event);
-				return;
+
+			case 'pte_send_notification_by_sync':
+				pte_send_sync(activeChannelMeta);
+			break;
+			case 'pte_start_audio_wait':
+				var waitIndicator = alpn_templatedir + "dist/assets/spinner_blue.gif";
+				jQuery('#pte_chat_on_off_button').attr('src', waitIndicator);
+				jQuery("#alpn_chat_audio_on_off_text").html("");
+			break;
+			case 'pte_start_microphone_wait':
+				var waitIndicator = alpn_templatedir + "dist/assets/spinner_blue.gif";
+				jQuery('#pte_chat_mute_button').attr('src', waitIndicator);
+			break;
+			case 'pte_select_topic':
+				console.log("SELECTING NEW TOPIC...");
+				pte_select_new_topic_from_id(activeChannelMeta.topic_id, activeChannelMeta.channel_owner_id);
 			break;
 			case 'pte_channel_stop':
-				pte_update_chat_title(event);
+				jQuery('#alpn_chat_audio_on_off').css({"opacity": "0.6", "pointer-events": "none"});
+				jQuery("#pte_chat_topic_name").html('--');
+				jQuery("#pte_chat_selected_unread").html('--');
 				return;
 			break;
-			case 'pte_chat_message':
-				pte_handle_chat_window_message(event);
+			case 'pte_channel_started':
+				jQuery('#alpn_chat_audio_on_off').css({"opacity": "1", "pointer-events": "auto"});
+
+				if (alpn_user_id == activeChannelMeta.topic_owner_id) {
+					jQuery("#pte_chat_topic_name").html(activeChannelMeta.topic_name);
+				} else {
+					channelName = activeChannelMeta.topic_name + " (" + activeChannelMeta.topic_owner_givenname + ")"
+					jQuery("#pte_chat_topic_name").html(channelName);
+				}
+
+				if (activeChannelMeta.message_count * 1) {
+					var unreadCount = activeChannelMeta.message_count;
+				} else {
+					var unreadCount = "--";
+				}
+				jQuery("#pte_chat_selected_unread").html(unreadCount);
+
+				return;
+			break;
+			case 'pte_audio_started':
+				jQuery("#pte_chat_on_off_button").attr("src", alpn_templatedir + "dist/assets/button_on.png");
+				jQuery("#alpn_chat_audio_on_off_text").html("ON").css("color", "yellow");
+			break;
+			case 'pte_audio_ended':
+				jQuery("#pte_chat_on_off_button").attr("src", alpn_templatedir + "dist/assets/button_off.png");
+				jQuery("#alpn_chat_audio_on_off_text").html("OFF").css("color", "#444");
+
+			break;
+			case 'pte_update_chat_total':
+				jQuery("#pte_chat_total_unreads").html(activeChannelMeta.chat_total_unreads);
 				return;
 			break;
 			case 'open_file':
@@ -2137,6 +2268,8 @@ jQuery( document ).ready( function(){
 
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 
+	pte_get_active_video_rooms();
+
 	if (history.scrollRestoration) {
 	  history.scrollRestoration = 'manual';
 	}
@@ -2156,10 +2289,10 @@ jQuery( document ).ready( function(){
 	window.onpopstate = function (event) {  //Handle Back Button
 		var state = event.state;
 		if (state) {
-				console.log('Back Button Pressed...');
+				//console.log('Back Button Pressed...');
 				pte_back_button = true;
 				state.back_button = true;
-				console.log(state);
+				//console.log(state);
 				pte_handle_interaction_link(state);     //fromBackButton is true so this won't be pushed on history again.
 		}
 	}
@@ -2200,7 +2333,7 @@ jQuery( document ).ready( function(){
 						userContext = {identity: data.identity};
 
 						console.log('Twilio');
-						console.log(userContext);
+						console.log(data);
 
 						if (typeof syncClient != "object") {
 							syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
@@ -2210,16 +2343,18 @@ jQuery( document ).ready( function(){
 						  map.on('itemAdded', function(item) {
 								var descriptor = item.item.descriptor;
 								var data = descriptor.data;
-								pte_handle_sync(data);
+								pte_handle_sync(data, item);
 						  });
 						  map.on('itemUpdated', function(item) {
 								var descriptor = item.item.descriptor;
 								var data = descriptor.data;
-								pte_handle_sync(data);
+								pte_handle_sync(data, item);
 						  });
 						});
 
 						syncClient.on('tokenAboutToExpire', function() {
+							console.log("CLIENT TOKEN ABOUT TO EXPIRE");
+
 							jQuery.getJSON(alpn_templatedir +  'chat/token.php', {
 								device: 'browser'
 							}, function(data1) {
@@ -2229,13 +2364,16 @@ jQuery( document ).ready( function(){
 						});
 
 						syncClient.on('connectionStateChanged', function(state) {
+							console.log("SYNC CLIENT -- CONNECTION STATE CHANGED");
 				      if (state != 'connected') {
-								console.log("Sync Client Connected");
+								//console.log("Sync Client Connected");
 				      } else {
-								console.log("Sync Client Not Connected");
+								//console.log("Sync Client Not Connected");
 
 				      }
 				    });
+
+
 				});
 
 				if (jQuery('#alpn_section_alert .wpdt-c :input')[2]) {
@@ -2356,7 +2494,7 @@ jQuery( document ).ready( function(){
 
 						jQuery('#alpn_chat_panel').click(function() {
 							if (jQuery('#alpn_chat_panel').css('bottom') == '0px') {
-									jQuery('#alpn_chat_panel').css('bottom', '-355px');
+									jQuery('#alpn_chat_panel').css('bottom', '-405px');
 									pte_chat_window_open = false;
 									console.log('closing...');
 							} else {
@@ -3371,7 +3509,7 @@ function pte_show_message(color, type, message, handler, parms) {
 	}
 
 	if (type == 'ok') {
-		typeStr += "";
+		typeStr += "<div class='pte_message_confirmation_container' title='Click/Tap to Clear '></div>";
 	}
 
 	var msToDraw = 0;
@@ -5520,7 +5658,7 @@ function alpn_handle_select(uniqueId) {
 // For AJAX with wpforms, how to handle callback of success or failure. TODO -- implement Failed
 
 function bindWpformsAjaxSuccess (table_profile_id, callBackFunc) {
-			console.log(jQuery('#wpforms-form-' + table_profile_id).bind('wpformsAjaxSubmitSuccess', callBackFunc));
+			jQuery('#wpforms-form-' + table_profile_id).bind('wpformsAjaxSubmitSuccess', callBackFunc);
 }
 
 function bindWpformsAjaxFailed (table_profile_id, callBackFunc) {
@@ -5552,7 +5690,8 @@ function alpn_handle_topic_done(formId){
 					},
 		success: function(topic) {
 
-			console.log(topic);
+			//console.log(topic);
+
 			//Main Topic
 			tabId = 0;
 			topicDomId = topic.dom_id;
@@ -5565,6 +5704,12 @@ function alpn_handle_topic_done(formId){
 			connectedTopicDomId = '';
 
 			topicReturnTo = JSON.parse(topic.last_return_to);
+
+			if (typeof topicReturnTo.pte_error != "undefined" && topicReturnTo.pte_error) {
+				pte_show_message('red', 'ok', topicReturnTo.pte_error_message);
+				return;
+			}
+
 			var returnHandler = (typeof topicReturnTo['return_to'] != "undefined" && topicReturnTo['return_to']) ? (topicReturnTo['return_to'].toString().substring(0,5) == "core_") ? true : false : false;
 
 			jQuery.ajax({
