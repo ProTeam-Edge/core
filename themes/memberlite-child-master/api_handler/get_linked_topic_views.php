@@ -13,6 +13,7 @@ $subject_token = $data->subject_token;
 $offset = $data->offset;
 $sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT 10 OFFSET ".$offset."";
 $results = $wpdb->get_results($sql);
+$count = count($results);
 
 $sql1 = "SELECT COUNT(*) as total from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."'";
 $results1 = $wpdb->get_row($sql1);
@@ -25,7 +26,8 @@ if(!empty($results)) {
 	}
 }
 
-$array['count'] = $results1->total;
+$array['rows_count'] = $results1->total;
+$array['total_count'] = $results1->total;
 if(!empty($array))
 $response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
 else
