@@ -21,7 +21,7 @@ else {
 }
 
 $subject_token = $data->subject_token;
-$sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT ".$limit." OFFSET ".$offset."";
+echo $sql = "SELECT * from alpn_topics_linked_view where owner_id = ".$id." and subject_token = '".$subject_token."' LIMIT ".$limit." OFFSET ".$offset."";
 $results = $wpdb->get_results($sql);
 $count = count($results);
 
