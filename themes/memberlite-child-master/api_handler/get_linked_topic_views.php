@@ -24,8 +24,7 @@ if(!empty($results)) {
 		$i++;
 	}
 }
-echo '<pre>';
-print_r($results1);
+
 $array['count'] = $results1->total;
 if(!empty($array))
 $response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
