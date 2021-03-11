@@ -8,7 +8,7 @@ global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
-$sql = "SELECT * from alpn_topics where owner_id = ".$id." and special = 'user' and sync_id !=''";
+$sql = "SELECT * from alpn_topics where id = ".$id."";
 $results = $wpdb->get_row($sql);
 $topic_content = '';
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
