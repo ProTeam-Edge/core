@@ -165,8 +165,8 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$array[0]['label'] ='Name';
 			$array[0]['value'] =$name;
 	
-			$array[9]['label'] ='About';
-			$array[9]['value'] =$about;
+			$array[1]['label'] ='About';
+			$array[1]['value'] =$about;
 		}
 	}
 }
