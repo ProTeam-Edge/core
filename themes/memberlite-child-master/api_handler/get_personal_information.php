@@ -48,16 +48,36 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		{
 		$description = $topic_content_response->person_description;
 		}
-		$array[0]['Firstname'] =$topic_content_response->person_givenname;
-		$array[1]['Occupation'] =$carrier;
-		$array[2]['Lastname'] =$topic_content_response->person_familyname;
-		$array[3]['Title'] =$job_title;
-		$array[4]['Email'] =$job_email;
-		$array[5]['Linked-In'] =$job_url;
-		$array[6]['Telephone'] =$telephone;
-		$array[7]['Fax Number'] =$faxnumber;
-		$array[8]['#interests'] =$knowsabout;
-		$array[9]['About'] =$description;
+		$array[0]['label'] ='Firstname';
+		$array[0]['value'] =$topic_content_response->person_givenname;
+		$array[1]['label'] ='Lastname';
+		$array[1]['value'] =$topic_content_response->person_familyname;
+		
+		$array[2]['label'] ='Title';
+		$array[2]['value'] =$job_title;
+		
+		$array[3]['label'] ='Occupation';
+		$array[3]['value'] =$carrier;
+	
+		$array[4]['label'] ='Email';
+		$array[4]['value'] =$job_email;
+		
+		$array[5]['label'] ='Linked-In';
+		$array[5]['value'] =$job_url;
+		
+		$array[6]['label'] ='Telephone';
+		$array[6]['value'] =$telephone;
+		
+		$array[7]['label'] ='Fax Number';
+		$array[7]['value'] =$faxnumber;
+		
+		$array[8]['label'] ='#interests';
+		$array[8]['value'] =$knowsabout;
+	
+		$array[9]['label'] ='About';
+		$array[9]['value'] =$description;
+		
+
 	}
 }
 if(!empty($array))
