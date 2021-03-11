@@ -155,9 +155,18 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$array['notedigitaldocument_headline'] =$notedigitaldocument_headline;
 		}
 		else if($type=='core_general') {
-			echo '<pre>';
-			print_r($topic_content_response);
-			die;
+			$name = $about =  'None' ;
+			if(isset($topic_content_response->thing_name) && !empty($topic_content_response->thing_name)) {
+				$name = $topic_content_response->thing_name;
+			}
+			if(isset($topic_content_response->thing_description) && !empty($topic_content_response->thing_description)) {
+				$about = $topic_content_response->thing_description;
+			}
+			$array[0]['label'] ='Name';
+			$array[0]['value'] =$name;
+	
+			$array[9]['label'] ='About';
+			$array[9]['value'] =$about;
 		}
 	}
 }
