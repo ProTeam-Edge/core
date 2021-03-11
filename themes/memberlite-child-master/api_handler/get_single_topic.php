@@ -12,7 +12,7 @@ $id = $data->id;
 $type = $data->type;
 
 
-$sql = "SELECT * from alpn_topics where id = ".$id."";
+$sql = "SELECT topic_content from alpn_topics where id = ".$id."";
 $results = $wpdb->get_row($sql);
 $array = array();
 if(isset($results->topic_content) && !empty($results->topic_content))
@@ -164,7 +164,6 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			}
 			$array[0]['label'] ='Name';
 			$array[0]['value'] =$name;
-	
 			$array[1]['label'] ='About';
 			$array[1]['value'] =$about;
 		}
