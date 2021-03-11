@@ -25,9 +25,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$carrier = $businessTypesList[$carrier_id];
 		}
 		
-		$array['person_givenname'] =$topic_content_response->person_givenname;
-		$array['occupation'] =$carrier;
-		$array['person_familyname'] =$topic_content_response->person_familyname;
+		
 		if(isset($topic_content_response->person_jobtitle) && !empty($topic_content_response->person_jobtitle))
 		$job_title = $topic_content_response->person_jobtitle;
 		if(isset($topic_content_response->person_email) && !empty($topic_content_response->person_email))
@@ -50,13 +48,16 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		{
 		$description = $topic_content_response->person_description;
 		}
-		$array['person_jobtitle'] =$job_title;
-		$array['person_email'] =$job_email;
-		$array['person_url'] =$job_url;
-		$array['person_telephone'] =$telephone;
-		$array['person_faxnumber'] =$faxnumber;
-		$array['person_knowsabout'] =$knowsabout;
-		$array['person_description'] =$description;
+		$array[0]['Firstname'] =$topic_content_response->person_givenname;
+		$array[1]['Occupation'] =$carrier;
+		$array[2]['Lastname'] =$topic_content_response->person_familyname;
+		$array[3]['Title'] =$job_title;
+		$array[4]['Email'] =$job_email;
+		$array[5]['Linked-In'] =$job_url;
+		$array[6]['Telephone'] =$telephone;
+		$array[7]['Fax Number'] =$faxnumber;
+		$array[8]['#interests'] =$knowsabout;
+		$array[9]['About'] =$description;
 	}
 }
 if(!empty($array))
