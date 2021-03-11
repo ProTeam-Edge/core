@@ -154,6 +154,11 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$array['notedigitaldocument_text'] =$notedigitaldocument_text;
 			$array['notedigitaldocument_headline'] =$notedigitaldocument_headline;
 		}
+		else if($type=='core_genral') {
+			echo '<pre>';
+			print_r($topic_content_response);
+			die;
+		}
 	}
 }
 
