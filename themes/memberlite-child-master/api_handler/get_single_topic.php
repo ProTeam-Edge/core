@@ -11,7 +11,7 @@ $data = json_decode($input);
 $id = $data->id;
 $type = $data->type;
 
-
+$businessTypesList = get_custom_post_items('pte_profession', 'ASC');
 $sql = "SELECT topic_content from alpn_topics where id = ".$id."";
 $results = $wpdb->get_row($sql);
 $array = array();
