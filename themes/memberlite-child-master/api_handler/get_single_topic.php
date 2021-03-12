@@ -169,7 +169,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		}
 		else {
 			$i = 0;
-			$decode = json_decode($results->alpn_topics_linked_view);
+			$decode = json_decode($results->connected_topic_type_meta);
 			echo '<pre>';
 			print_r($decode);
 			foreach($topic_content_response as $keys=>$vals) {
