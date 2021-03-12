@@ -80,7 +80,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		$array[9]['value'] =$description;
 		
 		}
-		if($type=='pte_place') {
+		else if($type=='pte_place') {
 			$place_name = $place_streetaddress = $place_addresslocality = $place_addressregion = $place_postalcode = $place_telephone = $place_faxnumber =  $place_url = $place_description = 'None' ;
 			
 			if(isset($topic_content_response->place_name) && !empty($topic_content_response->place_name))
@@ -167,7 +167,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$array[1]['label'] ='About';
 			$array[1]['value'] =$about;
 		}
-		/* else {
+		else {
 			$i = 0;
 			foreach($topic_content_response as $keys=>$vals) {
 				if($keys!="pte_meta")
@@ -188,7 +188,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 				$i++;
 				}
 			}
-		} */
+		} 
 	}
 }
 
