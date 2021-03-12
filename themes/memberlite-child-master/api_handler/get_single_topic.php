@@ -173,7 +173,13 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 				if($keys!="pte_meta")
 				{
 				$array[$i]['label']=$keys;
-				$array[$i]['value']=$vals;
+				if(empty($vals)) {
+					$fval = 'None';
+				}
+				else {
+					$fval = $vals;
+				}
+				$array[$i]['value']=$fval;
 				$i++;
 				}
 			}
