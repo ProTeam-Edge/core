@@ -12,7 +12,7 @@ $id = $data->id;
 $type = $data->type;
 
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
-$sql = "SELECT topic_content from alpn_topics where id = ".$id."";
+$sql = "SELECT a.topic_content,b.connected_topic_type_meta from alpn_topics as a inner join alpn_topics_linked_view as b on a.id=b.owner_topic_id where a.id = ".$id." ";
 $results = $wpdb->get_row($sql);
 $array = array();
 if(isset($results->topic_content) && !empty($results->topic_content))
@@ -169,7 +169,11 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		}
 		else {
 			$i = 0;
+			$decode = json_decode($topic_content_response->alpn_topics_linked_view);
+			echo '<pre>';
+			print_r($decode);
 			foreach($topic_content_response as $keys=>$vals) {
+				
 				if($keys!="pte_meta")
 				{
 					
