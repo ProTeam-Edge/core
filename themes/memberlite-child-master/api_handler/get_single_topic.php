@@ -168,9 +168,12 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$array[1]['value'] =$about;
 		}
 		else {
-			echo '<pre>';
-			print_r($topic_content_response);
-			die;
+			$i = 0;
+			foreach($topic_content_response as $keys=>$vals) {
+				$array[$i]['label']=$keys;
+				$array[$i]['value']=$vals;
+				$i++;
+			}
 		}
 	}
 }
