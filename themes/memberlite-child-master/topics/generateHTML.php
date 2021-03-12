@@ -103,7 +103,7 @@ foreach ($data["field_map"] as $key => $value) {
       if ($typeSplit[0] != "core") { // Don't include core types
 
         if ($value["friendly"] != "") {
-			echo "-{" . $key . "_title}";
+
           // Generate HTML here
           $output = $output = "<div class='outer_topic_html_container'>";
           $output = $output . "<div class='pte_vault_row pte_topic_html_row'>";
