@@ -170,20 +170,14 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		else { */
 			$i = 0;
 			foreach($topic_content_response as $keys=>$vals) {
-				if($keys!="pte_meta" && $keys!="")
+				if($keys!="pte_meta" && $keys!="" && !empty($vals))
 				{
-					
 				$array[$i]['label']=$keys;
-				if(empty($vals)) {
-					$fval = 'None';
+				if($keys=='person_hasoccupation_occupation_occupationalcategory') {
+					$fval = $businessTypesList[$vals];
 				}
-				else {
-					if($keys=='person_hasoccupation_occupation_occupationalcategory') {
-						$fval = $businessTypesList[$vals];
-					}
-					else
-					$fval = $vals;
-				}
+				else
+				$fval = $vals;
 				$array[$i]['value']=$fval;
 				$i++;
 				}
