@@ -20,7 +20,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 	$topic_content_response = json_decode($results->topic_content);
 	if(!empty($topic_content_response))
 	{
-		if($type=='personal_info') {
+		/* if($type=='personal_info') {
 			$job_title = $job_email = $job_url = $telephone = $faxnumber = $knowsabout = $carrier =  $description = 'None' ;
 		if(isset($topic_content_response->person_hasoccupation_occupation_occupationalcategory) && !empty($topic_content_response->person_hasoccupation_occupation_occupationalcategory)){
 			$carrier_id = $topic_content_response->person_hasoccupation_occupation_occupationalcategory;
@@ -167,7 +167,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 			$array[1]['label'] ='About';
 			$array[1]['value'] =$about;
 		}
-		else {
+		else { */
 			$i = 0;
 			foreach($topic_content_response as $keys=>$vals) {
 				if($keys!="pte_meta")
@@ -187,7 +187,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 				$array[$i]['value']=$fval;
 				$i++;
 				}
-			}
+			/* } */
 		} 
 	}
 }
