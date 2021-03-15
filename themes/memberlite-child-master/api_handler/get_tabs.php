@@ -57,7 +57,7 @@ $topicTabs[] = array(   //Info Page. All Topics Have Them
 	'name' => "Info",
 	'subject_token' => $subjectToken,
 	'owner_topic_id' => $topicId,
-	'topic_title' => ''
+	
 );
 $topicLinkKeys = array();
 foreach ($fullMap as $key => $value) {
@@ -76,7 +76,7 @@ foreach ($fullMap as $key => $value) {
 		$topicLinkKeys[] = $fieldType;
 		$linkId++;
 		$topicTabs[] = array(
-			'main_core_topic' => $mainCoreTopic,
+		
 			'type' => 'linked',
 			'id' => $linkId,
 			'name' => $value['friendly'] ? $value['friendly'] : "Not Specified",
@@ -110,7 +110,7 @@ if ($topicBelongsToUser) {
 		'key' => '',
 		'subject_token' => 'pte_inbound',
 		'owner_topic_id' => $topicId,
-		'topic_title' => 'Links to this Topic'
+		
 	);
 
 	if ($topicHasTeamMembers) {
@@ -122,14 +122,17 @@ if ($topicBelongsToUser) {
 			'key' => '',
 			'subject_token' => 'pte_external',
 			'owner_topic_id' => $topicId,
-			'topic_title' => 'Links to Team Member Topics'
+		
 		);
 	}
 }
 
 
-
-$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
+if(!empty($topicTabs))
+{
+	$encoded = json_encode($topicTabs);
+	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$encoded);
+}
 else
 $response = array('success' => 0, 'message'=>'No data found.','data'=>"");
 
