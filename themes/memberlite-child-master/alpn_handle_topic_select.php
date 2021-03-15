@@ -528,7 +528,7 @@ foreach ($topicTabs as $key => $value) {
 			$topicList = '';
 			switch ($topicClass) {
 				case 'topic':
-					//$topicList = $newTypeKey ? pte_get_topic_list('single_schema_type', $subjectString, $topicSelectId) : "";
+					$topicList = $newTypeKey ? pte_get_topic_list('single_schema_type', $subjectString, $topicSelectId) : "";
 				break;
 				case 'link':
 					$topicList = $newTypeKey ? pte_get_topic_list('type_key', $subjectString, $topicSelectId, $newTypeKey) : "";
