@@ -26,30 +26,14 @@ $results = $wpdb->get_results($sql);
  }
 
 $topicData = $results[0];
-$topicTypeId = $topicData->topic_type_id;
-$topicSpecial = $topicData->special;
-$topicTypeName = $topicData->topic_name;
-$topicIcon = $topicData->icon;
 $topicId = $topicData->id;
 $topicOwnerId = $topicData->owner_id;
-$topicImageHandle = $topicData->image_handle;
-$topicLogoHandle = $topicData->logo_handle;
-$topicProfileHandle = $topicData->profile_handle;
-$topicName = $topicData->name;
-$topicChannelId = $topicData->channel_id;
-$topicDomId = $topicData->dom_id;
 $topicMeta = json_decode($topicData->topic_type_meta, true);
-$topicContent = json_decode($topicData->topic_content, true);
-$topicHtml = stripcslashes($topicData->html_template);
 $typeKey = $topicData->type_key;
 $nameMap = pte_name_extract($topicMeta['field_map']);
 $fieldMap = array_flip($nameMap);
-
-$topicEmailRoute = $topicData->email_route_id;
-$topicFaxRoute = $topicData->pstn_number;
-
 $ownerFirstName = '';
-$context = $topicTypeName;
+$context ="";
 $proteamViewSelector = "block";
 $proteamContainer = 'block';
 $proTeamTitle = "Team Members";
@@ -63,24 +47,18 @@ $showEmailAccordian = "none";
 $showIconAccordian = "block";
 $pteEditDeleteClass = 'pte_ipanel_button_enabled';
 $subjectToken = '';
-
 $fullMap = $topicMeta['field_map'];
 $topicTabs = array();
-$infoColor = $topicData->connected_id ? '#700000' : '#444';
-$infoTitle = $topicData->connected_id ? 'Info Comes from Contact Topic' : 'Info Comes from Your Topic';
-
 $linkId = 0;
 $topicTabs[] = array(   //Info Page. All Topics Have Them
 	'type' => 'page',
 	'key' => $typeKey,
 	'id' => $linkId,
-	'name' => "<span style='color: {$infoColor};' title='{$infoTitle}'>Info</span>",
-	'html' => $topicHtml,
+	'name' => "Info",
 	'subject_token' => $subjectToken,
 	'owner_topic_id' => $topicId,
 	'topic_title' => ''
 );
-
 $topicLinkKeys = array();
 foreach ($fullMap as $key => $value) {
 
@@ -109,31 +87,18 @@ foreach ($fullMap as $key => $value) {
 	}
 }
 $topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
-
-
 if (!$topicBelongsToUser) {
-	$ownerTopicContent = json_decode($topicData->owner_topic_content, true);
-	$ownerFirst = isset($ownerTopicContent['person_givenname']) ? $ownerTopicContent['person_givenname'] : "Not Specified";
-	$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Topic Owner</div><div id='pte_interaction_owner_inner_name'>{$ownerFirst}</div></div>";
-	$showIconAccordian = "none";
-	$pteEditDeleteClass = 'pte_ipanel_button_disabled';
+	
 	foreach ($topicTabs as $key => $value) {
 		if ($value['type'] == 'linked') {
 			unset($topicTabs[$key]);
 		}
 	}
 }
-
-
-
-
-
 //TODO Prefill with correct token data
 //TODO use this in interactions for templating tied to IAs
 $messageTypeId = '1';
-
 $tabButtons = $tabPanels = $initializeTable = $tabTable = $topicSelector = '';
-
 if ($topicBelongsToUser) {
 	//Team Links
 	//Being user by. Linked to me.
