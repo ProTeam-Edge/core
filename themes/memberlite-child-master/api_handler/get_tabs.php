@@ -178,15 +178,18 @@ foreach ($topicTabs as $key => $value) {
 			switch ($topicClass) {
 				case 'topic':
 					$topicList = $newTypeKey ? pte_get_topic_list('single_schema_type', $subjectString, $topicSelectId) : "";
+					 echo '<pre>';
+						print_r($topicList);
 				break;
 				case 'link':
 					$topicList = $newTypeKey ? pte_get_topic_list('type_key', $subjectString, $topicSelectId, $newTypeKey) : "";
+					 echo '<pre>';
+						print_r($topicList);
 				break;
 			}
 	}	
 }
- echo '<pre>';
- print_r($topicList);
+
  die;
 if(!empty($topicTabs))
 {
