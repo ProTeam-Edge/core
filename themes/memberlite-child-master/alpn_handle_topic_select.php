@@ -604,7 +604,7 @@ foreach ($topicTabs as $key => $value) {
 			{$tabTable}
 			{$initializeTable}
 		<div>
-		
+		{$tabHtml}
 		</div>
 		</div>";
 }
