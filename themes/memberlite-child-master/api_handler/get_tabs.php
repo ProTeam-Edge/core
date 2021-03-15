@@ -484,8 +484,7 @@ foreach ($topicTabs as $key => $value) {
 					$topicList = $newTypeKey ? pte_get_topic_list('type_key', $subjectString, $topicSelectId, $newTypeKey) : "";
 				break;
 			}
-			echo '<pre>';
-			print_r($topicList);
+			
 			$topicInfo = "Link to {$friendlyName}...";
 			$coreTopicInfo = "Link to {$subjectStringFormatted}...";
 			$tabButtons .= "<button id='tab_{$key}' data-tab-id='{$key}' data-tab-type='{$tabType}' data-stoken='{$subjectToken}' class='tablinks' onclick='pte_handle_tab_selected(this)'>{$value['name']}</button>";
