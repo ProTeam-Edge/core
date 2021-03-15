@@ -127,7 +127,7 @@ if ($topicBelongsToUser) {
 }
 echo '<pre>';
 print_r($topicTabs);die;
-
+ 
 if(!empty($topicTabs))
 {
 	$encoded = json_encode($topicTabs);
