@@ -187,6 +187,7 @@ foreach ($topicTabs as $key => $value) {
 }
  echo '<pre>';
  print_r($topicList);
+ die;
 if(!empty($topicTabs))
 {
 
