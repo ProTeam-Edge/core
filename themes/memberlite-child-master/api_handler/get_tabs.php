@@ -15,7 +15,7 @@ $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
 $sql = "SELECT topic_content from alpn_topics where id = ".$id."";
 $results = $wpdb->get_row($sql);
 $array = array();
-$topicMeta = json_decode($topicData->topic_type_meta, true);
+$topicMeta = json_decode($results->topic_type_meta, true);
 echo '<pre>';
 print_r($topicMeta);
 die;
