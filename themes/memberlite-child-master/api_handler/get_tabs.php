@@ -630,7 +630,7 @@ $html .= "
 
 
 echo '<pre>';
-print_r($topicData);
+print_r($topicTabs);
 if(!empty($array))
 $response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
 else
