@@ -9,7 +9,7 @@ $array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
-$type = $data->type;
+
 
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
 $sql = "SELECT topic_content from alpn_topics where id = ".$id."";
@@ -18,7 +18,7 @@ $array = array();
 $topicMeta = json_decode($topicData->topic_type_meta, true);
 echo '<pre>';
 print_r($topicMeta);
-
+die;
 if(!empty($array))
 $response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
 else
