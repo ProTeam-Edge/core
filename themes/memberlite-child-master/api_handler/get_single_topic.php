@@ -170,7 +170,7 @@ if(isset($results->topic_content) && !empty($results->topic_content))
 		else { */
 			$i = 0;
 			foreach($topic_content_response as $keys=>$vals) {
-				if($keys!="pte_meta")
+				if($keys!="pte_meta" && $keys!="")
 				{
 					
 				$array[$i]['label']=$keys;
