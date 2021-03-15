@@ -9,6 +9,7 @@ $array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
+$userID = $data->userID;
 
 
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
