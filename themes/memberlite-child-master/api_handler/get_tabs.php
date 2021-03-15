@@ -125,13 +125,12 @@ if ($topicBelongsToUser) {
 		);
 	}
 }
-echo '<pre>';
-print_r($topicTabs);die;
+
  
 if(!empty($topicTabs))
 {
-	$encoded = json_encode($topicTabs);
-	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$encoded);
+
+	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
 }
 else
 $response = array('success' => 0, 'message'=>'No data found.','data'=>"");
