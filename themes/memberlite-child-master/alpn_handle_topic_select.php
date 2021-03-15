@@ -601,8 +601,8 @@ foreach ($topicTabs as $key => $value) {
 	$tabPanels .= "
 		<div id='tabcontent_{$key}' data-tab-id='{$key}' class='pte_tabcontent'>
 			{$topicSelector}
-		
-			{$initializeTable}
+			{$tabTable}
+			
 		<div>
 		{$tabHtml}
 		</div>
