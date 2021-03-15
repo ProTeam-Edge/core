@@ -76,7 +76,6 @@ foreach ($fullMap as $key => $value) {
 		$topicLinkKeys[] = $fieldType;
 		$linkId++;
 		$topicTabs[] = array(
-		
 			'type' => 'linked',
 			'id' => $linkId,
 			'name' => $value['friendly'] ? $value['friendly'] : "Not Specified",
