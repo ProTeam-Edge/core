@@ -129,8 +129,64 @@ if ($topicBelongsToUser) {
 		);
 	}
 }
+$usedTopicTypes = array(); //Needed to handle topic_class and source type key mapping correctly
+$typeKeyMap = array();
+if (count($topicLinkKeys)) {
+	$topicLinkKeysString = implode(',', array_map('pte_add_quotes', $topicLinkKeys)); //so we can pull all used topic types.
+	$usedTopicTypesData = $wpdb->get_results(
+		$wpdb->prepare("SELECT id, topic_class, type_key, source_type_key FROM alpn_topic_types WHERE (type_key IN ({$topicLinkKeysString}) OR source_type_key IN ({$topicLinkKeysString})) AND owner_id = %d", $userID)
+	 );
 
- 
+	 foreach ($usedTopicTypesData as $key => $value) {
+		 $typeKey = $value->type_key;
+		 $sourceTypeKey = $value->source_type_key;
+		 $typeKeyMap[$sourceTypeKey] = $typeKey;
+		 $usedTopicTypes[$typeKey] = $value->topic_class;
+	 }
+}
+$tableCounter = 1; //wpforms numbers tables odd numbers
+foreach ($topicTabs as $key => $value) {
+
+	$topicClass = isset($usedTopicTypes[$typeKey]) && $usedTopicTypes[$typeKey] ? $usedTopicTypes[$typeKey] : "special";
+	$newTypeKey = isset($typeKeyMap[$value['key']]) && $typeKeyMap[$value['key']] ? $typeKeyMap[$value['key']] : $value['key'];
+	$newTopicClass = isset($usedTopicTypes[$newTypeKey]) && $usedTopicTypes[$newTypeKey] ? $usedTopicTypes[$newTypeKey] : "special";
+
+	$tabType = $value['type'];
+	$tabId = $value['id'];
+	$friendlyName = $value['name'];
+	$subjectToken = $value['subject_token'];
+	$ownerTopicId = $value['owner_topic_id'];
+
+	$topicTitle = isset($value['topic_title'])  ? $value['topic_title'] : $newTopicClass;
+
+	$subjectTokenParts = explode("_", $newTypeKey);
+	if (count($subjectTokenParts) &&  isset($subjectTokenParts[1])){
+		$subjectString = $subjectTokenParts[1];
+	}
+
+	$subjectStringFormatted = ucfirst($subjectString);
+	switch ($tabType) {
+		case 'page':
+			$tabButtons .= "<button id='tab_{$key}' data-tab-id='{$key}' data-tab-type='{$tabType}' data-stoken='{$subjectToken}' class='tablinks' onclick='pte_handle_tab_selected(this)'>{$value['name']}</button>";
+			$tabHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $value['html']);
+		break;
+		case 'linked':
+			$topicTitle = "<div class='pte_topic_title'>{$topicTitle}</div>";
+   		$topicSelectId = "pte_single_topic_type_list_{$tabId}";
+			$topicClass = isset($usedTopicTypes[$newTypeKey]) && $usedTopicTypes[$newTypeKey] ? $usedTopicTypes[$newTypeKey] : "special";
+			$topicList = '';
+			switch ($topicClass) {
+				case 'topic':
+					$topicList = $newTypeKey ? pte_get_topic_list('single_schema_type', $subjectString, $topicSelectId) : "";
+				break;
+				case 'link':
+					$topicList = $newTypeKey ? pte_get_topic_list('type_key', $subjectString, $topicSelectId, $newTypeKey) : "";
+				break;
+			}
+	}	
+}
+ echo '<pre>';
+ print_r($topicList);
 if(!empty($topicTabs))
 {
 
