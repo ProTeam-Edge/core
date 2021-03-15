@@ -37,12 +37,7 @@ $base_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d
 if(!empty($final_data)) {
 	$c = $t = $u = 0;
 		foreach($final_data as $val) {
-			if(isset($val->image_handle) && !empty($val->image_handle)) {
-				$contact_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image_handle;
-			}
-			else {
-				$contact_image = $base_image;
-			}
+			
 				if($val->special=='topic') {
 					$increment_variable = $t;
 				}
@@ -57,8 +52,25 @@ if(!empty($final_data)) {
 				if(isset( $val->about) && !empty( $val->about)){
 					$about = striptags($val->about);
 				}
-				$array[$val->special][$increment_variable]['name'] = $val->name;
-				$array[$val->special][$increment_variable]['image'] = $contact_image;
+				
+				if(isset($val->connected_id) && !empty($val->connected_id)) {
+					$returned_name = $val->connected_name;
+					if(isset($val->connected_image_handle) && !empty($val->connected_image_handle)) {
+						$returned_contact_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->connected_image_handle;
+					} else {
+						$returned_contact_image = $base_image;
+					}
+				}
+				else {
+					$returned_name = $val->name;
+					if(isset($val->image_handle ) && !empty($val->image_handle )) {
+						$returned_contact_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image_handle ;
+					} else {
+						$returned_contact_image = $base_image;
+					}
+				}
+				$array[$val->special][$increment_variable]['name'] = $returned_name;
+				$array[$val->special][$increment_variable]['image'] = $returned_contact_image;
 				$array[$val->special][$increment_variable]['channel_id'] = $val->channel_id;
 				$array[$val->special][$increment_variable]['about'] = $about;
 				$array[$val->special][$increment_variable]['id'] = $val->id;
