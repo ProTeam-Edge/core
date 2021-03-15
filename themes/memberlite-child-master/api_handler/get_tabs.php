@@ -128,10 +128,8 @@ if ($topicBelongsToUser) {
 }
 
 
-echo '<pre>';
-print_r($topicTabs);
-if(!empty($array))
-$response = array('success' => 1, 'message'=>'Success data found.','data'=>$array);
+
+$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
 else
 $response = array('success' => 0, 'message'=>'No data found.','data'=>"");
 
