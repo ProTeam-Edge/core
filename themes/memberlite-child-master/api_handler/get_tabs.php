@@ -635,6 +635,7 @@ $html .= "
 $i = 0;
 $reconstructed_tabs = array();
 echo '<pre>';
+print_r($replaceStrings);
 print_r($topicTabs);
 die;
 foreach($topicTabs as $keys=>$vals) {
