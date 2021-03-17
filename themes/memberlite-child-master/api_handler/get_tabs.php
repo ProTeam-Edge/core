@@ -631,6 +631,9 @@ $html .= "
 
  echo '<pre>';
 print_r($replaceStrings); 
+foreach($topicTabs as $vals) {
+	print_r($vals); 
+}
 
 if(!empty($topicTabs))
 {
