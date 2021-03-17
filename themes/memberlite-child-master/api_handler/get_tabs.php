@@ -111,20 +111,17 @@ foreach ($fullMap as $key => $value) {
 		if ($isSystemType) {
 			switch ($value['schema_key']) {
 				case 'pte_added_Date':
-					$replaceStrings['-{' . 'pte_added_date' . '}-'] = pte_date_to_js($topicData->created_date);
-					$replaceStrings['-{' . 'pte_added_date_title' . '}-'] = $value['friendly'];
+					$replaceStrings[$value['friendly']] = pte_date_to_js($topicData->created_date);
 				break;
 				case 'pte_modified_Date':
-					$replaceStrings['-{' . 'pte_modified_date' . '}-'] = pte_date_to_js($topicData->modified_date);
-					$replaceStrings['-{' . 'pte_modified_date_title' . '}-'] = $value['friendly'];
+					$replaceStrings[$value['friendly']] = pte_date_to_js($topicData->modified_date);
 				break;
 				case 'pte_image_URL':
 					if ($topicLogoHandle) {
 						$topicLogoUrl = "<div onclick='jQuery(\"#pte_topic_logo_accordion\").click();' style='display: inline-block; width 40%; cursor: pointer;'><img class='pte_logo_image_screen' style='' src='{$ppCdnBase}{$topicLogoHandle}'></div>";
 					}
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings['-{' . 'pte_image_logo' . '}-'] = $topicLogoUrl;
-					$replaceStrings['-{' . 'pte_image_logo_title' . '}-'] = $friendlyLogoName;
+					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
@@ -173,8 +170,12 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 	}
 	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
 	if (!$isSystemType) {
-		$replaceStrings['-{' . $key . '}-'] = $actualValue;
-		$replaceStrings['-{' . $key . '_title}-'] = isset($nameMap[$key]) ? $nameMap[$key] : "";
+		if(isset($nameMap[$key]))
+		$tkey = $nameMap[$key];
+		else 
+		$tkey = '';
+		$replaceStrings[$tkey] = $actualValue;
+		
 	}
 }
 
