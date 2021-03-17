@@ -559,78 +559,9 @@ foreach ($topicTabs as $key => $value) {
 		</div>
 		</div>";
 }
-$tabs = "<div id='pte_tab_wrapper' class='pte_tab_wrapper'><i id='pte_tab_bar_left_arrow' onmousedown='pte_scroll_tab(\"left\");' class='far fa-caret-left pte_tab_bar_left_arrow pte_ipanel_button_disabled'></i><div id='pte_tab' class='pte_tab' onscroll='pte_handle_tab_bar_scroll();'>{$tabButtons}</div><i id='pte_tab_bar_right_arrow' onmousedown='pte_scroll_tab(\"right\");' class='far fa-caret-right pte_tab_bar_right_arrow pte_ipanel_button_disabled'></i></div>{$tabPanels}";
-//Buttons
-
-$html .= "
-			<div class='outer_button_line'>
-				<div class='pte_vault_row_35'>
-					<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Information' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-						<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
-					</span>
-					<span class='fa-stack pte_icon_button_nav' title='Report' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-						<i class='fas fa-drafting-compass fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
-					</span>
-					<span class='fa-stack pte_icon_button_nav' title='Vault' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-						<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
-					</span>
-				</div>
-				<div class='pte_vault_row_65 pte_vault_right'>
-					  <i class='far fa-pencil-alt pte_icon_button {$pteEditDeleteClass}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>
-		       	<i class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>
-				</div>
-				<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
-			</div>
-	  ";
-//Title
-$html .= "
-					<div class='alpn_container_title_2'>
-						<div id='pte_topic_form_title_view'>
-							<span class='fa-stack pte_stacked_icon'>
-								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-								<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
-							</span>
-							<span id='pte_topic_name'>{$topicName}</span>
-						</div>
-						<div id='pte_topic_form_title_view' class='pte_vault_right'>
-							{$ownerFirstName}{$context} <div class='pte_title_topic_icon_container'>{$topicImage}</div>
-						</div>
-					</div>
-			";
-$html .= "
-						<div id='pte_selected_topic_meta' class='pte_vault_row' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}'>
-							<div id='pte_topic_form_edit_view_left' class='pte_vault_row_padding_right'>
-								{$tabs}
-							</div>
-							<div id='pte_topic_form_edit_view_right' class=''>
-								<script>pte_old_proteam_selected_id=''</script>
-								{$proTeamTitle}
-								<div id='alpn_inner_proteam_manager' class='alpn_inner_proteam_manager' data-for-topic='{$topicId}' data-for-topic-type='{$topicTypeId}' data-for-special='{$topicSpecial}' style='display: {$proteamContainer}'>
-									<div id='alpn_proteam_title_line'>
-										<div style='font-weight: bold; float: left; font-size: 14px; line-height: 32px;'>
-										&nbsp;
-										</div>
-										{$proTeamSelector}
-									</div>
-									<div style='clear: both;'></div>
-									<div id='alpn_proteam_selected_outer' class='alpn_proteam_selected_outer'>
-										{$proTeamMembers}
-									</div>
-								</div>
-								<div style='font-weight: bold;'>
-								</div>
-								{$networkContactTopics}
-								{$settingsAccordion}
-								{$routes}
-							  </div>
-							</div>
-						 </div>
-						";
 
 
+if($type=='multiple') {
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
 		$topicTabs[$keys]['data']['type'] = 'single';
@@ -648,8 +579,7 @@ foreach($topicTabs as $keys=>$vals) {
 	}
 	$i++;
 }
-echo '<pre>';
-print_r($replaceStrings);
+}
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
