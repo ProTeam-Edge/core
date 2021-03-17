@@ -10,6 +10,7 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
 $userID = $data->userID;
+$type =  $data->type;
 
 
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
@@ -647,7 +648,8 @@ foreach($topicTabs as $keys=>$vals) {
 	}
 	$i++;
 }
-
+echo '<pre>';
+print_r($replaceStrings);
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
