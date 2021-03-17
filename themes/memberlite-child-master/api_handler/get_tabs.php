@@ -634,7 +634,7 @@ print_r($replaceStrings);
 $i = 0;
 $reconstructed_tabs = array();
 foreach($topicTabs as $keys=>$vals) {
-	if($vals['name']=='info') {
+	if($vals['name']=='Info') {
 		$topicTabs[$keys]['data'] = 'Reached';
 	}
 	else {
