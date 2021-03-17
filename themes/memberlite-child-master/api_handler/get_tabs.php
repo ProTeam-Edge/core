@@ -82,6 +82,25 @@ $topicTabs[] = array(   //Info Page. All Topics Have Them
 );
 
 $topicLinkKeys = array();
+//map and replace
+foreach($topicContent as $key => $value){	   //deals with date/time being arrays
+	if (is_array($value)) {
+		foreach ($value as $key2 => $value2) {
+			$actualValue = $value2;
+		}
+	} else {
+		$actualValue = str_replace("*r*n*", "\r\n", $value);
+	}
+	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
+	if (!$isSystemType) {
+		if(isset($nameMap[$key]))
+		$tkey = $nameMap[$key];
+		else 
+		$tkey = '';
+		$replaceStrings[$tkey] = $actualValue;
+		
+	}
+}
 foreach ($fullMap as $key => $value) {
 
 	$fieldType = isset($value['type']) ? $value['type'] : "";
@@ -159,25 +178,7 @@ if (!$topicBelongsToUser) {
 	}
 }
 
-//map and replace
-foreach($topicContent as $key => $value){	   //deals with date/time being arrays
-	if (is_array($value)) {
-		foreach ($value as $key2 => $value2) {
-			$actualValue = $value2;
-		}
-	} else {
-		$actualValue = str_replace("*r*n*", "\r\n", $value);
-	}
-	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
-	if (!$isSystemType) {
-		if(isset($nameMap[$key]))
-		$tkey = $nameMap[$key];
-		else 
-		$tkey = '';
-		$replaceStrings[$tkey] = $actualValue;
-		
-	}
-}
+
 
 $replaceStrings["{topicDomId}"] = $topicDomId;
 
