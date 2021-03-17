@@ -182,10 +182,10 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 $replaceStrings["{topicDomId}"] = $topicDomId;
 
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
-if (isset($replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-']) && intVal($replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-'])) {  //TODO test this
-	$replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-'] = $businessTypesList[$replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-']];
+if (isset($replaceStrings['Occupation']) && intVal($replaceStrings['Occupation'])) {  //TODO test this
+	$replaceStrings['Occupation'] = $businessTypesList[$replaceStrings['Occupation']];
 } else {
-	$replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-'] = "Not Specified";
+	$replaceStrings['Occupation'] = "Not Specified";
 }
 
 if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or network
