@@ -642,6 +642,7 @@ foreach($topicTabs as $keys=>$vals) {
 	}
 	else {
 		$topicTabs[$keys] = $vals;
+		$topicTabs[$keys]['data'] = '';
 	}
 	$i++;
 }
