@@ -634,6 +634,9 @@ $html .= "
 
 $i = 0;
 $reconstructed_tabs = array();
+echo '<pre>';
+print_r($topicTabs);
+die;
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
 		$topicTabs[$keys]['data']['type'] = 'single';
