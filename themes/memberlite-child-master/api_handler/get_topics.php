@@ -370,47 +370,7 @@ foreach ($topicTabs as $key => $value) {
 	}
 
 	$subjectStringFormatted = ucfirst($subjectString);
-	switch ($tabType) {
-		case 'page':
-			$tabButtons .= "<button id='tab_{$key}' data-tab-id='{$key}' data-tab-type='{$tabType}' data-stoken='{$subjectToken}' class='tablinks' onclick='pte_handle_tab_selected(this)'>{$value['name']}</button>";
-			$tabHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $value['html']);
-		break;
-		case 'linked':
-			$topicTitle = "<div class='pte_topic_title'>{$topicTitle}</div>";
-   		$topicSelectId = "pte_single_topic_type_list_{$tabId}";
-			$topicClass = isset($usedTopicTypes[$newTypeKey]) && $usedTopicTypes[$newTypeKey] ? $usedTopicTypes[$newTypeKey] : "special";
-			$topicList = '';
-			switch ($topicClass) {
-				case 'topic':
-					$topicList = $newTypeKey ? pte_get_topic_list('single_schema_type', $subjectString, $topicSelectId) : "";
-				break;
-				case 'link':
-					$topicList = $newTypeKey ? pte_get_topic_list('type_key', $subjectString, $topicSelectId, $newTypeKey) : "";
-				break;
-			}
-		
-			if (isset($topicClass) && $topicClass == 'record') {
-				$editButton = "<div class='pte_record_button_bar'><i id='pte_extra_edit_topic_button' class='far fa-pencil-alt pte_extra_button' title='Edit Topic' onclick='pte_edit_topic_link(\"{$newTypeKey}\");'></i></div>";
-				$tabTable =  $editButton . pte_get_create_linked_form ($ownerTopicId, $subjectToken, $newTypeKey);
-			} else {
-				$wpTable = do_shortcode("[wpdatatable id=8 var1='{$ownerTopicId}' var2='{$subjectToken}']");
-				$tabTable = "<div class='pte_tab_table_wrapper'>" .  $wpTable . "</div>";
-				$tabTable = str_replace("table_{$tableCounter}", "table_tab_{$key}", $tabTable);
-				$tabTable = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $tabTable);
-				$tableCounter += 2;
-			}
-			$tabHtml = "<div id='form_tab_{$key}'></div>";
-		break;
-	}
-	$tabPanels .= "
-		<div id='tabcontent_{$key}' data-tab-id='{$key}' class='pte_tabcontent'>
-			{$topicSelector}
-			{$tabTable}
-			{$initializeTable}
-		<div>
-		{$tabHtml}
-		</div>
-		</div>";
+
 }
 
 
