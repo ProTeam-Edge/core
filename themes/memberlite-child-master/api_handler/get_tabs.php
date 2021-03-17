@@ -75,7 +75,6 @@ $topicTabs[] = array(   //Info Page. All Topics Have Them
 	'key' => $typeKey,
 	'id' => $linkId,
 	'name' => "Info",
-	'html' => $topicHtml,
 	'subject_token' => $subjectToken,
 	'owner_topic_id' => $topicId,
 	'topic_title' => ''
