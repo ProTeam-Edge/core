@@ -630,7 +630,7 @@ $html .= "
 						";
 
  echo '<pre>';
-print_r($tabHtml); 
+print_r($replaceStrings); 
 
 if(!empty($topicTabs))
 {
