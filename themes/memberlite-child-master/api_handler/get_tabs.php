@@ -636,11 +636,14 @@ $i = 0;
 $reconstructed_tabs = array();
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
-		$topicTabs[$keys]['data'] = $replaceStrings;
+		$topicTabs[$keys]['data']['type'] = 'single';
+		$topicTabs[$keys]['data']['data'] = $replaceStrings;
 	}
 	else {
 		$topicTabs[$keys] = $vals;
-		$topicTabs[$keys]['data'] = '';
+		$topicTabs[$keys]['data']['type'] = 'multiple';
+		$topicTabs[$keys]['data']['data'] = '';
+
 	}
 	$i++;
 }
