@@ -84,6 +84,30 @@ foreach ($fullMap as $key => $value) {
 			'owner_topic_id' => $topicId
 		);
 	}
+	else {  //Handle System Types
+		$isSystemType = isset($value['schema_key']) && substr($value['schema_key'], 0, 4) == 'pte_' ? true : false;
+		if ($isSystemType) {
+			switch ($value['schema_key']) {
+				case 'pte_added_Date':
+					$replaceStrings['-{' . 'pte_added_date' . '}-'] = pte_date_to_js($topicData->created_date);
+					$replaceStrings['-{' . 'pte_added_date_title' . '}-'] = $value['friendly'];
+				break;
+				case 'pte_modified_Date':
+					$replaceStrings['-{' . 'pte_modified_date' . '}-'] = pte_date_to_js($topicData->modified_date);
+					$replaceStrings['-{' . 'pte_modified_date_title' . '}-'] = $value['friendly'];
+				break;
+				case 'pte_image_URL':
+					if ($topicLogoHandle) {
+						$topicLogoUrl = "<div onclick='jQuery(\"#pte_topic_logo_accordion\").click();' style='display: inline-block; width 40%; cursor: pointer;'><img class='pte_logo_image_screen' style='' src='{$ppCdnBase}{$topicLogoHandle}'></div>";
+					}
+					$friendlyLogoName = $value['friendly'];
+					$replaceStrings['-{' . 'pte_image_logo' . '}-'] = $topicLogoUrl;
+					$replaceStrings['-{' . 'pte_image_logo_title' . '}-'] = $friendlyLogoName;
+					if ($hidden) {$showLogoAccordion = 'none';}
+				break;
+			}
+		}
+	}
 }
 $topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
 if (!$topicBelongsToUser) {
