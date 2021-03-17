@@ -635,14 +635,14 @@ $i = 0;
 $reconstructed_tabs = array();
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='info') {
-		$reconstructed_tabs[$i][$keys]['data'] = 'Reached';
+		$topicTabs[$keys]['data'] = 'Reached';
 	}
 	else {
-		$reconstructed_tabs[$i][$keys] = $vals;
+		$topicTabs[$keys] = $vals;
 	}
 	$i++;
 }
-print_r($reconstructed_tabs); 
+print_r($topicTabs); 
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
