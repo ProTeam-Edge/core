@@ -632,16 +632,17 @@ $html .= "
  echo '<pre>';
 print_r($replaceStrings); 
 $i = 0;
+$reconstructed_tabs = array();
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='info') {
-		$topicTabs[$i][$keys]['data'] = 'Reached';
+		$reconstructed_tabs[$i][$keys]['data'] = 'Reached';
 	}
 	else {
-		$topicTabs[$i][$keys] = $vals;
+		$reconstructed_tabs[$i][$keys] = $vals;
 	}
 	$i++;
 }
-print_r($topicTabs); 
+print_r($reconstructed_tabs); 
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
