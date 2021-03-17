@@ -636,8 +636,8 @@ foreach($topicTabs as $keys=>$vals) {
 		$topicTabs[$keys]['data']['data'] = $replaceStrings;
 	}
 	else {
-		echo $linked_sql = "select  owner_topic_id, name,connected_topic_type_id FROM alpn_topics_linked_view
-		WHERE owner_topic_id = '".$vals['owner_topic_id']."' AND subject_token = '".$vals['subject_token']."' AND owner_id = ".$userID."
+		$linked_sql = "select  owner_topic_id, name,connected_topic_type_id FROM alpn_topics_linked_view
+		WHERE owner_topic_id = '".$vals['owner_topic_id']."' AND subject_token = '".$vals['subject_token']."' AND owner_id = ".$userID." and name !=''
 		ORDER BY name ASC";
 		$linked_data = $wpdb->get_results($linked_sql);
 		echo '<pre>';
