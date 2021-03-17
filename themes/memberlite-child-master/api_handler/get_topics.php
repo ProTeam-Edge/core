@@ -228,12 +228,7 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 }
 
 
-$friendlyLogoNameHtml = isset($friendlyLogoName) && $friendlyLogoName ? $friendlyLogoName : "Image/Logo";
 
-$imageTitle = ($showLogoAccordion == 'block' || $showIconAccordian == 'block') ? "<div class='pte_accordion_section_title'>Topic Images</div>" : "";
-$interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>Interaction Priority</div>" : "";
-$inboundRoutingTitle = ($showEmailAccordian == 'block' || $showFaxAccordian == 'block') ? "<div class='pte_accordion_section_title'>Inbound Routing</div>" : "";
-$importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte_accordion_section_title'>Contacts</div>" : "";
 
 
 
@@ -349,29 +344,7 @@ if (count($topicLinkKeys)) {
 	 }
 }
 
-$tableCounter = 1; //wpforms numbers tables odd numbers
-foreach ($topicTabs as $key => $value) {
 
-	$topicClass = isset($usedTopicTypes[$typeKey]) && $usedTopicTypes[$typeKey] ? $usedTopicTypes[$typeKey] : "special";
-	$newTypeKey = isset($typeKeyMap[$value['key']]) && $typeKeyMap[$value['key']] ? $typeKeyMap[$value['key']] : $value['key'];
-	$newTopicClass = isset($usedTopicTypes[$newTypeKey]) && $usedTopicTypes[$newTypeKey] ? $usedTopicTypes[$newTypeKey] : "special";
-
-	$tabType = $value['type'];
-	$tabId = $value['id'];
-	$friendlyName = $value['name'];
-	$subjectToken = $value['subject_token'];
-	$ownerTopicId = $value['owner_topic_id'];
-
-	$topicTitle = isset($value['topic_title'])  ? $value['topic_title'] : $newTopicClass;
-
-	$subjectTokenParts = explode("_", $newTypeKey);
-	if (count($subjectTokenParts) &&  isset($subjectTokenParts[1])){
-		$subjectString = $subjectTokenParts[1];
-	}
-
-	$subjectStringFormatted = ucfirst($subjectString);
-
-}
 
 
 if($type=='multiple') {
