@@ -74,29 +74,14 @@ $topicTabs[] = array(   //Info Page. All Topics Have Them
 	'type' => 'page',
 	'key' => $typeKey,
 	'id' => $linkId,
-	'name' => "Info",
+	'name' => "<span style='color: {$infoColor};' title='{$infoTitle}'>Info</span>",
+	'html' => $topicHtml,
 	'subject_token' => $subjectToken,
 	'owner_topic_id' => $topicId,
 	'topic_title' => ''
 );
 
 $topicLinkKeys = array();
-//map and replace
-foreach($topicContent as $key => $value){	   //deals with date/time being arrays
-	if (is_array($value)) {
-		foreach ($value as $key2 => $value2) {
-			$actualValue = $value2;
-		}
-	} else {
-		$actualValue = str_replace("*r*n*", "\r\n", $value);
-	}
-	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
-	if (!$isSystemType) {
-		$replaceStrings['-{' . $key . '}-'] = $actualValue;
-		$replaceStrings['-{' . $key . '_title}-'] = isset($nameMap[$key]) ? $nameMap[$key] : "";
-		
-	}
-}
 foreach ($fullMap as $key => $value) {
 
 	$fieldType = isset($value['type']) ? $value['type'] : "";
@@ -126,17 +111,20 @@ foreach ($fullMap as $key => $value) {
 		if ($isSystemType) {
 			switch ($value['schema_key']) {
 				case 'pte_added_Date':
-					$replaceStrings[$value['friendly']] =$topicData->created_date;
+					$replaceStrings['-{' . 'pte_added_date' . '}-'] = pte_date_to_js($topicData->created_date);
+					$replaceStrings['-{' . 'pte_added_date_title' . '}-'] = $value['friendly'];
 				break;
 				case 'pte_modified_Date':
-					$replaceStrings[$value['friendly']] = $topicData->modified_date;
+					$replaceStrings['-{' . 'pte_modified_date' . '}-'] = pte_date_to_js($topicData->modified_date);
+					$replaceStrings['-{' . 'pte_modified_date_title' . '}-'] = $value['friendly'];
 				break;
 				case 'pte_image_URL':
 					if ($topicLogoHandle) {
-						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
+						$topicLogoUrl = "<div onclick='jQuery(\"#pte_topic_logo_accordion\").click();' style='display: inline-block; width 40%; cursor: pointer;'><img class='pte_logo_image_screen' style='' src='{$ppCdnBase}{$topicLogoHandle}'></div>";
 					}
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
+					$replaceStrings['-{' . 'pte_image_logo' . '}-'] = $topicLogoUrl;
+					$replaceStrings['-{' . 'pte_image_logo_title' . '}-'] = $friendlyLogoName;
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
@@ -174,15 +162,29 @@ if (!$topicBelongsToUser) {
 	}
 }
 
+//map and replace
+foreach($topicContent as $key => $value){	   //deals with date/time being arrays
+	if (is_array($value)) {
+		foreach ($value as $key2 => $value2) {
+			$actualValue = $value2;
+		}
+	} else {
+		$actualValue = str_replace("*r*n*", "\r\n", $value);
+	}
+	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
+	if (!$isSystemType) {
+		$replaceStrings['-{' . $key . '}-'] = $actualValue;
+		$replaceStrings['-{' . $key . '_title}-'] = isset($nameMap[$key]) ? $nameMap[$key] : "";
+	}
+}
 
-
-//$replaceStrings["{topicDomId}"] = $topicDomId;
+$replaceStrings["{topicDomId}"] = $topicDomId;
 
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
-if (isset($replaceStrings['Occupation']) && intVal($replaceStrings['Occupation'])) {  //TODO test this
-	$replaceStrings['Occupation'] = $businessTypesList[$replaceStrings['Occupation']];
+if (isset($replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-']) && intVal($replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-'])) {  //TODO test this
+	$replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-'] = $businessTypesList[$replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-']];
 } else {
-	$replaceStrings['Occupation'] = "Not Specified";
+	$replaceStrings['-{person_hasoccupation_occupation_occupationalcategory}-'] = "Not Specified";
 }
 
 if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or network
@@ -628,25 +630,9 @@ $html .= "
 						";
 
 
-$i = 0;
-$reconstructed_tabs = array();
 echo '<pre>';
 print_r($replaceStrings);
-print_r($topicTabs);
 die;
-foreach($topicTabs as $keys=>$vals) {
-	if($vals['name']=='Info') {
-		$topicTabs[$keys]['data']['type'] = 'single';
-		$topicTabs[$keys]['data']['data'] = $replaceStrings;
-	}
-	else {
-		$topicTabs[$keys] = $vals;
-		$topicTabs[$keys]['data']['type'] = 'multiple';
-		$topicTabs[$keys]['data']['data'] = '';
-
-	}
-	$i++;
-}
 
 if(!empty($topicTabs))
 {
