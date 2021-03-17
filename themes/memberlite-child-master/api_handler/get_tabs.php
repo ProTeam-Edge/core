@@ -118,7 +118,7 @@ foreach ($fullMap as $key => $value) {
 				break;
 				case 'pte_image_URL':
 					if ($topicLogoHandle) {
-						$topicLogoUrl = "<div onclick='jQuery(\"#pte_topic_logo_accordion\").click();' style='display: inline-block; width 40%; cursor: pointer;'><img class='pte_logo_image_screen' style='' src='{$ppCdnBase}{$topicLogoHandle}'></div>";
+						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
 					}
 					$friendlyLogoName = $value['friendly'];
 					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
