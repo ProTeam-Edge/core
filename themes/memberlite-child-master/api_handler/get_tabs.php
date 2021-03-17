@@ -647,7 +647,8 @@ foreach($topicTabs as $keys=>$vals) {
 	}
 	$i++;
 }
-
+echo '<pre>';
+print_r($topicTabs);
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
