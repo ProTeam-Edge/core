@@ -97,6 +97,7 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 		$tkey = $nameMap[$key];
 		else 
 		$tkey = '';
+		if(!empty($tkey))
 		$replaceStrings[$tkey] = $actualValue;
 		
 	}
