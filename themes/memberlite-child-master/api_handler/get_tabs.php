@@ -180,7 +180,7 @@ if (!$topicBelongsToUser) {
 
 
 
-$replaceStrings["{topicDomId}"] = $topicDomId;
+//$replaceStrings["{topicDomId}"] = $topicDomId;
 
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
 if (isset($replaceStrings['Occupation']) && intVal($replaceStrings['Occupation'])) {  //TODO test this
