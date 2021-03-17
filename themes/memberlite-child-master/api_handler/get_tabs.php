@@ -82,52 +82,7 @@ $topicTabs[] = array(   //Info Page. All Topics Have Them
 );
 
 $topicLinkKeys = array();
-foreach ($fullMap as $key => $value) {
 
-	$fieldType = isset($value['type']) ? $value['type'] : "";
-	$hidden = isset($value['hidden']) && ($value['hidden'] == "true") ? true : false;
-
-	if (substr($fieldType, 0, 5) == "core_" && !$hidden) {
-		$fieldTypeArray = explode("_", $fieldType);
-		if (count($fieldTypeArray) == 2) {  //Handle Core Type Mapping
-			$mainCoreTopic = true;
-		} else {  //Handle User Topic Type
-			$mainCoreTopic = false;
-		}
-
-		$topicLinkKeys[] = $fieldType;
-		$linkId++;
-		$topicTabs[] = array(
-			'main_core_topic' => $mainCoreTopic,
-			'type' => 'linked',
-			'id' => $linkId,
-			'name' => $value['friendly'] ? $value['friendly'] : "Not Specified",
-			'key' => $fieldType,  //object type
-			'subject_token' => $key,   //field_unique id
-			'owner_topic_id' => $topicId
-		);
-	} else {  //Handle System Types
-		$isSystemType = isset($value['schema_key']) && substr($value['schema_key'], 0, 4) == 'pte_' ? true : false;
-		if ($isSystemType) {
-			switch ($value['schema_key']) {
-				case 'pte_added_Date':
-					$replaceStrings[$value['friendly']] =$topicData->created_date;
-				break;
-				case 'pte_modified_Date':
-					$replaceStrings[$value['friendly']] = $topicData->modified_date;
-				break;
-				case 'pte_image_URL':
-					if ($topicLogoHandle) {
-						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
-					}
-					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
-					if ($hidden) {$showLogoAccordion = 'none';}
-				break;
-			}
-		}
-	}
-}
 $topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
 
 if ($topicProfileHandle) {
@@ -178,7 +133,52 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 		$replaceStrings[$tkey] = $actualValue;
 	}
 }
+foreach ($fullMap as $key => $value) {
 
+	$fieldType = isset($value['type']) ? $value['type'] : "";
+	$hidden = isset($value['hidden']) && ($value['hidden'] == "true") ? true : false;
+
+	if (substr($fieldType, 0, 5) == "core_" && !$hidden) {
+		$fieldTypeArray = explode("_", $fieldType);
+		if (count($fieldTypeArray) == 2) {  //Handle Core Type Mapping
+			$mainCoreTopic = true;
+		} else {  //Handle User Topic Type
+			$mainCoreTopic = false;
+		}
+
+		$topicLinkKeys[] = $fieldType;
+		$linkId++;
+		$topicTabs[] = array(
+			'main_core_topic' => $mainCoreTopic,
+			'type' => 'linked',
+			'id' => $linkId,
+			'name' => $value['friendly'] ? $value['friendly'] : "Not Specified",
+			'key' => $fieldType,  //object type
+			'subject_token' => $key,   //field_unique id
+			'owner_topic_id' => $topicId
+		);
+	} else {  //Handle System Types
+		$isSystemType = isset($value['schema_key']) && substr($value['schema_key'], 0, 4) == 'pte_' ? true : false;
+		if ($isSystemType) {
+			switch ($value['schema_key']) {
+				case 'pte_added_Date':
+					$replaceStrings[$value['friendly']] =$topicData->created_date;
+				break;
+				case 'pte_modified_Date':
+					$replaceStrings[$value['friendly']] = $topicData->modified_date;
+				break;
+				case 'pte_image_URL':
+					if ($topicLogoHandle) {
+						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
+					}
+					$friendlyLogoName = $value['friendly'];
+					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
+					if ($hidden) {$showLogoAccordion = 'none';}
+				break;
+			}
+		}
+	}
+}
 //$replaceStrings["{topicDomId}"] = $topicDomId;
 
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
