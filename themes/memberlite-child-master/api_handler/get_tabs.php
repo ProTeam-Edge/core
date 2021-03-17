@@ -185,7 +185,7 @@ $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
 if (isset($replaceStrings['Occupation']) && intVal($replaceStrings['Occupation'])) {  //TODO test this
 	$replaceStrings['Occupation'] = $businessTypesList[$replaceStrings['Occupation']];
 } else {
-	$replaceStrings['Occupation'] = "Not Specified";
+	//$replaceStrings['Occupation'] = "Not Specified";
 }
 
 if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or network
