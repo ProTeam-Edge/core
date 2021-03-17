@@ -170,8 +170,12 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 	}
 	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
 	if (!$isSystemType) {
-		$replaceStrings['-{' . $key . '}-'] = $actualValue;
-		$replaceStrings['-{' . $key . '_title}-'] = isset($nameMap[$key]) ? $nameMap[$key] : "";
+		if(isset($nameMap[$key]))
+		$tkey = $nameMap[$key];
+		else 
+		$tkey = '';
+		if(!empty($tkey))
+		$replaceStrings[$tkey] = $actualValue;
 	}
 }
 
@@ -627,7 +631,19 @@ $html .= "
 						";
 
 
+foreach($topicTabs as $keys=>$vals) {
+	if($vals['name']=='Info') {
+		$topicTabs[$keys]['data']['type'] = 'single';
+		$topicTabs[$keys]['data']['data'] = $replaceStrings;
+	}
+	else {
+		$topicTabs[$keys] = $vals;
+		$topicTabs[$keys]['data']['type'] = 'multiple';
+		$topicTabs[$keys]['data']['data'] = '';
 
+	}
+	$i++;
+}
 
 if(!empty($topicTabs))
 {
