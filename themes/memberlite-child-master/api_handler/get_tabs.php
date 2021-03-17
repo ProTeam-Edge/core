@@ -629,8 +629,8 @@ $html .= "
 						 </div>
 						";
 
-echo '<pre>';
-print_r($replaceStrings);
+/* echo '<pre>';
+print_r($replaceStrings); */
 
 if(!empty($topicTabs))
 {
