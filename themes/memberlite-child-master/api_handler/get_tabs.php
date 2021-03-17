@@ -631,10 +631,17 @@ $html .= "
 
  echo '<pre>';
 print_r($replaceStrings); 
-foreach($topicTabs as $vals) {
-	print_r($vals); 
+$i = 0;
+foreach($topicTabs as $keys=>$vals) {
+	if($vals['name']=='info') {
+		$topicTabs[$i][$keys]['data'] = 'Reached';
+	}
+	else {
+		$topicTabs[$i][$keys] = $vals;
+	}
+	$i++;
 }
-
+print_r($topicTabs); 
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
