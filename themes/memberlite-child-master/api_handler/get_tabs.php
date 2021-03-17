@@ -92,12 +92,8 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 	}
 	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
 	if (!$isSystemType) {
-		if(isset($nameMap[$key]))
-		$tkey = $nameMap[$key];
-		else 
-		$tkey = '';
-		if(!empty($tkey))
-		$replaceStrings[$tkey] = $actualValue;
+		$replaceStrings['-{' . $key . '}-'] = $actualValue;
+		$replaceStrings['-{' . $key . '_title}-'] = isset($nameMap[$key]) ? $nameMap[$key] : "";
 		
 	}
 }
