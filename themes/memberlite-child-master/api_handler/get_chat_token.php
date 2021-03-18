@@ -14,6 +14,7 @@ $twilioApiKey = APIKEY;
 $twilioApiSecret = SECRETKEY;
 
 $serviceSid = CHATSERVICESID;
+
 if(!empty($data))
 {
 	$username = $data->username;
@@ -29,6 +30,7 @@ if(!empty($data))
 	// Create Chat grant
 	$chatGrant = new ChatGrant();
 	$chatGrant->setServiceSid($serviceSid);
+	$chatGrant->setPushCredentialSid($serviceSid);
 
 	// Add grant to token
 	$token->addGrant($chatGrant);
