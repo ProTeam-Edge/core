@@ -1,8 +1,66 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300italic);
 
+.pte_chat_list_item{
+  margin-bottom: 3px;
+}
+
+.pte_item_row_container_icons{
+  display: flex;
+  flex-wrap: wrap;
+}
+
+
+.pte_chat_activity_icons_holder{
+  flex-grow: 1;
+  flex-basis: 82%;
+  max-width: 82%;
+
+}
+
+.pte_chat_activity_icon_image_participant{
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 50%;
+
+}
+
+.pte_item_row_container{
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.pte_chat_activity_icon{
+  flex-grow: 1;
+  flex-basis: 18%;
+  max-width: 18%;
+  text-align: center;
+}
+
+.pte_chat_activity_friendlyname{
+  flex-grow: 1;
+  flex-basis: 67%;
+  max-width: 67%;
+  font-size: 13px;
+  line-height: 18px;
+  color: rgb(49, 114, 182);
+  cursor: pointer;
+}
+
+.pte_chat_activity_unreads{
+  flex-grow: 1;
+  flex-basis: 15%;
+  max-width: 15%;
+  text-align: center;
+}
+
+.pte_unread_count{
+
+}
+
 .pte_chat_activity_icon_image{
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
 
 }
