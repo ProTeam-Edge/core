@@ -1145,7 +1145,7 @@ function pte_handle_interaction_link(mapData){
 			break;
 			case 'vault_item':
 				pte_global_vault_item_dom_id = vaultDomId;
-				delete wpDataTables.table_vault;
+				delete wpDataTables.table_vault;  //timing issues
 
 				if (topicId) {
 					var data = {
@@ -2055,6 +2055,19 @@ function pte_send_sync(activeChannelMeta){
 	}
 }
 
+function pte_handle_mute_audio(){
+	var muteButtonIcon = jQuery("#pte_chat_audio_icon");
+	var muteState = muteButtonIcon.hasClass('fa-microphone') ? 'unmuted' : "muted";
+	if (muteState == 'unmuted') {
+		var data = {"name": "pte_mute_current_channel"};
+		pte_message_chat_window(data);
+	} else {
+		var data = {"name": "pte_unmute_current_channel"};
+		pte_message_chat_window(data);
+	}
+}
+
+
 function pte_handle_sync(data, item = false){
 
 	  //console.log("Handling Sync");
@@ -2168,7 +2181,24 @@ function pte_handle_sync(data, item = false){
 		var channelName;
 
 		switch(name) {
+			case 'pte_handle_mute_button':
+				var muteButtonText = jQuery("#alpn_chat_audio_mute_text");
+				var muteButtonImage = jQuery("#pte_chat_mute_button");
+				muteButtonImage.attr("src", alpn_templatedir + "dist/assets/button_off.png");
+				muteButtonText.html("<i id='pte_chat_audio_icon' class='fas fa-microphone-slash'>");
+				muteButtonText.css("color", '#444');
+			break;
+			case 'pte_handle_unmute_button':
+				var muteButtonText = jQuery("#alpn_chat_audio_mute_text");
+				var muteButtonImage = jQuery("#pte_chat_mute_button");
+				muteButtonImage.attr("src", alpn_templatedir + "dist/assets/button_on.png");
+				muteButtonText.html("<i id='pte_chat_audio_icon' class='fas fa-microphone'>");
+				muteButtonText.css("color", 'yellow');
+			break;
 
+			case 'pte_handle_object_action':
+				pte_handle_interaction_link(activeChannelMeta.object_action_data);
+			break;
 			case 'pte_send_notification_by_sync':
 				pte_send_sync(activeChannelMeta);
 			break;
@@ -2177,22 +2207,25 @@ function pte_handle_sync(data, item = false){
 				jQuery('#pte_chat_on_off_button').attr('src', waitIndicator);
 				jQuery("#alpn_chat_audio_on_off_text").html("");
 			break;
-			case 'pte_start_microphone_wait':
-				var waitIndicator = alpn_templatedir + "dist/assets/spinner_blue.gif";
-				jQuery('#pte_chat_mute_button').attr('src', waitIndicator);
-			break;
-			case 'pte_select_topic':
-				console.log("SELECTING NEW TOPIC...");
-				pte_select_new_topic_from_id(activeChannelMeta.topic_id, activeChannelMeta.channel_owner_id);
+			case 'pte_handle_link':
+				var linkOperation = activeChannelMeta.link_operation;
+				switch(linkOperation) {
+					case 'topic_select':
+						console.log("SELECTING NEW TOPIC...");
+						pte_select_new_topic_from_id(activeChannelMeta.topic_id, activeChannelMeta.channel_owner_id);
+					break;
+				}
 			break;
 			case 'pte_channel_stop':
 				jQuery('#alpn_chat_audio_on_off').css({"opacity": "0.6", "pointer-events": "none"});
+				jQuery('#alpn_chat_audio_mute').css({"opacity": "0.6", "pointer-events": "none"});
 				jQuery("#pte_chat_topic_name").html('--');
 				jQuery("#pte_chat_selected_unread").html('--');
 				return;
 			break;
 			case 'pte_channel_started':
 				jQuery('#alpn_chat_audio_on_off').css({"opacity": "1", "pointer-events": "auto"});
+				jQuery('#alpn_chat_audio_mute').css({"opacity": "1", "pointer-events": "auto"});
 
 				if (alpn_user_id == activeChannelMeta.topic_owner_id) {
 					jQuery("#pte_chat_topic_name").html(activeChannelMeta.topic_name);
@@ -2217,7 +2250,6 @@ function pte_handle_sync(data, item = false){
 			case 'pte_audio_ended':
 				jQuery("#pte_chat_on_off_button").attr("src", alpn_templatedir + "dist/assets/button_off.png");
 				jQuery("#alpn_chat_audio_on_off_text").html("OFF").css("color", "#444");
-
 			break;
 			case 'pte_update_chat_total':
 				jQuery("#pte_chat_total_unreads").html(activeChannelMeta.chat_total_unreads);
@@ -2497,10 +2529,12 @@ jQuery( document ).ready( function(){
 									jQuery('#alpn_chat_panel').css('bottom', '-405px');
 									pte_chat_window_open = false;
 									console.log('closing...');
+									pte_message_chat_window({'name': 'pte_chat_window_closed'});
 							} else {
 									jQuery('#alpn_chat_panel').css('bottom', '0px');
 									pte_chat_window_open = true;
 									console.log('opening...');
+									pte_message_chat_window({'name': 'pte_chat_window_open'});
 							}
 					  });
 			}
@@ -3358,10 +3392,10 @@ function pte_set_work_area_html(areaType) {
 		var workAreaHtml = " \
 						<div class='pte_vault_row pte_row_top_margin pte_vault_bold pte_vault_text_xlarge'> \
 							<div class='pte_vault_row_70 pte_field_padding_right'> \
-								Secure URLs \
+								xLinks \
 							</div> \
 							<div class='pte_vault_row_30 pte_vault_right'> \
-							<i class='far fa-plus-circle pte_topic_link' style='font-size: 16px;' title='Create a New URL' onclick='pte_create_new_vault_url();'></i> \
+							<i class='far fa-plus-circle pte_topic_link' style='font-size: 16px;' title='Create a New xLink' onclick='pte_create_new_vault_url();'></i> \
 							</div> \
 						</div> \
 						<div class='pte_vault_row pte_vault_text_xlarge'> \
@@ -3970,8 +4004,6 @@ function pte_setup_pdf_viewer(viewerSettings) {
 
 				});
 
-
-
 				window.addEventListener('scroll',(event) => {
 						pdfui.redraw();
 				});
@@ -4142,6 +4174,7 @@ function alpn_vault_control(operation) {
 	//Get Row Context
 	var trOb, rowData, s_id, from_id;
 	var vaultId = '';
+	var vaultDomId = '';
 	var submissionId = '';
 	var permissionValue;
 	var formId = '';
@@ -4160,6 +4193,7 @@ function alpn_vault_control(operation) {
 			rowData = wpDataTables.table_vault.fnGetData(trObj);
 
 			vaultId = rowData[0];
+			vaultDomId = rowData[11];
 			submissionId = rowData[8];
 			formId = rowData[10];
 			formName = rowData[5];
@@ -4171,7 +4205,35 @@ function alpn_vault_control(operation) {
 			topicId = rowData[13].replace(/\D/g,'');
 		}
 	}
+
+//TODO CHeck for rights at server??
+
 	switch(operation) {
+		case 'insert_chat_vault_item':
+			//insert link to vault item into chat window
+			var selectedTopicMeta = jQuery("div#pte_selected_topic_meta");
+			var topicSpecial = selectedTopicMeta.data("special");
+			var topicDomId = selectedTopicMeta.data("tdid");
+			var topicId = selectedTopicMeta.data("tid");
+			var topicTypeId = selectedTopicMeta.data("ttid");
+
+			var messageData = {
+				"name": "pte_insert_new_object",
+				"file_name": fileName,
+				"file_about": formAbout,
+				"topic_special": topicSpecial,
+				"topic_dom_id": topicDomId,
+				"topic_id": topicId,
+				"topic_type_id": topicTypeId,
+				"vault_id": vaultId,
+				"vault_dom_id": vaultDomId,
+				"mime_type": mimeType,
+				"permission": permissionValue,
+				"object_type": "vault_item"
+			};
+			pte_message_chat_window(messageData);
+
+		break;
 		case 'download_original':
 			console.log('Downloading Original...');
 			var security = specialObj.security;

@@ -276,7 +276,7 @@ function usernetwork_shortcode($attr) {
 			}
 
 			$html = "<div id='alpn_section_network'><div class='alpn_title_bar'><div class='alpn_section_head_left'>Contacts</div><div class='alpn_section_head_right'><i class='far fa-plus-circle alpn_icons' title='Add Network Contact' onclick='alpn_mission_control(\"add_topic\", \"\", alpn_contact_topic_type_id);'></i></div></div>
-			<div id='alpn_selector_container_left' class='alpn_selector_container_left'><select id='alpn_selector_network' class='alpn_selector'><option></option>{$optionsStr}</select></div>
+			<div id='alpn_selector_container_left' class='alpn_selector_container_left pte_hidden_for_now'><select id='alpn_selector_network' class='alpn_selector'><option></option>{$optionsStr}</select></div>
 			";
 			$html .= do_shortcode("[wpdatatable id=2]");
 
@@ -341,7 +341,7 @@ function usernetwork_shortcode($attr) {
 				<span style='display: inline-block;'><i class='far fa-plus-circle alpn_icons' title='Add Topic' onclick='alpn_mission_control(\"add_topic\");'></i></span>
 			</div>
 			</div>
-			<div id='alpn_topic_container_left' class='alpn_topic_container_left'><select id='alpn_selector_topic_filter' class='alpn_selector'><option></option></select></div>
+			<div id='alpn_topic_container_left' class='alpn_topic_container_left pte_hidden_for_now'><select id='alpn_selector_topic_filter' class='alpn_selector'><option></option></select></div>
 			";
 			$html .= do_shortcode("[wpdatatable id=3]");
 
@@ -409,7 +409,7 @@ function usernetwork_shortcode($attr) {
 				//$iconStr =
 				$optionsStr .= "<option value='{$key}'>{$value}</option>";
 			}
-			$html .= "<div id='pte_interaction_table_filter_container' class='alpn_selector_container_left'><select id='pte_interaction_table_filter' class='alpn_selector'>{$optionsStr}</select></div>";
+			$html .= "<div id='pte_interaction_table_filter_container' class='alpn_selector_container_left pte_hidden_for_now'><select id='pte_interaction_table_filter' class='alpn_selector'>{$optionsStr}</select></div>";
 			$html .= do_shortcode("[wpdatatable id=4 var1='{$ownerNetworkId}' var2='active']");
 			$html = str_replace('table_5', 'table_interactions', $html);
 			$html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
@@ -420,9 +420,9 @@ function usernetwork_shortcode($attr) {
 
 		case 'chat':
 
-			$audioOnOffHtml = "<div id='alpn_chat_audio_on_off' onclick='event.stopPropagation(); var data = {\"name\": \"pte_join_audio_current_channel\"}; pte_message_chat_window(data);'><img id='pte_chat_on_off_button' class='pte_chat_title_button' src='{$rootUrl}dist/assets/button_off.png' title='Turn on Audio'><div id='alpn_chat_audio_on_off_text'>OFF</div></div>";
+			$audioOnOffHtml = "<div id='alpn_chat_audio_on_off' title='Your audio is off. Press to turn on audio.' onclick='event.stopPropagation(); var data = {\"name\": \"pte_join_audio_current_channel\"}; pte_message_chat_window(data);'><img id='pte_chat_on_off_button' class='pte_chat_title_button' src='{$rootUrl}dist/assets/button_off.png' ><div id='alpn_chat_audio_on_off_text'>OFF</div></div>";
 
-			$audioMuteUnmuteHtml = "<div id='alpn_chat_audio_mute' onclick='event.stopPropagation(); var data = {\"name\": \"pte_mute_current_channel\"}; pte_message_chat_window(data);'><img id='pte_chat_mute_button' class='pte_chat_title_button' src='{$rootUrl}dist/assets/button_mute_off.png' title='UnMute Audio'></div>";
+			$audioMuteUnmuteHtml = "<div id='alpn_chat_audio_mute' title='You are muted. Press to un-mute.' onclick='event.stopPropagation(); pte_handle_mute_audio();'><img id='pte_chat_mute_button' class='pte_chat_title_button' src='{$rootUrl}dist/assets/button_off.png'><div id='alpn_chat_audio_mute_text'><i id='pte_chat_audio_icon' class='fas fa-microphone-slash'></i></div></div>";
 
 			$html =
 				"<div id='alpn_chat_panel' class='alpn_chat_panel'>

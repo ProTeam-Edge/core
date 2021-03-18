@@ -9,6 +9,39 @@ use Twilio\Rest\Client;
 use PascalDeVink\ShortUuid\ShortUuid;
 
 
+
+function pte_user_rights_check ($resourceType, $data){
+
+  alpn_log('RIGHTS CHECK');
+
+  global $wpdb;
+
+  switch ($resourceType) {
+
+   case 'vault_item':
+     alpn_log('VAULT ITEM');
+
+   break;
+
+   case 'topic':
+    alpn_log('TOPIC');
+
+    $domId = $data['dom_id'];
+    $userId = $data['user_id'];
+
+
+
+
+   break;
+
+ }
+
+
+  return false;
+}
+
+
+
 //TODO centralize this with report usages on ZIP
 
 function pte_add_to_proteam($data) {

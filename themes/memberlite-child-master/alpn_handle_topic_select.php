@@ -50,6 +50,17 @@ $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
+$rightsCheckData = array(
+  "topic_dom_id" => $recordId,
+  "user_id" => $userID
+);
+
+if (!pte_user_rights_check("topic", $rightsCheckData)) {
+
+
+
+}
+
 //pp($userInfo->data);
 
 if (!$userID) {
@@ -105,12 +116,12 @@ $proteamContainer = 'block';
 $proTeamTitle = "Team Members";
 $profilePicTitle = "Icon";
 $showMessageAccordion = "none";
-$showLogoAccordion = "block";
 $showAddressBookAccordion = "none";
 $showImportanceAccordions = "none";
 $showFaxAccordian = "none";
 $showEmailAccordian = "none";
 $showIconAccordian = "block";
+$showLogoAccordion = "block";
 $pteEditDeleteClass = 'pte_ipanel_button_enabled';
 $subjectToken = '';
 
@@ -195,7 +206,8 @@ if (!$topicBelongsToUser) {
 	$ownerTopicContent = json_decode($topicData->owner_topic_content, true);
 	$ownerFirst = isset($ownerTopicContent['person_givenname']) ? $ownerTopicContent['person_givenname'] : "Not Specified";
 	$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Topic Owner</div><div id='pte_interaction_owner_inner_name'>{$ownerFirst}</div></div>";
-	$showIconAccordian = "none";
+  $showIconAccordian = "none";
+	$showLogoAccordion = "none";
 	$pteEditDeleteClass = 'pte_ipanel_button_disabled';
 	foreach ($topicTabs as $key => $value) {
 		if ($value['type'] == 'linked') {
@@ -296,7 +308,6 @@ $imageTitle = ($showLogoAccordion == 'block' || $showIconAccordian == 'block') ?
 $interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>Interaction Priority</div>" : "";
 $inboundRoutingTitle = ($showEmailAccordian == 'block' || $showFaxAccordian == 'block') ? "<div class='pte_accordion_section_title'>Inbound Routing</div>" : "";
 $importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte_accordion_section_title'>Contacts</div>" : "";
-
 $settingsAccordion = "
 	{$imageTitle}
 	<button id='pte_topic_photo_accordion' class='pte_accordion'  style='display: {$showIconAccordian};' title='Change Personal Topic Icon'>{$profilePicTitle}</button>

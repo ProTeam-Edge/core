@@ -367,11 +367,6 @@ function pte_make_button_line($lineType, $uxMeta) {
 		break;
 	}
 
-
-
-
-
-
 	return $html;
 }
 
@@ -484,7 +479,7 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 
 		break;
 		case 'vault_item':
-				$html .= "<div data-vault-id='{$vaultId}' data-vault-dom-id='{$vaultDomId}' data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='vault_item' class='interaction_panel_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-file-pdf'></i></div>View - {$viewString}</div>";
+				$html .= "<div data-vault-id='{$vaultId}' data-vault-dom-id='{$vaultDomId}' data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='vault_item' class='interaction_panel_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-file-pdf'></i></div>{$viewString}</div>";
 		break;
 	}
 	return $html;

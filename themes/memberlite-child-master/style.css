@@ -10,7 +10,13 @@ License: GPL-2.0+
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
+.pte_hidden_for_now{
+  display: none;
+}
 
+.pte_audio_muted {
+  color: yellow;
+}
 
 .pte_connected_data{
   color: maroon;
@@ -33,6 +39,21 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 #alpn_chat_audio_mute{
 	display: inline-block;
+  position: relative;
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+#alpn_chat_audio_mute_text {
+	height: 35px;
+	width: 35px;
+	line-height: 35px;
+	position: absolute;
+  top: 0;
+	left: 0;
+	color: #444;
+	font-size: 14px;
+	text-align: center;
 }
 
 #alpn_chat_audio_on_off_text {
