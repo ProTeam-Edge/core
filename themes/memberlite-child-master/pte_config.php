@@ -34,6 +34,8 @@ define('SENDGRID_KEY', 'SG.EZSSduFOTkOcC1rrFV2vgg.zY6ZvELxMsq9JQVgj8cMBRzNOdnG4_
 // Twilio
 
 define('ACCOUNT_SID', 'ACa3cfb8ff4e9f2b263e37a00f35c3e1ae');
+define('NOTIFYSSID', 'CHb368c3a4f22548b2966c7333adf45dc1');
+define('FCMCREDENTIALSID', 'CRb88746a8b7fce85b786f1c5ed76e3645');
 define('AUTHTOKEN', '3571d56833a50968498e466dddd50ed4');
 define('APPID', 'APcac98d559ccc8b1eba822b0219c6eb9e');
 define('APIKEY', 'SK79bc191d001b636bba388d0da7d9c40d');
