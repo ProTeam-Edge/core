@@ -7,36 +7,25 @@ require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/sdk/v
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\ChatGrant;
 
-$input = file_get_contents('php://input');
-$data = json_decode($input);
+
 $twilioAccountSid = ACCOUNT_SID;
 $twilioApiKey = APIKEY;
 $twilioApiSecret = SECRETKEY;
+$AUTHTOKEN = AUTHTOKEN;
 
 $serviceSid = CHATSERVICESID;
 $NOTIFYSSID = NOTIFYSSID;
 $FCMCREDENTIALSID = FCMCREDENTIALSID;
+$sid = $twilioAccountSid;
+$token = $AUTHTOKEN;
+$twilio = new Client($sid, $token);
 
-if(!empty($data))
-{
-	$username = $data->username;
-	$identity =$username;
-	$token = new AccessToken(
-    $twilioAccountSid,
-    $twilioApiKey,
-    $twilioApiSecret,
-    3600,
-    $identity
-);
+$notification = $twilio->notify->v1->services("ISd4ca1551946f4360a7dfb215ad84e1d0")
+                                   ->notifications
+                                   ->create([
+                                                "body" => "Hello Bob",
+                                                "identity" => ["00000001"]
+                                            ]
+                                   );
 
-	// Create Chat grant
-	$chatGrant = new ChatGrant();
-	$chatGrant->setServiceSid($serviceSid);
-	$chatGrant->setPushCredentialSid($NOTIFYSSID);
-
-	// Add grant to token
-	$token->addGrant($chatGrant);
-
-	// render token to string
-	echo $token->toJWT();
-}
+print($notification->sid);
