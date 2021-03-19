@@ -20,9 +20,10 @@ $service = $twilio->chat->v2->services($serviceSid)
                             ->update(array(
                                          "notificationsAddedToChannelEnabled" => True,
                                          "notificationsAddedToChannelSound" => "default",
-                                         "notificationsAddedToChannelTemplate" => "A New message"
+                                         "notificationsAddedToChannelTemplate" => "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}"
                                      )
                             );
-echo '<pre>';
-print_r($service);
+
+
+
 print($service->friendlyName);
