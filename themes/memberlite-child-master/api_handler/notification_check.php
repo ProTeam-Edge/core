@@ -15,7 +15,7 @@ use Twilio\Rest\Client;
 $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
 $twilio = new Client($sid, $token);
-$serviceSid = CHATSERVICESID;
+$serviceSid = NOTIFYSSID;
 $service = $twilio->chat->v2->services($serviceSid)
                             ->update(array(
                                          "notificationsAddedToChannelEnabled" => True,
