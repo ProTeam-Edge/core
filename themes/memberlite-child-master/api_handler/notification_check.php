@@ -23,5 +23,6 @@ $service = $twilio->chat->v2->services($serviceSid)
                                          "notificationsAddedToChannelTemplate" => "A New message"
                                      )
                             );
-
+echo '<pre>';
+print_r($service);
 print($service->friendlyName);
