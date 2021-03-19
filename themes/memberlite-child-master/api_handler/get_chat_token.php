@@ -32,7 +32,7 @@ if(!empty($data))
 	// Create Chat grant
 	$chatGrant = new ChatGrant();
 	$chatGrant->setServiceSid($serviceSid);
-	//$chatGrant->setPushCredentialSid($NOTIFYSSID);
+	$chatGrant->setPushCredentialSid($NOTIFYSSID);
 
 	// Add grant to token
 	$token->addGrant($chatGrant);
