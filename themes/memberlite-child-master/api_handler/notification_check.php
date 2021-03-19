@@ -20,7 +20,7 @@ $service = $twilio->chat->v2->services("ISd4ca1551946f4360a7dfb215ad84e1d0")
                             ->update(array(
                                          "notificationsAddedToChannelEnabled" => True,
                                          "notificationsAddedToChannelSound" => "default",
-                                         "notificationsAddedToChannelTemplate" => "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}"
+                                         "notificationsAddedToChannelTemplate" => "A New message"
                                      )
                             );
 
