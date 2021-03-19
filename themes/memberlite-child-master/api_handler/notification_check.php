@@ -16,7 +16,7 @@ $AUTHTOKEN = AUTHTOKEN;
 $serviceSid = CHATSERVICESID;
 $NOTIFYSSID = NOTIFYSSID;
 $FCMCREDENTIALSID = FCMCREDENTIALSID;
-$sid = $twilioAccountSid;
+$sid = $NOTIFYSSID;
 $token = $AUTHTOKEN;
 $twilio = new Client($sid, $token);
 
