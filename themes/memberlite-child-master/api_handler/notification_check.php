@@ -15,8 +15,8 @@ use Twilio\Rest\Client;
 $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
 $twilio = new Client($sid, $token);
-
-$service = $twilio->chat->v2->services("ISd4ca1551946f4360a7dfb215ad84e1d0")
+$serviceSid = CHATSERVICESID;
+$service = $twilio->chat->v2->services($serviceSid)
                             ->update(array(
                                          "notificationsAddedToChannelEnabled" => True,
                                          "notificationsAddedToChannelSound" => "default",
