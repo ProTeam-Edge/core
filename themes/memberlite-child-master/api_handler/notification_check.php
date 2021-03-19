@@ -1,4 +1,6 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 'On');
 include_once('../pte_config.php');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
@@ -16,7 +18,7 @@ $AUTHTOKEN = AUTHTOKEN;
 $serviceSid = CHATSERVICESID;
 $NOTIFYSSID = NOTIFYSSID;
 $FCMCREDENTIALSID = FCMCREDENTIALSID;
-$sid = $NOTIFYSSID;
+$sid = $twilioAccountSid;
 $token = $AUTHTOKEN;
 $twilio = new Client($sid, $token);
 
