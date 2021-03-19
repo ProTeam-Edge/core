@@ -341,6 +341,10 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
         Video.createLocalTracks({
           audio: true
         }).then(localTracks => {
+          localTracks.forEach(function(track) {
+              track.disable();  //enter room muting my track
+          });
+
           return Video.connect(token, {
             name: roomChannelSid,
             tracks: localTracks
@@ -821,6 +825,10 @@ function pte_select_new_topic($el){
   var selectedTopicLI = $el.closest("LI");
   var topicId = selectedTopicLI.data('cid');
   var channelOwnerId = selectedTopicLI.data('co');
+
+  console.log(selectedTopicLI);
+  console.log(topicId);
+  console.log(channelOwnerId);
 
   var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
   activeChannelMetaSnapshot.name = "pte_handle_link";

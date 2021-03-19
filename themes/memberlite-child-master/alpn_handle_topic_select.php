@@ -51,8 +51,7 @@ $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
 $rightsCheckData = array(
-  "topic_dom_id" => $recordId,
-  "user_id" => $userID
+  "topic_dom_id" => $recordId
 );
 
 if (!pte_user_rights_check("topic", $rightsCheckData)) {

@@ -16,6 +16,10 @@ function pte_user_rights_check ($resourceType, $data){
 
   global $wpdb;
 
+  $userInfo = wp_get_current_user();
+  $userId = $userInfo->data->ID;
+  $userNetworkId = get_user_meta( $userID, 'pte_user_network_id', true );
+
   switch ($resourceType) {
 
    case 'vault_item':
@@ -27,9 +31,12 @@ function pte_user_rights_check ($resourceType, $data){
     alpn_log('TOPIC');
 
     $domId = $data['dom_id'];
-    $userId = $data['user_id'];
 
 
+   break;
+
+   case 'action':
+    alpn_log('ACTION');
 
 
    break;

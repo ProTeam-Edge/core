@@ -2212,6 +2212,7 @@ function pte_handle_sync(data, item = false){
 				switch(linkOperation) {
 					case 'topic_select':
 						console.log("SELECTING NEW TOPIC...");
+						console.log(activeChannelMeta);
 						pte_select_new_topic_from_id(activeChannelMeta.topic_id, activeChannelMeta.channel_owner_id);
 					break;
 				}
