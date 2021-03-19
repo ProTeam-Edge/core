@@ -11,24 +11,17 @@ use Twilio\Jwt\Grants\ChatGrant;
 use Twilio\Rest\Client;
 
 
-$twilioAccountSid = ACCOUNT_SID;
-$twilioApiKey = APIKEY;
-$twilioApiSecret = SECRETKEY;
-$AUTHTOKEN = AUTHTOKEN;
 
-$serviceSid = CHATSERVICESID;
-$NOTIFYSSID = NOTIFYSSID;
-$FCMCREDENTIALSID = FCMCREDENTIALSID;
-$sid = $twilioAccountSid;
-$token = $AUTHTOKEN;
+$sid    = ACCOUNT_SID;
+$token  =AUTHTOKEN;
 $twilio = new Client($sid, $token);
 
-$notification = $twilio->notify->v1->services("ISd4ca1551946f4360a7dfb215ad84e1d0")
-                                   ->notifications
-                                   ->create([
-                                                "body" => "Hello Bob",
-                                                "identity" => ["00000001"]
-                                            ]
-                                   );
+$service = $twilio->chat->v2->services("ISd4ca1551946f4360a7dfb215ad84e1d0")
+                            ->update(array(
+                                         "notificationsAddedToChannelEnabled" => True,
+                                         "notificationsAddedToChannelSound" => "default",
+                                         "notificationsAddedToChannelTemplate" => "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}"
+                                     )
+                            );
 
-print($notification->sid);
+print($service->friendlyName);
