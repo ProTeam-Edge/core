@@ -1,8 +1,6 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
-
-
 $siteUrl = get_site_url();
 
 $qVars = $_POST;
@@ -18,9 +16,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    echo 'Not a valid request.';
    die;
 }
-
-
-	// nonce verfied do your action here
 
 	$topicTypeId = isset($qVars['topicTypeId']) ? $qVars['topicTypeId'] : '';
 	$topicTypeSpecial = isset($qVars['topicTypeSpecial']) ? $qVars['topicTypeSpecial'] : '';
