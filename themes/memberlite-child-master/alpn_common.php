@@ -16,6 +16,10 @@ function pte_user_rights_check ($resourceType, $data){
 
   global $wpdb;
 
+  $userInfo = wp_get_current_user();
+  $userId = $userInfo->data->ID;
+  $userNetworkId = get_user_meta( $userID, 'pte_user_network_id', true );
+
   switch ($resourceType) {
 
    case 'vault_item':
@@ -23,19 +27,31 @@ function pte_user_rights_check ($resourceType, $data){
 
    break;
 
-   case 'topic':
-    alpn_log('TOPIC');
+   case 'topic_dom_view':
+    $topicDomId = $data['topic_dom_id'];
+    $results = $wpdb->get_results($wpdb->prepare(
+      "SELECT t.id FROM alpn_topics t WHERE t.owner_id = %d AND t.dom_id = %s UNION SELECT t.id FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE p.wp_id = %d AND t.dom_id = %s", $userId, $topicDomId, $userId, $topicDomId));
+     if (isset($results[0])) {
+       return true;
+     }
+   break;
 
-    $domId = $data['dom_id'];
-    $userId = $data['user_id'];
+   case 'topic_dom_edit':  //TODO Future allow editing as part of comprehensive multuser capability.
+    $topicDomId = $data['topic_dom_id'];
+    $results = $wpdb->get_results($wpdb->prepare(
+      "SELECT t.id FROM alpn_topics t WHERE t.owner_id = %d AND t.dom_id = %s ", $userId, $topicDomId));
+     if (isset($results[0])) {
+       return true;
+     }
+   break;
 
-
+   case 'action':
+    alpn_log('ACTION');
 
 
    break;
 
  }
-
 
   return false;
 }

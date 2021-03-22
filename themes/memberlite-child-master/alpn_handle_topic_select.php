@@ -41,9 +41,9 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 
-
-
 $recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
+//$recordId = "9ccaa051-40e4-11eb-bb24-d60131c04105";
+
 $ppCdnBase = PTE_IMAGES_ROOT_URL;
 
 $userInfo = wp_get_current_user();
@@ -51,14 +51,15 @@ $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
 $rightsCheckData = array(
-  "topic_dom_id" => $recordId,
-  "user_id" => $userID
+  "topic_dom_id" => $recordId
 );
-
-if (!pte_user_rights_check("topic", $rightsCheckData)) {
-
-
-
+if (!pte_user_rights_check("topic_dom_view", $rightsCheckData)) {
+  $html = "
+  <div class='pte_topic_error_message'>
+     You do not have permission to view this Topic. Please check with the Topic Owner.
+  </div>";
+  echo $html;
+  exit;
 }
 
 //pp($userInfo->data);
@@ -661,7 +662,7 @@ $html .= "
 					</div>
 			";
 $html .= "
-						<div id='pte_selected_topic_meta' class='pte_vault_row' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}'>
+						<div id='pte_selected_topic_meta' class='pte_vault_row' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId}'>
 							<div id='pte_topic_form_edit_view_left' class='pte_vault_row_padding_right'>
 								{$tabs}
 							</div>

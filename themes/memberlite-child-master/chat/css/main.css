@@ -1,5 +1,9 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,600,700,300italic);
 
+
+.emojionearea-editor{
+  margin-top: 0 !important;
+}
 .pte_chat_list_item{
   margin-bottom: 3px;
 }
@@ -544,7 +548,7 @@ div.edit-button {
 
 #channel-messages .timestamp {
   color: #333;
-  margin-left: 4px;
+  font-size: 10px;
 }
 
 #channel-messages p.body {

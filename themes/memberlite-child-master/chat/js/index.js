@@ -98,6 +98,7 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
             break;
             case 'pte_insert_new_object':
               var data = event.data;
+              console.log(data);
               pte_insert_new_object(data);
             break;
     				case 'pte_channel_deleted':
@@ -341,6 +342,10 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
         Video.createLocalTracks({
           audio: true
         }).then(localTracks => {
+          localTracks.forEach(function(track) {
+              track.disable();  //enter room muting my track
+          });
+
           return Video.connect(token, {
             name: roomChannelSid,
             tracks: localTracks
@@ -826,7 +831,7 @@ function pte_select_new_topic($el){
   activeChannelMetaSnapshot.name = "pte_handle_link";
   activeChannelMetaSnapshot.topic_id = topicId;
   activeChannelMetaSnapshot.channel_owner_id = channelOwnerId;
-  activeChannelMetaSnapshot.link_operation= "topic_select";
+  activeChannelMetaSnapshot.link_operation= "topic_same";
   pte_parent_message_send(activeChannelMetaSnapshot);
 }
 
@@ -961,6 +966,7 @@ function pte_handle_object_action(lineId) {
       var messageData = page.items[0].attributes.data;
       messageData.operation = "vault_item";
       var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
+      messageData.current_user_id = userContext.identity ;
       activeChannelMetaSnapshot.name = "pte_handle_object_action";
       activeChannelMetaSnapshot.object_action_data = messageData;
       pte_parent_message_send(activeChannelMetaSnapshot);
@@ -974,6 +980,8 @@ function createObject(message, $el) {
   var messageAttributes = message.attributes;
   var objectData = messageAttributes.data;
   var objectType = objectData.object_type;
+  var fileName = objectData.file_name ? objectData.file_name : "-- No Name Specified --";
+  var fileAbout = objectData.file_about? objectData.file_about : " --";
   var objectBody = '';
   var lineIndex = $el.data('index');
   switch(objectType) {
@@ -983,8 +991,8 @@ function createObject(message, $el) {
       objectBody += "<i class='far fa-file-pdf pte_chat_object_icon' onclick='pte_handle_object_action(" + lineIndex + ");' title='Vault Item iLink'></i>";
       objectBody += "</div>";
       objectBody += "<div class='pte_object_container_body'>";
-      objectBody += "<div class='pte_chat_object_title'  onclick='pte_handle_object_action(" + lineIndex + ");'>" + objectData.file_name + "</div>";
-      objectBody += "<div class='pte_chat_object_about'>" + objectData.file_about + "</div>";
+      objectBody += "<div class='pte_chat_object_title'  onclick='pte_handle_object_action(" + lineIndex + ");'>" + fileName + "</div>";
+      objectBody += "<div class='pte_chat_object_about'>" + fileAbout + "</div>";
       objectBody += "</div>";
       objectBody += "</div>";
     break;

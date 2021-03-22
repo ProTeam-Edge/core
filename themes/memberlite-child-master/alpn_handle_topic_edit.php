@@ -16,7 +16,17 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 $uniqueRecId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 $returnDetails = isset($qVars['return_details']) ? json_decode(stripslashes($qVars['return_details']), true) : array();
 
-
+$rightsCheckData = array(
+  "topic_dom_id" => $uniqueRecId
+);
+if (!pte_user_rights_check("topic_dom_edit", $rightsCheckData)) {
+  $html = "
+  <div class='pte_topic_error_message'>
+     You do not have permission to edit this Topic.
+  </div>";
+  echo $html;
+  exit;
+}
 
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;

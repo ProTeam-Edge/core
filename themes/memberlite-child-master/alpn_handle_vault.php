@@ -21,6 +21,18 @@ $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
+$rightsCheckData = array(
+  "topic_dom_id" => $recordId
+);
+if (!pte_user_rights_check("topic_dom_view", $rightsCheckData)) {
+  $html = "
+  <div class='pte_topic_error_message'>
+     You do not have permission to access this resource. Please check with the Topic Owner.
+  </div>";
+  echo $html;
+  exit;
+}
+
 $results = $wpdb->get_results(
 	$wpdb->prepare("SELECT t.*, p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.special, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special = 'user' WHERE t.dom_id = %s", $recordId)
  );
@@ -109,11 +121,11 @@ $html .= "
 							</span>
 						</div>
 						<div class='pte_vault_row_65 pte_vault_right'>
-							<i id='alpn_vault_email' class='far fa-envelope pte_icon_button' title='Send a Secure URL to this File by Email' onclick='alpn_vault_control(\"email\")'></i>
-							<i id='alpn_vault_sms' class='far fa-sms pte_icon_button' title='Send a Secure URL to this File by SMS/Text' onclick='alpn_vault_control(\"sms\")'></i>
-							<i id='alpn_vault_chat' class='far fa-comment-alt-lines pte_icon_button' title='Send a Chat Link to this File' onclick='alpn_vault_control(\"chat\")' ></i>
+							<i id='alpn_vault_email' class='far fa-envelope pte_icon_button' title='Send an xLink to this vault item by Email using an Interaction.' onclick='alpn_vault_control(\"email\")'></i>
+							<i id='alpn_vault_sms' class='far fa-sms pte_icon_button' title='Send an xLink to this vault item by SMS/Text using an Interaction.' onclick='alpn_vault_control(\"sms\")'></i>
+							<i id='alpn_vault_chat' class='far fa-comment-alt-lines pte_icon_button' title='Send an iLink to this vault item in Chat.' onclick='alpn_vault_control(\"insert_chat_vault_item\")' ></i>
 							<div style='display: inline-block; width: 20px;'></div>
-							<i id='alpn_vault_fax' class='far fa-fax pte_icon_button' title='Send this File as a Fax' onclick='alpn_vault_control(\"fax\")'></i>
+							<i id='alpn_vault_fax' class='far fa-fax pte_icon_button' title='Send this vault item by Fax using an Interaction.' onclick='alpn_vault_control(\"fax\")'></i>
 							<i id='alpn_vault_print' class='far fa-print pte_icon_button' title='Print File' onclick='alpn_vault_control(\"print\")'></i>
 							<i id='alpn_vault_download_original' class='far fa-file-download pte_icon_button' title='Download Original File' onclick='alpn_vault_control(\"download_original\")'></i>
 							<i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
@@ -127,7 +139,7 @@ $html .= "
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
 
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}'>
+					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}'>
 						<div id='pte_topic_form_title_view'>
 							<span class='fa-stack pte_stacked_icon'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>

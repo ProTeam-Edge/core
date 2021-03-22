@@ -29,8 +29,17 @@ $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 // pp($userID);
 // pp($userMeta);
 
-
-
+$rightsCheckData = array(
+  "topic_dom_id" => $recordId
+);
+if (!pte_user_rights_check("topic_dom_edit", $rightsCheckData)) {
+  $html = "
+  <div class='pte_topic_error_message'>
+     You do not have permission to design reports on this Topic.
+  </div>";
+  echo $html;
+  exit;
+}
 
 $html = '';
 $script = "<script>
@@ -415,7 +424,7 @@ $html .= "
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
 
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-tkey='{$typeKey}'>
+					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-tkey='{$typeKey}' data-oid='{$topicOwnerId}'>
 						<div id='pte_topic_form_title_view'>
 							<span class='fa-stack pte_stacked_icon'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>

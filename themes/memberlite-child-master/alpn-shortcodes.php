@@ -430,7 +430,7 @@ function usernetwork_shortcode($attr) {
 						<div id='alpn_chat_title_title'>Conversations&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<span id='pte_chat_topic_name'>--</span></div>
 						<div id='alpn_chat_stats'>
 							<div id='alpn_chat_chat'>
-								Chat  &nbsp;&nbsp;<span id='pte_chat_selected_unread'>--</span>&nbsp; / &nbsp;<span id='pte_chat_total_unreads'>--</span>
+								Chat  &nbsp;&nbsp;<span id='pte_chat_total_unreads'>--</span>
 							</div>
 							<div id='alpn_chat_audio'>
 								<div id='alpn_chat_audio_status_area'>Audio  &nbsp;&nbsp;<span id='pte_active_audio_channels'>--</span></div>{$audioOnOffHtml}{$audioMuteUnmuteHtml}

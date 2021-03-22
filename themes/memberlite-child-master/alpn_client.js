@@ -1024,8 +1024,7 @@ function pte_handle_interaction_link_object(theObj){
 
 function pte_handle_interaction_link(mapData){
 
-	//console.log('pte_handle_interaction_link');
-	//console.log(mapData);
+	console.log('pte_handle_interaction_link');
 
 		var operation = mapData.operation;
 		var topicId = mapData.topic_id;
@@ -1041,7 +1040,7 @@ function pte_handle_interaction_link(mapData){
 			case 'to_vault':
 				alpn_mission_control("vault", alpn_oldSelectedId);
 				alpn_mode = 'vault';
-				break;
+			break;
 			case 'to_info':
 				alpn_mission_control("select_topic", alpn_oldSelectedId);
 				alpn_mode = 'topic';
@@ -1065,6 +1064,9 @@ function pte_handle_interaction_link(mapData){
 				alpn_mission_control("select_topic", topicDomId);
 				pte_set_table_page(data);
 				alpn_mode = 'topic';
+			break;
+			case 'topic_same':
+				alpn_mission_control("select_by_mode", topicDomId);
 			break;
 			case 'topic_report':
 				var data = {
@@ -1131,8 +1133,7 @@ function pte_handle_interaction_link(mapData){
 				var domId = jQuery('#alpn_me_field').find('div.alpn_user_container').data('uid');
 				alpn_mission_control("vault", domId);
 				alpn_mode = 'vault';
-		break;
-
+			break;
 			case 'personal_info':
 				var domId = jQuery('#alpn_me_field').find('div.alpn_user_container').data('uid');
 				alpn_mission_control("select_topic", domId);
@@ -1146,6 +1147,11 @@ function pte_handle_interaction_link(mapData){
 			case 'vault_item':
 				pte_global_vault_item_dom_id = vaultDomId;
 				delete wpDataTables.table_vault;  //timing issues
+
+
+				console.log('pte_handle_interaction_link VAULT ITEM');
+				console.log(mapData);
+
 
 				if (topicId) {
 					var data = {
@@ -1711,30 +1717,40 @@ function pte_interactions_table() {
 	}
 }
 
-function pte_select_new_topic_from_id(topicId, channelOwnerId = 0) {
-	console.log('Selecting Topic From ID...', topicId, channelOwnerId);
-
+function pte_select_new_topic_from_id(topicId, vaultData = {}) {
+	console.log('Selecting Topic From ID...', topicId);
+		var isVaultItem = (typeof vaultData.vault_id != "undefined") ? true : false;
 		var security = specialObj.security;
 		jQuery.ajax({
 			url: alpn_templatedir + 'alpn_handle_get_topic_channel.php',
 			type: 'GET',
 			data: {
 				index_type: "topic_id",
-				channel_owner_id: channelOwnerId,
 				record_id: topicId,
 				security: security,
 			},
 			dataType: "json",
 			success: function(json) {
 				console.log('RETURNING FROM GET CHANNEL...');
-				console.log(json);
 				if (typeof json[0] != "undefined") {
-					var domId = json[0].dom_id;
-					alpn_mission_control('select_by_mode', domId);
+					var topicData = json[0];
+					var linkData = {
+						"topic_special": topicData.special,
+						"topic_dom_id": topicData.dom_id,
+						"topic_id": topicData.topic_id,
+						"topic_type_id": topicData.topic_type_id
+					};
+					if (isVaultItem) {
+						linkData.operation = "vault_item";
+						linkData.vault_id = vaultData.vault_id;
+						linkData.vault_dom_id = vaultData.vault_dom_id;
+					} else {
+						linkData.operation = "topic_same";
+					}
+					pte_handle_interaction_link(linkData);
 				} else {
 					console.log('Topic Not Found...');
 				}
-
 			},
 			error: function() {
 				console.log('problem getting domId');
@@ -1968,17 +1984,14 @@ function pte_start_chat(indexType, recordId){
 		data: {
 			index_type: indexType,
 			record_id: recordId,
-			security: security,
+			security: security
 		},
 		dataType: "json",
 		success: function(json) {
-
 			if (typeof json[0] != "undefined") {
 				var data = json[0];
 				data['name'] = 'pte_chat_message';
 				pte_message_chat_window(data);
-
-
 			} else {
 				console.log("Topic ID for Chat Not Found..." + recordId);
 			}
@@ -2197,7 +2210,8 @@ function pte_handle_sync(data, item = false){
 			break;
 
 			case 'pte_handle_object_action':
-				pte_handle_interaction_link(activeChannelMeta.object_action_data);
+				var objectData = activeChannelMeta.object_action_data;
+				pte_select_new_topic_from_id(objectData.topic_id, objectData);
 			break;
 			case 'pte_send_notification_by_sync':
 				pte_send_sync(activeChannelMeta);
@@ -2210,9 +2224,10 @@ function pte_handle_sync(data, item = false){
 			case 'pte_handle_link':
 				var linkOperation = activeChannelMeta.link_operation;
 				switch(linkOperation) {
-					case 'topic_select':
+					case 'topic_same':
 						console.log("SELECTING NEW TOPIC...");
-						pte_select_new_topic_from_id(activeChannelMeta.topic_id, activeChannelMeta.channel_owner_id);
+						console.log(activeChannelMeta);
+						pte_select_new_topic_from_id(activeChannelMeta.topic_id);
 					break;
 				}
 			break;
@@ -2872,7 +2887,7 @@ function pte_uppy_topic_logo_uppyeditor(){
 
 function pte_uppy_topic_logo(){
 
-	if (pte_external == false) {
+	if (pte_external == false && jQuery('#pte_profile_logo_selector').length) {
 
 		var fileCounter = 0;
 		var allowedFileTypes = ['image/jpeg', 'image/jpg',	'image/png', 'image/xvg+xml'];
@@ -3000,7 +3015,7 @@ function pte_uppy_topic_logo(){
 
 function pte_uppy_topic_icon(){
 
-	if (pte_external == false) {
+	if (pte_external == false && jQuery("#pte_profile_image_selector").length) {
 
 		var fileCounter = 0;
 		var allowedFileTypes = ['image/jpeg', 'image/jpg',	'image/png', 'image/xvg+xml'];
@@ -4214,6 +4229,7 @@ function alpn_vault_control(operation) {
 			var selectedTopicMeta = jQuery("div#pte_selected_topic_meta");
 			var topicSpecial = selectedTopicMeta.data("special");
 			var topicDomId = selectedTopicMeta.data("tdid");
+			var topicOwnerId = selectedTopicMeta.data("oid");
 			var topicId = selectedTopicMeta.data("tid");
 			var topicTypeId = selectedTopicMeta.data("ttid");
 
@@ -4221,6 +4237,7 @@ function alpn_vault_control(operation) {
 				"name": "pte_insert_new_object",
 				"file_name": fileName,
 				"file_about": formAbout,
+				"topic_owner_id": topicOwnerId,
 				"topic_special": topicSpecial,
 				"topic_dom_id": topicDomId,
 				"topic_id": topicId,
@@ -4725,7 +4742,7 @@ function alpn_setup_proteam_selector(uniqueRecId){
 			width: '100%',
 			allowClear: true,
 			closeOnSelect: false,
-			placeholder: "Send an Invitation..."
+			placeholder: "Send an invitation Interaction..."
 		});
 		jQuery('#alpn_proteam_selector').on('select2:select', function (e) {
 			var data = e.params.data;
