@@ -12,6 +12,17 @@ use Twilio\Rest\Client;
 
 
 
+// Find your Account Sid and Auth Token at twilio.com/console
+// and set the environment variables. See http://twil.io/secure
+$sid = ACCOUNT_SID;
+$token = AUTHTOKEN;
+$twilio = new Client($sid, $token);
+
+$service = $twilio->notify->v1->services
+                              ->create();
+
+print($service->sid);
+/* 
 $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
 $twilio = new Client($sid, $token);
@@ -26,4 +37,4 @@ $service = $twilio->chat->v2->services($serviceSid)
 
 
 
-print($service->friendlyName);
+print($service->friendlyName); */
