@@ -69,7 +69,7 @@ if(!empty($final_data)) {
 						$returned_contact_image = $base_image;
 					}
 				}
-				$sql = 'select device_token from wp_users where ID = '.$val->id.'';
+				$sql = 'select device_token from wp_users where ID = '.$id.'';
 				$data = $wpdb->get_row($sql);
 				$array[$val->special][$increment_variable]['name'] = $returned_name;
 				$array[$val->special][$increment_variable]['image'] = $returned_contact_image;
