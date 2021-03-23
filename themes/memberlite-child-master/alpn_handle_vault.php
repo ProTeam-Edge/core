@@ -14,7 +14,7 @@ $siteUrl = get_site_url();
 $ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
 $qVars = $_POST;
-$recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : 0;
+$recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : false;
 $alpn_selected_type = isset($qVars['alpn_selected_type']) ? $qVars['alpn_selected_type'] : false;
 
 $userInfo = wp_get_current_user();
@@ -27,7 +27,7 @@ $rightsCheckData = array(
 if (!pte_user_rights_check("topic_dom_view", $rightsCheckData)) {
   $html = "
   <div class='pte_topic_error_message'>
-     You do not have permission to access this resource. Please check with the Topic Owner.
+     You do not have permission to access this Topic. Please check with the Topic Owner.
   </div>";
   echo $html;
   exit;

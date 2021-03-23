@@ -14,7 +14,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 $qVars = $_POST;
-$rowToDelete = isset($qVars['rowToDelete']) ? $qVars['rowToDelete'] : '';
+$rowToDelete = isset($qVars['rowToDelete']) ? pte_digits($qVars['rowToDelete']) : '';
 
 $proTeamMemberResults = $wpdb->get_results(
 	$wpdb->prepare("SELECT topic_id, wp_id FROM alpn_proteams WHERE id = '%s' AND owner_id = '%s'", $rowToDelete, $userId)

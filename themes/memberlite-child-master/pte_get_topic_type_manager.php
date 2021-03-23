@@ -15,7 +15,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die();
 }
 
-$formId = isset($pVars['form_id']) ? $pVars['form_id'] : 0;
+$formId = isset($pVars['form_id']) ? pte_digits($pVars['form_id']) : 0;
 
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;

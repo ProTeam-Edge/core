@@ -5,10 +5,10 @@ $siteUrl = get_site_url();
 
 $qVars = $_POST;
 $topicContext = isset($qVars['topic_context']) ? $qVars['topic_context'] : '';
-$topicNetworkId = isset($qVars['topic_id']) ? $qVars['topic_id'] : '';
+$topicNetworkId = isset($qVars['topic_id']) ? pte_digits($qVars['topic_id']) : '';
 $topicNetworkName = isset($qVars['topic_name']) ? $qVars['topic_name'] : '';
-$topicWpId = isset($qVars['topic_wp_id']) ? $qVars['topic_wp_id'] : '';
-$networkDomId = isset($qVars['network_dom_id']) ? $qVars['network_dom_id'] : '';
+$topicWpId = isset($qVars['topic_wp_id']) ? pte_digits($qVars['topic_wp_id']) : '';
+$networkDomId = isset($qVars['network_dom_id']) ? pte_digits($qVars['network_dom_id']) : false;
 
 $html = "";
 

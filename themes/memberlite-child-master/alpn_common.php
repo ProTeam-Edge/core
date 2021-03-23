@@ -8,23 +8,34 @@ use Google\Cloud\Storage\StorageClient;
 use Twilio\Rest\Client;
 use PascalDeVink\ShortUuid\ShortUuid;
 
-
-
-function pte_user_rights_check ($resourceType, $data){
-
-  alpn_log('RIGHTS CHECK');
-
+function pte_user_rights_check($resourceType, $data){
+  //alpn_log('RIGHTS CHECK');
   global $wpdb;
-
   $userInfo = wp_get_current_user();
   $userId = $userInfo->data->ID;
   $userNetworkId = get_user_meta( $userID, 'pte_user_network_id', true );
-
   switch ($resourceType) {
 
-   case 'vault_item':
-     alpn_log('VAULT ITEM');
+    case 'vault_item_edit':    //It's one of mine. Or, I'm on a Topic Team with proper rights.
+      $vaultId = $data['vault_id'];
+      $results = $wpdb->get_results($wpdb->prepare(
+        "SELECT v.id FROM alpn_vault v WHERE v.owner_id = %d AND v.id = %d", $userId, $vaultId));
+       if (isset($results[0])) {
+         return true;
+       }
+    break;
 
+    case 'vault_item':
+    case 'vault_item_view':
+     $vaultId = $data['vault_id'];
+     $results = $wpdb->get_results($wpdb->prepare(
+       "SELECT v.id FROM alpn_vault v WHERE v.owner_id = %d AND v.id = %d
+        UNION
+        SELECT v.id FROM alpn_vault v INNER JOIN alpn_proteams p ON p.topic_id = v.topic_id AND p.wp_id = %d AND v.access_level <= p.access_level WHERE v.id = %d
+       ", $userId, $vaultId, $userId, $vaultId));
+      if (isset($results[0])) {
+        return true;
+      }
    break;
 
    case 'topic_dom_view':
@@ -39,7 +50,7 @@ function pte_user_rights_check ($resourceType, $data){
    case 'topic_dom_edit':  //TODO Future allow editing as part of comprehensive multuser capability.
     $topicDomId = $data['topic_dom_id'];
     $results = $wpdb->get_results($wpdb->prepare(
-      "SELECT t.id FROM alpn_topics t WHERE t.owner_id = %d AND t.dom_id = %s ", $userId, $topicDomId));
+      "SELECT t.id FROM alpn_topics t WHERE t.owner_id = %d AND t.dom_id = %s", $userId, $topicDomId));
      if (isset($results[0])) {
        return true;
      }
@@ -56,7 +67,9 @@ function pte_user_rights_check ($resourceType, $data){
   return false;
 }
 
-
+function pte_digits($sourceString){
+  return preg_replace('/\D/', '', $sourceString);
+}
 
 //TODO centralize this with report usages on ZIP
 
@@ -99,6 +112,23 @@ function pte_add_to_proteam($data) {
 	$wpdb->insert( 'alpn_proteams', $proTeamData );
 
   return $wpdb->insert_id;
+}
+
+function delete_from_cloud_storage($fileKey){
+  alpn_log("Deleting Vault Item in Cloud Storage.");
+	try {
+		$storage = new StorageClient([
+	    	'keyFilePath' => '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/proteam-edge-cf8495258f58.json'
+		]);
+    $bucket = $storage->bucket('pte_file_store1');
+      $object = $bucket->object($fileKey);
+      $object->delete();
+    return true;
+	} catch (\Exception $e) { // Global namespace
+    alpn_log('Failed to Delete from Cloud Storage');
+    alpn_log($e);
+    return false;
+	}
 }
 
 
@@ -1002,10 +1032,12 @@ function pte_get_viewer($viewerSettings){
   if ($linkKeyLength >= 20 && $linkKeyLength <= 22) {  //Valid Length.
     $results = $wpdb_readonly->get_results(
       $wpdb_readonly->prepare(
-        "SELECT v.file_name, v.description, v.mime_type, v.modified_date, l.* FROM alpn_links l LEFT JOIN alpn_vault v ON v.id = l.vault_id WHERE l.uid = '%s';", $linkKey)   //Case sensitive
+        "SELECT v.id, v.file_name, v.description, v.mime_type, v.modified_date, l.* FROM alpn_links l LEFT JOIN alpn_vault v ON v.id = l.vault_id WHERE l.uid = '%s';", $linkKey)   //Case sensitive
     );
     if (isset($results[0])) {
       $linkRow = $results[0];
+      //TODO Rights Check.
+
       $linkLastUpdate = $linkRow->last_update;
       $linkMeta = json_decode($linkRow->link_meta, true);
       $linkInteractionExpiration = isset($linkMeta['link_interaction_expiration']) ? $linkMeta['link_interaction_expiration'] : 0;
@@ -1051,7 +1083,7 @@ function pte_get_viewer($viewerSettings){
                     </div>
                   ";
       } else {
-        $viewDocumentHtml = "pte_view_document({$vaultId});";
+        $viewDocumentHtml = "pte_view_document({$vaultId}, '{$linkKey}');";
         if ($linkInteractionOptions == 1) {
           $printFiles = 'pte_ipanel_button_enabled';
         }
