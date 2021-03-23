@@ -71,11 +71,17 @@ if(!empty($final_data)) {
 				}
 				$sql = 'select device_token from wp_users where ID = '.$id.'';
 				$data = $wpdb->get_row($sql);
+				if($data){
+					$dId = $data->device_token;
+				}
+				else {
+					$dId = '';
+				}
 				$array[$val->special][$increment_variable]['name'] = $returned_name;
 				$array[$val->special][$increment_variable]['image'] = $returned_contact_image;
 				$array[$val->special][$increment_variable]['channel_id'] = $val->channel_id;
 				$array[$val->special][$increment_variable]['about'] = $about;
-				$array[$val->special][$increment_variable]['device_id'] = $data->device_token;
+				$array[$val->special][$increment_variable]['device_id'] = $dId;
 				$array[$val->special][$increment_variable]['id'] = $val->id;
 				$array[$val->special][$increment_variable]['source_type_key'] = $val->source_type_key;
 				if($val->special=='topic'){
