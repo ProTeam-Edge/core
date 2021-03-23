@@ -14,7 +14,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 
 $source = isset($qVars['source']) ? $qVars['source'] : '';
 $handle = isset($qVars['handle']) ? $qVars['handle'] : '';
-$topicId = isset($qVars['topic_id']) ? $qVars['topic_id'] : 0;
+$topicId = isset($qVars['topic_id']) ? pte_digits($qVars['topic_id']) : 0;
 $topicSpecial = isset($qVars['topic_special']) ? $qVars['topic_special'] : 'topic';
 
 $userInfo = wp_get_current_user();

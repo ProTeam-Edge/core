@@ -21,6 +21,7 @@ $indexType = isset($qVars['index_type']) ? $qVars['index_type'] : 'dom_id';
 
 $results = array();
 if ($indexType == "topic_id") {
+	$recordId = pte_digits($recordId );
 	$results = $wpdb->get_results(
 		$wpdb->prepare("SELECT t.connected_id, t.connected_topic_id, t.id AS topic_id, t.dom_id, t.owner_id, t.channel_id, t.image_handle, t.name AS topic_name, t.about, tt.special, tt.id AS topic_type_id, tt.name AS topic_type_name, tt.icon, t2.image_handle AS profile_handle FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t.connected_id = t2.owner_id AND t2.special = 'user' WHERE t.id = %s", $recordId)
 	 );

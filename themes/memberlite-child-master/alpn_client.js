@@ -3494,25 +3494,24 @@ function alpn_close_vault_work_area(){
 }
 
 function pte_handle_delete_response(response, theObject) {
+
 var security = specialObj.security;
+
 if (response == 'yes' && typeof theObject !== "undefined") {
+
 	var vaultId = theObject['vault_id'];
+
 	jQuery.ajax({
 		url: alpn_templatedir + 'alpn_handle_vault_delete_row.php',
-		type: 'GET',
+		type: 'POST',
 		data: {
 			vault_id: vaultId,
 			security: security,
 		},
 		dataType: "json",
 		success: function(json) {
-			console.log('deleted from cloud...');
 			alpn_set_vault_to_first_row = true;
 			wpDataTables.table_vault.fnFilter();
-			setTimeout(function(){
-				pte_show_message('green', 'timed', 'Delete successful.');
-			}, 500);
-			console.log(json);
 		},
 		error: function() {
 			console.log('problemo edit');
@@ -4072,22 +4071,48 @@ function pte_check_viewer_password(tObj){
 	}
 }
 
-function pte_view_document(vaultId, formId, filename = "pte_file.pdf") {
+function pte_view_document(vaultId, token = false) {
 	var security = specialObj.security;
-	console.log('Viewing Document...');
-	//console.log(vaultId);
-	var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId + '&security=' + security;
+	//console.log('Viewing Document...');
 
-	pdfui.openPDFByHttpRangeRequest({
-		range: {
-			url: srcFile
+	if (!token) {
+		var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId + '&security=' + security;
+	} else {
+		var srcFile = alpn_templatedir + 'alpn_get_vault_file_token.php?which_file=pdf&v_id=' + vaultId + '&security=' + security + '&token=' + token;
+	}
+
+	var xhr = new XMLHttpRequest();
+	xhr.open('GET', srcFile, true);
+	xhr.responseType = 'blob';
+	xhr.onreadystatechange = function () {
+		if (xhr.readyState !== 4) {
+			return;
 		}
-	}, {
-		fileName: filename
-	}).then(function(){
+		var status = xhr.status;
+		if (status == 204) {  //Premission Denied
+			console.log("Permission Denied");  //TODO handle - shouldn't happen too often cuz shouldnt show up. But yeah, hackers.
+			return;
+		}
 
-	});
-
+		if ((status >= 200 && status < 300) || status === 304) {
+			pdfui.openPDFByFile(xhr.response).catch(function (e) {
+					if (e.error === 11 && e.encryptDict.Filter === 'FOPN_foweb') {
+							console.log("ENCRYPTED DOC");
+							var fileOpenKey = getFileOpenKey(e.encryptDict);
+							pdfui.reopenPDFDoc(e.pdfDoc, {
+									fileOpen: {
+											encryptKey: fileOpenKey
+									}
+							})
+					}
+			})
+		} else {
+			console.log("ERROR OPENING FILE");
+			console.log(xhr);
+			console.log(status);
+		}
+	};
+	xhr.send();
 }
 /*
 function alpn_handle_close_add_edit(){
@@ -4420,7 +4445,7 @@ function alpn_vault_control(operation) {
 			jQuery('#alpn_name_field').attr('style', 'pointer-events: auto; opacity: 1.0;');
 			jQuery('#alpn_name_field_label').attr('style', 'pointer-events: auto; opacity: 1.0;');
 			if (vaultId) {
-				pte_view_document(vaultId, formId, fileName);
+				pte_view_document(vaultId);
 			}
 
 		break;
@@ -5283,17 +5308,42 @@ function pte_handle_report_settings(operation) {
 				success: function(json) {
 					console.log('pte_handle_report_change - SUCCESS');
 					var filename = "placeholder.pdf";
-					var srcFile = alpn_templatedir + "quick_report_tmp/" + json.pdf_key;
-					// wait TODO first time fails. Put in timer?
-					pdfui.openPDFByHttpRangeRequest({
-						range: {
-							url: srcFile,
-						}
-					}, {
-						fileName: filename
-					}).then(function(){
+					var srcFile = alpn_templatedir + "quick_report_tmp/" + json.pdf_key
 
-					});
+					var xhr = new XMLHttpRequest();
+					xhr.open('GET', srcFile, true);
+					xhr.responseType = 'blob';
+					xhr.onreadystatechange = function () {
+						if (xhr.readyState !== 4) {
+							return;
+						}
+						var status = xhr.status;
+						console.log(status);
+
+						if (status == 204) {  //Premission Denied
+							console.log("Permission Denied");
+							return;
+						}
+
+						if ((status >= 200 && status < 300) || status === 304) {
+							pdfui.openPDFByFile(xhr.response).catch(function (e) {
+									if (e.error === 11 && e.encryptDict.Filter === 'FOPN_foweb') {
+											console.log("ENCRYPTED DOC");
+											var fileOpenKey = getFileOpenKey(e.encryptDict);
+											pdfui.reopenPDFDoc(e.pdfDoc, {
+													fileOpen: {
+															encryptKey: fileOpenKey
+													}
+											})
+									}
+							})
+						} else {
+							console.log("ERROR OPENING FILE");
+							console.log(xhr);
+							console.log(status);
+						}
+					};
+					xhr.send();
 				},
 				error: function() {
 					console.log('pte_handle_report_change - FAIL');
@@ -5387,6 +5437,8 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 		case 'make_default_topic':
 		console.log('make_default_topic...');
+
+
 		var tableId = "table_tab_" + tabId;
 		var trObj =  jQuery('#alpn_main_container #alpn_field_' + uniqueRecId).closest('tr');
 		var vaultRowData = wpDataTables[tableId].fnGetData(trObj);

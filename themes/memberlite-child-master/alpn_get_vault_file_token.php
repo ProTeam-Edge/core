@@ -8,39 +8,39 @@ use Google\Cloud\Storage\StorageClient;
 //TODO RUGGEDIZE -- queries, exceptions, size of files??, logs SECURITY!!!, pass in id and check for match. nonce thing maybe?
 //TODO do not check over and over in failure situations.
 
+//$siteUrl = get_site_url();
 $html = "";
 $qVars = $_GET;
 
-if(!is_user_logged_in() ) {
-	echo 'Not a valid request.';
-	die;
-}
 if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    echo 'Not a valid request.';
    die;
 }
 
-$vId = isset($qVars['v_id']) ? pte_digits($qVars['v_id']) : '';
+$token = isset($qVars['token']) ? $qVars['token'] : '';
 $whichFile = isset($qVars['which_file']) ? $qVars['which_file'] : 'original';
 
-//TODO implement has rights to. Must be logged in and has rights to. Has rights to topic. Has rights to vault File.
-
-$rightsCheckData = array(
-  "vault_id" => $vId
-);
-if (!pte_user_rights_check("vault_item", $rightsCheckData)) {
-	http_response_code (204); //TODO fix this
-exit;
-}
+//$vId = "23498712983719283712";
+//use token to get vault id and retrurn period.
 
 $results = $wpdb->get_results(
-	$wpdb->prepare("SELECT mime_type, file_name, pdf_key, file_key FROM alpn_vault WHERE id = %s", $vId)   //TODO check for logged in.
+	$wpdb->prepare("SELECT v.mime_type, v.file_name, v.pdf_key, v.file_key, l.link_meta FROM alpn_links l LEFT JOIN alpn_vault v ON v.id = l.vault_id WHERE l.uid = %s", $token)   //TODO check for logged in.
  );
 
 if (isset($results[0])) {
 
+
+  alpn_log("Link META");
+  $linkMeta = json_decode($results->link_meta, true);
+
+  alpn_log($linkMeta);
+  
+
 	$mimeType = $results[0]->mime_type;
 	$fileName = $results[0]->file_name;
+
+
+
 	$fileNameExtension = pathinfo($fileName, PATHINFO_EXTENSION);
 
 	if (!$fileNameExtension) {
@@ -56,6 +56,7 @@ if (isset($results[0])) {
 		$objectName = $results[0]->file_key;
 	}
 try {
+
 	http_response_code (200);
 
 	$storage = new StorageClient([

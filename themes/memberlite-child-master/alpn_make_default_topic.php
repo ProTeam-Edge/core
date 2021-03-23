@@ -9,8 +9,8 @@ $results = array();
 
 $qVars = $_POST;
 $uniqueRecordId = isset($qVars['unique_record_id']) ? $qVars['unique_record_id'] : "";
-$newLinkId = isset($qVars['new_link_id']) ? $qVars['new_link_id'] : 0;
-$ownerTopicId1 = isset($qVars['owner_topic_id_1']) ? $qVars['owner_topic_id_1'] : 0;
+$newLinkId = isset($qVars['new_link_id']) ? pte_digits($qVars['new_link_id']) : 0;
+$ownerTopicId1 = isset($qVars['owner_topic_id_1']) ? pte_digits($qVars['owner_topic_id_1']) : 0;
 $topicSubjectToken = isset($qVars['topic_subject_token']) ? $qVars['topic_subject_token'] : "";
 
 $oldLinkId = '';
@@ -23,6 +23,10 @@ if ($newLinkId && $ownerTopicId1 && $topicSubjectToken) {
 			$wpdb->prepare("SELECT id FROM alpn_topic_links WHERE owner_id_1 = %d AND owner_topic_id_1 = %d AND subject_token = %s AND list_default = 'yes'", $userID, $ownerTopicId1, $topicSubjectToken)
 		 );
 
+		 alpn_log($results);
+		 alpn_log($wpdb->last_query);
+		 alpn_log($wpdb->last_error);
+
 		 if (isset($results[0])) {
 
 			 $oldLinkId = $results[0]->id;
@@ -34,6 +38,11 @@ if ($newLinkId && $ownerTopicId1 && $topicSubjectToken) {
 		 			'id' => $oldLinkId
 		 		);
 				$wpdb->update( 'alpn_topic_links', $linkUpdateData, $whereClause );
+
+				alpn_log('FIRST');
+				alpn_log($wpdb->last_query);
+				alpn_log($wpdb->last_error);
+
 		 }
 
 		$linkUpdateData = array(
@@ -45,6 +54,10 @@ if ($newLinkId && $ownerTopicId1 && $topicSubjectToken) {
 
 		//set new to yest
 	$wpdb->update( 'alpn_topic_links', $linkUpdateData, $whereClause );
+
+	alpn_log('SECOND');
+	alpn_log($wpdb->last_query);
+	alpn_log($wpdb->last_error);
 
 	} catch (\Exception $e) {
 			alpn_log($e);

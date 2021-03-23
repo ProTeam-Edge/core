@@ -17,7 +17,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 
-	$topicTypeId = isset($qVars['topicTypeId']) ? $qVars['topicTypeId'] : '';
+	$topicTypeId = isset($qVars['topicTypeId']) ? pte_digits($qVars['topicTypeId']) : '';
 	$topicTypeSpecial = isset($qVars['topicTypeSpecial']) ? $qVars['topicTypeSpecial'] : '';
 	$topicDomId = isset($qVars['previous_topic']) ? $qVars['previous_topic'] : '';
 	$returnDetails = isset($qVars['return_details']) ? json_decode(stripslashes($qVars['return_details']), true) : array();
