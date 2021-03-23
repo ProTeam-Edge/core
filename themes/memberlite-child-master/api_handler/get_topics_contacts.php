@@ -73,6 +73,7 @@ if(!empty($final_data)) {
 				$array[$val->special][$increment_variable]['image'] = $returned_contact_image;
 				$array[$val->special][$increment_variable]['channel_id'] = $val->channel_id;
 				$array[$val->special][$increment_variable]['about'] = $about;
+				$array[$val->special][$increment_variable]['device_token'] = $val->device_token;
 				$array[$val->special][$increment_variable]['id'] = $val->id;
 				$array[$val->special][$increment_variable]['source_type_key'] = $val->source_type_key;
 				if($val->special=='topic'){
