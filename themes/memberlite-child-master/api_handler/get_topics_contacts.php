@@ -12,7 +12,7 @@ $id = $data->id;
 /* $final_sql = 'SELECT l.subject_token, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t JOIN alpn_topics_linked_view as l on t.id=l.connected_topic_id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id =  '.$id.' and t.name!="" and (l.subject_token!="pte_place" and l.subject_token!="pte_organization"  and l.subject_token!="pte_notedigitaldocument" and l.subject_token!="pte_external")  UNION
 SELECT "" AS subject_token, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, "" AS connected_id, "" AS connected_image_handle, "" AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE t.channel_id <> "" AND p.wp_id = '.$id.''; */
 
-echo $final_sql = "SELECT tt.source_type_key, tt.topic_class, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = ".$id." and t.name!='' and tt.topic_class != 'link' 
+$final_sql = "SELECT tt.source_type_key, tt.topic_class, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = ".$id." and t.name!='' and tt.topic_class != 'link' 
 UNION
 SELECT tt.source_type_key, tt.topic_class, t.id, t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, '' AS connected_id, '' AS connected_image_handle, '' AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.channel_id <> '' AND p.wp_id = ".$id."";
 
@@ -69,7 +69,7 @@ if(!empty($final_data)) {
 						$returned_contact_image = $base_image;
 					}
 				}
-				$sql = 'select device_token from wp_users where ID = '.$val->owner_id.'';
+				$sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_network_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id='.$val->id.'';
 				$data = $wpdb->get_row($sql);
 				if($data){
 					$dId = $data->device_token;
