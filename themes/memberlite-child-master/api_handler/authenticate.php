@@ -30,6 +30,7 @@ if(!empty($email) && !empty($password))
 			$response_data['email'] = $verify->data->user_email;
 			$response_data['alpn_id'] = $get_alpn_result->id;
 			$response_data['token'] = $hash;
+			$response_data['device_id'] = $device_token;
 			$update_option = update_option('api_request_token_'.$verify->ID.'',$hash);
 			$update_sql= "update wp_users set device_token ='".$device_token."'  where ID =".$verify->ID." ";
 			$update_data = $wpdb->query($update_sql);
