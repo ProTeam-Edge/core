@@ -69,7 +69,7 @@ if(!empty($final_data)) {
 						$returned_contact_image = $base_image;
 					}
 				}
-				$sql = 'select device_token from wp_users where ID = '.$id.'';
+				$sql = 'select device_token from wp_users where ID = '.$val->owner_id.'';
 				$data = $wpdb->get_row($sql);
 				if($data){
 					$dId = $data->device_token;
