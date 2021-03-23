@@ -69,7 +69,7 @@ if(!empty($final_data)) {
 						$returned_contact_image = $base_image;
 					}
 				}
-				$sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_network_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id='.$val->id.'';
+				$sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_topic_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id='.$val->id.'';
 				$data = $wpdb->get_row($sql);
 				if($data){
 					$dId = $data->device_token;
