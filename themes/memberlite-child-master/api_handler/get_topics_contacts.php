@@ -69,10 +69,13 @@ if(!empty($final_data)) {
 						$returned_contact_image = $base_image;
 					}
 				}
+				$sql = 'select device_id from wp_users where ID = '.$val->id.'';
+				$data = $wpdb->get_row($sql);
 				$array[$val->special][$increment_variable]['name'] = $returned_name;
 				$array[$val->special][$increment_variable]['image'] = $returned_contact_image;
 				$array[$val->special][$increment_variable]['channel_id'] = $val->channel_id;
 				$array[$val->special][$increment_variable]['about'] = $about;
+				$array[$val->special][$increment_variable]['device_id'] = $data->device_id;
 				$array[$val->special][$increment_variable]['id'] = $val->id;
 				$array[$val->special][$increment_variable]['source_type_key'] = $val->source_type_key;
 				if($val->special=='topic'){
