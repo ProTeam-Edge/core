@@ -2,7 +2,7 @@
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
-
+include_once('../pte_config.php');
 
 
 $root = $_SERVER['DOCUMENT_ROOT'];
