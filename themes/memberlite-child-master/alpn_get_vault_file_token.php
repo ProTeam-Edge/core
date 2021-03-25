@@ -24,22 +24,33 @@ $whichFile = isset($qVars['which_file']) ? $qVars['which_file'] : 'original';
 //use token to get vault id and retrurn period.
 
 $results = $wpdb->get_results(
-	$wpdb->prepare("SELECT v.mime_type, v.file_name, v.pdf_key, v.file_key, l.link_meta FROM alpn_links l LEFT JOIN alpn_vault v ON v.id = l.vault_id WHERE l.uid = %s", $token)   //TODO check for logged in.
+	$wpdb->prepare("SELECT v.mime_type, v.file_name, v.pdf_key, v.file_key, l.link_meta, l.last_update, l.created_date, l.expired FROM alpn_links l LEFT JOIN alpn_vault v ON v.id = l.vault_id WHERE l.uid = %s", $token)   //TODO check for logged in.
  );
 
 if (isset($results[0])) {
 
+  $result = $results[0];
 
-  alpn_log("Link META");
-  $linkMeta = json_decode($results->link_meta, true);
+  $linkMeta = json_decode($result->link_meta, true);
 
-  alpn_log($linkMeta);
-  
+  $baseDate =  $result->last_update ? $result->last_update : $result->created_date;
+  $linkExpiration = $linkMeta['link_interaction_expiration'];
+
+  $now = new DateTime();
+  $baseDateObj = new DateTime($baseDate);
+
+  $baseDateObj->modify("+{$linkExpiration} minutes");
+  $linkExpired = (($baseDateObj < $now) && ($linkExpiration > 0)) || ($result->expired == 'true');
+
+  if ($linkExpired) {
+    $html = "Permission Denied.";
+    http_response_code (204);
+    echo $html;
+    exit;
+  }
 
 	$mimeType = $results[0]->mime_type;
 	$fileName = $results[0]->file_name;
-
-
 
 	$fileNameExtension = pathinfo($fileName, PATHINFO_EXTENSION);
 
@@ -75,6 +86,7 @@ try {
 		exit;
 }
 } else {
+  $html = "Permission Denied.";
 	http_response_code (204); //TODO fix this
 }
 echo $html;

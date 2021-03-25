@@ -56,35 +56,21 @@ function pte_save_process(Process $process, $uxMeta) {
 
     global $wpdb;
 
-    $impNetworkTotal = IMP_NETWORK_TOTAL;
-    $impTopicTotal = IMP_TOPIC_TOTAL;
-    $impInteractionTypeTotal = IMP_INTERACTION_TYPE_TOTAL;
-    $impRequiresAttentionTotal = IMP_REQUIRES_ATTENTION_TOTAL;
-    $impRevisitTotal = IMP_REVISIT_TOTAL;
+    alpn_log("SAVING PROCESS");
+    alpn_log($uxMeta);
 
-    $requiresAttentionStep = IMP_REQUIRES_ATTENTION_STEP;
-    $requiresAttentionInfo = IMP_REQUIRES_ATTENTION_INFO;
-
-    $networkValueVip = IMP_NETWORK_VIP;
-    $networkValueGeneral = IMP_NETWORK_GENERAL;
-    $topicValueVit = IMP_TOPIC_VIT;
-    $topicValueGeneral = IMP_TOPIC_GENERAL;
-
-    $easingTotal = IMP_EASING_TOTAL;
-
-    $ownerNetworkId =	isset($uxMeta['owner_network_id']) ? $uxMeta['owner_network_id'] : 0;
+    $ownerNetworkId =	isset($uxMeta['owner_network_id']) ? pte_digits($uxMeta['owner_network_id']) : 0;
     $altId =	isset($uxMeta['alt_id']) && !$ownerNetworkId ? $uxMeta['alt_id'] : '';
     $interactsWithId =	isset($uxMeta['interacts_with_id']) ? $uxMeta['interacts_with_id'] : '';
-    $expirationMinutes =	isset($uxMeta['expiration_minutes']) ? $uxMeta['expiration_minutes'] : 0;
+    $expirationMinutes =	isset($uxMeta['expiration_minutes']) ? pte_digits($uxMeta['expiration_minutes']) : 0;
 
-    $stepRequiresUserAttention = 	isset($uxMeta['requires_user_attention']) ? $uxMeta['requires_user_attention'] : false;
-    $stepRequiresUserNotification = 	isset($uxMeta['requires_user_notification']) ? $uxMeta['requires_user_notification'] : false;
-
-    $networkId  =	isset($uxMeta['network_id']) ? $uxMeta['network_id'] : 0;
-    $topicId  =	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : 0;
+    $networkId  =	isset($uxMeta['network_id']) ? pte_digits($uxMeta['network_id']) : 0;
+    $topicId  =	isset($uxMeta['topic_id']) ? pte_digits($uxMeta['topic_id']) : 0;
 
     $networkImportant  =	isset($uxMeta['network_important']) ? $uxMeta['network_important'] : false;
     $topicImportant  =	isset($uxMeta['topic_important']) ? $uxMeta['topic_important'] : false;
+    $stepRequiresUserAttention = 	isset($uxMeta['requires_user_attention']) ? $uxMeta['requires_user_attention'] : false;
+    $interactionComplete = 	isset($uxMeta['interaction_complete']) ? $uxMeta['interaction_complete'] : false;
 
     if ($ownerNetworkId || $altId) {
 
@@ -92,42 +78,14 @@ function pte_save_process(Process $process, $uxMeta) {
       $processValues = json_encode(get_values($process));
       $now = date ("Y-m-d H:i:s", time());
 
-      $requiresAttentionValue = 0;
-      if ($stepRequiresUserAttention || $stepRequiresUserNotification) {
-        $requiresAttentionValue = $requiresAttentionStep; //TODO Doesn't do this right. Need to fix it. Test for attention then address notification.
-      }
-
-      $networkValue = 0;
-      if ($networkId) {
-        if ($networkImportant) {
-          $networkValue = $networkValueVip;
-        } else {
-          $networkValue = $networkValueGeneral;
-        }
-      }
-
-      $topicValue = 0;
-      if ($topicId) {
-        if ($topicImportant) { //TODO IS in VIP list
-          $topicValue = $topicValueVit;
-        } else {
-          $topicValue = $topicValueGeneral;
-        }
-      }
       $processData = array(
         'owner_network_id' => $ownerNetworkId,
-        'imp_network_total' => $impNetworkTotal,
-        'imp_topic_total' => $impTopicTotal,
-        'imp_interaction_type_total' => $impInteractionTypeTotal,
-        'imp_requires_user_attention_total' => $impRequiresAttentionTotal,
-        'imp_requires_user_attention_value' => $requiresAttentionValue,
-        'imp_time_urgency_total' => $impRevisitTotal,
         'imp_network_id' => $networkId,
-        'imp_network_value' => $networkValue,
+        'network_is_important' => $networkImportant,
+        'topic_is_important' => $topicImportant,
+        'interaction_complete' => $interactionComplete,
+        'requires_user_attention' => $stepRequiresUserAttention,
         'imp_topic_id' => $topicId,
-        'imp_topic_value' => $topicValue,
-        'imp_easing_total' => $easingTotal,
-        'expiration_minutes' => $expirationMinutes,
         'interacts_with_id' => $interactsWithId,
         'alt_id' => $altId,
         'process_id' => $processId,
