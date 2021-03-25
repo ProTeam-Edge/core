@@ -34,9 +34,7 @@ $chatGrant = new ChatGrant();
 	// Add grant to token
 	$token->addGrant($chatGrant);
 
-echo '<pre>';
-print_r( $token->toJWT());
-die;
+
 /* $final_sql = 'SELECT l.subject_token, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t JOIN alpn_topics_linked_view as l on t.id=l.connected_topic_id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id =  '.$id.' and t.name!="" and (l.subject_token!="pte_place" and l.subject_token!="pte_organization"  and l.subject_token!="pte_notedigitaldocument" and l.subject_token!="pte_external")  UNION
 SELECT "" AS subject_token, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, "" AS connected_id, "" AS connected_image_handle, "" AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id WHERE t.channel_id <> "" AND p.wp_id = '.$id.''; */
 
@@ -130,8 +128,8 @@ if(!empty($final_data)) {
 		$user_image = $base_image;
 	}
 	$array['user_image'] = $user_image; 
-	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>'');
+	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>$token->toJWT());
 } else {
-	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array,'token'=>'');
+	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array,'token'=>$token->toJWT());
 }
 echo json_encode($response); 
