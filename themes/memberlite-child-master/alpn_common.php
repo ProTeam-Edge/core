@@ -16,10 +16,11 @@ function pte_user_rights_check($resourceType, $data){
   $userNetworkId = get_user_meta( $userID, 'pte_user_network_id', true );
   switch ($resourceType) {
 
-    case 'vault_item_edit':    //It's one of mine. Or, I'm on a Topic Team with proper rights.
+    case 'vault_item_edit':   //Mine or Shared Contact Topic.
       $vaultId = $data['vault_id'];
       $results = $wpdb->get_results($wpdb->prepare(
-        "SELECT v.id FROM alpn_vault v WHERE v.owner_id = %d AND v.id = %d", $userId, $vaultId));
+        "SELECT v.id FROM alpn_vault v WHERE v.owner_id = %d AND v.id = %d
+         UNION SELECT v.id FROM alpn_vault v INNER JOIN alpn_topics t ON t.id = v.topic_id AND t.connected_id = %d WHERE v.id = %d", $userId, $vaultId, $userId, $vaultId));
        if (isset($results[0])) {
          return true;
        }
@@ -27,12 +28,15 @@ function pte_user_rights_check($resourceType, $data){
 
     case 'vault_item':
     case 'vault_item_view':
-     $vaultId = $data['vault_id'];
+     $vaultId = $data['vault_id'];    //Mine, My Contacts, My Topics
      $results = $wpdb->get_results($wpdb->prepare(
        "SELECT v.id FROM alpn_vault v WHERE v.owner_id = %d AND v.id = %d
-        UNION
+         UNION
+        SELECT v.id FROM alpn_vault v INNER JOIN alpn_topics t ON t.id = v.topic_id AND t.connected_id = %d WHERE v.id = %d
+         UNION
         SELECT v.id FROM alpn_vault v INNER JOIN alpn_proteams p ON p.topic_id = v.topic_id AND p.wp_id = %d AND v.access_level <= p.access_level WHERE v.id = %d
-       ", $userId, $vaultId, $userId, $vaultId));
+       ", $userId, $vaultId, $userId, $vaultId, $userId, $vaultId));
+
       if (isset($results[0])) {
         return true;
       }
@@ -46,7 +50,6 @@ function pte_user_rights_check($resourceType, $data){
        return true;
      }
    break;
-
    case 'topic_dom_edit':  //TODO Future allow editing as part of comprehensive multuser capability.
     $topicDomId = $data['topic_dom_id'];
     $results = $wpdb->get_results($wpdb->prepare(
@@ -841,6 +844,7 @@ function pte_manage_link($operation, $requestData){
         'link_type' => $linkType,
         'about' => $about,
         'link_meta' => json_encode($requestData),
+        'created_date' => $now,
         'last_update' => $now
       );
       $wpdb->insert( 'alpn_links', $rowData );
@@ -1157,6 +1161,10 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
   $domId = isset($data['dom_id']) ? $data['dom_id'] : 0;
   $vaultId = isset($data['vault_id']) ? $data['vault_id'] : 0;
   $topicId = isset($data['topic_id']) ? $data['topic_id'] : 0;
+
+  $topicKey = isset($data['topic_key']) ? $data['topic_key'] : 0;
+  $accessLevel = isset($data['access_level']) ? $data['access_level'] : 0;
+
   $perPage = isset($data['per_page']) ? $data['per_page'] : 5;
   $subjectToken = isset($data['subject_token']) ? $data['subject_token'] : '';
 
@@ -1164,8 +1172,6 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
   $connectedTopicDomId = isset($data['connected_topic_dom_id']) ? $data['connected_topic_dom_id'] : '';
 
   $topicTypeFormId = isset($data['topic_type_form_id']) ? $data['topic_type_form_id'] : 0;   //Topic Manager
-
-
 
   switch ($type) {
     case "topic_link":   //TODO broken. Only supports one subject_token per topic.
@@ -1208,12 +1214,12 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
     ";
     break;
     case "vault":
-    $query = "
+      $query = "
       WITH tempList AS
       (
         SELECT id, row_number() OVER ( order by modified_date DESC ) AS row_num
         FROM alpn_vault_all
-        WHERE topic_id = {$topicId}
+        WHERE topic_key = '{$topicKey}' AND access_level <= {$accessLevel}
       )
       SELECT  row_num
       FROM    tempList
@@ -1235,13 +1241,19 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
     break;
 }
   if ($query) {
+
     $result = $wpdb->get_row($query);
+
+    alpn_log('QUERY');
+    alpn_log($result);
+    alpn_log($query);
+
     if (isset($result->row_num)) {
       $rowNum = $result->row_num;
       return intval(($rowNum - 1) / $perPage);
     }
   }
-  return 0;
+  return -1;
 }
 
 function pte_async_job ($url, $params) {
@@ -1688,27 +1700,21 @@ function pte_manage_topic_link($operation, $requestData, $subjectToken = 'pte_ex
   }
 }
 
-
 function pte_update_interaction_weight($listKey, $data) {
     global $wpdb;
-    $interaction = $whereClause = array();
+    $interactionUpdates = $whereClause = array();
     $operation = isset($data['operation']) ? $data['operation'] : "important_added";
-    $networkValueVip = IMP_NETWORK_VIP;
-    $networkValueGeneral = IMP_NETWORK_GENERAL;
-    $topicValueVit = IMP_TOPIC_VIT;
-    $topicValueGeneral = IMP_TOPIC_GENERAL;
+    $importanceValue = ($operation == 'important_added') ? 1 : 0;
     $whereClause['owner_network_id'] = $data['owner_network_id'];
     if ($listKey == 'pte_important_network') {
-      $networkValue = ($operation == 'important_added') ? $networkValueVip : $networkValueGeneral;
+      $interactionUpdates['network_is_important'] = $importanceValue;
       $whereClause['imp_network_id'] = $data['item_id'];
-      $interaction['imp_network_value'] = $networkValue;
     } else {  //TOPIC
-      $topicValue = ($operation == 'important_added') ? $topicValueVit : $topicValueGeneral;
+      $interactionUpdates['topic_is_important'] = $importanceValue;
       $whereClause['imp_topic_id'] = $data['item_id'];
-      $interaction['imp_topic_value'] = $topicValue;
     }
     $whereClause['state'] = 'active';
-    $wpdb->update( 'alpn_interactions', $interaction, $whereClause );
+    $wpdb->update( 'alpn_interactions', $interactionUpdates, $whereClause );
 }
 
 function pte_get_important_items($listKey){

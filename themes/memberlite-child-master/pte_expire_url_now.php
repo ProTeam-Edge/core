@@ -15,7 +15,7 @@ $now = date ("Y-m-d H:i:s", time());
 
 	$linkInfo = array(
 		'link_id' => $linkId,
-		'owner_id' => $userID
+		'owner_id' => $userID,
 	);
 pte_manage_link('expire_link', $linkInfo);
 pte_json_out($linkInfo);

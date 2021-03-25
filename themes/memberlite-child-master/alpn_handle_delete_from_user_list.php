@@ -11,7 +11,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 }
 $qVars = $_POST;
 $listKey = isset($qVars['list_key']) ? $qVars['list_key'] : '';
-$itemId	 = isset($qVars['item_id']) ? $qVars['item_id'] : '';
+$itemId	 = isset($qVars['item_id']) ? pte_digits($qVars['item_id']) : false;
 
 $userInfo = wp_get_current_user();
 $ownerId = $userInfo->data->ID;

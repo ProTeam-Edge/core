@@ -19,7 +19,6 @@ $ownerNetworkId = get_user_meta( $ownerId, 'pte_user_network_id', true );
 $listItem = array("error" => "missing data...");
 
 if ($listKey && $itemId && $ownerNetworkId) {
-
 		$listItem = array(
 			'owner_id'=> $ownerId,
 			'owner_network_id' => $ownerNetworkId,
@@ -28,9 +27,9 @@ if ($listKey && $itemId && $ownerNetworkId) {
 		);
 		$wpdb->insert( 'alpn_user_lists', $listItem );
 
+		$listItem['operation'] = "important_added";
 		pte_update_interaction_weight($listKey, $listItem);
-		//$listItem['wpdb_lq'] = $wpdb->last_query;
-		//$listItem['wpdb_le'] = $wpdb->last_error;
+
 		$data = array(
 			"sync_type" => "add_update_section",
 			"sync_section" => "user_list_update",

@@ -1339,29 +1339,28 @@ ul#menu-member-menu li a {
 }
 
 
-.pte_importance_progress_bg{
+.pte_importance_bg{
 	position: absolute;
-	top: 15px;
+	top: 11px;
 	right: 12px;
 	background-color: white;
-	height: 25px;
-	width: 25px;
+	height: 30px;
+	width: 30px;
 	border-radius: 50%;
 	opacity: 0.9;
+  border: solid 5px green;
 }
 
-.pte_importance_progress_bg_done{
-	position: absolute;
-	top: 10px;
-	right: 7px;
-	height: 35px;
-	width: 35px;
-	border-radius: 50%;
-	background-color: white;
-	opacity: 0.9;
-	border: solid 7px #308014;
-	padding-top: 4px;
-	padding-left: 2px;
+.pte_importance_icon{
+	position: relative;
+  height: 20px;
+  width: 20px;
+  line-height: 20px;
+  font-size: 16px;
+  text-align: center;
+  top: 0;
+  left: 0;
+  color: green;
 }
 
 .pte_interaction_complete{

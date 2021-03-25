@@ -1033,8 +1033,12 @@ function pte_handle_interaction_link(mapData){
 		var topicTypeId = mapData.topic_type_id;
 		var topicDomId = mapData.topic_dom_id;
 		var networkDomId = mapData.network_dom_id;
+
 		var vaultId = mapData.vault_id;
 		var vaultDomId = mapData.vault_dom_id;
+		
+		var vaultTopicKey = "";
+		var vaultAccessLevel = "";
 
 		switch(operation) {
 			case 'to_vault':
@@ -1170,7 +1174,7 @@ function pte_handle_interaction_link(mapData){
 						"per_page": 5
 					};
 					alpn_mission_control("vault", networkDomId);
-					pte_set_table_page(data);
+					pte_set_table_page(data);  //Topic
 				}
 				alpn_wait_for_ready(10000, 250,
 					function(){
@@ -1181,29 +1185,47 @@ function pte_handle_interaction_link(mapData){
 						}
 						return false;
 					},
-					function(){
+					function(){  //Vault
+
+						console.log('FOUND VAULT TABLE');
+						var security = specialObj.security;
+
 						var data = {
 							"table_type": "vault",
 							"topic_id": topicId,
 							"vault_id": vaultId,
 							"owner_id": alpn_user_id,
+							"topic_key": vaultTopicKey,
+							"access_level": vaultAccessLevel,
 							"per_page": 5
 						};
 						jQuery.ajax({
-							url: alpn_templatedir + 'pte_get_topic_page.php',
+							//HERE1
+							url: alpn_templatedir + 'pte_get_topic_page.php',   //Vault
 							type: 'POST',
 							data: {
-								"data": data
+								"data": data,
+								"security": security
 							},
 							dataType: "json",
 							success: function(json) {
+
+								console.log("JSON");
+								console.log(json);
 								var table = wpDataTables.table_vault;
-								var currentPage = table.api().page();
-								if (currentPage != json.page_number) {
-										table.api().page(json.page_number).draw('page');
+
+								if (json.page_number == -1) {   //handle vault item not found
+									alpn_set_vault_to_first_row = true;
+									table.api().page(0).draw('page');
+								} else {
+									var currentPage = table.api().page();
+									if (currentPage != json.page_number) {
+											table.api().page(json.page_number).draw('page');
+									}
 								}
 							},
 							error: function() {
+								console.log("VAULT AJAX PROBLEM");
 							}
 						})
 					},
@@ -1248,7 +1270,7 @@ function pte_show_process_ux(processId) {
 			type: 'POST',
 			data: {
 				process_id: processId,
-				security: security,
+				security: security
 
 			},
 			dataType: "html",
@@ -1587,11 +1609,9 @@ function pte_make_interaction_panel(uxMeta, rowNumber) {
 	var backGroundSrc = alpn_templatedir + 'dist/assets/interaction_card_background_' + processColorMap[interactionType] + '.png';  //TODO consider making the filename same as interaction type
 
 	html += "<div class='pte_interaction_background_container'><img class='interaction_background_image' src='" + backGroundSrc + "'></div>";
+	html += "<div id='pte_importance_icon_" + rowNumber + "' class='pte_importance_bg'><div class='pte_importance_icon'></div></div>";
 	if (interactionComplete) {
-		html += "<div class='pte_importance_progress_bg_done'><i class='far fa-check pte_interaction_complete' style=''></i></div>";
 	} else {
-		html += "<div class='pte_importance_progress_bg'></div>";
-		html += "<div class='pte_interaction_progress_bar_outer'><div id='pte_interaction_progress_bar_" + rowNumber + "' class='pte_interaction_progress_bar_inner' ></div></div>";
 	}
 	html += "<div class='pte_interaction_card_title_container'>";
 	html += "<div class='pte_interaction_card_title_inner_left'>" + interactionTypeNameStatus +"</div>";
@@ -1635,7 +1655,7 @@ function pte_interactions_table() {
 	console.log("Handling Interactions Table...");
 
 	var formattedField = "";
-	var pteControl, priority;
+	var pteControl, priority, titleImportance, titleState;
 	var tableData = wpDataTables[alpn_activity_table_id].fnGetData();
 	var uxMeta = {};
 
@@ -1652,6 +1672,7 @@ function pte_interactions_table() {
 		uxMeta = JSON.parse(tableData[i][3]);
 		uxMeta.priority = tableData[i][5];
 		uxMeta.state =  tableData[i][6];
+		uxMeta.interaction_complete =  tableData[i][7];
 
 		if (tableData[i][3]) {
 			formattedField =  "<div class='pte_interaction_body'>" + pte_make_interaction_panel(uxMeta, i) + "</div>";
@@ -1661,21 +1682,28 @@ function pte_interactions_table() {
 
 		pteControl = jQuery("[data-uid=" + tableData[i][0] + "]");
 		pteControl.html(formattedField);
-		var interactionProgressBar = '#pte_interaction_progress_bar_' + i;
-		if (jQuery(interactionProgressBar).length) {
+		var interactionImportanceContainer = jQuery('#pte_importance_icon_' + i);
+		var interactionImportanceIcon = interactionImportanceContainer.find('div.pte_importance_icon');
 
-		var bar = new ProgressBar.Circle(interactionProgressBar, {
-		  strokeWidth: 18,
-		  color: '#005588',
-		  trailColor: '#00B9F1',
-		  svgStyle: null,
-			text: {
-			        value: parseInt(uxMeta.priority * 10),
-							className: 'pte_progress_bar_label'
-					}
-		});
-		bar.set(uxMeta.priority);
-	}
+		if (uxMeta.priority > 2) {
+			interactionImportanceIcon.css("color", "rgb(255, 140, 0)");
+			interactionImportanceContainer.css("border-color", "rgb(255, 140, 0)");
+			titleImportance = 'High';
+		} else {
+			interactionImportanceIcon.css("color", "green");
+			interactionImportanceContainer.css("border-color", "green");
+			titleImportance = 'Normal';
+		}
+
+		if (uxMeta.interaction_complete == '1') {  //true
+			titleState = "Complete";
+			interactionImportanceIcon.html("<i class='fas fa-check'>");
+		} else {  //completed
+			titleState = "In Process";
+			interactionImportanceIcon.html("<i class='fas fa-heart-rate'>");
+		}
+		interactionImportanceContainer.attr("title", titleState + "/" + titleImportance);
+
 		pteControl.parent().click(
 			function(){
 				var processId = jQuery(this).find("div.alpn_interaction_cell").data('uid');
@@ -5436,8 +5464,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 	switch(operation) {
 
 		case 'make_default_topic':
-		console.log('make_default_topic...');
-
 
 		var tableId = "table_tab_" + tabId;
 		var trObj =  jQuery('#alpn_main_container #alpn_field_' + uniqueRecId).closest('tr');
@@ -5523,8 +5549,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 					wpDataTables.table_reports.addOnDrawCallback( function(){
 						alpn_handle_reports_table();
 					})
-
-
 				},
       	error: function() {
 		//TODO
@@ -5729,6 +5753,8 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 							alpn_set_vault_to_first_row = true;
 							alpn_oldVaultSelectedId = '';
 						}
+
+
 						var alpn_vault_table_settings = JSON.parse(jQuery('#alpn_outer_vault :input')[2].value);
 						//console.log(alpn_vault_table_settings);  SETTINGS TO TABLE fed to datatable. Not a bad place to change settings.
 						//console.log(alpn_vault_table_settings.selector);
