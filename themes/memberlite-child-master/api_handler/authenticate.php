@@ -4,19 +4,13 @@ header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
 include_once('../pte_config.php');
 $root = $_SERVER['DOCUMENT_ROOT'];
-require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/sdk/vendor/autoload.php';
-use Twilio\Jwt\AccessToken;
-use Twilio\Jwt\Grants\ChatGrant;
+
 
 $input = file_get_contents('php://input');
 $data = json_decode($input);
-$twilioAccountSid = ACCOUNT_SID;
-$twilioApiKey = APIKEY;
-$twilioApiSecret = SECRETKEY;
 
-$serviceSid = CHATSERVICESID;
-$NOTIFYSSID = NOTIFYSSID;
-$FCMCREDENTIALSID = FCMCREDENTIALSID;
+
+
 //Wordpress authentication
 global $wpdb;
 $response_data = array();
@@ -41,23 +35,9 @@ if(!empty($email) && !empty($password))
 			$update_data = $wpdb->query($update_sql);
 			
 			
-				$username = $verify->ID;
-				$identity =$username;
-				$token = new AccessToken(
-				$twilioAccountSid,
-				$twilioApiKey,
-				$twilioApiSecret,
-				3600,
-				$identity
-			);
 			
-			// Create Chat grant
-			$chatGrant = new ChatGrant();
-			$chatGrant->setServiceSid($serviceSid);
-			$chatGrant->setPushCredentialSid($NOTIFYSSID);
-
-			// Add grant to token
-			$token->addGrant($chatGrant);
+			
+			
 		
 			// render token to string
 		
@@ -67,7 +47,7 @@ if(!empty($email) && !empty($password))
 			$response_data['alpn_id'] = $get_alpn_result->id;
 			$response_data['token'] = $hash;
 			$response_data['device_id'] = $device_token;
-			$response_data['chat_token'] = $token->toJWT();
+	
 			$response = array('success' => 1, 'message'=>'Login Success! Redirecting..','data'=>$response_data);
 		} else {
 			$response = array('success' => 0, 'message'=>'Your email and password do not match.');
