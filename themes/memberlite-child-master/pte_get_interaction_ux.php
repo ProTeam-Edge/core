@@ -211,7 +211,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$linkOptions = pte_make_link_options_html();
 			$html .= "
 				<div id='pte_interaction_link_options'>
-					<div class='pte_vault_bold'>URL Security Settings</div>
+					<div class='pte_vault_bold'>xLink Security Settings</div>
 					<div class='pte_vault_row'>
 						<div class='pte_vault_row_40 pte_vault_bold'>
 							<i class='far fa-tasks pte_plain_text' title='Permissions'></i> Permissions
@@ -410,7 +410,7 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 		case 'url_panel':
 			$html .= "
 					<div class='pte_outer_link_bar_container'>
-						<div class='pte_link_bar_title pte_title_link' title='Copy Secure URL to Clipboard.' onclick='pte_topic_link_copy_string(\"Secure URL\", \"{$secureURL}\");'><i class='far fa-copy' style='margin-right: 5px;'></i>Secure URL</div>
+						<div class='pte_link_bar_title pte_title_link' title='Copy Secure xLink to Clipboard.' onclick='pte_topic_link_copy_string(\"Secure xLink\", \"{$secureURL}\");'><i class='far fa-copy' style='margin-right: 5px;'></i>Secure xLink</div>
 						<div class='pte_outer_link_bar_links'>
 							<div class='pte_link_bar_link_all pte_link_bar_link_33'><div class='interaction_panel_row_link_no_link'><div class='pte_icon_interaction_link'><i class='far fa-tasks'></i></div>$linkInteractionOptions</div></div>
 							<div class='pte_link_bar_link_all pte_link_bar_link_33'><div class='interaction_panel_row_link_no_link'><div class='pte_icon_interaction_link'><i class='far fa-stopwatch'></i></div>{$linkInteractionExpiration}</div></div>
@@ -422,17 +422,27 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 
 		case 'topic_panel':
 			$html .= "
-					<div class='pte_outer_link_bar_container'>
+					  <div class='pte_outer_link_bar_container'>
 						<div class='pte_link_bar_title'>{$topicName}</div>
 						<div class='pte_outer_link_bar_links'>
-							<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-operation='topic_info' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
-							<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-operation='topic_vault' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>
-							<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}'  data-operation='topic_chat' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
-							<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}'  data-operation='topic_audio' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-microphone'></i></div>Audio</div></div>
+						<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='to_topic_info_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
+						<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='to_topic_vault_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>";
+			if ($topicTypeSpecial != "user") {
+				$html .= "
+						<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='to_topic_chat_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
+						<div class='pte_link_bar_link'></div>";
+			} else {
+				$html .= "<div class='pte_link_bar_link'></div><div class='pte_link_bar_link'></div>";
+			}
+			$html .= "
 						</div>
 					</div>
 					";
 		break;
+
+
+
+
 		case 'personal_panel':
 			$html .= "
 					<div class='pte_outer_link_bar_container'>
@@ -461,8 +471,8 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 				$status = "<i class='far fa-user' title='Member, Not Connected'></i>";
 			} else {
 				$commFeaturesLink = "
-				<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_chat' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
-				<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_audio' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-microphone'></i></div>Audio</div></div>
+					<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_chat_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
+					<div class='pte_link_bar_link'></div>
 				";
 				$status = "<i class='far fa-user-friends' title='Member, Connected'></i>";
 			}
@@ -470,9 +480,11 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 					<div class='pte_outer_link_bar_container'>
 						<div class='pte_link_bar_title'>{$networkName} {$status}</div>
 						<div class='pte_outer_link_bar_links'>
-							<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_info' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
-							<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_vault' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>
+
+							<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_info_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
+							<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_vault_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>
 							{$commFeaturesLink}
+
 						</div>
 					</div>
 					";

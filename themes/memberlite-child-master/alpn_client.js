@@ -426,36 +426,15 @@ function alpn_handle_extra_table(extraKey) {
 	}
 }
 
-function pte_make_map_data(topicDomId, topicId = 0, topicTypeId = 0, tabId = 0, topicSpecial = 'topic', vaultId = '') {
-	var replaceMe = (topicDomId == "replace_me") ? true : false;
-	if (alpn_mode == 'topic') {
-		var view_string = "info";
-	} else if (alpn_mode == 'vault') {
-		var view_string = "vault";
-	} else if (alpn_mode == 'report') {
-		var view_string = "report";
-	}
 
-	if (topicSpecial == 'contact') {
-		var topic_id = 0;
-		var networkDomId = topicDomId;
-		var network_id = topicId;
-		var type_string = 'network';
-		var topicDomId = '';
-	} else {
-		var topicDomId = topicDomId;
-		var topic_id = topicId;
-		var network_id = 0;
-		var type_string = 'topic';
-		var networkDomId = '';
-	}
+function pte_make_map_data(topicDomId, topicId = 0, topicTypeId = 0, tabId = 0, topicSpecial = 'topic', vaultId = '', operation = 'to_topic_info_by_id') {
+
+	var replaceMe = (topicDomId == "replace_me") ? true : false;
+
 	var mapData = {
-		network_dom_id: networkDomId,
-		network_id: network_id,
-		operation: type_string + "_" + view_string,
-		tab_id: tabId,
+		operation: operation,
 		topic_dom_id: topicDomId,
-		topic_id: topic_id,
+		topic_id: topicId,
 		topic_type_id: topicTypeId,
 		topic_special: topicSpecial,
 		vault_dom_id: '',
@@ -1025,6 +1004,7 @@ function pte_handle_interaction_link_object(theObj){
 function pte_handle_interaction_link(mapData){
 
 	console.log('pte_handle_interaction_link');
+	console.log(mapData);
 
 		var operation = mapData.operation;
 		var topicId = mapData.topic_id;
@@ -1032,13 +1012,19 @@ function pte_handle_interaction_link(mapData){
 		var networkId = mapData.network_id;
 		var topicTypeId = mapData.topic_type_id;
 		var topicDomId = mapData.topic_dom_id;
+		var topicSpecial = mapData.topic_special
 		var networkDomId = mapData.network_dom_id;
 
 		var vaultId = mapData.vault_id;
 		var vaultDomId = mapData.vault_dom_id;
-		
-		var vaultTopicKey = "";
-		var vaultAccessLevel = "";
+
+		var table_type = (topicSpecial == "contact") ? "network" : "topic";
+		var destinationTopicData = {
+			"table_type": table_type,
+			"dom_id": topicDomId,
+			"owner_id": alpn_user_id,
+			"per_page": 5
+		};
 
 		switch(operation) {
 			case 'to_vault':
@@ -1053,6 +1039,29 @@ function pte_handle_interaction_link(mapData){
 				alpn_mission_control("pdf_topic", alpn_oldSelectedId);
 				alpn_mode = 'report';
 			break;
+			case 'to_topic_info_by_id':
+				alpn_mission_control("select_topic", topicDomId);
+				if (mapData.topic_special != "user") {
+					pte_set_table_page(destinationTopicData);
+				}
+			break;
+			case 'to_topic_vault_by_id':
+				alpn_mission_control("vault", topicDomId);
+				if (mapData.topic_special != "user") {
+					pte_set_table_page(destinationTopicData);
+				}
+			break;
+			case 'to_topic_chat_by_id':
+				alpn_mission_control("select_by_mode", topicDomId);
+				if (mapData.topic_special != "user") {
+					pte_set_table_page(destinationTopicData);
+				}
+				if (!pte_chat_window_open) {
+					jQuery('#alpn_chat_panel').click();	
+				}
+			break;
+
+			//TODO some unused and old here.
 			case 'topic_audio':
 			case 'topic_chat':
 				if (!pte_chat_window_open) {
@@ -1152,30 +1161,22 @@ function pte_handle_interaction_link(mapData){
 				pte_global_vault_item_dom_id = vaultDomId;
 				delete wpDataTables.table_vault;  //timing issues
 
-
 				console.log('pte_handle_interaction_link VAULT ITEM');
 				console.log(mapData);
 
+				var table_type = (topicSpecial == "contact") ? "network" : "topic";
 
-				if (topicId) {
-					var data = {
-						"table_type": 'topic',
-						"dom_id": topicDomId,
-						"owner_id": alpn_user_id,
-						"per_page": 5
-					};
-					alpn_mission_control("vault", topicDomId);
+				var data = {
+					"table_type": table_type,
+					"dom_id": topicDomId,
+					"owner_id": alpn_user_id,
+					"per_page": 5
+				};
+				alpn_mission_control("vault", topicDomId);
+				if (mapData.topic_special != "user") {
 					pte_set_table_page(data);
-				} else {
-					var data = {
-						"table_type": 'network',
-						"dom_id": networkDomId,
-						"owner_id": alpn_user_id,
-						"per_page": 5
-					};
-					alpn_mission_control("vault", networkDomId);
-					pte_set_table_page(data);  //Topic
 				}
+
 				alpn_wait_for_ready(10000, 250,
 					function(){
 						if (pte_external == false && typeof wpDataTables.table_vault != 'undefined') {
@@ -1190,13 +1191,19 @@ function pte_handle_interaction_link(mapData){
 						console.log('FOUND VAULT TABLE');
 						var security = specialObj.security;
 
+						var topicMeta = jQuery("#pte_selected_topic_meta");
+						var topicAccessLevel = topicMeta.data("pl");
+
+						console.log(topicMeta);
+						console.log(topicAccessLevel);
+
 						var data = {
 							"table_type": "vault",
 							"topic_id": topicId,
 							"vault_id": vaultId,
 							"owner_id": alpn_user_id,
-							"topic_key": vaultTopicKey,
-							"access_level": vaultAccessLevel,
+							"topic_key": topicId,    //Why unknown
+							"permission": topicAccessLevel,
 							"per_page": 5
 						};
 						jQuery.ajax({
@@ -1531,14 +1538,19 @@ function pte_handle_file_away(tObj){
 
 function pte_make_interaction_vault_link(uxMeta) {
 
+	console.log("Making Link");
+	console.log(uxMeta);
+
 		var vaultId = uxMeta.vault_id;
 		var vaultDomId = uxMeta.vault_dom_id;
 		var topicId = uxMeta.topic_id;
 		var topicDomId = uxMeta.topic_dom_id;
 		var topicTypeId = uxMeta.topic_type_id;
+		var topicSpecial = uxMeta.topic_special;
 		var linkString = uxMeta.interaction_type_name;
 		var fileName = (uxMeta.vault_file_name) ? uxMeta.vault_file_name.replace(/\\(.)/mg, "$1") : "";
-		var vaultLink = vaultId ? '<div title="' + fileName + '" class="pte_topic_link" data-vault-id="' + vaultId  + '" data-vault-dom-id="' + vaultDomId  + '" data-topic-id="' + topicId  + '" data-topic-type-id="' + topicTypeId  + '" data-topic-dom-id="' + topicDomId  + '" data-operation="vault_item" onclick="event.stopPropagation(); pte_handle_interaction_link_object(this);"><i class="far fa-file-pdf"></i>&nbsp;&nbsp;' + linkString + '</div>' : '';
+
+		var vaultLink = vaultId ? '<div title="' + fileName + '" class="pte_topic_link" data-vault-id="' + vaultId  + '" data-topic-special="' + topicSpecial  + '" data-vault-dom-id="' + vaultDomId  + '" data-topic-id="' + topicId  + '" data-topic-type-id="' + topicTypeId  + '" data-topic-dom-id="' + topicDomId  + '" data-operation="vault_item" onclick="event.stopPropagation(); pte_handle_interaction_link_object(this);"><i class="far fa-file-pdf"></i>&nbsp;&nbsp;' + linkString + '</div>' : '';
 		return vaultLink;
 }
 
@@ -2547,7 +2559,7 @@ jQuery( document ).ready( function(){
 							console.log("Error Loading Interactions..."); //TODO Handle Error
 						});
 
-						var initialTopicData = pte_make_map_data(jQuery(".alpn_user_container").data("uid"), jQuery(".alpn_user_container").data("topic-id"), 5);
+						var initialTopicData = pte_make_map_data(jQuery(".alpn_user_container").data("uid"), jQuery(".alpn_user_container").data("topic-id"), 0, -1, "user");
 						pte_handle_interaction_link(initialTopicData);
 
 						jQuery("#alpn_selector_container_left").insertBefore('#table_network_filter');

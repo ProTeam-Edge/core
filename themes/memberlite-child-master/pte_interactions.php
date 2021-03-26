@@ -56,8 +56,8 @@ function pte_save_process(Process $process, $uxMeta) {
 
     global $wpdb;
 
-    alpn_log("SAVING PROCESS");
-    alpn_log($uxMeta);
+    // alpn_log("SAVING PROCESS");
+    // alpn_log($uxMeta);
 
     $ownerNetworkId =	isset($uxMeta['owner_network_id']) ? pte_digits($uxMeta['owner_network_id']) : 0;
     $altId =	isset($uxMeta['alt_id']) && !$ownerNetworkId ? $uxMeta['alt_id'] : '';
@@ -131,7 +131,8 @@ function pte_get_process_context($processData) { //TODO make this work for all i
      }
   }
 
-  if ($getNetworkTopicId) { // Important -- If needed, find way back to user's network contact
+  if ($getNetworkTopicId) { // TODO Important -- If needed, find way back to user's network contact. FIX THIS. Is it fixed with flippity below?
+
     $results = $wpdb->get_results(
       $wpdb->prepare("SELECT t.id FROM alpn_topics t JOIN alpn_topics t1 ON t.owner_id = t1.owner_id WHERE t1.id = %s AND t.connected_network_id = %s", $ownerNetworkId, $interactionNetworkId)
      );
@@ -140,10 +141,10 @@ function pte_get_process_context($processData) { //TODO make this work for all i
      }
   }
 
-  $networkData = (object)array();   //contact
+  $networkData = (object)array();   //OLD CONTACT
   if ($interactionNetworkId) {
     $results = $wpdb->get_results(
-      $wpdb->prepare("SELECT t.name, t.image_handle, t.dom_id, t.alt_id, t.connected_id, t.connected_network_id, u.id AS important_id FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.list_key = 'pte_important_network' AND u.owner_network_id = %s WHERE t.id = %s", $ownerNetworkId, $interactionNetworkId)
+      $wpdb->prepare("SELECT t.name, t.image_handle, t.dom_id, t.alt_id, t.connected_id, t.connected_network_id, u.id AS important_id FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.owner_network_id = %d AND u.list_key = 'pte_important_network' WHERE t.id = %s", $ownerNetworkId, $interactionNetworkId)
      );
      $networkData = isset($results[0]) ? $results[0] : (object)array();
    }
@@ -151,13 +152,29 @@ function pte_get_process_context($processData) { //TODO make this work for all i
    $topicData = (object)array();
    if ($topicId) {
        $results = $wpdb->get_results(
-        $wpdb->prepare("SELECT t.special, t.name, t.image_handle, t.connected_id, t.topic_type_id, t.dom_id, t.id AS topic_id, u.id AS important_id FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.list_key = 'pte_important_topic' AND u.owner_network_id = %s WHERE t.id = %s or t.dom_id = %s", $ownerNetworkId, $topicId, $topicId)
+        $wpdb->prepare("SELECT t.owner_id AS topic_owner_id, t.special, t.name, t.image_handle, t.connected_id, t.connected_topic_id, t.topic_type_id, t.dom_id, t.id AS topic_id, u.id AS important_id FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.owner_network_id = %d AND (u.list_key = 'pte_important_topic' OR u.list_key = 'pte_important_network') WHERE t.id = %s OR t.dom_id = %s", $ownerNetworkId, $topicId, $topicId)
         );
         $topicData = isset($results[0]) ? $results[0] : (object)array();
     }
 
+    if (isset($results[0])) {    //connected topic information also known as flippity dippity
+      $topicData = $results[0];
+      $topicOwnerId = $topicData->owner_id;
+      $connectedTopicId = $topicData->connected_topic_id;
+
+      $connectedTopicData = (object)array();
+      if ( ($topicOwnerId != $ownerId) && $connectedTopicId) {
+
+        $results = $wpdb->get_results(
+         $wpdb->prepare("SELECT t.owner_id AS topic_owner_id, t.special, t.name, t.image_handle, t.connected_id, t.connected_topic_id, t.topic_type_id, t.dom_id, t.id AS topic_id, u.id AS important_id FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.owner_network_id = %d WHERE t.id = %s OR t.dom_id = %s", $ownerNetworkId, $connectedTopicId, $connectedTopicId)
+         );
+         $topicData = isset($results[0]) ? $results[0] : (object)array();
+       }
+    }
+
     $userData = (object)array();
     $friendlyName = 'Member';
+
     if ($ownerNetworkId) {
         $results = $wpdb->get_results(
          $wpdb->prepare("SELECT topic_content from alpn_topics WHERE id = %s", $ownerNetworkId)
@@ -190,6 +207,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
       'topic_dom_id' => isset($topicData->dom_id) ? $topicData->dom_id : '',
       'topic_type_id' => isset($topicData->topic_type_id) ? $topicData->topic_type_id : 0,
       'topic_special' => isset($topicData->special) ? $topicData->special : 'topic',
+      'topic_owner_id' => isset($topicData->topic_owner_id) ? $topicData->topic_owner_id : 0,
       'topic_name' => isset($topicData->name) ? $topicData->name : '',
       'topic_icon' => isset($topicData->image_handle) ? $topicData->image_handle : '',
       'process_id' => $processId,

@@ -11,10 +11,6 @@ $userInfo = wp_get_current_user();
 $ownerId = $userInfo->data->ID;
 $ownerNetworkId = get_user_meta( $ownerId, 'pte_user_network_id', true );
 
-//Add lots of checks: Logged in, etc.
-
-//TODO Check for dupes and don't insert -- enforce here important with logged in,. ALSO in Edit
-
 
 $listItem = array("error" => "missing data...");
 

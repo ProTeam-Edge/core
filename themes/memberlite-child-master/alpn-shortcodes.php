@@ -409,7 +409,7 @@ function usernetwork_shortcode($attr) {
 				//$iconStr =
 				$optionsStr .= "<option value='{$key}'>{$value}</option>";
 			}
-			$html .= "<div id='pte_interaction_table_filter_container' class='alpn_selector_container_left pte_hidden_for_now'><select id='pte_interaction_table_filter' class='alpn_selector'>{$optionsStr}</select></div>";
+			// $html .= "<div id='pte_interaction_table_filter_container' class='alpn_selector_container_left pte_hidden_for_now'><select id='pte_interaction_table_filter' class='alpn_selector'>{$optionsStr}</select></div>";
 			$html .= do_shortcode("[wpdatatable id=4 var1='{$ownerNetworkId}' var2='active']");
 			$html = str_replace('table_5', 'table_interactions', $html);
 			$html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
