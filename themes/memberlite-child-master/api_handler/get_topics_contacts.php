@@ -59,6 +59,7 @@ if (strlen($string) > 50) {
 }
 return $string;
 }
+$channels = [];
 $base_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
 if(!empty($final_data)) {
 	$c = $t = $u = 0;
@@ -106,6 +107,8 @@ if(!empty($final_data)) {
 				$array[$val->special][$increment_variable]['name'] = $returned_name;
 				$array[$val->special][$increment_variable]['image'] = $returned_contact_image;
 				$array[$val->special][$increment_variable]['channel_id'] = $val->channel_id;
+				if(isset($val->channel_id) && !empty( $val->channel_id))
+				$channels[] =  $val->channel_id;
 				$array[$val->special][$increment_variable]['about'] = $about;
 				$array[$val->special][$increment_variable]['device_id'] = $dId;
 				$array[$val->special][$increment_variable]['id'] = $val->id;
@@ -128,8 +131,8 @@ if(!empty($final_data)) {
 		$user_image = $base_image;
 	}
 	$array['user_image'] = $user_image; 
-	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>$token->toJWT());
+	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
 } else {
-	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array,'token'=>$token->toJWT());
+	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
 }
 echo json_encode($response); 
