@@ -37,13 +37,13 @@ function pte_get_process_all(string $id): array
   //Get topic information
 
     $results = $wpdb->get_results(
-       $wpdb->prepare("SELECT json, ux_meta FROM alpn_interactions WHERE process_id = %s", $id)
+       $wpdb->prepare("SELECT json, ux_meta, imp_network_id, imp_topic_id, owner_network_id FROM alpn_interactions WHERE process_id = %s", $id)
      );
    if (isset($results[0])){
      $processData = $results[0];
      $processJson = json_decode($processData->json, true);
-
      $uxMeta = json_decode($processData->ux_meta, true);
+
      $process = Process::create($processJson);
      $pteProcessAll = array("process" => $process, "process_context" => $uxMeta);
 
@@ -281,16 +281,15 @@ function pte_manage_interaction_proper($data) {
     }
     $processId = $process->getId();
     $processContext['process_id'] = $processId;
-
     //update contact status evertime interaction is run. TODO What happens when this changes mid interaction?
     $processContext['connected_contact_status'] = 'not_connected_not_member';
     if (!$processContext['connected_id']) { //If not connected, see if member from email alt_id
-      if ($processContext['alt_id']) {  //is actually a user based on email so let's engage that way-- create inviation received
+      if ($processContext['alt_id']) {  //is actually a user based on email so let's engage that way--
         $connectedUserData = get_user_by('email', $processContext['alt_id']);
-        if (isset($connectedUserData->data->ID) && $connectedUserData->data->ID) {
+        if (isset($connectedUserData->data->connectedUserData) && $connectedUserData->data->ID) {
           $processContext['connected_contact_status'] = 'not_connected_member';
           $processContext['connected_contact_id_alt'] = $connectedUserData->data->ID;
-          $processContext['connected_contact_email_alt'] = $processContext['alt_id'];
+          $processContext['connected_contact_email_alt'] = $connectedUserData['alt_id'];
           $processContext['connected_contact_topic_id_alt'] = get_user_meta( $connectedUserData->data->ID, 'pte_user_network_id', true );
         }
       }

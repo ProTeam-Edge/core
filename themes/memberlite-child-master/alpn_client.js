@@ -1057,7 +1057,7 @@ function pte_handle_interaction_link(mapData){
 					pte_set_table_page(destinationTopicData);
 				}
 				if (!pte_chat_window_open) {
-					jQuery('#alpn_chat_panel').click();	
+					jQuery('#alpn_chat_panel').click();
 				}
 			break;
 
@@ -1575,6 +1575,28 @@ return {"cal_html": createdCal, "time_html": createdTime};
 
 }
 
+
+function pte_update_interaction_importance(interactionImportanceContainer, priority, interactionComplete) {
+	var interactionImportanceIcon = interactionImportanceContainer.find('div.pte_importance_icon');
+	if (priority > 2) {
+		interactionImportanceIcon.css("color", "rgb(255, 140, 0)");
+		interactionImportanceContainer.css("border-color", "rgb(255, 140, 0)");
+		titleImportance = 'High';
+	} else {
+		interactionImportanceIcon.css("color", "green");
+		interactionImportanceContainer.css("border-color", "green");
+		titleImportance = 'Normal';
+	}
+	if (interactionComplete == '1') {  //true
+		titleState = "Complete";
+		interactionImportanceIcon.html("<i class='fas fa-check'>");
+	} else {  //completed
+		titleState = "In Process";
+		interactionImportanceIcon.html("<i class='fas fa-heart-rate'>");
+	}
+	interactionImportanceContainer.attr("title", titleState + "/" + titleImportance);
+}
+
 function pte_make_interaction_panel(uxMeta, rowNumber) {
 
 	console.log("UXMETA");
@@ -1694,27 +1716,9 @@ function pte_interactions_table() {
 
 		pteControl = jQuery("[data-uid=" + tableData[i][0] + "]");
 		pteControl.html(formattedField);
+
 		var interactionImportanceContainer = jQuery('#pte_importance_icon_' + i);
-		var interactionImportanceIcon = interactionImportanceContainer.find('div.pte_importance_icon');
-
-		if (uxMeta.priority > 2) {
-			interactionImportanceIcon.css("color", "rgb(255, 140, 0)");
-			interactionImportanceContainer.css("border-color", "rgb(255, 140, 0)");
-			titleImportance = 'High';
-		} else {
-			interactionImportanceIcon.css("color", "green");
-			interactionImportanceContainer.css("border-color", "green");
-			titleImportance = 'Normal';
-		}
-
-		if (uxMeta.interaction_complete == '1') {  //true
-			titleState = "Complete";
-			interactionImportanceIcon.html("<i class='fas fa-check'>");
-		} else {  //completed
-			titleState = "In Process";
-			interactionImportanceIcon.html("<i class='fas fa-heart-rate'>");
-		}
-		interactionImportanceContainer.attr("title", titleState + "/" + titleImportance);
+		pte_update_interaction_importance(interactionImportanceContainer, uxMeta.priority, uxMeta.interaction_complete);
 
 		pteControl.parent().click(
 			function(){
@@ -4250,6 +4254,16 @@ function pte_copy_report_to_vault(actionOnReturn){
 		})
 }
 
+
+function pte_start_topic_team_invitation (topicId) {
+	var sendData = {
+		'topic_id': topicId,
+		'process_type_id': 'proteam_invitation'
+	};
+	pte_handle_widget_interaction(sendData);
+	pte_overlay_success('pte_proteam_add');  //Animates button to give user feedback that am interaction is starting. TODO get this right
+}
+
 function alpn_vault_control(operation) {
 	//Get Row Context
 	var trOb, rowData, s_id, from_id;
@@ -4741,8 +4755,15 @@ function alpn_setup_proteam_member_selector(proteam_id){
 
 function pte_handle_message_merge(docType = 'message'){
 
-    var security = specialObj.security;
+	//also handles importance weight changes so very chatty
+
+  var security = specialObj.security;
+
+
 	console.log("Handle Message Merge...");
+
+	var thisProcessId = jQuery("#pte_interaction_information_panel").data("pid");
+	console.log(thisProcessId);
 
 	var selectedTargetId, selectedTemplateId, contextTopicId;
 
@@ -4753,6 +4774,7 @@ function pte_handle_message_merge(docType = 'message'){
 		selectedTemplateId = parseInt(templateListData[0].id);
 		contextTopicId = parseInt(templateList.data('topic-id'));
 	}
+
 	var targetList = jQuery('#alpn_select2_small_fax_number_select');
 	var targetListData = targetList.select2('data');
 	if (typeof targetListData != 'undefined' && typeof targetListData[0] != 'undefined') {
@@ -4760,6 +4782,7 @@ function pte_handle_message_merge(docType = 'message'){
 	} else {
 		selectedTargetId = jQuery('#pte_to_line').data('cid');
 	}
+
 	var sendButton = jQuery('#pte_message_panel_send');
 
 	if (!selectedTargetId) {
@@ -4768,7 +4791,8 @@ function pte_handle_message_merge(docType = 'message'){
 		}
 	}
 
-	if (selectedTargetId && contextTopicId) {
+	if (selectedTargetId) {
+
 		if (sendButton.hasClass('pte_extra_button_disabled')) {
 			sendButton.removeClass('pte_extra_button_disabled');
 		}
@@ -4780,13 +4804,19 @@ function pte_handle_message_merge(docType = 'message'){
 				template_id: selectedTemplateId,
 				context_topic_id: contextTopicId,
 				target_topic_id: selectedTargetId,
+				process_id: thisProcessId,
 				security: security,
 				doc_type: docType
 			},
 			dataType: "json",
 			success: function(json) {
 				console.log("Message Merge JSON...");
-				//console.log(json);
+				console.log(json);
+
+				var contactImportant = json.contact_is_important;
+				var interactionPriorityContainer = jQuery("div.alpn_interaction_cell[data-uid='" + thisProcessId + "']").find("div.pte_importance_bg");
+				pte_update_interaction_importance(interactionPriorityContainer, (contactImportant == true) * 3, 0);
+
 				var messageTitle = json['message_title'];
 				var messageBody = json['message_body'];
 				jQuery('#pte_message_title_field').val(messageTitle);

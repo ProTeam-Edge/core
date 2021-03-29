@@ -44,7 +44,7 @@ $html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"ful
 
 $results = array(
   'table_html' => $html,
-  'filter_html' => $filterContainer
+  'filter_html' => ""
 );
 
 pte_json_out($results);

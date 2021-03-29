@@ -388,33 +388,19 @@ $settingsAccordion = "
 	</script>
 ";
 
-$proTeamSelector = '';  //TODO extend selector to include all Persons (minus self) Test. Cool do this.
-if ($topicBelongsToUser) {
-	$network = array();
-	$options = "";
-	$network = $wpdb->get_results( //for select box
-		$wpdb->prepare("SELECT t.id, t.name, t.connected_id, t.dom_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = %d AND tt.schema_key = 'Person' AND t.special != 'user' ORDER BY name ASC", $userID)
-	 );
-	foreach ($network as $key => $value){
-		$options .= "<option data-dom-id='{$value->dom_id}' data-wp-id='{$value->connected_id}' value='{$value->id}'>{$value->name}</option>";
-	}
-	$proTeamSelector = "
-		 <div id='alpn_proteam_selector_outer' class='alpn_proteam_selector_outer' style='float: right; display: {$proteamViewSelector};'>
-			<select id='alpn_proteam_selector' class='alpn_selector'>
-				<option></option>
-				{$options}
-			</select>
-		</div>
-	";
-}
-
 $proteam = $wpdb->get_results(  //get proteam
 	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id, t.alt_id, t.connected_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
  );
 
 $proTeamMembers = "";
+$pteAddTopicTeamMember = "";
+if ($topicBelongsToUser) {
+  $pteAddTopicTeamMember = "<i id='pte_proteam_add' class='far fa-plus-circle pte_proteam_add_icon' onclick='pte_start_topic_team_invitation({$topicId});' title='Send a Topic Team Invitation Interaction'></i>";
+}
+
+
 $topicHasTeamMembers = count($proteam) ? true : false;
-$proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title'>Topic Team</div>" : "";
+$proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Topic Team</div><div class='pte_proteam_title_right'>{$pteAddTopicTeamMember}</div></div>" : "";
 
 foreach ($proteam as $key => $value) {
 	if ($topicBelongsToUser) {
@@ -670,13 +656,6 @@ $html .= "
 								<script>pte_old_proteam_selected_id=''</script>
 								{$proTeamTitle}
 								<div id='alpn_inner_proteam_manager' class='alpn_inner_proteam_manager' data-for-topic='{$topicId}' data-for-topic-type='{$topicTypeId}' data-for-special='{$topicSpecial}' style='display: {$proteamContainer}'>
-									<div id='alpn_proteam_title_line'>
-										<div style='font-weight: bold; float: left; font-size: 14px; line-height: 32px;'>
-										&nbsp;
-										</div>
-										{$proTeamSelector}
-									</div>
-									<div style='clear: both;'></div>
 									<div id='alpn_proteam_selected_outer' class='alpn_proteam_selected_outer'>
 										{$proTeamMembers}
 									</div>

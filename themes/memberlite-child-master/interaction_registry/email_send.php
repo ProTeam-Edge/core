@@ -22,37 +22,37 @@ function pte_get_registry_email_send() {
 
   $registryArray = array(
       'send_email' => function(Token $token) {
-
-
             alpn_log('Start Everything Sending...');
             global $wpdb;
-
             $requestData = $token->getValue("process_context");
             $requestData['interaction_type_name'] = "File";
             $requestData['interaction_template_name'] = "";
-            $requestData['interaction_type_status'] = "Send URL by Email";
+            $requestData['interaction_type_status'] = "Send xLink by Email";
             $requestData['interaction_to_from_string'] = "To";
             $requestData['interaction_to_from_name'] = "";
             $requestData['interaction_regarding'] = $requestData['topic_name'];
             $requestData['interaction_vault_link'] = "";
             $requestData['interaction_file_away_handling'] = "delete_interaction";
 
-
             $emailContactTopicId =  $token->getValue("send_email_address_id");
 
             if ($emailContactTopicId) {    // TODO Why is this not in requestdata by now?
 
-              $results = $wpdb->get_results(
-              	$wpdb->prepare("SELECT t.special, t.topic_type_id, t.connected_id, t.topic_content, t.dom_id AS email_contact_dom_id,  p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle, t2.topic_content AS connected_topic_content, t2.id AS connected_topic_id, t2.dom_id AS connected_topic_dom_id FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special= 'user' WHERE t.id = %s", $emailContactTopicId)
-               );
-               if (count($results)) {
+              $ownerNetworkId = $requestData['owner_network_id'];
 
-                 $originalTopicId =
+              $results = $wpdb->get_results(
+              	$wpdb->prepare("SELECT u.id AS network_important, t.special, t.topic_type_id, t.connected_id, t.topic_content, t.dom_id AS email_contact_dom_id, t.connected_network_id, p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle, t2.topic_content AS connected_topic_content, t2.id AS connected_topic_id, t2.dom_id AS connected_topic_dom_id FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special = 'user' LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.owner_network_id = %d AND u.list_key = 'pte_important_network' WHERE t.id = %s", $ownerNetworkId, $emailContactTopicId)
+               );
+
+
+               if (count($results)) {
 
                   $emailContactData = $results[0];
                   $tTypeId =  $emailContactData->topic_type_id;
                   $tTypeSpecial =  $emailContactData->special;
                   $tConnectedId = $emailContactData->connected_id;
+
+                  $requestData['network_important'] = $emailContactData->network_important;
 
                   $tContent = json_decode($emailContactData->topic_content, true);
                   $ownerContent = json_decode($emailContactData->owner_topic_content, true);
@@ -60,17 +60,26 @@ function pte_get_registry_email_send() {
                   $requestData['target_topic_type_id'] = $tTypeId;
                   $requestData['target_topic_special'] = $tTypeSpecial;
 
-                  if ($tTypeSpecial == 'network') {
-                    if ($tConnectedId) { //if connected, use network contact data
-                      $tContent = json_decode($emailContactData->connected_topic_content, true);
-                    }
-                    $requestData['network_id'] = $emailContactTopicId;
-                    $requestData['connected_network_dom_id'] = $emailContactData->email_contact_dom_id;
-                  } else { //A topic that is a Person that has an email address -- they all should since required.  TODO can non-person's have email address?
+                  if ($tConnectedId) { //if connected, use network contact data
+                    $tContent = json_decode($emailContactData->connected_topic_content, true);
+                  }
+                  $requestData['network_id'] = $emailContactTopicId;
+                  $requestData['connected_network_dom_id'] = $emailContactData->email_contact_dom_id;
+                  $requestData['connected_contact_status'] = 'not_connected_not_member';
 
-                    //TODO I did this for a reason but it showed up wront last step. PTE-68
-                    //$requestData['topic_id'] = $emailContactTopicId;
-                    //$requestData['topic_dom_id'] = $emailContactData->email_contact_dom_id;
+                  //TODO Make Function
+                  if ($emailContactData->connected_id) {
+                    $requestData['connected_id'] = $emailContactData->connected_id;
+                    $requestData['connected_network_id'] = $emailContactData->connected_network_id;
+                    $requestData['connected_contact_status'] = 'connected_member';
+                  } else if ($processContext['alt_id']) {
+                    $connectedUserData = get_user_by('email', $processContext['alt_id']);
+                    if (isset($connectedUserData->data->connectedUserData) && $connectedUserData->data->ID) {
+                      $requestData['connected_contact_status'] = 'not_connected_member';
+                      $requestData['connected_contact_id_alt'] = $connectedUserData->data->ID;
+                      $requestData['connected_contact_email_alt'] = $connectedUserData['alt_id'];
+                      $requestData['connected_contact_topic_id_alt'] = get_user_meta( $connectedUserData->data->ID, 'pte_user_network_id', true );
+                    }
                   }
 
                   $emailAddress = $tContent['person_email'];
@@ -141,7 +150,7 @@ function pte_get_registry_email_send() {
 
           $requestData['interaction_to_from_name'] = $requestData["send_email_address_name"];
           $requestData['static_name'] = $requestData["send_email_address_name"];
-          $requestData['interaction_type_status'] = "URL Sent by Email";
+          $requestData['interaction_type_status'] = "xLink Sent by Email";
           $requestData['interaction_complete'] = true;
           $requestData['interaction_file_away_handling'] = "archive_interaction";
 
