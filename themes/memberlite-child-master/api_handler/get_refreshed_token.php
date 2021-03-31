@@ -11,12 +11,14 @@ $source_key = $data->source_key;
 $channelId = $data->channelId;
 $id = $data->id;
 $token = '';
-if($source_key=='core_contact') {
-	$sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_topic_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id='.$id.'';
+if(!empty($source_key) && !empty($channelId) && !empty($id))
+{
+	if($source_key=='core_contact') {
+		$sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_topic_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id='.$id.'';
 
-	$result = $wpdb->get_row($sql);
-	$token = $result->device_token;
+		$result = $wpdb->get_row($sql);
+		$token = $result->device_token;
+	}
 }
-
-$response = array('success' => 1, 'message'=>'No token found.','data'=>$token);
+$response = array('success' => 1, 'message'=>'success','data'=>$token);
 echo json_encode($response); 
