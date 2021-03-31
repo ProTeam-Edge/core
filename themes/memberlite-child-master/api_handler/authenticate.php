@@ -31,10 +31,14 @@ if(!empty($email) && !empty($password))
 			$get_alpn_result = $wpdb->get_row($sql);
 			
 			$update_option = update_option('api_request_token_'.$verify->ID.'',$hash);
-			$update_sql= "update wp_users set device_token ='".$device_token."'  where ID =".$verify->ID." ";
-			$update_data = $wpdb->query($update_sql);
 			
-			
+			$select_token =  "select device_token from wp_users where ID =".$verify->ID."";
+			$select_data = $wpdb->get_row($select_token);
+			if(empty($select_data->device_token))
+			{
+				$update_sql= "update wp_users set device_token ='".$device_token."'  where ID =".$verify->ID." ";
+				$update_data = $wpdb->query($update_sql);
+			}
 			
 			
 			
