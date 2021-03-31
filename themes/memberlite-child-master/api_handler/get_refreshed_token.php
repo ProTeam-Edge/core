@@ -9,9 +9,10 @@ $data = json_decode($input);
 $source_key = $data->source_key;
 $channelId = $data->channelId;
 $id = $data->id;
+$token = '';
 if($source_key=='core_contact') {
-	echo $sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_topic_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id='.$id.'';
-	die;
+	$sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_topic_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id='.$id.'';
+
 	$result = $wpdb->get_row($sql);
 	$token = $result->device_token;
 }
