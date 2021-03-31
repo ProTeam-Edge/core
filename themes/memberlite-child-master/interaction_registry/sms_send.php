@@ -29,7 +29,7 @@ function pte_get_registry_sms_send() {
             $requestData = $token->getValue("process_context");
             $requestData['interaction_type_name'] = "File";
             $requestData['interaction_template_name'] = "";
-            $requestData['interaction_type_status'] = "Send URL by SMS";
+            $requestData['interaction_type_status'] = "Send xLink by SMS";
             $requestData['interaction_to_from_string'] = "To";
             $requestData['interaction_to_from_name'] = "";
             $requestData['interaction_regarding'] = $requestData['topic_name'];

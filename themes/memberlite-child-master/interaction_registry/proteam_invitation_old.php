@@ -24,25 +24,23 @@ function pte_get_registry_proteam_invitation() {
   $registryArray = array(
       'request_sent' => function(Token $token) {  //Node 1 - waiting for send
 
-
-          alpn_log('Start Topic Team invitation...');
-
           global $wpdb;
-          $requestData = $token->getValue("process_context");
-          $requestData['interaction_type_name'] = "Team Invite";
-          $requestData['interaction_template_name'] = "";
-          $requestData['interaction_type_status'] = "Send";
-          $requestData['interaction_to_from_string'] = "To";
-          $requestData['interaction_to_from_name'] = "";
-          $requestData['interaction_regarding'] = $requestData['topic_name'];
-          $requestData['interaction_vault_link'] = "";
-          $requestData['interaction_file_away_handling'] = "delete_interaction";
 
+            $requestData = $token->getValue("process_context");
+            $requestData['interaction_type_name'] = "Team Invite";
+            $requestData['interaction_template_name'] = "";
+            $requestData['interaction_type_status'] = "Send";
+            $requestData['interaction_to_from_string'] = "To";
+            $requestData['interaction_to_from_name'] = $requestData['network_name'];
+            $requestData['interaction_regarding'] = $requestData['topic_name'];
+            $requestData['interaction_vault_link'] = "";
+            $requestData['interaction_file_away_handling'] = "delete_interaction";
+            $requestData['to_from'] = 'To';
 
-          //Update ProTeam Record with Process ID.
-          $proTeamData = array("process_id" => $requestData['process_id']);
-          $whereClause = array("id" => $requestData['proteam_row_id']);
-          $wpdb->update( "alpn_proteams", $proTeamData, $whereClause );
+            //Update ProTeam Record with Process ID.
+            $proTeamData = array("process_id" => $requestData['process_id']);
+            $whereClause = array("id" => $requestData['proteam_row_id']);
+            $wpdb->update( "alpn_proteams", $proTeamData, $whereClause );
 
 
             if ($token->getValue("message_title")) { //As long as there is a title, we can send.
@@ -120,9 +118,8 @@ function pte_get_registry_proteam_invitation() {
             return; //if successful TODO: is this always successful?
             }
 
-            $requestData['widget_type_id'] = "topic_team_invite";
-            //$requestData['information_title'] = "Send Invitation";
-            $requestData['information_title'] = "YO DAWG";
+            $requestData['widget_type_id'] = "message_send";
+            $requestData['information_title'] = "Send Invitation";
             $requestData['buttons'] =  array(
               "file" => true
               );

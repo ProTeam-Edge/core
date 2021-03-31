@@ -1163,7 +1163,7 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
   $topicId = isset($data['topic_id']) ? $data['topic_id'] : 0;
 
   $topicKey = isset($data['topic_key']) ? $data['topic_key'] : 0;
-  $accessLevel = isset($data['access_level']) ? $data['access_level'] : 0;
+  $permission = isset($data['permission']) ? $data['permission'] : 0;
 
   $perPage = isset($data['per_page']) ? $data['per_page'] : 5;
   $subjectToken = isset($data['subject_token']) ? $data['subject_token'] : '';
@@ -1219,7 +1219,7 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
       (
         SELECT id, row_number() OVER ( order by modified_date DESC ) AS row_num
         FROM alpn_vault_all
-        WHERE topic_key = '{$topicKey}' AND access_level <= {$accessLevel}
+        WHERE topic_key = '{$topicKey}' AND access_level <= {$permission}
       )
       SELECT  row_num
       FROM    tempList
@@ -1241,13 +1241,7 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
     break;
 }
   if ($query) {
-
     $result = $wpdb->get_row($query);
-
-    alpn_log('QUERY');
-    alpn_log($result);
-    alpn_log($query);
-
     if (isset($result->row_num)) {
       $rowNum = $result->row_num;
       return intval(($rowNum - 1) / $perPage);
@@ -1705,16 +1699,25 @@ function pte_update_interaction_weight($listKey, $data) {
     $interactionUpdates = $whereClause = array();
     $operation = isset($data['operation']) ? $data['operation'] : "important_added";
     $importanceValue = ($operation == 'important_added') ? 1 : 0;
+
     $whereClause['owner_network_id'] = $data['owner_network_id'];
+    $whereClause['state'] = 'active';
+
     if ($listKey == 'pte_important_network') {
       $interactionUpdates['network_is_important'] = $importanceValue;
       $whereClause['imp_network_id'] = $data['item_id'];
-    } else {  //TOPIC
-      $interactionUpdates['topic_is_important'] = $importanceValue;
-      $whereClause['imp_topic_id'] = $data['item_id'];
+      $wpdb->update( 'alpn_interactions', $interactionUpdates, $whereClause );
     }
-    $whereClause['state'] = 'active';
+
+    //Topic  Regarding or Context Topic can be any of Personal, Topic or Contact(Network) So if a user list is changed, importance is updated
+
+    //clean up query and run every time on Topic.
+    $interactionUpdates = array();
+    if (isset($whereClause['imp_network_id'])) {unset ($whereClause['imp_network_id']);}
+    $interactionUpdates['topic_is_important'] = $importanceValue;
+    $whereClause['imp_topic_id'] = $data['item_id'];
     $wpdb->update( 'alpn_interactions', $interactionUpdates, $whereClause );
+
 }
 
 function pte_get_important_items($listKey){

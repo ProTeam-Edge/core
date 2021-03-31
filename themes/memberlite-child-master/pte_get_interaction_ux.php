@@ -12,6 +12,29 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 
+
+
+
+// $proTeamSelector = '';  //TODO extend selector to include all Persons (minus self) Test. Cool do this.
+// if ($topicBelongsToUser) {
+// 	$network = array();
+// 	$options = "";
+// 	$network = $wpdb->get_results( //for select box
+// 		$wpdb->prepare("SELECT t.id, t.name, t.connected_id, t.dom_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = %d AND tt.schema_key = 'Person' AND t.special != 'user' ORDER BY name ASC", $userID)
+// 	 );
+// 	foreach ($network as $key => $value){
+// 		$options .= "<option data-dom-id='{$value->dom_id}' data-wp-id='{$value->connected_id}' value='{$value->id}'>{$value->name}</option>";
+// 	}
+// 	$proTeamSelector = "
+// 		 <div id='alpn_proteam_selector_outer' class='alpn_proteam_selector_outer' style='float: right; display: {$proteamViewSelector};'>
+// 			<select id='alpn_proteam_selector' class='alpn_selector'>
+// 				<option></option>
+// 				{$options}
+// 			</select>
+// 		</div>
+// 	";
+// }
+
 $siteUrl = get_site_url();
 
 $qVars = $_POST;
@@ -52,7 +75,7 @@ function pte_make_interaction_editor_ux($uxMeta) {
 
 	$interactionTypeNameStatus = "{$interactionTypeName} - {$interactionTemplateName}{$interactionTypeStatus}";
 
-	$priority =	isset($uxMeta['priority']) ? $uxMeta['priority'] * 100 : 0;
+	$priority =	isset($uxMeta['priority']) ? $uxMeta['priority'] : 0;
 	$processId = 	isset($uxMeta['process_id']) ? $uxMeta['process_id'] : "";
 	$processTypeId = 	isset($uxMeta['process_type_id']) ? $uxMeta['process_type_id'] : "";
 	$interactionState = 	isset($uxMeta['state']) ? $uxMeta['state'] : "";
@@ -69,7 +92,16 @@ function pte_make_interaction_editor_ux($uxMeta) {
 					<i data-pid='{$processId}' onclick='event.stopPropagation(); pte_handle_file_away(this);' class='far fa-sparkles pte_interaction_editor_button {$fileAwayButtonState}' title='File Interaction Away'></i></div>
 		";
 
-	if ($interactionComplete) {$html .= "<div class='pte_importance_progress_bg_done_editor'><i class='far fa-check pte_interaction_complete_editor'></i></div>";}
+	if ($interactionComplete) {
+		$interactionPriorityClass = "pte_interaction_complete_editor_normal";
+		$interactionPriorityBorderClass = "pte_importance_progress_bg_done_editor_normal";
+
+		if ($priority > 2) {
+			$interactionPriorityClass = "pte_interaction_complete_editor_important";
+			$interactionPriorityBorderClass = "pte_importance_progress_bg_done_editor_important";
+		}
+		$html .= "<div class='pte_importance_progress_bg_done_editor {$interactionPriorityBorderClass}'><i class='far fa-check pte_interaction_complete_editor {$interactionPriorityClass}'></i></div>";
+	}
 
 	$html .="
 			</div>
@@ -88,9 +120,10 @@ function pte_make_interaction_editor_ux($uxMeta) {
 		case 'fax_send':
 			$html .= pte_make_fax_panel($uxMeta);
 		break;
+		case 'topic_team_invite':
 		case 'email_send':
 		case 'sms_send':
-			$html .= pte_make_send_url_panel($uxMeta);
+			$html .= pte_make_send_panel($uxMeta);
 		break;
 		case 'waiting':
 		case 'information':
@@ -211,7 +244,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$linkOptions = pte_make_link_options_html();
 			$html .= "
 				<div id='pte_interaction_link_options'>
-					<div class='pte_vault_bold'>URL Security Settings</div>
+					<div class='pte_vault_bold'>xLink Security Settings</div>
 					<div class='pte_vault_row'>
 						<div class='pte_vault_row_40 pte_vault_bold'>
 							<i class='far fa-tasks pte_plain_text' title='Permissions'></i> Permissions
@@ -244,16 +277,22 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$sendKey = isset($uxMeta['fax_key']) ? 'send_fax' : 'send';
 			$sendKey = isset($uxMeta['email_key']) ? 'send_email' : 'send';
 			$sendKey = isset($uxMeta['sms_key']) ? 'send_sms' : 'send';
-			$selectPanel = "<select id='alpn_select2_small_template_select' class='' data-topic-id='{$topicId}'>";
-			$selectPanel .= "<option value='0'>Select Template...</option>";
-			foreach ($templates as $key => $value){
-				$id = $value['id'];
-				$description = $value['short_description'];
-				$defaultItem = $value['default_item'];
-				$selected = $defaultItem == true ? " SELECTED " : "";
-				$selectPanel .= "<option value='{$id}' {$selected}>{$description}</option>";
+			if (count($templates)) {
+				$selectPanel = "<select id='alpn_select2_small_template_select' class='' data-topic-id='{$topicId}'>";
+				$selectPanel .= "<option value='0'>Select Template</option>";
+				foreach ($templates as $key => $value){
+					$id = $value['id'];
+					$description = $value['short_description'];
+					$defaultItem = $value['default_item'];
+					$selected = $defaultItem == true ? " SELECTED " : "";
+					$selectPanel .= "<option value='{$id}' {$selected}>{$description}</option>";
+				}
+				$selectPanel .= "</select>";
+			} else {
+				$selectPanel = "&nbsp";
 			}
-			$selectPanel .= "</select>";
+
+
 			$html .= "
 					<div style='float: left; width: calc(100% - 60px); margin-top: 5px'>
 						<div style='width: 100%; margin-bottom: 0px;'>{$selectPanel}</div>
@@ -284,7 +323,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 		case 'select_topics_with_mobile_numbers':
 			$mobileNumbers  = isset($uxMeta['mobile_numbers']) ? $uxMeta['mobile_numbers'] : array();
 			$selectPanel = "<select id='alpn_select2_small_fax_number_select' data-topic-id='{$topicId}'>";
-			$selectPanel .= "<option value='0'>Select Recipient...</option>";
+			$selectPanel .= "<option value='0'>Select Recipient</option>";
 			foreach ($mobileNumbers as $key => $value){
 				$tId = $value['id'];
 				$tText = $value['text'];
@@ -307,7 +346,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 		case 'select_topics_with_email_addresses':
 			$emailAddresses  = isset($uxMeta['email_addresses']) ? $uxMeta['email_addresses'] : array();
 			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}'>";
-			$selectPanel .= "<option value='0'>Select Recipient...</option>";
+			$selectPanel .= "<option value='0'>Select Recipient</option>";
 			foreach ($emailAddresses as $key => $value){
 				$tId = $value['id'];
 				$tText = $value['text'];
@@ -331,7 +370,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$faxNumbers  = isset($uxMeta['fax_numbers']) ? $uxMeta['fax_numbers'] : array();
 			$faxNumbersById = array();
 			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}'>";
-			$selectPanel .= "<option value='0'>Select or Enter Recipient Information...</option>";
+			$selectPanel .= "<option value='0'>Select or Enter Recipient Information</option>";
 			foreach ($faxNumbers as $key => $value){
 				$id = $value['id'];
 				$name = $value['name'];
@@ -410,7 +449,7 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 		case 'url_panel':
 			$html .= "
 					<div class='pte_outer_link_bar_container'>
-						<div class='pte_link_bar_title pte_title_link' title='Copy Secure URL to Clipboard.' onclick='pte_topic_link_copy_string(\"Secure URL\", \"{$secureURL}\");'><i class='far fa-copy' style='margin-right: 5px;'></i>Secure URL</div>
+						<div class='pte_link_bar_title pte_title_link' title='Copy Secure xLink to Clipboard.' onclick='pte_topic_link_copy_string(\"Secure xLink\", \"{$secureURL}\");'><i class='far fa-copy' style='margin-right: 5px;'></i>Secure xLink</div>
 						<div class='pte_outer_link_bar_links'>
 							<div class='pte_link_bar_link_all pte_link_bar_link_33'><div class='interaction_panel_row_link_no_link'><div class='pte_icon_interaction_link'><i class='far fa-tasks'></i></div>$linkInteractionOptions</div></div>
 							<div class='pte_link_bar_link_all pte_link_bar_link_33'><div class='interaction_panel_row_link_no_link'><div class='pte_icon_interaction_link'><i class='far fa-stopwatch'></i></div>{$linkInteractionExpiration}</div></div>
@@ -422,17 +461,24 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 
 		case 'topic_panel':
 			$html .= "
-					<div class='pte_outer_link_bar_container'>
+					  <div class='pte_outer_link_bar_container'>
 						<div class='pte_link_bar_title'>{$topicName}</div>
 						<div class='pte_outer_link_bar_links'>
-							<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-operation='topic_info' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
-							<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-operation='topic_vault' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>
-							<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}'  data-operation='topic_chat' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
-							<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}'  data-operation='topic_audio' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-microphone'></i></div>Audio</div></div>
+						<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='to_topic_info_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
+						<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='to_topic_vault_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>";
+			if ($topicTypeSpecial != "user") {
+				$html .= "
+						<div class='pte_link_bar_link'><div data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='to_topic_chat_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
+						<div class='pte_link_bar_link'></div>";
+			} else {
+				$html .= "<div class='pte_link_bar_link'></div><div class='pte_link_bar_link'></div>";
+			}
+			$html .= "
 						</div>
 					</div>
 					";
 		break;
+
 		case 'personal_panel':
 			$html .= "
 					<div class='pte_outer_link_bar_container'>
@@ -461,8 +507,8 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 				$status = "<i class='far fa-user' title='Member, Not Connected'></i>";
 			} else {
 				$commFeaturesLink = "
-				<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_chat' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
-				<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_audio' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-microphone'></i></div>Audio</div></div>
+					<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_chat_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
+					<div class='pte_link_bar_link'></div>
 				";
 				$status = "<i class='far fa-user-friends' title='Member, Connected'></i>";
 			}
@@ -470,9 +516,11 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 					<div class='pte_outer_link_bar_container'>
 						<div class='pte_link_bar_title'>{$networkName} {$status}</div>
 						<div class='pte_outer_link_bar_links'>
-							<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_info' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
-							<div class='pte_link_bar_link'><div data-network-id='{$networkId}' data-network-dom-id='{$networkDomId}' data-operation='network_vault' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>
+
+							<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_info_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
+							<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_vault_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>
 							{$commFeaturesLink}
+
 						</div>
 					</div>
 					";
@@ -576,8 +624,8 @@ function pte_make_message_line ($lineType, $uxMeta) {
 		case 'message_editable_new':
 		$buttonLineHtml = pte_make_button_line('select_send', $uxMeta);
 			$html = 	"{$buttonLineHtml}
-								 <input type='text' id='pte_message_title_field' placeholder='Message Title...'></input>
-								 <textarea id='pte_message_body_area' placeholder='Message Body...'></textarea>
+								 <input type='text' id='pte_message_title_field' placeholder='Message Title'></input>
+								 <textarea id='pte_message_body_area' placeholder='Message Body'></textarea>
 								 <div class='pte_updated_message' style='display: {$messageVisibilty};'>{$updatedString}</div>
 						";
 		break;
@@ -585,8 +633,8 @@ function pte_make_message_line ($lineType, $uxMeta) {
 		case 'message_editable_update':
 		$buttonLineHtml = pte_make_button_line('update', $uxMeta);
 		$html = 	"{$buttonLineHtml}
-							 <input type='text' id='pte_message_title_field' value='{$messageTitle}' placeholder='Message Title...'></input>
-							 <textarea id='pte_message_body_area' placeholder='Message Body...'>{$messageBody}</textarea>
+							 <input type='text' id='pte_message_title_field' value='{$messageTitle}' placeholder='Message Title'></input>
+							 <textarea id='pte_message_body_area' placeholder='Message Body'>{$messageBody}</textarea>
 							 <div class='pte_updated_message' style='display: {$messageVisibilty};'>{$updatedString}</div>
 					";
 	break;
@@ -596,7 +644,7 @@ function pte_make_message_line ($lineType, $uxMeta) {
 		$html .= pte_make_button_line("accept_decline", $uxMeta);
 		$html .= "
 						<div id='pte_interaction_response_inner_textarea_container'>
-								<textarea id='pte_message_body_area_response' placeholder='Optional Note...'></textarea>
+								<textarea id='pte_message_body_area_response' placeholder='Optional Note'></textarea>
 						</div>
 					</div>
 		";
@@ -772,6 +820,7 @@ function pte_make_message_panel($uxMeta) {
 	global $wpdb;
 
 	$showExpiration = false; //TODO Implement Revisit.
+	$vaultItemHTML = "";
 
 	$userInfo = wp_get_current_user();
 	$ownerId = $userInfo->data->ID;
@@ -830,7 +879,7 @@ function pte_make_message_panel($uxMeta) {
 }
 
 
-function pte_make_send_url_panel($uxMeta) {
+function pte_make_send_panel($uxMeta) {
 
 	global $wpdb;
 
@@ -839,6 +888,7 @@ function pte_make_send_url_panel($uxMeta) {
 	$messageTypeId = $uxMeta['template_type_id'];
 
 	$widgetTypeId  = isset($uxMeta['widget_type_id']) ? $uxMeta['widget_type_id'] : '';
+	$vaultId  = isset($uxMeta['vault_id']) ? $uxMeta['vault_id'] : false;
 	//Lookup templates for this user for this template type
 
 	$templateData = $wpdb->get_results(
@@ -910,6 +960,13 @@ function pte_make_send_url_panel($uxMeta) {
 		$sendToHtml = pte_make_message_line('sms_send_to', $uxMeta);
 	}
 
+
+	if ($widgetTypeId == "topic_team_invite") {
+
+	}
+
+
+
 	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : 0;
 	$topicTypeId = 	isset($uxMeta['topic_type_id']) ? $uxMeta['topic_type_id'] : 0;
 	$topicTypeSpecial =	isset($uxMeta['topic_special']) ? $uxMeta['topic_special'] : 'topic';
@@ -917,15 +974,19 @@ function pte_make_send_url_panel($uxMeta) {
 
 	$html = "";
 	$messageLineHtml = pte_make_message_line('message_editable_new', $uxMeta);
-	$vaultItemHTML = pte_make_interaction_link('vault_item', $uxMeta);
-	$linkSettings = pte_make_button_line('link_settings', $uxMeta);
+	if ($vaultId) {
+		$vaultItemHTML = pte_make_interaction_link('vault_item', $uxMeta);
+		$linkSettings = pte_make_button_line('link_settings', $uxMeta);
+	}
 	$linkPanel = pte_make_interaction_link('topic_panel', $uxMeta);
+	$regardingLineHtml = pte_make_data_line('regarding_line', $uxMeta);
 
 	$html .= "
 	<div class='pte_interaction_information_panel'>
 		<div class='proteam_message_panel'>
 			<div style='margin-top: 32px; padding: 0 5px; font-size: 13px; font-weight: normal; line-height: 20px; margin-bottom: 0px;'>
 				{$sendToHtml}
+				{$regardingLineHtml}
 				{$messageLineHtml}
 				{$linkSettings}
 				{$vaultItemHTML}
