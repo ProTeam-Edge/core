@@ -15,5 +15,5 @@ if($source_key=='core_contact') {
 	$token = $data->device_token;
 }
 
-$response = array('success' => 1, 'message'=>'No token found.','data'=>$token,);
+$response = array('success' => 1, 'message'=>'No token found.','data'=>$token);
 echo json_encode($response); 
