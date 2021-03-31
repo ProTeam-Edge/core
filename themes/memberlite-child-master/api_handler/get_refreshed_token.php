@@ -10,21 +10,24 @@ $data = json_decode($input);
 $source_key = $data->source_key;
 $channelId = $data->channelId;
 $id = $data->id;
-$token = '';
+$identity = $data->identity;
+$token = [];
 if(!empty($source_key) && !empty($channelId) && !empty($id))
 {
 	if($source_key=='core_contact') {
 		$sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_topic_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id='.$id.'';
 
 		$result = $wpdb->get_row($sql);
-		$token = $result->device_token;
+		$token[] = $result->device_token;
 	}
 	else {
-		echo $sql = 'select u.ID as id,u.device_id as device_id from alpn_topics as a join alpn_proteams as ap on a.id=ap.topic_id join wp_users as u on ap.proteam_member_id=u.iD where a.channel_id="'.$channelId.'"';
+		echo $sql = 'select u.device_token , u.ID from alpn_proteams as ap join alpn_topics as ato on ap.proteam_member_id=ato.id join wp_users as u on ato.connected_id=u.ID where ap.topic_id="'.$id.'"';
 		$result = $wpdb->get_results($sql);
-		echo '<pre>';
-		print_r($result);
-		die;
+		foreach($result as $vals){
+			if($vals->ID!=$identity) {
+				$token[] = $vals->device_token
+			}
+		}
 	}
 }
 $response = array('success' => 1, 'message'=>'success','data'=>$token);
