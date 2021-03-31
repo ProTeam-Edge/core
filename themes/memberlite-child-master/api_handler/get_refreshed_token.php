@@ -20,8 +20,8 @@ if(!empty($source_key) && !empty($channelId) && !empty($id))
 		$token = $result->device_token;
 	}
 	else {
-		$sql = 'select u.ID as id,u.device_id as device_id from alpn_topics as a join alpn_proteams as ap on a.id=ap.topic_id join wp_users as u on ap.proteam_member_id=u.iD where a.channel_id="'.$channelId.'"';
-		$result = $wpdb->get_row($sql);
+		echo $sql = 'select u.ID as id,u.device_id as device_id from alpn_topics as a join alpn_proteams as ap on a.id=ap.topic_id join wp_users as u on ap.proteam_member_id=u.iD where a.channel_id="'.$channelId.'"';
+		$result = $wpdb->get_results($sql);
 		echo '<pre>';
 		print_r($result);
 		die;
