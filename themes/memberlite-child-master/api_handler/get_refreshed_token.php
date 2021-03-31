@@ -25,8 +25,8 @@ if(!empty($source_key) && !empty($channelId) && !empty($id))
 		$sql = 'select u.device_token,u.ID from alpn_topics as at join alpn_proteams as ap on at.id=ap.topic_id join alpn_topics as at2 on ap.proteam_member_id=at2.id join wp_users as u on at2.connected_id=u.ID where at.channel_id="'.$channelId.'"';
 		$result = $wpdb->get_results($sql);
 		foreach($result as $vals){
-			$id = $vals->ID;
-			if($id!=$identity) {
+			$uid = $vals->ID;
+			if($uid!=$identity) {
 				$token[] = $vals->device_token;
 			}
 		}
