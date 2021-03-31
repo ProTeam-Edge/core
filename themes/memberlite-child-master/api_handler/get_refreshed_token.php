@@ -12,7 +12,7 @@ $id = $data->id;
 $token = '';
 if($source_key=='core_contact') {
 $sql = 'select u.device_token from alpn_topics as a JOIN alpn_topics as b on a.connected_topic_id = b.id JOIN wp_users as u on b.owner_id = u.ID where a.id="'.$id.'"';
-$result = $wpdb->get_row($sql);
+$result = $wpdb->get_results($sql);
 echo '<pre>';
 print_r($result);
 }
