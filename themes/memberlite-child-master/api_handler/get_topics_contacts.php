@@ -119,17 +119,20 @@ if(!empty($final_data)) {
 				else if($val->special=='contact'){
 					$c++;
 				}
+				else if($val->special=='user'){
+					 if(isset($val->image_handle)) {
+						$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image_handle;
+					}
+					else { 
+						$user_image = $base_image;
+					}
+				}
 				else {
 					$u++;
 				}
 		}
 
-	 if(isset($final_data[0]->image_handle)) {
-		$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$final_data[0]->image_handle;
-	}
-	else {
-		$user_image = $base_image;
-	}
+	
 	$array['user_image'] = $user_image; 
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
 } else {
