@@ -121,7 +121,7 @@ if(!empty($final_data)) {
 				}
 				else if($val->special=='user'){
 					$explode_logged_user = explode(',',$returned_name);
-					$logged_user_name = $explode_logged_user[1];
+					$logged_user_name = trim($explode_logged_user[1]);
 					 if(isset($val->image_handle)) {
 						$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image_handle;
 					}
