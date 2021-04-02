@@ -26,15 +26,31 @@ print($service->sid);
 $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
 $twilio = new Client($sid, $token);
-$serviceSid = 'ISe2ce4eeed597d0b555132fa36d43f6be';
-$service = $twilio->chat->v2->services($serviceSid)
-                            ->update(array(
-                                         "notificationsAddedToChannelEnabled" => True,
-                                         "notificationsAddedToChannelSound" => "default",
-                                         "notificationsAddedToChannelTemplate" => "A New message"
-                                     )
-                            );
+$serviceSid = NOTIFYSSID;
+$service = $twilio->notify->v1->services($serviceSid);
+
+$json = json_decode(file_get_contents('php://input'), true);
 
 
+try {
+    $notification = $service->notifications->create(
+        [
+            'identity' => 76,
+            'body' => 'Hello world!'
+        ]
+    );
 
-print($service->friendlyName);
+    $response = array(
+        'message' => 'Notification Sent!'
+    );
+    header('Content-type:application/json;charset=utf-8');
+    echo json_encode($response);
+} catch (Exception $e) {
+    $response = array(
+        'message' => 'Error creating notification: ' . $e->getMessage(),
+        'error' => $e->getMessage()
+    );
+    header('Content-type:application/json;charset=utf-8');
+    http_response_code(500);
+    echo json_encode($response);
+}
