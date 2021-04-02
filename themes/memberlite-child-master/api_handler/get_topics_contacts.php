@@ -120,6 +120,8 @@ if(!empty($final_data)) {
 					$c++;
 				}
 				else if($val->special=='user'){
+					$explode_logged_user = explode(',',$returned_name);
+					$logged_user_name = $explode_logged_user[1];
 					 if(isset($val->image_handle)) {
 						$user_image = 'https://storage.googleapis.com/pte_media_store_1/'.$val->image_handle;
 					}
@@ -134,6 +136,7 @@ if(!empty($final_data)) {
 
 	
 	$array['user_image'] = $user_image; 
+	$array['logged_user_name'] = $logged_user_name; 
 	/* echo '<pre>';
 	print_r($array);
 	die; */
