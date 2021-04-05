@@ -32,11 +32,11 @@ if(!empty($data))
 	// Create Chat grant
 	$chatGrant = new ChatGrant();
 	$chatGrant->setServiceSid($serviceSid);
-	$chatGrant->setPushCredentialSid($NOTIFYSSID);
-
+		
 	// Add grant to token
 	$token->addGrant($chatGrant);
-
+	$grant = new VideoGrant();
+	$token->addGrant($grant);
 	// render token to string
 	echo $token->toJWT();
 }
