@@ -8,6 +8,7 @@ $root = $_SERVER['DOCUMENT_ROOT'];
 require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/sdk/vendor/autoload.php';
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\ChatGrant;
+use Twilio\Jwt\Grants\VideoGrant;
 global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
@@ -33,6 +34,8 @@ $chatGrant = new ChatGrant();
 
 	// Add grant to token
 	$token->addGrant($chatGrant);
+	$grant = new VideoGrant();
+	$token->addGrant($grant);
 
 
 /* $final_sql = 'SELECT l.subject_token, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t JOIN alpn_topics_linked_view as l on t.id=l.connected_topic_id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = "user" WHERE t.owner_id =  '.$id.' and t.name!="" and (l.subject_token!="pte_place" and l.subject_token!="pte_organization"  and l.subject_token!="pte_notedigitaldocument" and l.subject_token!="pte_external")  UNION
