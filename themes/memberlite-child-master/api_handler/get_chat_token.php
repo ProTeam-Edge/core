@@ -7,6 +7,8 @@ require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/sdk/v
 use Twilio\Jwt\AccessToken;
 use Twilio\Jwt\Grants\ChatGrant;
 use Twilio\Jwt\Grants\VideoGrant;
+use Twilio\Rest\Client;
+
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $twilioAccountSid = ACCOUNT_SID;
