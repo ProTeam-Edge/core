@@ -43,8 +43,21 @@ if(!empty($data))
 	// render token to string
 	$twilio = new Client($sid, $token);
 
-$room = $twilio->video->v1->rooms("CH429707ef8a1c457cb9aaea2a877d9206")
+try {
+   $room = $twilio->video->v1->rooms("CH429707ef8a1c457cb9aaea2a877d9206")
                           ->fetch();
+    header('Content-type:application/json;charset=utf-8');
+    echo json_encode($response);
+} catch (Exception $e) {
+    $response = array(
+        'message' => 'Error creating notification: ' . $e->getMessage(),
+        'error' => $e->getMessage()
+    );
+    header('Content-type:application/json;charset=utf-8');
+    http_response_code(500);
+    echo json_encode($response);
+}
+
 
 print($room->uniqueName);
 	echo $token->toJWT();
