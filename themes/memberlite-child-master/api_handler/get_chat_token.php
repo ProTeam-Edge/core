@@ -16,7 +16,8 @@ $twilioApiSecret = SECRETKEY;
 $serviceSid = CHATSERVICESID;
 $NOTIFYSSID = NOTIFYSSID;
 $FCMCREDENTIALSID = FCMCREDENTIALSID;
-
+$sid =ACCOUNT_SID;
+$token = AUTHTOKEN;
 if(!empty($data))
 {
 	$username = $data->username;
@@ -38,5 +39,11 @@ if(!empty($data))
 	$grant = new VideoGrant();
 	$token->addGrant($grant);
 	// render token to string
+	$twilio = new Client($sid, $token);
+
+$room = $twilio->video->v1->rooms("CH429707ef8a1c457cb9aaea2a877d9206")
+                          ->fetch();
+
+print($room->uniqueName);
 	echo $token->toJWT();
 }
