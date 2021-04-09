@@ -41,7 +41,7 @@ if(!empty($data))
 	$grant = new VideoGrant();
 	$token->addGrant($grant);
 	// render token to string
-	$twilio = new Client($sid, $token);
+	$client = new Client($twilioApiKey, $twilioApiSecret, $twilioAccountSid);
 
 try {
    $room = $twilio->video->v1->rooms("CH429707ef8a1c457cb9aaea2a877d9206")
