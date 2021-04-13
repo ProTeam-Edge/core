@@ -12,12 +12,13 @@ $input = file_get_contents('php://input');
 $data = json_decode($input);
 $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
+$serviceSid = CHATSERVICESID;
 $twilio = new Client($sid, $token);
 $message_id = $data->message_id;
 $channel_id = $data->channel_id;
 if(!empty($data)) {
 	try {
-		$deleted = $twilio->chat->v2->services($sid)->channels($channel_id)->messages($message_id)->delete(); 
+		$deleted = $twilio->chat->v2->services($serviceSid)->channels($channel_id)->messages($message_id)->delete(); 
 		$response = array('success' => 1, 'message'=>'Message deleted successfully.','data'=>'');
 	} catch (Exception $e) {
 		$response = array('success' => 2, 'message'=>'There was some error','data'=>$e->getMessage());
