@@ -22,7 +22,7 @@ if(!empty($data)) {
 		$message = $twilio->chat->v2->services($serviceSid)
                             ->channels($channel_id)
                             ->messages($message_id)
-                            ->update(["body" =>$message]);
+                            ->update(["body" =>'Edited : '$message]);
 		
 		$response = array('success' => 1, 'message'=>'Message updated successfully.','data'=>'');
 	} catch (Exception $e) {
