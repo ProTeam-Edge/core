@@ -28,6 +28,11 @@ function pte_get_registry_fax_send() {
   $registryArray = array(
       'send_fax' => function(Token $token) {
             $requestData = $token->getValue("process_context");
+
+
+            alpn_log('Start Fax Sending...');
+            global $wpdb;
+            $requestData = $token->getValue("process_context");
             $requestData['interaction_type_name'] = "Fax";
             $requestData['interaction_template_name'] = "";
             $requestData['interaction_type_status'] = "Send";
@@ -37,10 +42,16 @@ function pte_get_registry_fax_send() {
             $requestData['interaction_vault_link'] = "";
             $requestData['interaction_file_away_handling'] = "delete_interaction";
 
-            $requestData['view_link_file_type'] = "File";
-            $requestData['to_from'] = 'To';
+            $emailContactTopicId =  $token->getValue("send_email_address_id");  //TODO identical for all
 
-            if ($token->getValue("fax_field_fax_number")) {
+          //  if ($token->getValue("fax_field_fax_number")) {
+
+
+          if ($emailContactTopicId) {    // TODO Why is this not in requestdata by now?
+
+
+
+
               $requestData['fax_field_fax_number_plain'] =  preg_replace( '/[^0-9]/', '', $requestData['fax_field_fax_number'] );
               $requestData['fax_field_fax_number_plain'] = count($requestData['fax_field_fax_number_plain']) == 11 ?  $requestData['fax_field_fax_number_plain'] : '1' . $requestData['fax_field_fax_number_plain'];
               //Send fax

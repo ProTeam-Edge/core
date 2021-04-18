@@ -131,7 +131,7 @@ $html .= "
 							<i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
 							<i id='alpn_vault_copy' class='far fa-file-export pte_icon_button' title='Copy File to Linked Topic' onclick='alpn_vault_control(\"copy_file\")'></i>
 							<div style='display: inline-block; width: 20px;'></div>
-							<i id='alpn_vault_links' class='far fa-link pte_icon_button' title='Manage URLs for this File' onclick='alpn_vault_control(\"links\")'></i>
+							<i id='alpn_vault_links' class='far fa-link pte_icon_button' title='Manage xLinks for this File' onclick='alpn_vault_control(\"links\")'></i>
 						  <i id='alpn_vault_new' class='far fa-plus-circle pte_icon_button' title='Add New Vault Files' onclick='alpn_vault_control(\"add\")'></i>
 							<i id='alpn_vault_edit' class='far fa-pencil-alt pte_icon_button' title='Edit Vault File Settings' onclick='alpn_vault_control(\"edit\")'></i>
 							<i id='alpn_vault_delete' class='far fa-trash-alt pte_icon_button' title='Delete File from Vault' onclick='alpn_vault_control(\"delete\")'></i>

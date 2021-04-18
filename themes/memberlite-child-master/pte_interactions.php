@@ -144,7 +144,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
   $networkData = (object)array();   //OLD CONTACT
   if ($interactionNetworkId) {
     $results = $wpdb->get_results(
-      $wpdb->prepare("SELECT t.name, t.image_handle, t.dom_id, t.alt_id, t.connected_id, t.connected_network_id, u.id AS important_id FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.owner_network_id = %d AND u.list_key = 'pte_important_network' WHERE t.id = %s", $ownerNetworkId, $interactionNetworkId)
+      $wpdb->prepare("SELECT t.name, t.image_handle, t.dom_id, t.alt_id, t.connected_id, t.connected_network_id, u.id AS important_id FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.owner_network_id = %d AND u.list_key = 'pte_important_network' WHERE t.id = %d", $ownerNetworkId, $interactionNetworkId)
      );
      $networkData = isset($results[0]) ? $results[0] : (object)array();
    }
@@ -197,12 +197,12 @@ function pte_get_process_context($processData) { //TODO make this work for all i
       'owner_id' => $ownerId,
       'owner_friendly_name' => $friendlyName,
       'network_id' => $interactionNetworkId,
+      'network_name' => isset($networkData->name) ? $networkData->name : '',
+      'network_icon' => isset($networkData->image_handle) ? $networkData->image_handle : '',
       'connected_id' => isset($networkData->connected_id) ? $networkData->connected_id : 0,
       'connected_network_id' => isset($networkData->connected_network_id) ? $networkData->connected_network_id : 0,
       'connected_network_dom_id' => isset($networkData->dom_id) ? $networkData->dom_id : '',
       'alt_id' => isset($networkData->alt_id) ? $networkData->alt_id : '',
-      'network_name' => isset($networkData->name) ? $networkData->name : '',
-      'network_icon' => isset($networkData->image_handle) ? $networkData->image_handle : '',
       'topic_id' => isset($topicData->topic_id) ? $topicData->topic_id : 0,
       'topic_dom_id' => isset($topicData->dom_id) ? $topicData->dom_id : '',
       'topic_type_id' => isset($topicData->topic_type_id) ? $topicData->topic_type_id : 0,
@@ -218,6 +218,50 @@ function pte_get_process_context($processData) { //TODO make this work for all i
 
   return $processContext;
 
+}
+
+function pte_update_context_with_contact($contextData, $contactNetworkId, $emailContactData){
+
+  $tTypeId =  $emailContactData->topic_type_id;
+  $tTypeSpecial =  $emailContactData->special;
+  $tConnectedId = $emailContactData->connected_id;
+  $contextData['network_important'] = $emailContactData->network_important;
+
+  $tContent = json_decode($emailContactData->topic_content, true);
+  $ownerContent = json_decode($emailContactData->owner_topic_content, true);
+
+  $contextData['target_topic_type_id'] = $tTypeId;
+  $contextData['target_topic_special'] = $tTypeSpecial;
+
+  if ($tConnectedId) { //if connected, use network contact data
+    $tContent = json_decode($emailContactData->connected_topic_content, true);
+  }
+
+  $contextData['alt_id'] = $tContent['person_email'];
+  $contextData['network_id'] = $contactNetworkId;
+  $contextData['network_name'] = trim($tContent['person_familyname']  . ", " . $tContent['person_givenname']);
+  $contextData['connected_network_dom_id'] = $emailContactData->email_contact_dom_id;
+  $contextData['connected_contact_status'] = 'not_connected_not_member';
+
+  //TODO Make Function
+  if ($emailContactData->connected_id) {
+    $contextData['connected_id'] = $emailContactData->connected_id;
+    $contextData['connected_network_id'] = $emailContactData->connected_network_id;
+    $contextData['connected_contact_status'] = 'connected_member';
+  } else if ($contextData['alt_id']) {
+    $connectedUserData = get_user_by('email', $contextData['alt_id']);
+    if (isset($connectedUserData->data->connectedUserData) && $connectedUserData->data->ID) {
+      $contextData['connected_contact_status'] = 'not_connected_member';
+      $contextData['connected_contact_id_alt'] = $connectedUserData->data->ID;
+      $contextData['connected_contact_email_alt'] = $contextData['alt_id'];
+      $contextData['connected_contact_topic_id_alt'] = get_user_meta( $connectedUserData->data->ID, 'pte_user_network_id', true );
+    }
+  }
+
+  return array(
+              "context" => $contextData,
+              "content" => $tContent
+              );
 }
 
 function pte_manage_interaction_proper($data) {

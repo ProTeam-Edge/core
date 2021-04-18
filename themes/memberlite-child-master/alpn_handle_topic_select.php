@@ -20,7 +20,7 @@ $data = array(
 
 //pte_manage_cc_groups("update_all_user_attributes", array());
 
-
+//pte_release_all_pstn_numbers(103);
 
 $data = array(  //add contact to channel
  'channel_id' => 'CHd72168c48bc942c0bce2d3906665e07c'
@@ -388,7 +388,7 @@ $settingsAccordion = "
 	</script>
 ";
 
-$proteam = $wpdb->get_results(  //get proteam
+$proteam = $wpdb->get_results(  //get proteam -- pre-connected by alpn_topics_network_profile view in db
 	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id, t.alt_id, t.connected_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
  );
 
@@ -398,46 +398,23 @@ if ($topicBelongsToUser) {
   $pteAddTopicTeamMember = "<i id='pte_proteam_add' class='far fa-plus-circle pte_proteam_add_icon' onclick='pte_start_topic_team_invitation({$topicId});' title='Send a Topic Team Invitation Interaction'></i>";
 }
 
-
 $topicHasTeamMembers = count($proteam) ? true : false;
 $proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Topic Team</div><div class='pte_proteam_title_right'>{$pteAddTopicTeamMember}</div></div>" : "";
 
-foreach ($proteam as $key => $value) {
+if (count($proteam)) {
+$displayNoMembers = "none";
+foreach ($proteam as $key => $value) {    //for everyone on the team
 	if ($topicBelongsToUser) {
-		$topicNetworkId = $value->id;
-		$topicDomIdProTeam = $value->dom_id;
-		$topicNetworkName = $value->name;
-		$topicAccessLevel= $value->access_level;
-		$connectedContactStatus = 'not_connected_not_member';
-		if ($value->connected_id) {
-			$connectedContactStatus = 'connected_member';
-		} else if ($value->alt_id) {
-			 $userData = get_user_by('email', $value->alt_id);
-			 if (isset($userData->data->ID) && $userData->data->ID) {
-				 $connectedContactStatus = 'not_connected_member';
-			 }
-		}
-		$topicNetworkRights = json_decode($value->member_rights, true);
-		$checked = array();
-		foreach ($topicNetworkRights as $key2 => $value2) {
-			$checked[$key2] = $value2;
-		}
-		$topicPanelData = array(
-			'proTeamRowId' => $value->id,
-			'topicNetworkId' => $value->proteam_member_id,
-			'topicDomId' => $topicDomIdProTeam,
-			'topicNetworkName' => $value->name,
-			'topicAccessLevel' => $topicAccessLevel,
-			'state' => $value->state,
-			'checked' => $checked,
-			'connected_contact_status' => $connectedContactStatus
-		);
-		$proTeamMembers .= pte_make_rights_panel_view($topicPanelData);
+    $proTeamMembers .= pte_create_panel($value);
 	} else {
 		$proTeamMembers .= "
 			<div>{$value->name}</div>
 		";
 	}
+}
+} else {
+  $displayNoMembers = "block";
+  $proTeamMembers = "";
 }
 
 //TODO Prefill with correct token data
@@ -656,6 +633,7 @@ $html .= "
 								<script>pte_old_proteam_selected_id=''</script>
 								{$proTeamTitle}
 								<div id='alpn_inner_proteam_manager' class='alpn_inner_proteam_manager' data-for-topic='{$topicId}' data-for-topic-type='{$topicTypeId}' data-for-special='{$topicSpecial}' style='display: {$proteamContainer}'>
+                  <div id='pte_no_proteam_members' style='display: {$displayNoMembers};'>--</div>
 									<div id='alpn_proteam_selected_outer' class='alpn_proteam_selected_outer'>
 										{$proTeamMembers}
 									</div>

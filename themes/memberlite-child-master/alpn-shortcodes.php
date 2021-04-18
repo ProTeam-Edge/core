@@ -275,8 +275,18 @@ function usernetwork_shortcode($attr) {
 				$optionsStr .= "<option value='{$key}'>{$value}</option>";
 			}
 
-			$html = "<div id='alpn_section_network'><div class='alpn_title_bar'><div class='alpn_section_head_left'>Contacts</div><div class='alpn_section_head_right'><i class='far fa-plus-circle alpn_icons' title='Add Network Contact' onclick='alpn_mission_control(\"add_topic\", \"\", alpn_contact_topic_type_id);'></i></div></div>
-			<div id='alpn_selector_container_left' class='alpn_selector_container_left pte_hidden_for_now'><select id='alpn_selector_network' class='alpn_selector'><option></option>{$optionsStr}</select></div>
+			$html = "
+					<div id='alpn_section_network'>
+						<div class='alpn_title_bar'>
+							<div class='alpn_section_head_left'>Contacts</div>
+							<div class='alpn_section_head_right'>
+								<i class='far fa-user-circle alpn_icons' title='Manage Connections' onclick='alpn_mission_control(\"manage_connections\", \"\", alpn_contact_topic_type_id);'></i>
+								<i class='far fa-plus-circle alpn_icons' title='Add Network Contact' onclick='alpn_mission_control(\"add_topic\", \"\", alpn_contact_topic_type_id);'></i>
+							</div>
+						</div>
+						<div id='alpn_selector_container_left' class='alpn_selector_container_left pte_hidden_for_now'>
+							<select id='alpn_selector_network' class='alpn_selector'><option></option>{$optionsStr}</select>
+						</div>
 			";
 			$html .= do_shortcode("[wpdatatable id=2]");
 
@@ -326,7 +336,8 @@ function usernetwork_shortcode($attr) {
 					}
 				}
 				catch(Exception $e) {
-					pp($e);
+					alpn_log('DRAWING TOPIC PANEL');
+					alpn_log($e);
 				}
 			}
 
@@ -426,6 +437,7 @@ function usernetwork_shortcode($attr) {
 
 			$html =
 				"<div id='alpn_chat_panel' class='alpn_chat_panel'>
+				<div id='pte_chat_dropzone'>Drop a file here to add it to this Topics File Vault and to send a link in Chat [Coming Soon!]</div>
 				 	<div id='alpn_chat_title' class='alpn_chat_title'>
 						<div id='alpn_chat_title_title'>Conversations&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<span id='pte_chat_topic_name'>--</span></div>
 						<div id='alpn_chat_stats'>

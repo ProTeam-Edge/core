@@ -13,28 +13,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 }
 
 
-
-
-// $proTeamSelector = '';  //TODO extend selector to include all Persons (minus self) Test. Cool do this.
-// if ($topicBelongsToUser) {
-// 	$network = array();
-// 	$options = "";
-// 	$network = $wpdb->get_results( //for select box
-// 		$wpdb->prepare("SELECT t.id, t.name, t.connected_id, t.dom_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = %d AND tt.schema_key = 'Person' AND t.special != 'user' ORDER BY name ASC", $userID)
-// 	 );
-// 	foreach ($network as $key => $value){
-// 		$options .= "<option data-dom-id='{$value->dom_id}' data-wp-id='{$value->connected_id}' value='{$value->id}'>{$value->name}</option>";
-// 	}
-// 	$proTeamSelector = "
-// 		 <div id='alpn_proteam_selector_outer' class='alpn_proteam_selector_outer' style='float: right; display: {$proteamViewSelector};'>
-// 			<select id='alpn_proteam_selector' class='alpn_selector'>
-// 				<option></option>
-// 				{$options}
-// 			</select>
-// 		</div>
-// 	";
-// }
-
 $siteUrl = get_site_url();
 
 $qVars = $_POST;
@@ -114,12 +92,13 @@ function pte_make_interaction_editor_ux($uxMeta) {
 		case 'proteam_invitation_received':
 			$html .= pte_make_invitation_received_panel($uxMeta);
 		break;
-		case 'message_send':
-			$html .= pte_make_message_panel($uxMeta);
-		break;
+		// case 'message_send':
+		// 	$html .= pte_make_message_panel($uxMeta);
+		// break;
+		// case 'fax_send':
+		// 	$html .= pte_make_fax_panel($uxMeta);
+		// break;
 		case 'fax_send':
-			$html .= pte_make_fax_panel($uxMeta);
-		break;
 		case 'topic_team_invite':
 		case 'email_send':
 		case 'sms_send':
@@ -135,21 +114,6 @@ function pte_make_interaction_editor_ux($uxMeta) {
 
 	$html .= "</div>
 	<script>
-			var interactionProgressBarEditor = '#pte_interaction_progress_bar_editor';
-			if (jQuery(interactionProgressBarEditor).length) {
-			var priority = {$priority};
-			var bar = new ProgressBar.Circle(interactionProgressBarEditor, {
-			  strokeWidth: 18,
-			  color: '#005588',
-			  trailColor: '#00B9F1',
-			  svgStyle: null,
-				text: {
-				        value: parseInt(priority * 10),
-								className: 'pte_progress_bar_label'
-						}
-			});
-			bar.set(priority);
-		}
 		function pte_handle_send_interaction(theObj) {
 				var jObj = jQuery(theObj);
 				var buttonOperation = jObj.data('pteop');
@@ -236,47 +200,51 @@ function pte_make_button_line($lineType, $uxMeta) {
 	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : 0;
 	$ownerId = 	isset($uxMeta['owner_id']) ? $uxMeta['owner_id'] : 0;
 	$ownerNetworkId = get_user_meta( $ownerId, 'pte_user_network_id', true ); //Owners Topic ID
+	$widgetTypeId  = isset($uxMeta['widget_type_id']) ? $uxMeta['widget_type_id'] : '';
 
 	$html = "";
 	switch ($lineType) {
 		case 'link_settings':
-			$expirationSelectHtml = pte_make_link_expiration_html();
-			$linkOptions = pte_make_link_options_html();
-			$html .= "
-				<div id='pte_interaction_link_options'>
-					<div class='pte_vault_bold'>xLink Security Settings</div>
-					<div class='pte_vault_row'>
-						<div class='pte_vault_row_40 pte_vault_bold'>
-							<i class='far fa-tasks pte_plain_text' title='Permissions'></i> Permissions
+			if ($widgetTypeId != "fax_send"){
+				$expirationSelectHtml = pte_make_link_expiration_html();
+				$linkOptions = pte_make_link_options_html();
+				$html .= "
+					<div id='pte_interaction_link_options'>
+						<div class='pte_vault_bold'>xLink Security Settings</div>
+						<div class='pte_vault_row'>
+							<div class='pte_vault_row_40 pte_vault_bold'>
+								<i class='far fa-tasks pte_plain_text' title='Permissions'></i> Permissions
+							</div>
+							<div class='pte_vault_row_60 pte_max_width_60'>
+							{$linkOptions}
+							</div>
 						</div>
-						<div class='pte_vault_row_60 pte_max_width_60'>
-						{$linkOptions}
+						<div class='pte_vault_row'>
+							<div class='pte_vault_row_40 pte_vault_bold'>
+								<i class='far fa-stopwatch pte_plain_text' title='Expiration'></i> Expiration
+							</div>
+							<div class='pte_vault_row_60'>
+								{$expirationSelectHtml}
+							</div>
+						</div>
+						<div class='pte_vault_row'>
+							<div class='pte_vault_row_40 pte_vault_bold'>
+								<i class='far fa-key pte_plain_text' title='Passcode'></i> Passcode
+							</div>
+							<div class='pte_vault_row_60'>
+								<input id='link_interaction_password' class='pte_interaction_input' type='input' placeholder='No Passcode'>
+							</div>
 						</div>
 					</div>
-					<div class='pte_vault_row'>
-						<div class='pte_vault_row_40 pte_vault_bold'>
-							<i class='far fa-stopwatch pte_plain_text' title='Expiration'></i> Expiration
-						</div>
-						<div class='pte_vault_row_60'>
-							{$expirationSelectHtml}
-						</div>
-					</div>
-					<div class='pte_vault_row'>
-						<div class='pte_vault_row_40 pte_vault_bold'>
-							<i class='far fa-key pte_plain_text' title='Passcode'></i> Passcode
-						</div>
-						<div class='pte_vault_row_60'>
-							<input id='link_interaction_password' class='pte_interaction_input' type='input' placeholder='No Passcode'>
-						</div>
-					</div>
-				</div>
-			";
+				";
+			}
 		break;
 		case 'select_send':
 			$templates  = isset($uxMeta['templates']) ? $uxMeta['templates'] : array();
 			$sendKey = isset($uxMeta['fax_key']) ? 'send_fax' : 'send';
 			$sendKey = isset($uxMeta['email_key']) ? 'send_email' : 'send';
 			$sendKey = isset($uxMeta['sms_key']) ? 'send_sms' : 'send';
+			$sendKey = isset($uxMeta['topic_invite_key']) ? 'send_invite' : 'send';
 			if (count($templates)) {
 				$selectPanel = "<select id='alpn_select2_small_template_select' class='' data-topic-id='{$topicId}'>";
 				$selectPanel .= "<option value='0'>Select Template</option>";
@@ -365,6 +333,30 @@ function pte_make_button_line($lineType, $uxMeta) {
 			</div>
 			";
 		break;
+
+		case 'select_person_topics':
+			$inviteList  = isset($uxMeta['invite_send_to_list']) ? $uxMeta['invite_send_to_list'] : array();
+			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}'>";
+			$selectPanel .= "<option value='0'>Select Recipient</option>";
+			foreach ($inviteList as $key => $value){
+				$tId = $value['id'];
+				$tText = $value['text'];
+				$selectPanel .= "<option value='{$tId}'>{$tText}</option>";
+			}
+			$selectPanel .= '</select>';
+			$html .= "
+			<div style='width: 100%; padding-top: 5px;'>
+				<div style='float: left; width: 35px; margin: 0; font-weight: bold; height: 18px; line-height: 18px;'>
+					To
+				</div>
+				<div style='float: right; width: calc(100% - 35px); height: 18px; line-height: 18px;'>
+					<div style='width: 100%; margin-bottom: 0px;'>{$selectPanel}</div>
+				</div>
+				<div style='clear: both;'></div>
+			</div>
+			";
+		break;
+
 		case 'select_users_with_fax_numbers':
 			$networkContacts = $topicContacts = '';
 			$faxNumbers  = isset($uxMeta['fax_numbers']) ? $uxMeta['fax_numbers'] : array();
@@ -447,6 +439,7 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 	$html = "";
 	switch ($linkType) {
 		case 'url_panel':
+			if ($vaultId) {
 			$html .= "
 					<div class='pte_outer_link_bar_container'>
 						<div class='pte_link_bar_title pte_title_link' title='Copy Secure xLink to Clipboard.' onclick='pte_topic_link_copy_string(\"Secure xLink\", \"{$secureURL}\");'><i class='far fa-copy' style='margin-right: 5px;'></i>Secure xLink</div>
@@ -457,6 +450,7 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 						</div>
 					</div>
 					";
+				}
 		break;
 
 		case 'topic_panel':
@@ -510,13 +504,12 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 					<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_chat_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-comments'></i></div>Chat</div></div>
 					<div class='pte_link_bar_link'></div>
 				";
-				$status = "<i class='far fa-user-friends' title='Member, Connected'></i>";
+				$status = "<i class='far fa-user-check' title='Member, Connected'></i>";
 			}
 			$html .= "
 					<div class='pte_outer_link_bar_container'>
 						<div class='pte_link_bar_title'>{$networkName} {$status}</div>
 						<div class='pte_outer_link_bar_links'>
-
 							<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_info_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-info-circle'></i></div>Info</div></div>
 							<div class='pte_link_bar_link'><div data-topic-id='{$networkId}' data-topic-type-id='{$topicTypeId}' data-topic-special='contact' data-topic-dom-id='{$networkDomId}' data-operation='to_topic_vault_by_id' class='interaction_panel_row_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-lock-alt'></i></div>Vault</div></div>
 							{$commFeaturesLink}
@@ -527,7 +520,10 @@ function pte_make_interaction_link($linkType, $uxMeta) {
 
 		break;
 		case 'vault_item':
+			if ($vaultId) {
 				$html .= "<div data-vault-id='{$vaultId}' data-vault-dom-id='{$vaultDomId}' data-topic-id='{$topicId}' data-topic-type-id='{$topicTypeId}' data-topic-special='{$topicTypeSpecial}' data-topic-dom-id='{$topicDomId}' data-operation='vault_item' class='interaction_panel_link' onclick='pte_handle_interaction_link_object(this);'><div class='pte_icon_interaction_link'><i class='far fa-file-pdf'></i></div>{$viewString}</div>";
+			}
+
 		break;
 	}
 	return $html;
@@ -613,6 +609,12 @@ function pte_make_message_line ($lineType, $uxMeta) {
 	$sendType = "<span class='pte_internal_link' data-topic-id='{$topicId}' data-operation='topic_info' onclick='pte_handle_interaction_link_object(this);'>{$topicName}</span>"; //TODO this needs to change based on type
 
 	switch ($lineType) {
+		case 'topic_team_invite_send_to':
+		$html = "<div id='pte_email_send_outer'>";
+		$html .= pte_make_button_line("select_person_topics", $uxMeta);
+		$html .= "</div>";
+		break;
+
 		case 'message_view_only':
 			$html = 	"<div id='pte_message_title_field_static' class='pte_interaction_message_title'>
 									{$messageTitle}
@@ -901,10 +903,25 @@ function pte_make_send_panel($uxMeta) {
 	}
 	$uxMeta['templates'] = $templates;
 
+
+	if ($widgetTypeId == "fax_send") {
+
+		$faxData = $wpdb->get_results( //all my topics that have fax numbers but not me
+			$wpdb->prepare("SELECT id, name, topic_content, topic_type_id FROM alpn_topics WHERE special != 'user' AND owner_id = %s AND (JSON_EXTRACT(topic_content, '$.organization_faxnumber') != '' OR JSON_EXTRACT(topic_content, '$.person_faxnumber') != '') ORDER BY NAME ASC", $ownerId)
+		);
+		$faxNumbers = array();
+		foreach ($faxData as $key => $value) {
+			$faxNumbers[] = array("id" => $value->id, "name" => $value->name, "topic_type_id" => $value->topic_type_id, "topic_content" => json_decode($value->topic_content, true));
+		}
+		$uxMeta['fax_numbers'] = $faxNumbers;
+		$uxMeta['fax_key'] = true;
+		$sendToHtml = pte_make_message_line('fax_send_to', $uxMeta);
+	}
+
 	if ($widgetTypeId == "email_send") {
 		//get topics with ids
 		$results = $wpdb->get_results(
-			$wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE JSON_EXTRACT(t.topic_content, '$.person_email') != '' AND t.owner_id = %s AND tt.schema_key = 'Person' AND t.special != 'user' ORDER BY NAME ASC", $ownerId)
+			$wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE JSON_EXTRACT(t.topic_content, '$.person_email') <> '' AND t.owner_id = %s AND tt.schema_key = 'Person' AND t.special <> 'user' ORDER BY NAME ASC", $ownerId)
 		 );
 
 		$emailAddresses = array();
@@ -913,11 +930,9 @@ function pte_make_send_panel($uxMeta) {
 			$tTypeSpecial =  $value->special;
 			$tConnectedId = $value->connected_id;
 			$tContent = json_decode($value->topic_content, true);
-
 			if ($tTypeSpecial == 'contact' && $tConnectedId) {
 				$tConnectedContent = json_decode($value->connected_topic_content);
 			}
-
 			if (isset($tConnectedContent['person_email'])) {
 				$emailAddress = $tConnectedContent['person_email'];
 			} else {
@@ -938,7 +953,7 @@ function pte_make_send_panel($uxMeta) {
 		//  );
 
 		 $results = $wpdb->get_results(
-			 $wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE (JSON_EXTRACT(t.topic_content, '$.person_telephone') != '' OR (JSON_EXTRACT(ct.topic_content, '$.person_telephone') != '')) AND t.owner_id = %s AND tt.schema_key = 'Person' AND t.special != 'user' ORDER BY NAME ASC", $ownerId)
+			 $wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE (JSON_EXTRACT(t.topic_content, '$.person_telephone') <> '' OR (JSON_EXTRACT(ct.topic_content, '$.person_telephone') <> '')) AND t.owner_id = %s AND tt.schema_key = 'Person' AND t.special <> 'user' ORDER BY NAME ASC", $ownerId)
 		);
 
 		$mobileNumbers = array();
@@ -960,12 +975,28 @@ function pte_make_send_panel($uxMeta) {
 		$sendToHtml = pte_make_message_line('sms_send_to', $uxMeta);
 	}
 
-
 	if ($widgetTypeId == "topic_team_invite") {
+		$results = $wpdb->get_results(
+			$wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE t.owner_id = %d AND tt.schema_key = 'Person' AND t.special <> 'user' ORDER BY t.name ASC", $ownerId)
+	 );
 
+	 $inviteList = array();
+	 foreach ($results as $key => $value) {   //If connected with someone, use their data.
+		 $tId =  $value->id;
+		 $tTypeId =  $value->topic_type_id;
+		 $tTypeSpecial =  $value->special;
+		 $tConnectedId = $value->connected_id;
+		 $tContent = $value->topic_content;
+		 if ($tTypeSpecial == 'contact' && $tConnectedId) {
+			 $tContent = $value->connected_topic_content;
+		 }
+		 $tContent = json_decode($tContent, true);
+		 $inviteList[] = array("id" => $tId, "text" => "{$value->name}");
+	 }
+	 $uxMeta['invite_send_to_list'] = $inviteList;
+	 $uxMeta['topic_invite_key'] = true;
+	 $sendToHtml = pte_make_message_line('topic_team_invite_send_to', $uxMeta);
 	}
-
-
 
 	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : 0;
 	$topicTypeId = 	isset($uxMeta['topic_type_id']) ? $uxMeta['topic_type_id'] : 0;
@@ -1010,9 +1041,11 @@ function pte_make_send_panel($uxMeta) {
 					allowClear: false
     		});
 				jQuery('#alpn_select2_small_fax_number_select').on('select2:select', function (e) {
+					var data = e.params.data;
+					pte_handle_fax_number_selected(data);
 					pte_handle_message_merge('message');
 				});
-			//	pte_handle_message_merge('message');
+				pte_handle_message_merge('message');
     </script>
 		";
 	return $html;

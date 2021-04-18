@@ -13,7 +13,7 @@ function pte_user_rights_check($resourceType, $data){
   global $wpdb;
   $userInfo = wp_get_current_user();
   $userId = $userInfo->data->ID;
-  $userNetworkId = get_user_meta( $userID, 'pte_user_network_id', true );
+  $userNetworkId = get_user_meta( $userId, 'pte_user_network_id', true );
   switch ($resourceType) {
 
     case 'vault_item_edit':   //Mine or Shared Contact Topic.
@@ -503,9 +503,9 @@ function pte_send_sms($data){
 
 
 function pte_duplicate_topic_type($data){
-  alpn_log('pte_duplicate_topic_type');
-  alpn_log($data);
 
+  //alpn_log('pte_duplicate_topic_type');
+  //alpn_log($data);
   global $wpdb;
   $relatedId = $data["related_id"];
   $topicTypeMap = $data["topic_type_map"];
@@ -547,9 +547,12 @@ function pte_duplicate_topic_type($data){
        $topicTypeValue['form_id'] = $newFormId;
        $topicTypeMeta = json_decode($topicTypeValue['topic_type_meta'], true);
        $fieldMap = $topicTypeMeta['field_map'];
-
        foreach ($fieldMap as $key1 => $value1 ) {    //Maps all core fields to their new topics.
          $typeKey = isset($value1['type']) ? $value1['type'] : "";
+         $pos = strpos($typeKey, "_", strpos($typeKey, "_") + 1);
+         if ($pos) {
+           $typeKey = substr($typeKey, 0, $pos);
+         }
          if (substr($typeKey, 0, 5) == 'core_') {
            if ($skipTopicLinks) {
              unset($topicTypeMeta['field_map'][$key1]);
@@ -981,6 +984,72 @@ function pte_get_topic_manager($topicManagerSettings){
 return $html;
 }
 
+function pte_create_topic_team_member($data) {    //add to proteam.
+
+    global $wpdb;
+    $ownerId = isset($data['owner_id']) ? $data['owner_id'] : '';
+    $topicId = isset($data['topic_id']) ? $data['topic_id'] : '';
+    $proTeamMemberId = isset($data['proteam_member_id']) ? $data['proteam_member_id'] : '';
+    $wpId = isset($data['wp_id']) ? $data['wp_id'] : '';
+    $processId = isset($data['process_id']) ? $data['process_id'] : '';
+
+  	//TODO make this a user options
+  	$defaultMemberRights = array(
+  		'download' => '0',
+  		'share' => '0',
+  		'delete' => '0',
+  		'fax'  => '0',
+  		'email' => '0',
+  		'new' => '1',
+  		'edit' => '1',
+  		'chat' => '1',
+  		'action' => '1',
+  		'print' => '1',
+  		'transfer' => '1',
+  		);
+  	$defaultAccessLevel = "10";
+  	$defaultState = "20";
+  	$memberRights = json_encode($defaultMemberRights);
+
+  	$proTeamData = array( //TODO start IA and store processID
+  		'owner_id' => $ownerId,
+  		'topic_id' => $topicId,
+  		'proteam_member_id' => $proTeamMemberId,
+      'process_id' => $processId,
+		  'wp_id' => $wpId,
+  		'access_level' => $defaultAccessLevel,
+  		'state' => $defaultState,
+  		'member_rights' => $memberRights
+  	);
+  	$wpdb->insert( 'alpn_proteams', $proTeamData );
+    $proTeamData['id'] = $wpdb->insert_id;
+
+    return $proTeamData;
+}
+
+function pte_is_on_topic_team($topicId, $emailContactTopicId){
+  global $wpdb;
+  $results = $wpdb->get_results(
+    $wpdb->prepare("SELECT id from alpn_proteams WHERE topic_id = %d AND proteam_member_id = %d", $topicId, $emailContactTopicId)
+   );
+   if (isset($results[0])) {
+     return $results[0];
+   }
+return false;
+}
+
+function pte_get_recipient($ownerNetworkId, $topicId){
+  //alpn_log('Getting Recipient...');
+  global $wpdb;
+  $results = $wpdb->get_results(
+    $wpdb->prepare("SELECT u.id AS network_important, t.id, t.special, t.owner_id, t.topic_type_id, t.connected_id, t.topic_content, t.dom_id AS email_contact_dom_id, t.connected_network_id, p.access_level, f.pstn_number, tt.id AS topic_type_id, tt.form_id, tt.name AS topic_name, tt.icon, tt.topic_type_meta, tt.html_template, t3.name AS owner_name, t3.topic_content AS owner_topic_content, t2.image_handle AS profile_handle, t2.topic_content AS connected_topic_content, t2.id AS connected_topic_id, t2.dom_id AS connected_topic_dom_id FROM alpn_topics t LEFT JOIN alpn_proteams p ON p.topic_id = t.id AND p.owner_id = t.owner_id LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id LEFT JOIN alpn_topic_types tt ON t.topic_type_id = tt.id LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special = 'user' LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.owner_network_id = %d AND u.list_key = 'pte_important_network' WHERE t.id = %s", $ownerNetworkId, $topicId)
+   );
+   if (isset($results[0])) {
+     return $results[0];
+   }
+return false;
+}
+
 function pte_get_template_editor($editorSettings) {
   //$sidebarState = isset($topicManagerSettings['sidebar_state']) ? $topicManagerSettings['sidebar_state'] : 'closed';
   $topicTable = do_shortcode("[wpdatatable id=9]");
@@ -994,7 +1063,7 @@ function pte_get_template_editor($editorSettings) {
       <div class='pte_vault_row_25 pte_max_width_25'>
       <div class='pte_editor_title'>
         <div class='pte_vault_row_75'>
-          <div>Template</div>
+          <div>Templates</div>
         </div>
         <div class='pte_vault_row_25 pte_vault_right'>
           &nbsp;
@@ -1277,6 +1346,64 @@ function pte_format_pstn_number($phoneNumber){
 	return ($country . " (" . $areaCode . ") " . $firstThree . "-" . $lastFour);
 }
 
+function pte_release_all_pstn_numbers($ownerId){
+  global $wpdb;
+  $pstnNumbers = $wpdb->get_results(
+    $wpdb->prepare("SELECT pstn_number from alpn_pstn_numbers WHERE owner_id = %s AND release_date IS NULL", $ownerId)
+   );
+   foreach ($pstnNumbers as $key => $value) {
+     $phoneNumber = $value->pstn_number;
+     pte_release_pstn_number($phoneNumber);
+   }
+}
+
+function pte_release_pstn_number($phoneNumber) {
+  global $wpdb;
+  if ($phoneNumber) {
+    try {
+      $results = $wpdb->get_results(
+        $wpdb->prepare("SELECT pstn_uuid from alpn_pstn_numbers WHERE pstn_number = %s", $phoneNumber)
+       );
+       if (isset($results[0])) {
+        $pstnUuid = $results[0]->pstn_uuid;
+         //Release
+        $webhook = pte_call_documo('number_release', array('pstn_uuid' => $pstnUuid));
+        $webhookData = json_decode($webhook, true);
+
+        $now = date ("Y-m-d H:i:s", time());
+        $pstnData = array(
+          "release_date" => $now
+        );
+        $whereClause = array(
+          'pstn_uuid' => $pstnUuid
+        );
+        $wpdb->update( 'alpn_pstn_numbers', $pstnData, $whereClause );
+        return array(
+          "error" => false,
+          "message_key" => "pte_pstn_number_release_success",
+          "pstn_uuid" => $pstnUuid
+        );
+       } else {
+         return array(
+           "error" => true,
+           "message_key" => "pte_pstn_number_release_number_not_found"
+         );
+       }
+    } catch (\Exception $e) {
+        alpn_log($e);
+        return array(
+          "error" => true,
+          "message_key" => "pte_pstn_number_release_exception",
+          "exception" => $e
+        );
+    }
+  }
+  return array(
+    "error" => true,
+    "message_key" => "pte_pstn_number_release_number_not_provided"
+  );
+}
+
 function get_user_fax_numbers() {
 
   global $wpdb_readonly;
@@ -1468,7 +1595,7 @@ function pte_get_email_ux() {
     <div id='pte_email_ux_container'>
       <div id='pte_email_ux_container_inner'>
         <div class='pte_fax_words'>
-          Email attachments securely route to the designated Topic Vault. Click on the Topic Name to copy the email address to the clipoard.
+          Email attachments securely route to the designated Topic Vault. Click on the Topic Name to copy the email address to the clipoard. Disposible in case of abuse.
         </div>
         <div class='pte_email_address_selector_outer'><div class='pte_email_address_selector_left'></div><div class='pte_email_address_selector_right'>{$topicList}</div></div>
         <ul id='pte_emails_assigned' class='pte_important_topic_scrolling_list'>{$emailAddresses}</ul>
@@ -1505,11 +1632,11 @@ function pte_get_fax_ux() {
             <button id='pte_pstn_widget_lookup' class='btn btn-danger btn-sm' onclick='pte_pstn_widget_lookup();'>Lookup</button>
           </div>
           <div id='pte_pstn_number_widget_right'>
-            <div class='pte_inner_widget_text'>Enter desired area code and press 'Lookup'. Press 'Use', then assign the Topic to the fax number. <span><a href='./pricing' target='_blank'>Pricing</a></span></div>
+            <div class='pte_inner_widget_text'>Enter desired area code and press 'Lookup'. Press 'Use', then assign the Topic to the fax number.</span></div>
           </div>
           <div style='clear: both;'></div>
         </div>
-        <div class='pte_fax_words'>Faxes securely route to the selected Topic Vault in PDF format.</div>
+        <div class='pte_fax_words'>Faxes securely route to the selected Topic Vault in PDF format. Disposible in case of abuse. Non-transferable.</div>
         <ul id='pte_fax_numbers_assigned' class='pte_important_topic_scrolling_list' style='padding: 5px;'>{$faxNumbers}</ul>
       </div>
     </div>
@@ -2274,8 +2401,8 @@ function pte_manage_cc_groups($operation, $data) {
         )
       );
     break;
-		case "get_create_channel":
 
+		case "get_create_channel":
     $channelId = "";
     if ($topicId && $ownerId) {
       $results = $wpdb->get_results(
@@ -2607,11 +2734,20 @@ function pte_manage_cc_groups($operation, $data) {
 		break;
 
     case "delete_user":
-    $user = $twilio->chat->v2
-      ->services($chatServiceId)
-      ->users($ownerId)
-      ->delete();
-      alpn_log("Delete user... " . $ownerId);
+      try {
+        $user = $twilio->chat->v2
+          ->services($chatServiceId)
+          ->users($ownerId)
+          ->delete();
+          alpn_log("Deleted user... " . $ownerId);
+      } catch (Exception $e) {
+          $response = array(
+              'message' =>  $e->getMessage(),
+              'code' => $e->getCode(),
+              'error' => $e
+          );
+          alpn_log($response);
+      }
 		break;
 	}
 
@@ -2748,12 +2884,50 @@ function get_custom_post_items($post_type, $order){
 	return ('error');
 }
 
+function pte_create_panel($value){
+
+  alpn_log("Creating Panel");
+
+  $value = (is_array($value)) ? (object) $value : $value;
+
+  $topicNetworkId = $value->id;
+  $topicDomIdProTeam = $value->dom_id;
+  $topicNetworkName = $value->name;
+  $topicAccessLevel = $value->access_level;
+  $connectedContactStatus = 'not_connected_not_member';
+  if ($value->connected_id) {
+    $connectedContactStatus = 'connected_member';
+  } else if ($value->alt_id) {
+     $userData = get_user_by('email', $value->alt_id);
+     if (isset($userData->data->ID) && $userData->data->ID) {
+       $connectedContactStatus = 'not_connected_member';
+     }
+  }
+  $topicNetworkRights = json_decode($value->member_rights, true);
+  $checked = array();
+  foreach ($topicNetworkRights as $key2 => $value2) {
+    $checked[$key2] = $value2;
+  }
+  $topicPanelData = array(
+    'proTeamRowId' => $value->id,
+    'topicNetworkId' => $value->proteam_member_id,
+    'topicDomId' => $topicDomIdProTeam,
+    'topicNetworkName' => $value->name,
+    'topicAccessLevel' => $topicAccessLevel,
+    'state' => $value->state,
+    'checked' => $checked,
+    'connected_contact_status' => $connectedContactStatus
+  );
+  return pte_make_rights_panel_view($topicPanelData);
+}
+
+
 function  pte_make_rights_panel_view($panelData) {
 
-  alpn_log("pte_make_rights_panel_view");
-  //alpn_log($panelData);
+  // alpn_log("pte_make_rights_panel_view");
+  // alpn_log($panelData);
 
-	$topicStates = array('10' => "Added", '20' => "Invite Sent", '30' => "Joined", '40' => "Linked", '80' => "Email Sent", '90' => "Declined");
+	$topicStates = array('10' => "Added", '20' => "Invited", '30' => "Joined", '40' => "Linked", '80' => "Email Sent", '90' => "Declined");
 
 	$proTeamRowId = $panelData['proTeamRowId'];
   $topicNetworkId = $panelData['topicNetworkId'];
@@ -2776,7 +2950,7 @@ function  pte_make_rights_panel_view($panelData) {
   if ($connectedContactStatus == 'not_connected_member') {
     $connectedContactStatusIcon = "<i class='far fa-user' title='Member, Not Connected'></i>";
   } else if ($connectedContactStatus == 'connected_member') {
-    $connectedContactStatusIcon = "<i class='far fa-user-friends' title='Member, Connected'></i>";
+    $connectedContactStatusIcon = "<i class='far fa-user-check' title='Member, Connected'></i>";
   }
 
   $permissions = "

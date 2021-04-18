@@ -340,6 +340,13 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 	$now = date ("Y-m-d H:i:s", time());
 
   $defaultTopicData = pte_create_default_topics($user_id, true);   //with sample data
+
+
+	alpn_log("Creating New User...");
+	alpn_log($defaultTopicData);
+
+
+	
 	$coreUserFormId = $defaultTopicData['core_user_form_id'];
 	$samplePlace1Id = $defaultTopicData['sample_place_id_1'];
 	$samplePlace2Id = $defaultTopicData['sample_place_id_2'];
@@ -405,17 +412,24 @@ add_action('user_register', 'sync_alpn_user_info_on_register');
 
 function cleanup_pte_user_on_delete( $user_id ) {
 	//TODO WHAT ABOUT ARCHIVING INTERATIONS, Files, ETC?
-	//pte_manage_cc_groups
-	//pte_manage_user_connection -- Need to disconnect everywhere
+
+
+	// see jira for these. Not dangerous, just uses up space. Vault Ids deleted so floating and paying forever so delete.
 	//cloud files
 	//images
-	// MORE check
-	//WP Forms definitions in Posts
-	//
+  //WP Forms definitions in Posts
 
 	global $wpdb;
 
 	alpn_log('cleanup_pte_user_on_delete_start - ' . $user_id);
+
+	//channels unlimited, no cost. No need to delete unless privacy issue.
+	//CC Groups delete user
+	$data = array('owner_id' => $user_id);
+	pte_manage_cc_groups("delete_user", $data);
+
+	//Handle Fax Numbers
+	pte_release_all_pstn_numbers($user_id);
 
 	$whereclause = array('owner_id' => $user_id);
 	$wpdb->delete( "alpn_topics", $whereclause );
@@ -423,6 +437,13 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	$wpdb->delete( "alpn_vault", $whereclause );
 	$wpdb->delete( "alpn_templates", $whereclause );
 	$wpdb->delete( "alpn_links", $whereclause );
+	$wpdb->delete( "alpn_user_lists", $whereclause );
+	$wpdb->delete( "alpn_proteams", $whereclause );
+
+	//ProTeam participant
+	$whereclause = array('wp_id' => $user_id);
+	$wpdb->delete( "alpn_proteams", $whereclause );
+
 
 	$whereclause = array('id' => $user_id);
 	$wpdb->delete( "alpn_user_metadata", $whereclause );
@@ -439,8 +460,9 @@ function cleanup_pte_user_on_delete( $user_id ) {
 
 	delete_user_meta( $user_id, "pte_user_network_id");
 
+	//reset records of my connections.
 	$whereclause = array('connected_id' => $user_id);
-	$topicData = array('connected_id' => NULL);
+	$topicData = array('connected_id' => NULL, 'connected_topic_id' => NULL, 'connected_network_id' => NULL, 'channel_id' => NULL);
 	$wpdb->update( "alpn_topics", $topicData, $whereclause );
 
 }

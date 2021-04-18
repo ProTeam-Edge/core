@@ -24,11 +24,14 @@ function pte_get_registry_proteam_invitation() {
   $registryArray = array(
       'request_sent' => function(Token $token) {  //Node 1 - waiting for send
 
-
           alpn_log('Start Topic Team invitation...');
+
+          //TODO mark an interaction as BUSY so that accidental secondary messages are ignored while processing primmary.
+
 
           global $wpdb;
           $requestData = $token->getValue("process_context");
+
           $requestData['interaction_type_name'] = "Team Invite";
           $requestData['interaction_template_name'] = "";
           $requestData['interaction_type_status'] = "Send";
@@ -38,16 +41,42 @@ function pte_get_registry_proteam_invitation() {
           $requestData['interaction_vault_link'] = "";
           $requestData['interaction_file_away_handling'] = "delete_interaction";
 
+          $emailContactTopicId =  $token->getValue("send_email_address_id");   //TODO generalized across multiple send types but did not update the names so this. TopicId is correct.
 
-          //Update ProTeam Record with Process ID.
-          $proTeamData = array("process_id" => $requestData['process_id']);
-          $whereClause = array("id" => $requestData['proteam_row_id']);
-          $wpdb->update( "alpn_proteams", $proTeamData, $whereClause );
+          $contactData = pte_get_recipient($requestData['owner_network_id'], $emailContactTopicId);
 
+          if ($emailContactTopicId && !pte_is_on_topic_team($requestData['topic_id'], $emailContactTopicId)) {
 
-            if ($token->getValue("message_title")) { //As long as there is a title, we can send.
+              $proTeamData = array(
+                 "owner_id" => $requestData['owner_id'],
+                 "process_id" => $requestData['process_id'],
+                 "topic_id" => $requestData['topic_id'],
+                 "proteam_member_id" => $contactData->id,
+                 "wp_id" => $contactData->connected_id
+              );
 
-              //TODO mark an interaction as BUSY so that accidental secondary messages are ignored while processing primmary.
+              $proTeamData = pte_create_topic_team_member($proTeamData);
+              $newData = pte_update_context_with_contact($requestData, $emailContactTopicId, $contactData);
+
+              $requestData = $newData['context'];
+              $tContent = $newData['content'];
+
+              alpn_log('Start Topic Team invitation...RD GOOD');
+              alpn_log($requestData);
+
+              $topicPanelData = array(
+                "dom_id" => $requestData['connected_network_dom_id'],
+                "name" => $requestData['network_name'],
+                "alt_id" => $contactData->alt_id,
+                "connected_id" => $contactData->connected_id,
+                "id" => $proTeamData['id'],
+                "access_level" => $proTeamData['access_level'],
+                "member_rights" => $proTeamData['member_rights'],
+                "proteam_member_id" => $proTeamData['proteam_member_id'],
+                "state" => $proTeamData['state']
+              );
+              $requestData['initial_proteam_panel_html'] = pte_create_panel($topicPanelData);
+              $requestData['proteam_member_row_id'] = $proTeamData['id'];
 
               $newRequestData = array( //start a proteam_invitation_received process for network contact
                 'template_id' => $requestData["template_id"],
@@ -64,7 +93,7 @@ function pte_get_registry_proteam_invitation() {
                 'alt_id' => $requestData['alt_id']
               );
 
-              if ($requestData['connected_id'] || $requestData['connected_contact_id_alt']) { //connected -- create inviation received
+              if ($requestData['connected_id'] || $requestData['connected_contact_id_alt']) { //connected
 
                 $data = array(
               		'process_id' => "",
@@ -76,14 +105,6 @@ function pte_get_registry_proteam_invitation() {
               	);
               	$interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
                 $requestData['interacts_with_id'] = $interactsWithProcessResponse['process_id'];
-
-                $data = array(
-                  'connected_type' => 'none',
-                  'state' => 20,
-                  'proteam_row_id' => $requestData['proteam_row_id'],
-                  'owner_id' => $requestData['owner_id']
-                );
-                pte_proteam_state_change_sync($data);
 
               } else {
 
@@ -104,25 +125,18 @@ function pte_get_registry_proteam_invitation() {
                     alpn_log($data);
                     pte_send_mail ($data);
 
-                    $data = array(
-                      'connected_type' => 'external',
-                      'state' => 80,
-                      'proteam_row_id' => $requestData['proteam_row_id'],
-                      'owner_id' => $requestData['owner_id']
-                    );
-                    pte_proteam_state_change_sync($data);
-
                   }
               }
 
             $token->setValue("process_context", $requestData);
 
-            return; //if successful TODO: is this always successful?
+            return;
+
+            } else {
+              $requestData['error'] = "already_on_topic_team";
             }
 
             $requestData['widget_type_id'] = "topic_team_invite";
-            //$requestData['information_title'] = "Send Invitation";
-            $requestData['information_title'] = "YO DAWG";
             $requestData['buttons'] =  array(
               "file" => true
               );
@@ -139,6 +153,7 @@ function pte_get_registry_proteam_invitation() {
           global $wpdb;
 
           $requestData = $token->getValue("process_context");
+        //  $requestData['initial_proteam_panel_html'] = '';
           $requestData['interaction_file_away_handling'] = "archive_interaction";
           $buttonOperation = $token->getValue("button_operation");
 
@@ -245,25 +260,20 @@ function pte_get_registry_proteam_invitation() {
               $interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
 
               $requestData['restart_interaction'] = true;
-
-              //On this side, the interaction should be reset to before hitting send
-              //How do we show feedback here and there?
-              //Replace with new proteam_invite so we are back at first node
-
-
               $token->setValue("process_context", $requestData);
               throw new WaitExecutionException();
             break;
           }
 
-          $requestData['interaction_template_name'] = $requestData["template_name"];
-          $requestData['interaction_type_status'] = "Waiting...";
-          $requestData['interaction_to_from_name'] = $requestData["network_name"];
 
-          $requestData['content_lines'] =  array(
-              "network_panel",
-              "topic_panel"
-            );
+          $requestData['widget_type_id'] = "information";
+          $requestData['interaction_to_from_name'] = $requestData["network_name"];
+          $requestData['static_name'] = $requestData["network_name"];
+          $requestData['interaction_type_status'] = "Waiting...";
+          $requestData['interaction_complete'] = false;
+          $requestData['interaction_file_away_handling'] = "archive_interaction";
+          $requestData['template_name'] = $token->getValue("template_name");
+
           $requestData['message_lines'] =  array(
               "message_editable_update"
             );
@@ -276,23 +286,29 @@ function pte_get_registry_proteam_invitation() {
               );
           }
 
-
-          //TODO Show button pressed and response message at Top
-
-          $requestData['widget_type_id'] = "information";
           $requestData['buttons'] =  array(
               "file" => true
-          );
+              );
           $requestData['data_lines'] =  array(
-              "to_from_line",
+              "to_from_line_static",
               "regarding_line"
-          );
+            );
           $requestData['content_lines'] =  array(
-              "network_panel",
-              "topic_panel"
-          );
+            "vault_item",
+            "url_panel"
+            );
+
+          if ($requestData['network_id']){
+            $requestData['content_lines'][] = "network_panel";
+          }
+          if ($requestData['topic_id'] && $requestData['topic_special'] == 'user') {
+            $requestData['content_lines'][] = "personal_panel";
+          } else {
+            $requestData['content_lines'][] = "topic_panel";
+          }
           $requestData['sync'] = true;
           $requestData['requires_user_attention'] = false;
+          $requestData['refresh_proteams'] = true;
 
           $token->setValue("process_context", $requestData);
           throw new WaitExecutionException();
@@ -324,6 +340,7 @@ function pte_get_registry_proteam_invitation() {
               "message_view_only"
             );
           $requestData['sync'] = true;
+          $requestData['refresh_proteams'] = false;
           $requestData['requires_user_attention'] = false;
           $token->setValue("process_context", $requestData);
           return true;
