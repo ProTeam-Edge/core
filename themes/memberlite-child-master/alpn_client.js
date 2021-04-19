@@ -2451,7 +2451,7 @@ function iformat(icon) {
 
 
 function pte_setup_window_onload() {
-pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
+
 	if ((typeof alpn_user_id != "undefined") && (alpn_user_id > 0)) {	//Must be logged in
 
 				console.log('WINDOW ON LOADED..');
@@ -2683,10 +2683,7 @@ pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template
 	}
 
 }
-window.onload = function() {
-			console.log("WORKED ONLOAD SETUP");
-			pte_setup_window_onload();
-	}
+
 jQuery( document ).ready( function(){
 
 
@@ -2694,7 +2691,10 @@ jQuery( document ).ready( function(){
 
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 
-	
+	window.onload = function() {
+			console.log("WORKED ONLOAD SETUP");
+			pte_setup_window_onload();
+	}
 
 	if (!pte_external) {pte_get_active_video_rooms();}
 
