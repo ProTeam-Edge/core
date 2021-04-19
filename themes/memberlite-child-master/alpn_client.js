@@ -4259,7 +4259,7 @@ function pte_check_viewer_password(tObj){
 }
 
 function pte_view_document(vaultId, token = false) {
-	var security = specialObj.security;
+	/* var security = specialObj.security;
 	//console.log('Viewing Document...');
 
 	if (!token) {
@@ -4299,7 +4299,7 @@ function pte_view_document(vaultId, token = false) {
 			console.log(status);
 		}
 	};
-	xhr.send();
+	xhr.send(); */
 }
 /*
 function alpn_handle_close_add_edit(){
