@@ -120,7 +120,7 @@ pte_supported_types_map = {
 }
 
 //zendesk prefill support
-window.zESettings = {
+/* window.zESettings = {
     webWidget: {
 			position: { horizontal: 'right', vertical: 'top' },
       offset: {
@@ -132,7 +132,7 @@ window.zESettings = {
         }
       }
     }
-  };
+  }; */
 
   zE(function() {
 		if (typeof alpn_user_id !== 'undefined' && alpn_user_id) {
@@ -2696,7 +2696,7 @@ jQuery( document ).ready( function(){
 			pte_setup_window_onload();
 	}
 
-	//if (!pte_external) {pte_get_active_video_rooms();}
+	if (!pte_external) {pte_get_active_video_rooms();}
 
 	if (history.scrollRestoration) {
 	  history.scrollRestoration = 'manual';
