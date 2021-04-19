@@ -2692,7 +2692,7 @@ jQuery( window ).load( function(){
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 
 setTimeout(function(){ 	console.log("WORKED ONLOAD SETUP");
-			pte_setup_window_onload(); }, 2000);
+			pte_setup_window_onload(); }, 1000);
 
 		
 
