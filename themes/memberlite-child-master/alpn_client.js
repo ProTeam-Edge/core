@@ -2690,15 +2690,11 @@ jQuery( document ).ready( function(){
 	console.log("DOC READY");
 
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
-jQuery(window).bind("load", function() {
- 	console.log("WORKED ONLOAD SETUP");
-			pte_setup_window_onload();
-});
-	/* window.onload = function() {
-		alert('reached')
+
+	window.onload = function() {
 			console.log("WORKED ONLOAD SETUP");
 			pte_setup_window_onload();
-	} */
+	}
 
 	if (!pte_external) {pte_get_active_video_rooms();}
 
