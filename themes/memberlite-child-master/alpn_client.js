@@ -2694,7 +2694,7 @@ jQuery( window ).load( function(){
 		setTimeout(function(){ 
 		console.log("WORKED ONLOAD SETUP");
 		pte_setup_window_onload(); 
-		}, 1000);
+		}, 500);
 
 		
 
