@@ -120,7 +120,7 @@ pte_supported_types_map = {
 }
 
 //zendesk prefill support
-/* window.zESettings = {
+window.zESettings = {
     webWidget: {
 			position: { horizontal: 'right', vertical: 'top' },
       offset: {
@@ -132,16 +132,16 @@ pte_supported_types_map = {
         }
       }
     }
-  }; */
+  };
 
- /*  zE(function() {
+  zE(function() {
 		if (typeof alpn_user_id !== 'undefined' && alpn_user_id) {
 	    zE.identify({
 	      name: alpn_user_displayname,
 	      email: alpn_user_email
 	    });
 		}
-  }); */
+  });
 
 function pte_UUID() { // Public Domain/MIT
     var d = new Date().getTime();//Timestamp
