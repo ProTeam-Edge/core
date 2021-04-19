@@ -2115,6 +2115,7 @@ function pte_start_chat(indexType, recordId){
 }
 
 function	pte_message_chat_window(data){
+	alert("reached chat function");
 		var name = data.name;
 		var chatBody = document.querySelector( "#alpn_chat_body" );
 		if (chatBody) {
