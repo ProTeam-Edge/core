@@ -2115,7 +2115,6 @@ function pte_start_chat(indexType, recordId){
 }
 
 function	pte_message_chat_window(data){
-	alert("reached chat function");
 		var name = data.name;
 		var chatBody = document.querySelector( "#alpn_chat_body" );
 		if (chatBody) {
@@ -2690,13 +2689,13 @@ jQuery( document ).ready( function(){
 
 	console.log("DOC READY");
 
-	
+	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 
 	window.onload = function() {
 			console.log("WORKED ONLOAD SETUP");
 			pte_setup_window_onload();
 	}
-	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
+
 	if (!pte_external) {pte_get_active_video_rooms();}
 
 	if (history.scrollRestoration) {
