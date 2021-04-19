@@ -2683,23 +2683,18 @@ function pte_setup_window_onload() {
 	}
 
 }
-jQuery(window).load(function() {
-/* 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
-console.log("WORKED ONLOAD SETUP");
-			pte_setup_window_onload(); */
-});
-jQuery( document ).ready( function(){
+
+jQuery( window ).load( function(){
 
 
 	console.log("DOC READY");
 
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 
-	/* window.onload = function() {
-		
+
 			console.log("WORKED ONLOAD SETUP");
 			pte_setup_window_onload();
-	} */
+
 
 	if (!pte_external) {pte_get_active_video_rooms();}
 
