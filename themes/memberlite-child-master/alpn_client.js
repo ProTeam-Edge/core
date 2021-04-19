@@ -2684,9 +2684,9 @@ function pte_setup_window_onload() {
 
 }
 jQuery(window).load(function() {
-	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
+/* 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 console.log("WORKED ONLOAD SETUP");
-			pte_setup_window_onload();
+			pte_setup_window_onload(); */
 });
 jQuery( document ).ready( function(){
 
