@@ -2692,6 +2692,7 @@ jQuery( document ).ready( function(){
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 
 	window.onload = function() {
+		alert("test")
 			console.log("WORKED ONLOAD SETUP");
 			pte_setup_window_onload();
 	}
