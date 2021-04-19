@@ -2696,7 +2696,7 @@ jQuery( document ).ready( function(){
 			pte_setup_window_onload();
 	}
 
-	if (!pte_external) {pte_get_active_video_rooms();}
+	//if (!pte_external) {pte_get_active_video_rooms();}
 
 	if (history.scrollRestoration) {
 	  history.scrollRestoration = 'manual';
