@@ -2451,7 +2451,7 @@ function iformat(icon) {
 
 
 function pte_setup_window_onload() {
-
+pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 	if ((typeof alpn_user_id != "undefined") && (alpn_user_id > 0)) {	//Must be logged in
 
 				console.log('WINDOW ON LOADED..');
