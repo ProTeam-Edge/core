@@ -2683,7 +2683,7 @@ function pte_setup_window_onload() {
 	}
 
 }
-$(window).on("load", function() {
+jQuery(window).on("load", function() {
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 console.log("WORKED ONLOAD SETUP");
 			pte_setup_window_onload();
