@@ -2693,10 +2693,7 @@ jQuery( document ).ready( function(){
 
 	window.onload = function() {
 			console.log("WORKED ONLOAD SETUP");
-		
-			document.addEventListener("DOMContentLoaded", function(event) { 
- 	pte_setup_window_onload();
-});
+			pte_setup_window_onload();
 	}
 
 	if (!pte_external) {pte_get_active_video_rooms();}
