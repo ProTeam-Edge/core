@@ -2688,14 +2688,14 @@ jQuery( document ).ready( function(){
 
 
 	console.log("DOC READY");
-	console.log("reached after DOC READY");
-	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
-	console.log("reached before onload");
+
+	
+
 	window.onload = function() {
 			console.log("WORKED ONLOAD SETUP");
 			pte_setup_window_onload();
 	}
-
+	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 	if (!pte_external) {pte_get_active_video_rooms();}
 
 	if (history.scrollRestoration) {
