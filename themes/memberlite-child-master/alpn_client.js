@@ -2688,8 +2688,9 @@ jQuery( document ).ready( function(){
 
 
 	console.log("DOC READY");
-
+	
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
+	setTimeout(function(){ alert("Hello"); }, 3000);
 
 	window.onload = function() {
 			console.log("WORKED ONLOAD SETUP");
