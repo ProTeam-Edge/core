@@ -14,6 +14,7 @@
 
     // run code
 } */
+die;
 include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 // verify added nonce before submission for wpforms
