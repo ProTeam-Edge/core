@@ -18,7 +18,10 @@ include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 // verify added nonce before submission for wpforms
 use PascalDeVink\ShortUuid\ShortUuid;
-
+function disable_tml_ajax( $form_name, $form ) {
+    $form->remove_attribute( 'data-ajax' );
+}
+add_action( 'tml_registered_form', 'disable_tml_ajax', 10, 2 );
 
 function wpf_dev_process_before( $entry, $form_data ) {
 
