@@ -2361,8 +2361,8 @@ function pte_manage_cc_groups($operation, $data) {
   }
 
   $topicId = isset($data['topic_id']) ? $data['topic_id'] : "";
-  $userId = isset($data['user_id']) ? $data['user_id'] : "";   //WP ID CONNECTED ID
-  $syncId = isset($data['sync_id']) ? $data['sync_id'] : "";   //WP ID CONNECTED ID
+  $userId = isset($data['user_id']) ? $data['user_id'] : "";
+  $syncId = isset($data['sync_id']) ? $data['sync_id'] : "";  
   $topicName = isset($data['topic_name']) && $data['topic_name'] ? $data['topic_name'] : "New";
   $fullName = isset($data['full_name']) && $data['full_name'] ? $data['full_name'] : "";
   $imageHandle = isset($data['image_handle']) && $data['image_handle'] ? $data['image_handle'] : false;
@@ -2530,7 +2530,7 @@ function pte_manage_cc_groups($operation, $data) {
     case "delete_member":
     $channelId = pte_manage_cc_groups("get_create_channel", $data);
 
-    if ($channelId) {
+    if ($channelId) {  //TODO SEEMS Like this should not require a loop
       try {
         $members = $twilio->chat->v2
           ->services($chatServiceId)

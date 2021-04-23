@@ -342,11 +342,11 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
   $defaultTopicData = pte_create_default_topics($user_id, true);   //with sample data
 
 
-	alpn_log("Creating New User...");
-	alpn_log($defaultTopicData);
+	// alpn_log("Creating New User...");
+	// alpn_log($defaultTopicData);
 
 
-	
+
 	$coreUserFormId = $defaultTopicData['core_user_form_id'];
 	$samplePlace1Id = $defaultTopicData['sample_place_id_1'];
 	$samplePlace2Id = $defaultTopicData['sample_place_id_2'];
@@ -359,7 +359,7 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 		'id' => $coreUserFormId,  //source user template type  Using custom TT
 		'new_owner' => $user_id,
 		"create_email_route" => $userEmailRouteId,
-		'fields' => array()
+		'fields' => array("2" => "[Replace Me, Please]", "4" => "[Replace Me, Please]")    //4 for user topic is person_givenname, 2 = person_familynname
 	);
 	$newUserTopicId = alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
 	//Create linkS
@@ -395,10 +395,10 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 	pte_manage_topic_link('add_edit_topic_bidirectional_link', $linkData, $subjectToken);
 
 	//send Personalized Email Attachment to the new Topic
-	alpn_log('New User Sample Data -- Send some Emails here');
-	alpn_log($samplePerson1Id);
-	alpn_log($samplePerson1EmailId);
-	alpn_log($userEmailRouteId);
+	// alpn_log('New User Sample Data -- Send some Emails here');
+	// alpn_log($samplePerson1Id);
+	// alpn_log($samplePerson1EmailId);
+	// alpn_log($userEmailRouteId);
 
 
 }
@@ -425,11 +425,21 @@ function cleanup_pte_user_on_delete( $user_id ) {
 
 	//channels unlimited, no cost. No need to delete unless privacy issue.
 	//CC Groups delete user
+
+
 	$data = array('owner_id' => $user_id);
 	pte_manage_cc_groups("delete_user", $data);
 
 	//Handle Fax Numbers
 	pte_release_all_pstn_numbers($user_id);
+
+	//Store vault keys to batch delete
+	$wpdb->get_results(
+		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT pdf_key AS object_key FROM alpn_vault WHERE owner_id = %d AND pdf_key <> ''", $userId, $topicId)
+	);
+	$wpdb->get_results(
+		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT file_key AS object_key FROM alpn_vault WHERE owner_id = %d AND file_key <> ''", $userId, $topicId)
+	);
 
 	$whereclause = array('owner_id' => $user_id);
 	$wpdb->delete( "alpn_topics", $whereclause );
@@ -443,7 +453,6 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	//ProTeam participant
 	$whereclause = array('wp_id' => $user_id);
 	$wpdb->delete( "alpn_proteams", $whereclause );
-
 
 	$whereclause = array('id' => $user_id);
 	$wpdb->delete( "alpn_user_metadata", $whereclause );
@@ -459,7 +468,6 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	$wpdb->delete( "alpn_interactions", $whereclause );
 
 	delete_user_meta( $user_id, "pte_user_network_id");
-
 	//reset records of my connections.
 	$whereclause = array('connected_id' => $user_id);
 	$topicData = array('connected_id' => NULL, 'connected_topic_id' => NULL, 'connected_network_id' => NULL, 'channel_id' => NULL);
@@ -534,15 +542,16 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 				$mappedFields = array();
 				foreach($alpnNormalizeMapFlipped as $key => $value) {
 					if (isset($fields[$key])) {
-						$mappedFields[$alpnNormalizeMapFlipped[$key]] = $fields[$key];
+						$newKey = $alpnNormalizeMapFlipped[$key];
+						$mappedFields[$newKey] = $fields[$key];
 					} else {
 						$mappedFields[$alpnNormalizeMapFlipped[$key]] = '';
 					}
 				}
 
 				if (isset($entry['new_owner'])) {
-					$topicName = "New Member";
-					$topicAbout = "";
+					$topicName = $userEmail;
+					$topicAbout = $userEmail;
 				} else if ($fields) {
 					$topicName = pte_make_string($nameSource, $fields, $alpnNormalizeMap);
 					$topicAbout = pte_make_string($aboutSource, $fields, $alpnNormalizeMap);
@@ -555,6 +564,10 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
         $altId = ""; //email address for type 4 topics contact and topicid
 				$last_record_id = array();
 				$topicMeta = array();
+
+				if ($topicTypeSpecial == 'user') { //User
+					$mappedFields['person_email'] = $userEmail;  //sets user profile email to WP email
+				}
 
 				if (isset($mappedFields['person_email']) && $mappedFields['person_email']) {  //person only
 					//Check for contact only dupes and dissallow
@@ -576,10 +589,6 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 							return;
 						}
 					}
-				}
-
-        if ($topicTypeSpecial == 'user') { //User
-					$mappedFields['person_email'] = $userEmail;  //sets user profile email to WP email
 				}
 
 				//TODO Topic Meta. Network: user-editable status: prospect, active, trusted (need better name). Topic: type.
@@ -608,11 +617,21 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 						$syncId = $tRow->sync_id;
 						if ($topicSchemaKey == "Person") {
 							if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
-								$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . strtolower(substr($mappedFields['person_givenname'], 0, 1)) . ".png";
+								$firstChar = strtolower(substr($mappedFields['person_givenname'], 0, 1));
+								if ($firstChar >= 'a' && $firstChar <= 'z') {
+									$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
+								} else {
+									$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_n.png";
+								}
 							}
 						} else { //Reguler Topic
-							if ($currentImageHandle == "" ) {
-								$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . strtolower(substr($topicName, 0, 1)) . ".png";
+							if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
+								$firstChar = strtolower(substr($topicName, 0, 1));
+								if ($firstChar >= 'a' && $firstChar <= 'z') {
+									$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
+								} else {
+									$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_n.png";
+								}
 							}
 						}
 					}
@@ -631,11 +650,25 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 						$data['sync_id'] = $syncId;
 						$data['owner_id'] = $userId;
 						$data['user_id'] = $userId;
-						$data['full_name'] = $topicName;
             $data['image_handle'] = $currentImageHandle;
             $data['topic_id'] = $row_id;
-            $data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
+						$firstChar = strtolower(substr($mappedFields['person_givenname'], 0, 1));
+						if ($firstChar && $firstChar >= 'a' && $firstChar <= 'z') {
+							$data['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
+						} else {
+							$data['image_handle'] = "pte_icon_letter_n.png";
+						}
+						if (isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] != "[Replace Me, Please]") {
+							$data['topic_name'] = $mappedFields['person_givenname'];
+	            $data['full_name'] = $topicName;
+						} else {
+							$data['topic_name'] = $mappedFields['person_email'];
+							$data['full_name'] = $mappedFields['person_email'];
+						}
             pte_manage_cc_groups("update_user", $data);
+
+						// alpn_log("UPDATING USER");
+						// alpn_log($data);
 
 						// update Topic Name and About for all connected
 						$nameAboutData = array(
@@ -646,13 +679,6 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 							"connected_id" => $userId
 						);
 						$wpdb->update( 'alpn_topics', $nameAboutData, $whereClause );
-
-            //update_user_meta( $userId, "pte_user_network_id",  $row_id); //SH  TODO probably don't need this so I commented it. Because once ID, always id.
-            // $data = array(
-            //   "sync_type" => "return_create_sync_id",
-            //   "sync_payload" => array()
-            // );
-            // pte_manage_user_sync($data);
           }
 
 					if ($topicTypeSpecial == 'topic') { //update topic
@@ -666,14 +692,20 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 
 					if (isset($entry['icon_image']) && $entry['icon_image']) {
 						$topicData['image_handle'] = $entry['icon_image'];
+
 					} else if ($topicSchemaKey == "Person") {
-						$topicData['image_handle'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? "pte_icon_letter_" . strtolower(substr($mappedFields['person_givenname'], 0, 1)) . ".png" : "pte_icon_letter_n.png";
+						$firstChar = strtolower(substr($mappedFields['person_givenname'], 0, 1));
+						if ($firstChar >= 'a' && $firstChar <= 'z') {
+							$topicData['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
+						} else {
+							$topicData['image_handle'] = "pte_icon_letter_n.png";
+						}
 					}
 					if (isset($entry['logo_image']) && $entry['logo_image']) {
 						$topicData['logo_handle'] = $entry['logo_image'];
 					}
 
-					if (isset($entry['create_email_route']) && $entry['create_email_route']) {  //When adding a user  .. I suppose special=user on add only happens first time.
+					if (isset($entry['create_email_route']) && $entry['create_email_route']) {
 							$topicData['email_route_id'] = $entry['create_email_route'];
 					}
 
@@ -718,8 +750,13 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
             $data['owner_id'] = $userId;
 						$data['user_id'] = $userId;
             $data['topic_id'] = $row_id;
-						$data['topic_name'] = isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] ? $mappedFields['person_givenname'] : "Welcome";
-            $data['full_name'] = $topicName;
+						if (isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] != "[Replace Me, Please]") {
+							$data['topic_name'] = $mappedFields['person_givenname'];
+	            $data['full_name'] = $topicName;
+						} else {
+							$data['topic_name'] = $mappedFields['person_email'];
+							$data['full_name'] = $mappedFields['person_email'];
+						}
             pte_manage_cc_groups("add_user", $data);
 						update_user_meta( $userId, "pte_user_network_id",  $row_id);
 				}
