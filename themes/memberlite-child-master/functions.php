@@ -18,6 +18,7 @@ include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 // verify added nonce before submission for wpforms
 use PascalDeVink\ShortUuid\ShortUuid;
+echo 'test';
 
 function wpf_dev_process_before( $entry, $form_data ) {
 
