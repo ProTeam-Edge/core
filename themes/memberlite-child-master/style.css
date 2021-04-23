@@ -11,6 +11,22 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+.pte_connection_name_link {
+		color: #0074BB;
+		cursor: pointer;
+}
+
+.pte_connection_loading{
+	width: 18px;
+	height: 18px;
+	margin-right: 5px;
+	display: none;
+}
+
+table#table_connections td.column-draw_id {
+	background-color: white !important;
+}
+
 .pte_connected_action_button:active,
 .pte_connected_action_button:focus,
 .pte_connected_action_button:focus-within,
@@ -23,7 +39,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 	box-shadow: none !important;
 	transform: none !important;
 	border-radius: 0 !important;
-	margin: 0 !important;
+	margin: 0 0 2px 0 !important;
   padding: 0 !important;
 }
 
@@ -450,8 +466,16 @@ nav#mobile-navigation li.current_page_item a {
 }
 
 .pmpro_content_message{
-	text-align: center;
 	border: 0;
+}
+
+.pte_membership_message,
+.pmpro_content_message p{
+	max-width: 500px;
+	text-align: center;
+	padding: 10px 15px;
+	margin: 30px auto 30px auto !important;
+	border: 1px solid rgb(192, 192, 192);
 }
 
 .pmpro_btn,
@@ -1188,6 +1212,7 @@ input.wpforms-field-large {
 	height: 70px;
 	width: 100%;
 	border:	1px solid rgb(204, 204, 204) !important;
+	background-color: white;
 	overflow-y: auto;
 }
 

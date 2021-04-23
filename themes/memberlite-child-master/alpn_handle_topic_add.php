@@ -7,7 +7,6 @@ $qVars = $_POST;
 $html = "";
 // verifying nonce
 
-
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
@@ -17,7 +16,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 
-	$topicTypeId = isset($qVars['topicTypeId']) ? pte_digits($qVars['topicTypeId']) : '';
+	$topicTypeId = isset($qVars['topicTypeId']) ? $qVars['topicTypeId'] : '';
 	$topicTypeSpecial = isset($qVars['topicTypeSpecial']) ? $qVars['topicTypeSpecial'] : '';
 	$topicDomId = isset($qVars['previous_topic']) ? $qVars['previous_topic'] : '';
 	$returnDetails = isset($qVars['return_details']) ? json_decode(stripslashes($qVars['return_details']), true) : array();
@@ -40,8 +39,8 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 		 );
 	}
 
-	if (array_key_exists(0, $results)) {
-		$topicType = $results['0'];
+	if (isset($results[0])) {
+		$topicType = $results[0];
 		$formId = $topicType->form_id;
 		$name = $topicType->name;
 		$icon = $topicType->icon;

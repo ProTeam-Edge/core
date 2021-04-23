@@ -4,28 +4,6 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
-// $webhook = pte_call_documo('get_numbers', array());
-// $webhookData = json_decode($webhook, true);
-// pp($webhookData);
-
-//pp(get_user_meta( '40', 'pte_user_network_id', true ));
-
-$data = array(
-  "sync_type" => "update_all_sync_ids",
-  "sync_payload" => array()
-);
-//pte_manage_user_sync($data);
-
-
-
-//pte_manage_cc_groups("update_all_user_attributes", array());
-
-//pte_release_all_pstn_numbers(103);
-
-$data = array(  //add contact to channel
- 'channel_id' => 'CHd72168c48bc942c0bce2d3906665e07c'
- );
-//pte_manage_cc_groups("delete_channel_by_channel_id", $data);
 
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";

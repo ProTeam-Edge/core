@@ -857,6 +857,9 @@ function pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCo
 function pte_handle_chat_channel(channel){
 
   console.log("Handling Channel");
+  console.log(channel);
+
+
   var channelState = channel.state;
   var channelUniqueId = channel.uniqueName;
   var channelFriendlyName = channel.friendlyName;

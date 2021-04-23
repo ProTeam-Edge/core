@@ -307,50 +307,134 @@ function pte_unlink_selected_topic(){
 	}
 }
 
+function pte_handle_connection_button(operation, topicId) {
+
+	console.log("Handling Connection...");
+
+	if (operation != "connect") {
+		alert("Feature still in development...");
+		return;
+	}
+
+	var security = specialObj.security;
+	var connectionEl = jQuery("div.pte_member_connection[data-uid='" + topicId + "']");
+	connectionEl.find("img#pte_connection_loading").css("display", "inline");
+	connectionEl.find("div#pte_button_container").css({"opacity": 0.7, "pointer-events": "none"});
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'pte_handle_connection.php',
+		type: 'POST',
+		data: {
+			security: security,
+			operation: operation,
+			topic_id: topicId
+		},
+		dataType: "json",
+		success: function(json) {
+
+			console.log('Successfully Handled Connection...');
+			console.log(json);
+
+			switch(operation) {
+				case 'connect':
+					var elements = pte_make_connection_elements(json);
+					connectionEl.find("div#pte_button_container").html(elements.button_line).css({"opacity": 1, "pointer-events": "auto"});
+					connectionEl.find("div#pte_icon_container").html(elements.connected_icon);
+					connectionEl.find("div#pte_name_container").html(elements.connected_name);
+					connectionEl.find("img#pte_connection_loading").css("display", "none");
+				break;
+				case 'dni':
+					var elements = pte_make_connection_elements(json);
+					connectionEl.find("div#pte_button_container").html(elements.button_line).css({"opacity": 1, "pointer-events": "auto"});
+					connectionEl.find("div#pte_icon_container").html(elements.connected_icon);
+					connectionEl.find("div#pte_name_container").html(elements.connected_name);
+					connectionEl.find("img#pte_connection_loading").css("display", "none");
+				break;
+			}
+
+
+		},
+		error: function() {
+			console.log('Error Handling Connection....');
+			connectionEl.find("img#pte_connection_loading").css("display", "none");
+		//TODO
+		}
+	});
+
+
+}
+
+function pte_make_connection_elements(connection){
+
+	console.log("Making Connection Elements...");
+	console.log(connection);
+
+	var connectedIcon, buttonLine, connectedName;
+	var connectionId = connection[0];
+	var connectionName = connection[1];
+	var connectionTopicId = connection[2];
+	var connectionAbout = connection[3];
+	var connectionState = connection[4];
+	var connectedOwnerDomId  = connection[6];
+
+	var loadingIndicator = "<img id='pte_connection_loading' class='pte_connection_loading' src='" + alpn_templatedir + "pdf/web/images/loading-icon.gif'>";
+	switch(connectionState) {
+		case 'connected':
+			connectedName = "<div data-topic-id='" + connectionId + "' data-topic-type-id='' data-topic-special='contact' data-topic-dom-id='" + connectedOwnerDomId + "' data-operation='to_topic_info_by_id' class='pte_connection_name_link' onclick='pte_handle_interaction_link_object(this);'>" + connectionName + "</div>";
+			connectedIcon = "<i class='far fa-user-check' title='Member, Connected'></i>";
+			buttonLine = loadingIndicator + "<button title='Do Not Allow Interaction' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"dni\", \"" + connectionId + "\");'>DNI</button>";
+		break;
+		case 'disconnected':
+			connectedName = connectionName;
+			connectedIcon = "<i class='far fa-user-slash' title='Not a Member'></i>";
+			buttonLine = "";
+		case 'wants_to_connect':
+			connectedName = connectionName;
+			connectedIcon = "<i class='far fa-question-circle' title='Member Wants to Connect'></i>";
+			buttonLine = loadingIndicator + "<button title='Connect with Member' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"connect\", \"" + connectionId + "\");'>Connect</button>";
+		break;
+		case 'dni':
+			connectedName = connectionName;
+			connectedIcon = "<i class='far fa-user-shield' title='Do Not Interact, Connected'></i>";
+			buttonLine = loadingIndicator + "<buttontitle='Allow Interaction' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"un_dni\", \"" + connectionId + "\");'>Interact</button>";
+		break;
+	}
+	return {connected_icon: connectedIcon, button_line: buttonLine, connected_name: connectedName};
+}
+
 function pte_draw_connections_table() {
 	console.log("Drawing Connections Table");
 
-	var formattedField, cellObj, cellId, connectedIcon, buttonLine;
+	var formattedField, cellObj, cellId, connectedIcon, buttonLine, elements;
 	var tableData = wpDataTables.table_connections.fnGetData();
 
 	for (i = 0; i < tableData.length; i++) {
 		var connection = tableData[i];
 
+		console.log("connection");
+
+
 		var connectionId = connection[0];
-		var connectionName = connection[1];
-		var connectionTopicId = connection[2];
 		var connectionAbout = connection[3];
-		var connectionState = connection[4];
 
-		buttonLine = '';
+		elements = pte_make_connection_elements(connection);
 
-		switch(connectionState) {
-			case 'connected':
-				connectedIcon = "<i class='far fa-user-check' title='Member, Connected'></i>";
-				buttonLine += "<button class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button('unblock', '" + connectionId + "');'>Block</button>";
-			break;
-			case 'disconnected':
-				connectedIcon = "<i class='far fa-user-slash' title='Not a Member'></i>";
-			case 'wants_to_connect':
-				connectedIcon = "<i class='far fa-question-circle' title='Member Wants to Connect'></i>";
-				buttonLine += "<button class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button('connect', '" + connectionId + "');'>Connect</button>";
-			break;
-		}
-
-		//console.log(connection);
+		buttonLine = elements.button_line;
+		connectedIcon = elements.connected_icon;
+		connectedName = elements.connected_name;
 
 		formattedField = "";
 		formattedField += "<div class='pte_vault_row'>";
-		formattedField += "<div class='pte_vault_5'>";
+		formattedField += "<div id='pte_icon_container' class='pte_vault_5'>";
 		formattedField += connectedIcon;
 		formattedField += "</div>";
-		formattedField += "<div class='pte_vault_row_40 pte_extra_padding_right pte_vault_bold'>";
-		formattedField += connectionName;
+		formattedField += "<div id='pte_name_container' class='pte_vault_row_40 pte_extra_padding_right pte_vault_bold'>";
+		formattedField += connectedName;
 		formattedField += "</div>";
 		formattedField += "<div class='pte_vault_row_40 pte_extra_padding_right'>";
 		formattedField += connectionAbout;
 		formattedField += "</div>";
-		formattedField += "<div class='pte_vault_row_15 pte_vault_right'>";
+		formattedField += "<div id='pte_button_container' class='pte_vault_row_15 pte_vault_right'>";
 		formattedField += buttonLine;
 		formattedField += "</div>";
 		formattedField += "</div>";
@@ -358,7 +442,6 @@ function pte_draw_connections_table() {
 		cellId = "div.pte_member_connection[data-uid='" + connectionId + "']";
 		cellObj = jQuery(cellId);
 		cellObj.html(formattedField);
-
 	}
 
 }
@@ -390,7 +473,7 @@ function alpn_handle_extra_table(extraKey) {
 	var subjectToken;
 	var ownerName;
 
-	//sconsole.log(tableData);
+	console.log(tableData);
 
 	for (i=0; i< tableData.length; i++) {
 		rowData = tableData[i];
@@ -424,14 +507,18 @@ function alpn_handle_extra_table(extraKey) {
 
 		if (connectedTopicClass == 'LINKYES') {
 			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold' data-link-id='" + linkId  + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
-		} else {
+		} else if (connectedTopicClass == 'topic' || connectedTopicClass == 'link'){
 			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
+
 			if (connectedTopicSpecial == 'contact') {
 				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 			}
+
 			if (connectedTopicSpecial == 'user') {
 				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 			}
+		} else {
+			topicLink = "<div class='pte_topic_list pte_vault_bold'>" + itemName + "</div>";
 		}
 
 		cellObj = jQuery(cellId);
@@ -941,7 +1028,7 @@ function pte_pstn_widget_lookup(){
 	}
 }
 
-function pte_set_table_page(data){
+function pte_set_table_page(data, moveNewToView = false){
 
 	console.log('pte_set_table_page');
 	console.log(data);
@@ -962,15 +1049,17 @@ function pte_set_table_page(data){
 		dataType: "json",
 		success: function(json) {
 
+			if (json.page_number == -1) {return;}
+
 			switch(tableType) {
 				case 'table_topic_types':
-					var table =	wpDataTables.table_topic_types;
+					var tableName = "table_topic_types";
 				break;
 				case 'topic':
-					var table =	wpDataTables.table_topic;
+					var tableName = "table_topic";
 				break;
 				case 'network':
-					var table =	wpDataTables.table_network;
+				var tableName = "table_network";
 				break;
 				case 'topic_link':  //Topic Link -- has to wait for table.
 					var tabId  = data['tab_id'];
@@ -994,15 +1083,32 @@ function pte_set_table_page(data){
 						});
 					return;
 				break;
-
 		}
-			alpn_oldSelectedId = domId;
-			var currentPage = table.api().page();
-			table.api().page(json.page_number).draw('page');
-			if (connectedTopicId && connectedTopicDomId) {
-				data['table_type'] = 'topic_link';
-				pte_set_table_page(data);
-			}
+		if (moveNewToView) {wpDataTables[tableName].fnFilterClear();}
+		alpn_wait_for_ready(10000, 250,  //All Other Tables
+			function(){ //Something to check
+				if (pte_external == false && wpDataTables[tableName] != "undefined") {
+					if (wpDataTables[tableName].api().data().count() > 0 ) {
+						return true;
+					}
+				}
+				return false;
+			},
+			function(){ //Handle Success
+				console.log('Handling Set Page for Table');
+				var table =	wpDataTables[tableName];
+				if (!moveNewToView) {alpn_oldSelectedId = domId;}
+				var currentPage = table.api().page();
+				table.api().page(json.page_number).draw('page');
+				if (connectedTopicId && connectedTopicDomId) {
+					data['table_type'] = 'topic_link';
+					pte_set_table_page(data);
+				}
+			},
+			function(){ //Handle Error
+				console.log("Failed -- Handling Set Page for Table"); //TODO Handle Error
+			});
+
 		},
 		error: function() {
 			console.log('Error setting table page...');
@@ -1223,12 +1329,7 @@ function pte_handle_interaction_link(mapData){
 			case 'vault_item':
 				pte_global_vault_item_dom_id = vaultDomId;
 				delete wpDataTables.table_vault;  //timing issues
-
-				console.log('pte_handle_interaction_link VAULT ITEM');
-				console.log(mapData);
-
 				var table_type = (topicSpecial == "contact") ? "network" : "topic";
-
 				var data = {
 					"table_type": table_type,
 					"dom_id": topicDomId,
@@ -1251,14 +1352,14 @@ function pte_handle_interaction_link(mapData){
 					},
 					function(){  //Vault
 
-						console.log('FOUND VAULT TABLE');
+						// console.log('FOUND VAULT TABLE');
 						var security = specialObj.security;
 
 						var topicMeta = jQuery("#pte_selected_topic_meta");
 						var topicAccessLevel = topicMeta.data("pl");
 
-						console.log(topicMeta);
-						console.log(topicAccessLevel);
+						// console.log(topicMeta);
+						// console.log(topicAccessLevel);
 
 						var data = {
 							"table_type": "vault",
@@ -2454,7 +2555,6 @@ function pte_setup_window_onload() {
 
 	if ((typeof alpn_user_id != "undefined") && (alpn_user_id > 0)) {	//Must be logged in
 
-				console.log('WINDOW ON LOADED..');
 				if (pte_external == false) {   //Initialize Mission Control
 					//Setup Sync
 					jQuery.getJSON(alpn_templatedir +  'chat/token.php', {
@@ -2522,7 +2622,6 @@ function pte_setup_window_onload() {
 					alpn_wait_for_ready(10000, 250,  //Network Table
 						function(){
 							if (pte_external == false  && wpDataTables.table_network !== "undefined") {
-									console.log("FOUND TABLE");
 									return true;
 							}
 							return false;
@@ -2543,8 +2642,6 @@ function pte_setup_window_onload() {
 					alpn_wait_for_ready(10000, 250,  //Topic Table
 						function(){
 							if (pte_external == false  && wpDataTables.table_topic !== "undefined") {
-								console.log("FOUND TABLE");
-
 									return true;
 							}
 							return false;
@@ -2686,18 +2783,12 @@ function pte_setup_window_onload() {
 
 jQuery( window ).load( function(){
 
-
-	console.log("DOC READY");
-
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
-	// added delay for fixing loading issue
-		setTimeout(function(){ 
+	// added delay for fixing loading issue TODO figure out exactly whats up and fix it or wait for it, not a timer.
+		setTimeout(function(){
 		console.log("WORKED ONLOAD SETUP");
-		pte_setup_window_onload(); 
-		}, 500);
-
-		
-
+		pte_setup_window_onload();
+	}, 500);
 
 	if (!pte_external) {pte_get_active_video_rooms();}
 
@@ -2795,10 +2886,7 @@ jQuery( window ).load( function(){
 						jQuery("#pte_topic_dropzone").hide();
 	    }
 		}
-
 	}
-
-
 });
 
 function alpn_wait_for_ready(waitPeriod, tryFrequency, checkCondition, callback, errorHandler){
@@ -5591,6 +5679,38 @@ function pte_handle_report_settings(operation) {
 	}
 }
 
+function pte_handle_delete_topic(response, returnData){
+	console.log("HANDLING DELETE");
+	if (response == 'no') {return;}
+	var security = specialObj.security;
+	jQuery.ajax({
+		url: alpn_templatedir + 'pte_delete_topic.php',
+		type: 'POST',
+		data: {
+			security: security,
+			return_details: JSON.stringify(returnData)
+		},
+		dataType: "json",
+		success: function(json) {
+			console.log('TOPIC DELETE SUCCESS');
+			console.log(json);
+			if (json.topic_special == 'contact') {
+					alpn_oldSelectedId = jQuery("table#table_network").find("div.alpn_topic_cell").data("uid");
+					if (alpn_oldSelectedId) {wpDataTables.table_network.fnFilterClear();}
+			} else if (json.topic_special == 'topic') {
+				alpn_oldSelectedId = jQuery("table#table_topic").find("div.alpn_topic_cell").data("uid");
+				if (alpn_oldSelectedId) {wpDataTables.table_topic.fnFilterClear();}
+			}
+			if (!alpn_oldSelectedId) {alpn_oldSelectedId = jQuery("div.alpn_user_container").data("uid");}
+			alpn_mission_control('select_by_mode', alpn_oldSelectedId);
+		},
+		error: function() {
+			console.log('TOPIC DELETE FAILED');
+		}
+	});
+}
+
+
 function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 	var tabId = jQuery("button.tablinks.pte_tab_button_active").data('tab-id');
@@ -5614,6 +5734,9 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 	switch(operation) {
 
+		case 'delete_topic':
+			pte_show_message('yellow_question', 'confirm', 'This will delete all items in this Topic including vault files. Please confirm:', 'pte_handle_delete_topic', JSON.stringify(returnDetails));
+		break;
 		case 'manage_connections':
 
 			if (jQuery("#pte_editor_container").data("mc")) {return;}
@@ -5649,18 +5772,15 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 			});
 
 		break;
-
 		case 'make_default_topic':
 		var tableId = "table_tab_" + tabId;
 		var trObj =  jQuery('#alpn_main_container #alpn_field_' + uniqueRecId).closest('tr');
 		var vaultRowData = wpDataTables[tableId].fnGetData(trObj);
 
 		if (vaultRowData.length) {
-
 			var newLinkId = vaultRowData[12];
 			var ownerTopicId1 = vaultRowData[0];
 			var topicSubjectToken = subjectToken;
-
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_make_default_topic.php',
 				type: 'POST',
@@ -5690,7 +5810,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 			})
 		}
 		break;
-
 		case 'pdf_topic':
 		var security = specialObj.security;
 		console.log('PDF TOPIC...');
@@ -5808,7 +5927,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 					//TODO update icon with new image_handle data if needed.
 					var newUser = jQuery("div#alpn_field_" + uniqueRecId);
 					if (newUser.data('nm') == 'yes') { //Put them in edit mode for their topic. Tell em something
-						pte_show_message('green', 'ok', 'Welcome to ProTeam Edge. Please complete and save your personal profile. Keeping it updated is a good idea because your contacts will see this information.');
+						pte_show_message('green', 'ok', 'Welcome to ProTeam Edge. Please complete and save your personal profile. Keeping it updated because your connections will see it. Otherwise, it is private.');
 						newUser.data('nm', 'no');
 					}
 				},
