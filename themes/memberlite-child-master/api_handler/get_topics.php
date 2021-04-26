@@ -369,4 +369,8 @@ if(!empty($topicTabs))
 else
 $response = array('success' => 0, 'message'=>'No data found.','data'=>"");
 
+echo '<pre>';
+print_r($response);
+die;
+
 echo json_encode($response); 
