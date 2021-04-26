@@ -161,9 +161,11 @@ foreach ($fullMap as $key => $value) {
 					$replaceStrings[$value['friendly']] = $topicData->modified_date;
 				break;
 				case 'pte_image_URL':
-					
+					if ($topicLogoHandle) {
+						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
+					}
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = $topicLogoHandle;
+					//$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
