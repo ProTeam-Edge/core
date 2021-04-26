@@ -106,8 +106,7 @@ if (!$topicBelongsToUser) {
 		$topicContent = json_decode($topicData->connected_topic_content, true);
 	}
 }
-echo 'reached here';
-die;
+
 //map and replace
 foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 	if (is_array($value)) {
@@ -174,7 +173,8 @@ foreach ($fullMap as $key => $value) {
 	}
 }
 //$replaceStrings["{topicDomId}"] = $topicDomId;
-
+echo 'reached here 2';
+die;
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
 if (isset($replaceStrings['Occupation']) && intVal($replaceStrings['Occupation'])) {  //TODO test this
 	$replaceStrings['Occupation'] = $businessTypesList[$replaceStrings['Occupation']];
