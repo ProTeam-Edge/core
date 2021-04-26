@@ -111,7 +111,7 @@ if (!$topicBelongsToUser) {
 foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 	if (is_array($value)) {
 		foreach ($value as $key2 => $value2) {
-			$actualValue = 't';
+			$actualValue = $value2;
 		}
 	} else {
 		$actualValue = str_replace("*r*n*", "\r\n", $value);
@@ -123,7 +123,7 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 		else 
 		$tkey = '';
 		if(!empty($tkey))
-		$replaceStrings[$tkey] =  't';
+		$replaceStrings[$tkey] = $actualValue;
 	}
 }
 foreach ($fullMap as $key => $value) {
@@ -155,17 +155,17 @@ foreach ($fullMap as $key => $value) {
 		if ($isSystemType) {
 			switch ($value['schema_key']) {
 				case 'pte_added_Date':
-					$replaceStrings[$value['friendly']] =$topicData->created_date;
+					$replaceStrings[$value['friendly']] ='';
 				break;
 				case 'pte_modified_Date':
-					$replaceStrings[$value['friendly']] = $topicData->modified_date;
+					$replaceStrings[$value['friendly']] = '';
 				break;
 				case 'pte_image_URL':
 					if ($topicLogoHandle) {
 						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
 					}
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
+					$replaceStrings[$friendlyLogoName] = '';
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
