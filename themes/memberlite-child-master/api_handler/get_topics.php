@@ -372,6 +372,7 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
- // Print out the error if any
+echo json_encode($response);
+echo json_last_error_msg(); // Print out the error if any
 
 die;
