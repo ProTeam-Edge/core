@@ -368,9 +368,10 @@ if(!empty($topicTabs))
 }
 else
 $response = array('success' => 0, 'message'=>'No data found.','data'=>null);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-
-echo json_encode($response);
-echo json_last_error_msg(); // Print out the error if any
+ // Print out the error if any
 
 die;
