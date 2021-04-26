@@ -84,7 +84,8 @@ $topicTabs[] = array(   //Info Page. All Topics Have Them
 $topicLinkKeys = array();
 
 $topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
-
+echo 'reached here';
+die;
 
 if (!$topicBelongsToUser) {
 	$ownerTopicContent = json_decode($topicData->owner_topic_content, true);
