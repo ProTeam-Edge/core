@@ -155,10 +155,10 @@ foreach ($fullMap as $key => $value) {
 		if ($isSystemType) {
 			switch ($value['schema_key']) {
 				case 'pte_added_Date':
-					$replaceStrings[$value['friendly']] =$topicData->created_date;
+					$replaceStrings[$value['friendly']] ='';
 				break;
 				case 'pte_modified_Date':
-					$replaceStrings[$value['friendly']] = $topicData->modified_date;
+					$replaceStrings[$value['friendly']] = '';
 				break;
 				case 'pte_image_URL':
 					if ($topicLogoHandle) {
