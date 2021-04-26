@@ -164,10 +164,8 @@ foreach ($fullMap as $key => $value) {
 					if ($topicLogoHandle) {
 						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
 					}
-					echo $topicLogoUrl;
-					die;
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = '';
+					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
