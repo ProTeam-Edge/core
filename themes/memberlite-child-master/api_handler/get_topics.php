@@ -162,10 +162,12 @@ foreach ($fullMap as $key => $value) {
 				break;
 				case 'pte_image_URL':
 					if ($topicLogoHandle) {
-						$topicLogoUrl = $ppCdnBase.$topicLogoHandle;
+						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
 					}
+					echo $topicLogoUrl;
+					die;
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
+					$replaceStrings[$friendlyLogoName] = '';
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
