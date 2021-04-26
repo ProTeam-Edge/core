@@ -337,8 +337,7 @@ if (count($topicLinkKeys)) {
 	 }
 }
 
-echo 'reached here 6';
-die;
+
 
 
 if($type=='multiple') {
@@ -363,6 +362,8 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
+echo 'reached here 6';
+die;
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
