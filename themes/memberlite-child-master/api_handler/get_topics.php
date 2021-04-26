@@ -224,6 +224,7 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 
 
 
+
 $proTeamSelector = '';  //TODO extend selector to include all Persons (minus self) Test. Cool do this.
 if ($topicBelongsToUser) {
 	$network = array();
@@ -240,7 +241,6 @@ if ($topicBelongsToUser) {
 $proteam = $wpdb->get_results(  //get proteam
 	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id, t.alt_id, t.connected_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
  );
-
 
 $proTeamMembers = "";
 $topicHasTeamMembers = count($proteam) ? true : false;
@@ -362,14 +362,12 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
-
 if(!empty($topicTabs))
+{
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
+}
 else
-$response = array('success' => 0, 'message'=>'No data found.','data'=>null);
-
-echo '<pre>';
-print_r($response);
-die;
+$response = array('success' => 0, 'message'=>'No data found.','data'=>"");
 
 echo json_encode($response); 
+die;
