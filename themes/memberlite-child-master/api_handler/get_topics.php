@@ -240,8 +240,7 @@ if ($topicBelongsToUser) {
 $proteam = $wpdb->get_results(  //get proteam
 	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id, t.alt_id, t.connected_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
  );
-echo 'reached here 3';
-die;
+
 
 $proTeamMembers = "";
 $topicHasTeamMembers = count($proteam) ? true : false;
@@ -284,7 +283,8 @@ foreach ($proteam as $key => $value) {
 		";
 	}
 }
-
+echo 'reached here 4';
+die;
 //TODO Prefill with correct token data
 //TODO use this in interactions for templating tied to IAs
 $messageTypeId = '1';
