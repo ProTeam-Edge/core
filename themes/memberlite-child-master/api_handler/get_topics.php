@@ -371,5 +371,6 @@ $response = array('success' => 0, 'message'=>'No data found.','data'=>null);
 
 
 echo json_encode($response);
+echo json_last_error_msg(); // Print out the error if any
 
 die;
