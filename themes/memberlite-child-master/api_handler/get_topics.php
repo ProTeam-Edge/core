@@ -337,16 +337,23 @@ if (count($topicLinkKeys)) {
 	 }
 }
 
+function utf8ize($d) {
+    if (is_array($d)) {
+        foreach ($d as $k => $v) {
+            $d[$k] = utf8ize($v);
+        }
+    } else if (is_string ($d)) {
+        return utf8_encode($d);
+    }
+    return $d;
+}
 
 
-echo '<pre>';
-print_r($replaceStrings);
-die;
 if($type=='multiple') {
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
 		$topicTabs[$keys]['data']['type'] = 'single';
-		$topicTabs[$keys]['data']['data'] = $replaceStrings;
+		$topicTabs[$keys]['data']['data'] = utf8ize($replaceStrings);
 	}
 	else {
 		$linked_sql = "select owner_topic_id, name, about, owner_id, dom_id, draw_id, owner_name, type_key, subject_token, connected_topic_id, connected_id, connected_topic_type_id, link_id, connected_topic_special, topic_class, list_default FROM alpn_topics_linked_view
