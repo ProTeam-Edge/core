@@ -283,8 +283,7 @@ foreach ($proteam as $key => $value) {
 		";
 	}
 }
-echo 'reached here 4';
-die;
+
 //TODO Prefill with correct token data
 //TODO use this in interactions for templating tied to IAs
 $messageTypeId = '1';
@@ -321,7 +320,8 @@ if ($topicBelongsToUser) {
 		);
 	}
 }
-
+echo 'reached here 5';
+die;
 $usedTopicTypes = array(); //Needed to handle topic_class and source type key mapping correctly
 $typeKeyMap = array();
 if (count($topicLinkKeys)) {
