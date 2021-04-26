@@ -362,14 +362,19 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
-$fixed = mb_convert_encoding($topicTabs, 'UTF-8', 'UTF-8');
-
 if(!empty($topicTabs))
 {
-	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$fixed);
+	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
 }
 else
-$response = array('success' => 0, 'message'=>'No data found.','data'=>null);
-$encode = json_encode($response); 
-echo $encode;
-die;
+$response = array('success' => 0, 'message'=>'No data found.','data'=>"");
+$show_json = json_encode($response , JSON_FORCE_OBJECT);
+if ( json_last_error_msg()=="Malformed UTF-8 characters, possibly incorrectly encoded" ) {
+    $show_json = json_encode($response, JSON_PARTIAL_OUTPUT_ON_ERROR );
+}
+if ( $show_json !== false ) {
+    echo($show_json);
+} else {
+    die("json_encode fail: " . json_last_error_msg());
+}
+echo json_encode($response); 
