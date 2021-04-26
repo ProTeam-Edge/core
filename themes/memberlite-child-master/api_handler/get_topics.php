@@ -343,8 +343,8 @@ if (count($topicLinkKeys)) {
 if($type=='multiple') {
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
-		echo '<pre>';
-		print_r($replaceStrings);
+	/* 	echo '<pre>';
+		print_r($replaceStrings); */
 		$topicTabs[$keys]['data']['type'] = 'single';
 		$topicTabs[$keys]['data']['data'] = $replaceStrings;
 	}
@@ -364,7 +364,7 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
-die;
+
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
