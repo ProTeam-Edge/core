@@ -353,7 +353,7 @@ foreach($topicTabs as $keys=>$vals) {
 		
 		$topicTabs[$keys] = $vals;
 		$topicTabs[$keys]['data']['type'] = 'multiple';
-		$topicTabs[$keys]['data']['data'] = $linked_data;
+		//$topicTabs[$keys]['data']['data'] = $linked_data;
 
 	}
 	$i++;
