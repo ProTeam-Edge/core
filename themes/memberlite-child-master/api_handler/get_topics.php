@@ -362,7 +362,9 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
-
+echo '<pre>';
+print_r($topicTabs);
+die;
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
