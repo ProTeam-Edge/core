@@ -339,12 +339,14 @@ if (count($topicLinkKeys)) {
 
 
 
-
+echo '<pre>';
+print_r($replaceStrings);
+die;
 if($type=='multiple') {
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
 		$topicTabs[$keys]['data']['type'] = 'single';
-		//$topicTabs[$keys]['data']['data'] = $replaceStrings;
+		$topicTabs[$keys]['data']['data'] = $replaceStrings;
 	}
 	else {
 		$linked_sql = "select owner_topic_id, name, about, owner_id, dom_id, draw_id, owner_name, type_key, subject_token, connected_topic_id, connected_id, connected_topic_type_id, link_id, connected_topic_special, topic_class, list_default FROM alpn_topics_linked_view
