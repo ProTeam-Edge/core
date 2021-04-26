@@ -162,10 +162,9 @@ foreach ($fullMap as $key => $value) {
 				break;
 				case 'pte_image_URL':
 					if ($topicLogoHandle) {
-						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
+						$topicLogoUrl = "https://storage.googleapis.com/pte_media_store_1/".$topicLogoHandle."";
 					}
-					echo $topicLogoUrl;
-					die;
+					
 					$friendlyLogoName = $value['friendly'];
 					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
 					if ($hidden) {$showLogoAccordion = 'none';}
