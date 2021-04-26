@@ -362,7 +362,7 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
-echo 'reached here 6';
+echo 'reached here 8';
 die;
 if(!empty($topicTabs))
 {
