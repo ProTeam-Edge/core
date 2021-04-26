@@ -165,7 +165,7 @@ foreach ($fullMap as $key => $value) {
 						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
 					}
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
+					$replaceStrings[$friendlyLogoName] = '';
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
