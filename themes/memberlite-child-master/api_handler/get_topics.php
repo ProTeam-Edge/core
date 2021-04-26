@@ -114,7 +114,7 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 			$actualValue = $value2;
 		}
 	} else {
-		$actualValue = str_replace("*r*n*", "\r\n", $value);
+		$actualValue = 'test';
 	}
 	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
 	if (!$isSystemType) {
