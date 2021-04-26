@@ -173,8 +173,7 @@ foreach ($fullMap as $key => $value) {
 	}
 }
 //$replaceStrings["{topicDomId}"] = $topicDomId;
-echo 'reached here 2';
-die;
+
 $businessTypesList = get_custom_post_items('pte_profession', 'ASC');
 if (isset($replaceStrings['Occupation']) && intVal($replaceStrings['Occupation'])) {  //TODO test this
 	$replaceStrings['Occupation'] = $businessTypesList[$replaceStrings['Occupation']];
@@ -223,7 +222,8 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 
 
 
-
+echo 'reached here 2';
+die;
 
 
 $proTeamSelector = '';  //TODO extend selector to include all Persons (minus self) Test. Cool do this.
