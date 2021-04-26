@@ -84,8 +84,7 @@ $topicTabs[] = array(   //Info Page. All Topics Have Them
 $topicLinkKeys = array();
 
 $topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
-echo 'reached here';
-die;
+
 
 if (!$topicBelongsToUser) {
 	$ownerTopicContent = json_decode($topicData->owner_topic_content, true);
@@ -107,7 +106,8 @@ if (!$topicBelongsToUser) {
 		$topicContent = json_decode($topicData->connected_topic_content, true);
 	}
 }
-
+echo 'reached here';
+die;
 //map and replace
 foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 	if (is_array($value)) {
