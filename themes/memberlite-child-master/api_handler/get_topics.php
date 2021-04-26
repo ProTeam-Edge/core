@@ -155,17 +155,17 @@ foreach ($fullMap as $key => $value) {
 		if ($isSystemType) {
 			switch ($value['schema_key']) {
 				case 'pte_added_Date':
-					$replaceStrings[$value['friendly']] ='';
+					$replaceStrings[$value['friendly']] =$topicData->created_date;
 				break;
 				case 'pte_modified_Date':
-					$replaceStrings[$value['friendly']] = '';
+					$replaceStrings[$value['friendly']] = $topicData->modified_date;
 				break;
 				case 'pte_image_URL':
 					if ($topicLogoHandle) {
 						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
 					}
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
+					$replaceStrings[$friendlyLogoName] = '';
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
