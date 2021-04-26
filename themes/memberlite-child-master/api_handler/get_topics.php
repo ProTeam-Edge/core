@@ -367,14 +367,6 @@ if(!empty($topicTabs))
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
 }
 else
-$response = array('success' => 0, 'message'=>'No data found.','data'=>null);
-$show_json = json_encode($response , JSON_FORCE_OBJECT);
-if ( json_last_error_msg()=="Malformed UTF-8 characters, possibly incorrectly encoded" ) {
-    $show_json = json_encode($response, JSON_PARTIAL_OUTPUT_ON_ERROR );
-}
-if ( $show_json !== false ) {
-    echo($show_json);
-} else {
-    die("json_encode fail: " . json_last_error_msg());
-}
+$response = array('success' => 0, 'message'=>'No data found.','data'=>"");
+
 echo json_encode($response); 
