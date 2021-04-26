@@ -362,14 +362,14 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
-echo '<pre>';
-print_r($topicTabs);
-die;
+
 if(!empty($topicTabs))
-{
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
-}
 else
-$response = array('success' => 0, 'message'=>'No data found.','data'=>"");
+$response = array('success' => 0, 'message'=>'No data found.','data'=>null);
+
+echo '<pre>';
+print_r($response);
+die;
 
 echo json_encode($response); 
