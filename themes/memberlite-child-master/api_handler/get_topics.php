@@ -161,6 +161,7 @@ foreach ($fullMap as $key => $value) {
 					$replaceStrings[$value['friendly']] = $topicData->modified_date;
 				break;
 				case 'pte_image_URL':
+				  $topicLogoUrl = '';
 					if ($topicLogoHandle) {
 						$topicLogoUrl = "https://storage.googleapis.com/pte_media_store_1/".$topicLogoHandle."";
 					}
