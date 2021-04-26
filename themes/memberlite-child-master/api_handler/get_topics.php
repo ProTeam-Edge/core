@@ -320,8 +320,7 @@ if ($topicBelongsToUser) {
 		);
 	}
 }
-echo 'reached here 5';
-die;
+
 $usedTopicTypes = array(); //Needed to handle topic_class and source type key mapping correctly
 $typeKeyMap = array();
 if (count($topicLinkKeys)) {
@@ -338,7 +337,8 @@ if (count($topicLinkKeys)) {
 	 }
 }
 
-
+echo 'reached here 6';
+die;
 
 
 if($type=='multiple') {
