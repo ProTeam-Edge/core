@@ -337,14 +337,16 @@ if (count($topicLinkKeys)) {
 	 }
 }
 
-$fixed = mb_convert_variables('UTF-8', 'original encode', $replaceStrings);
+
 
 
 if($type=='multiple') {
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
+		echo '<pre>';
+		print_r($replaceStrings);
 		$topicTabs[$keys]['data']['type'] = 'single';
-		$topicTabs[$keys]['data']['data'] = $fixed;
+		$topicTabs[$keys]['data']['data'] = $replaceStrings;
 	}
 	else {
 		$linked_sql = "select owner_topic_id, name, about, owner_id, dom_id, draw_id, owner_name, type_key, subject_token, connected_topic_id, connected_id, connected_topic_type_id, link_id, connected_topic_special, topic_class, list_default FROM alpn_topics_linked_view
@@ -362,17 +364,12 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
+die;
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
 }
 else
-$response = array('success' => 0, 'message'=>'No data found.','data'=>null);
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+$response = array('success' => 0, 'message'=>'No data found.','data'=>"");
 
-echo json_encode($response, JSON_UNESCAPED_UNICODE);
-
-
-die;
+echo json_encode($response); 
