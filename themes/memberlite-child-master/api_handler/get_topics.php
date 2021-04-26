@@ -158,14 +158,12 @@ foreach ($fullMap as $key => $value) {
 					$replaceStrings[$value['friendly']] =$topicData->created_date;
 				break;
 				case 'pte_modified_Date':
-					$replaceStrings[$value['friendly']] = '';
+					$replaceStrings[$value['friendly']] = $topicData->modified_date;
 				break;
 				case 'pte_image_URL':
-					if ($topicLogoHandle) {
-						$topicLogoUrl = "{$ppCdnBase}{$topicLogoHandle}";
-					}
+					
 					$friendlyLogoName = $value['friendly'];
-					$replaceStrings[$friendlyLogoName] = $topicLogoUrl;
+					$replaceStrings[$friendlyLogoName] = $topicLogoHandle;
 					if ($hidden) {$showLogoAccordion = 'none';}
 				break;
 			}
@@ -369,6 +367,4 @@ if(!empty($topicTabs))
 else
 $response = array('success' => 0, 'message'=>'No data found.','data'=>"");
 
-
-
-echo json_encode($response,true); 
+echo json_encode($response); 
