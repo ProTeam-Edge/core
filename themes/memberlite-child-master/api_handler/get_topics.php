@@ -338,7 +338,8 @@ if (count($topicLinkKeys)) {
 }
 
 
-
+echo $type;
+die;
 
 if($type=='multiple') {
 foreach($topicTabs as $keys=>$vals) {
