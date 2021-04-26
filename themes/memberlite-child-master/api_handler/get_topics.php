@@ -337,12 +337,14 @@ if (count($topicLinkKeys)) {
 	 }
 }
 
+$fixed = mb_convert_variables('UTF-8', 'original encode', $replaceStrings);
+
 
 if($type=='multiple') {
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
 		$topicTabs[$keys]['data']['type'] = 'single';
-		$topicTabs[$keys]['data']['data'] = $replaceStrings;
+		$topicTabs[$keys]['data']['data'] = $fixed;
 	}
 	else {
 		$linked_sql = "select owner_topic_id, name, about, owner_id, dom_id, draw_id, owner_name, type_key, subject_token, connected_topic_id, connected_id, connected_topic_type_id, link_id, connected_topic_special, topic_class, list_default FROM alpn_topics_linked_view
@@ -368,6 +370,6 @@ else
 $response = array('success' => 0, 'message'=>'No data found.','data'=>null);
 
 
-echo json_encode($response, JSON_HEX_QUOT | JSON_HEX_TAG);
+echo json_encode($response);
 
 die;
