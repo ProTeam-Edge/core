@@ -362,10 +362,11 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
+$fixed = mb_convert_encoding($topicTabs, 'UTF-8', 'UTF-8');
 
 if(!empty($topicTabs))
 {
-	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
+	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$fixed);
 }
 else
 $response = array('success' => 0, 'message'=>'No data found.','data'=>null);
