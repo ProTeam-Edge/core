@@ -111,10 +111,10 @@ if (!$topicBelongsToUser) {
 foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 	if (is_array($value)) {
 		foreach ($value as $key2 => $value2) {
-			$actualValue = $value2;
+			$actualValue = 't';
 		}
 	} else {
-		$actualValue = 'test';
+		$actualValue = str_replace("*r*n*", "\r\n", $value);
 	}
 	$isSystemType = substr($key, 0, 4) == 'pte_' ? true : false;
 	if (!$isSystemType) {
@@ -123,7 +123,7 @@ foreach($topicContent as $key => $value){	   //deals with date/time being arrays
 		else 
 		$tkey = '';
 		if(!empty($tkey))
-		$replaceStrings[$tkey] = $actualValue;
+		$replaceStrings[$tkey] =  't';
 	}
 }
 foreach ($fullMap as $key => $value) {
@@ -343,8 +343,6 @@ if (count($topicLinkKeys)) {
 if($type=='multiple') {
 foreach($topicTabs as $keys=>$vals) {
 	if($vals['name']=='Info') {
-	/* 	echo '<pre>';
-		print_r($replaceStrings); */
 		$topicTabs[$keys]['data']['type'] = 'single';
 		$topicTabs[$keys]['data']['data'] = $replaceStrings;
 	}
@@ -364,7 +362,6 @@ foreach($topicTabs as $keys=>$vals) {
 else {
 	$topicTabs = $replaceStrings;
 }
-
 if(!empty($topicTabs))
 {
 	$response = array('success' => 1, 'message'=>'Success data found.','data'=>$topicTabs);
