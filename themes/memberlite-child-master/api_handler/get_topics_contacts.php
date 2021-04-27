@@ -141,9 +141,7 @@ if(!empty($final_data)) {
 	
 	$array['user_image'] = $user_image; 
 	$array['logged_user_name'] = $logged_user_name; 
-	/* echo '<pre>';
-	print_r($array);
-	die; */
+
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
 } else {
 	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
