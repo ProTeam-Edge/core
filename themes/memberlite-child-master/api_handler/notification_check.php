@@ -35,7 +35,7 @@ $json = json_decode(file_get_contents('php://input'), true);
 try {
     $notification = $service->notifications->create(
         [
-            'identity' => 76,
+            'identity' => 126,
             'body' => 'Hello world!'
         ]
     );
