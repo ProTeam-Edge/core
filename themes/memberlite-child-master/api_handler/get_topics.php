@@ -13,7 +13,7 @@ $userID = $data->userID;
 $type =  $data->type;
 $apiToken =  $data->apiToken;
 
-if(!empty($id) && !empty($userID) && !empty($type) !empty($apiToken)) {
+if(!empty($id) && !empty($userID) && !empty($type) && !empty($apiToken)) {
 $get_token = get_option('api_request_token_'.$userID.'');
 if($get_token==$apiToken)
 {
