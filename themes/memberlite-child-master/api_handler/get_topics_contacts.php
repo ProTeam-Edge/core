@@ -13,7 +13,11 @@ global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 $id = $data->id;
-
+$apiToken = $data->apiToken;
+if(!empty($id) && !empty($apiToken)) {
+$get_token = get_option('api_request_token_'.$id.'');
+if($get_token==$apiToken)
+{
 $twilioAccountSid = ACCOUNT_SID;
 $twilioApiKey = APIKEY;
 $twilioApiSecret = SECRETKEY;
@@ -140,11 +144,15 @@ if(!empty($final_data)) {
 	
 	$array['user_image'] = $user_image; 
 	$array['logged_user_name'] = $logged_user_name; 
-	/* echo '<pre>';
-	print_r($array);
-	die; */
+
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
 } else {
 	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
+}
+} else {
+	$response = array('success' => 2, 'message'=>'Not a valid token','data'=>null);
+}
+} else {
+	$response = array('success' => 2, 'message'=>'No required parameters provided','data'=>null);
 }
 echo json_encode($response); 
