@@ -13,8 +13,9 @@ global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
 if(!empty($data->id) && !empty($data->apiToken)) {
-$get_token = get_option('api_request_token_'.$id.'');
 $id = $data->id;
+$get_token = get_option('api_request_token_'.$id.'');
+
 $apiToken = $data->apiToken;
 
 if($get_token==$apiToken)
