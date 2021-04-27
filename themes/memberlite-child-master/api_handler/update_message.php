@@ -11,6 +11,7 @@ use Twilio\Rest\Client;
 $array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
+if(!empty($message_id) && !empty($channel_id) && !empty($message) && !empty($apiToken) && !empty($userID)) {
 $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
 $serviceSid = CHATSERVICESID;
@@ -20,7 +21,7 @@ $channel_id = $data->channel_id;
 $message = $data->message;
 $apiToken =  $data->apiToken;
 $userID = $data->userID;
-if(!empty($message_id) && !empty($channel_id) && !empty($message) && !empty($apiToken) && !empty($userID)) {
+
 	$get_token = get_option('api_request_token_'.$userID.'');
 	if($get_token==$apiToken) {
 		try {
