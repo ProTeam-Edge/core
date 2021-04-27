@@ -45,7 +45,7 @@ if(!empty($email) && !empty($password))
 			$response_data['username'] = $verify->data->user_login;
 			$response_data['email'] = $verify->data->user_email;
 			$response_data['alpn_id'] = $get_alpn_result->id;
-			$response_data['token'] = $hash;
+			$response_data['apiToken'] = $hash;
 			$response_data['device_id'] = $device_token;
 	
 			$response = array('success' => 1, 'message'=>'Login Success! Redirecting..','data'=>$response_data);
