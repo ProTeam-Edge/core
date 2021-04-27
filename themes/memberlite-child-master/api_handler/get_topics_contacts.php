@@ -153,6 +153,6 @@ if(!empty($final_data)) {
 	$response = array('success' => 2, 'message'=>'Not a valid token','data'=>null);
 }
 } else {
-	$response = array('success' => 2, 'message'=>'No required parameters found','data'=>null);
+	$response = array('success' => 2, 'message'=>'No required parameters provided','data'=>null);
 }
 echo json_encode($response); 
