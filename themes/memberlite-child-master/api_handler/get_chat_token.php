@@ -10,6 +10,8 @@ use Twilio\Jwt\Grants\ChatGrant;
 use Twilio\Jwt\Grants\VideoGrant;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
+if(!empty($apiToken) && !empty( $data->username))
+{
 $twilioAccountSid = ACCOUNT_SID;
 $twilioApiKey = APIKEY;
 $twilioApiSecret = SECRETKEY;
@@ -18,8 +20,7 @@ $serviceSid = CHATSERVICESID;
 $NOTIFYSSID = NOTIFYSSID;
 $FCMCREDENTIALSID = FCMCREDENTIALSID;
 
-if(!empty($apiToken) && !empty( $data->username))
-{
+
 	$get_token = get_option('api_request_token_'.$data->username.'');
 	if($get_token==$apiToken) {
 	$username = $data->username;
