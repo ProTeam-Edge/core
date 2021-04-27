@@ -16,9 +16,8 @@ $id = $data->id;
 $apiToken = $data->apiToken;
 if(!empty($id) && !empty($apiToken)) {
 $get_token = get_option('api_request_token_'.$id.'');
-echo '<pre>';
-print_r($get_token);
-die;
+if($get_token==$apiToken)
+{
 $twilioAccountSid = ACCOUNT_SID;
 $twilioApiKey = APIKEY;
 $twilioApiSecret = SECRETKEY;
@@ -149,6 +148,9 @@ if(!empty($final_data)) {
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
 } else {
 	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
+}
+} else {
+	$response = array('success' => 2, 'message'=>'Not a valid token','data'=>null);
 }
 } else {
 	$response = array('success' => 2, 'message'=>'No required parameters found','data'=>null);
