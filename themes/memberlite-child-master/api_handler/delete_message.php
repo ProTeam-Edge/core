@@ -1,4 +1,5 @@
 <?php
+include('/var/www/html/proteamedge/public/wp-blog-header.php');
 error_reporting(E_ALL);
 ini_set('display_errors', 'On');
 include_once('../pte_config.php');
