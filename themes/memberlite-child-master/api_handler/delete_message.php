@@ -11,6 +11,9 @@ use Twilio\Rest\Client;
 $array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
+if(!empty($message_id) && !empty($channel_id)  && !empty($apiToken) && !empty($userID)) {
+$get_token = get_option('api_request_token_'.$userID.'');
+	if($get_token==$apiToken) {
 $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
 $serviceSid = CHATSERVICESID;
@@ -19,9 +22,7 @@ $message_id = $data->message_id;
 $channel_id = $data->channel_id;
 $apiToken =  $data->apiToken;
 $userID = $data->userID;
-if(!empty($message_id) && !empty($channel_id)  && !empty($apiToken) && !empty($userID)) {
-$get_token = get_option('api_request_token_'.$userID.'');
-	if($get_token==$apiToken) {
+
 	try {
 		$deleted = $twilio->chat->v2->services($serviceSid)->channels($channel_id)->messages($message_id)->delete(); 
 		$response = array('success' => 1, 'message'=>'Message deleted successfully.','data'=>'');
