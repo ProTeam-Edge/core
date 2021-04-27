@@ -1,4 +1,5 @@
 <?php
+include('/var/www/html/proteamedge/public/wp-blog-header.php');
 include_once('../pte_config.php');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept"); 
@@ -12,13 +13,15 @@ $data = json_decode($input);
 $twilioAccountSid = ACCOUNT_SID;
 $twilioApiKey = APIKEY;
 $twilioApiSecret = SECRETKEY;
-
+$apiToken =  $data->apiToken;
 $serviceSid = CHATSERVICESID;
 $NOTIFYSSID = NOTIFYSSID;
 $FCMCREDENTIALSID = FCMCREDENTIALSID;
 
-if(!empty($data))
+if(!empty($apiToken) && !empty( $data->username))
 {
+	$get_token = get_option('api_request_token_'.$data->username.'');
+	if($get_token==$apiToken) {
 	$username = $data->username;
 	$identity =$username;
 	$token = new AccessToken(
@@ -39,4 +42,9 @@ if(!empty($data))
 	$token->addGrant($grant);
 	// render token to string
 	echo $token->toJWT();
+	} else {
+		echo 'Not a valid token';
+	}
+} else {
+	echo 'No required parameters found';
 }
