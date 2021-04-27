@@ -8,7 +8,7 @@ global $wpdb;
 $array = array();
 $input = file_get_contents('php://input');
 $data = json_decode($input);
-if(!empty($id) && !empty($userID) && !empty($type) && !empty($apiToken)) {
+if(!empty($data->id) && !empty($data->userID) && !empty($data->type) && !empty($data->apiToken)) {
 $get_token = get_option('api_request_token_'.$userID.'');
 if($get_token==$apiToken)
 {
