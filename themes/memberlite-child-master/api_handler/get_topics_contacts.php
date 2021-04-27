@@ -15,6 +15,10 @@ $data = json_decode($input);
 $id = $data->id;
 $apiToken = $data->apiToken;
 if(!empty($id) && !empty($apiToken)) {
+$get_token = get_option('api_request_token_'.$verify->ID.'');
+echo '<pre>';
+print_r($get_token);
+die;
 $twilioAccountSid = ACCOUNT_SID;
 $twilioApiKey = APIKEY;
 $twilioApiSecret = SECRETKEY;
