@@ -12,7 +12,7 @@ use Twilio\Jwt\Grants\VideoGrant;
 global $wpdb;
 $input = file_get_contents('php://input');
 $data = json_decode($input);
-if(!empty($id) && !empty($apiToken)) {
+if(!empty($data->id) && !empty($data->apiToken)) {
 $get_token = get_option('api_request_token_'.$id.'');
 $id = $data->id;
 $apiToken = $data->apiToken;
