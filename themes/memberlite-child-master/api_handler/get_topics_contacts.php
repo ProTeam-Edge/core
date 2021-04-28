@@ -54,7 +54,7 @@ if(isset($data->keyword) && !empty($data->keyword)) {
 else {
 	$final_sql = "SELECT tt.source_type_key, tt.topic_class, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = ".$id." and t.name!='' and tt.topic_class != 'link' 
 	UNION
-	SELECT tt.source_type_key, tt.topic_class, t.id, t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, '' AS connected_id, '' AS connected_image_handle, '' AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.channel_id <> '' AND p.wp_id = ".$id." order by name asc, connected_name";
+	SELECT tt.source_type_key, tt.topic_class, t.id, t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, '' AS connected_id, '' AS connected_image_handle, '' AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.channel_id <> '' AND p.wp_id = ".$id." order by name asc, connected_name limit 15";
 }
 
 
