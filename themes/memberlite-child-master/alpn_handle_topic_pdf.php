@@ -382,7 +382,6 @@ $buttons = "
 					<div class='pte_quick_report_widget_row'>
 						<div id='pte_section_name' class='pte_vault_row_35 pte_vault_bold'>Saved Reports</div>
 						<div class='pte_vault_row_65 pte_max_width_65 pte_vault_right'>
-						<img id='pte_refresh_report_loading' class='pte_refresh_report_loading' src='{$rootUrl}pdf/web/images/loading-icon.gif'>
 							<i class='far fa-sync-alt quick_report_button' title='Refresh Report Using Changed Settings' onclick='pte_handle_report_settings(\"refresh\");'></i>
 							<i id='pte_report_button_save' class='far fa-save quick_report_button' title='Save Report Settings Template' onclick='pte_handle_report_settings(\"save\");' style='font-size: 20px;'></i>
 							<i id='pte_report_button_clone' class='far fa-clone quick_report_button pte_extra_button_disabled' title='Duplicate Report Settings Template' onclick='pte_handle_report_settings(\"clone\");' ></i>
@@ -424,7 +423,7 @@ $html .= "
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
 
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-tkey='{$typeKey}' data-oid='{$topicOwnerId}'>
+					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='design' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-tkey='{$typeKey}' data-oid='{$topicOwnerId}'>
 						<div id='pte_topic_form_title_view'>
 							<span class='fa-stack pte_stacked_icon'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
@@ -451,6 +450,7 @@ $html .= "	</div>
 						<div id='pte_vault_container' class='pte_outer_vault_small'>
 							<div id='alpn_add_edit_outer_container' class='alpn_add_edit_outer_container'></div>
 							<div id='alpn_vault_preview_embedded'>
+							<img id='pte_refresh_report_loading' class='pte_refresh_report_loading' src='https://alct.pro/wp-content/themes/memberlite-child-master/pdf/web/images/loading-icon.gif'>
 								<div id='pte_pdf_ui'></div>
 								{$pdfViewer}
 							</div>

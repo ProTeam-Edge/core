@@ -4,6 +4,12 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
+// $fred = array(
+// 	"channel_id" => "CHae34c79174b6492e905ebb175722c46d"
+// );
+//
+// pte_manage_cc_groups("delete_channel_by_channel_id", $fred);
+
 
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
@@ -275,7 +281,7 @@ if ($topicEmailRoute || $topicFaxRoute) {
 	$faxHtml = $topicFaxRoute ? "<div title='Copy Fax Number Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Fax Number\", \"{$topicFaxRoute}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Fax: {$topicFaxRouteFormatted}</div>" : "";
 	$routes = "
 			<div class='pte_route_container'>
-				<div class='pte_route_container_title'>Route Files to this Topic by</div>
+				<div class='pte_route_container_title'>Route to This Topic</div>
 				{$emailRouteHtml}
 				{$faxHtml}
 			</div>
@@ -283,14 +289,14 @@ if ($topicEmailRoute || $topicFaxRoute) {
 }
 $friendlyLogoNameHtml = isset($friendlyLogoName) && $friendlyLogoName ? $friendlyLogoName : "Image/Logo";
 
-$imageTitle = ($showLogoAccordion == 'block' || $showIconAccordian == 'block') ? "<div class='pte_accordion_section_title'>Topic Images</div>" : "";
+$imageTitle = ($showLogoAccordion == 'block' || $showIconAccordian == 'block') ? "<div class='pte_accordion_section_title'>Media</div>" : "";
 $interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>Interaction Priority</div>" : "";
 $inboundRoutingTitle = ($showEmailAccordian == 'block' || $showFaxAccordian == 'block') ? "<div class='pte_accordion_section_title'>Inbound Routing</div>" : "";
 $importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte_accordion_section_title'>Contacts</div>" : "";
 $settingsAccordion = "
 	{$imageTitle}
 	<button id='pte_topic_photo_accordion' class='pte_accordion'  style='display: {$showIconAccordian};' title='Change Personal Topic Icon'>{$profilePicTitle}</button>
-	<div class='pte_panel' data-height='325px' style='display: {$showIconAccordian};' >
+	<div id='pte_topic_icon_container' class='pte_panel' data-height='325px' style='display: {$showIconAccordian};' >
 		<div id='pte_profile_image_selector' style='height: 100%; width: 100%;'></div>
 		<div id='pte_profile_image_crop' style='height: 100%; width: 100%; display: none;'></div>
 	</div>
@@ -373,11 +379,11 @@ $proteam = $wpdb->get_results(  //get proteam -- pre-connected by alpn_topics_ne
 $proTeamMembers = "";
 $pteAddTopicTeamMember = "";
 if ($topicBelongsToUser) {
-  $pteAddTopicTeamMember = "<i id='pte_proteam_add' class='far fa-plus-circle pte_proteam_add_icon' onclick='pte_start_topic_team_invitation({$topicId});' title='Send a Topic Team Invitation Interaction'></i>";
+  $pteAddTopicTeamMember = "<i id='pte_proteam_add' class='far fa-plus-circle pte_proteam_add_icon' onclick='pte_start_topic_team_invitation({$topicId});' title='Send a Team Invitation Interaction'></i>";
 }
 
 $topicHasTeamMembers = count($proteam) ? true : false;
-$proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Topic Team</div><div class='pte_proteam_title_right'>{$pteAddTopicTeamMember}</div></div>" : "";
+$proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Team</div><div class='pte_proteam_title_right'>{$pteAddTopicTeamMember}</div></div>" : "";
 
 if (count($proteam)) {
 $displayNoMembers = "none";
@@ -582,7 +588,7 @@ $html .= "
 				</div>
 				<div class='pte_vault_row_65 pte_vault_right'>
 					  <i class='far fa-pencil-alt pte_icon_button {$pteEditDeleteClass}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>
-		       	<i class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>
+		       	<i id='delete_topic_button' class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>
 				</div>
 				<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 			</div>
@@ -603,7 +609,7 @@ $html .= "
 					</div>
 			";
 $html .= "
-						<div id='pte_selected_topic_meta' class='pte_vault_row' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId}'>
+						<div id='pte_selected_topic_meta' class='pte_vault_row' data-mode='info' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId} data-tia='{$topicImageHandle}'>
 							<div id='pte_topic_form_edit_view_left' class='pte_vault_row_padding_right'>
 								{$tabs}
 							</div>

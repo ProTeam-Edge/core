@@ -8,6 +8,8 @@ use Google\Cloud\Storage\StorageClient;
 //TODO RUGGEDIZE -- queries, exceptions, size of files??, logs SECURITY!!!, pass in id and check for match. nonce thing maybe?
 //TODO do not check over and over in failure situations.
 
+alpn_log("Starting GET VAULT FILE TOKEN");
+
 //$siteUrl = get_site_url();
 $html = "";
 $qVars = $_GET;

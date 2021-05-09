@@ -461,7 +461,7 @@ function usernetwork_shortcode($attr) {
 				$profileImage = "<i class='far fa-address-card alpn_icon_left' style='font-size: 20px;  line-height: 34px;' title='About Me'></i>";
 			}
 
-			$newMember = $results[0]->owner_familyname ? 'no' : 'yes';
+			$newMember = $results[0]->owner_familyname == "[Replace Me, Please]" ? 'yes' : 'no';
 
 			$html .= "
 			<div class='alpn_user_outer' onclick='alpn_mission_control(\"select_by_mode\", \"{$domId}\");'>

@@ -16,6 +16,8 @@
 } */
 include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
+ini_set('memory_limit', '512M');
+
 // verify added nonce before submission for wpforms
 use PascalDeVink\ShortUuid\ShortUuid;
 
@@ -277,16 +279,65 @@ add_filter( 'gettext', 'my_gettext_membership', 10, 3 );
 
 
 */
+
+function pmpro_change_error_message( $translated_text, $text, $domain ) {
+        switch ( $translated_text ) {
+					case 'Your membership requires approval before you are able to view this content.' :
+							$translated_text = __( '<p>Until we launch ProTeam Edge to the public, your account must be approved by an administrator</p>', 'pmpro-approvals' );
+					break;
+					case 'IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated' :
+							$translated_text = __( 'Please confirm your email', 'pmpro-email-confirmation' );
+					break;
+          case 'Your %s membership will be activated as soon as you confirm your email address' :
+              $translated_text = __( 'To activate your membership, please confirm your email address by following the instructions we just sent. If you don\'t see it, check your SPAM folder', 'paid-memberships-pro' );
+          break;
+					case 'Important! You must click on the confirmation URL sent to %s before you gain full access to your membership' :
+							$translated_text = __( 'Until we launch ProTeam Edge to the public, your account must be approved by an administrator', 'paid-memberships-pro' );
+					break;
+        }
+
+    return $translated_text;
+}
+add_filter( 'gettext', 'pmpro_change_error_message', 20, 3 );
+
+
+function my_pmpro_login_redirect_url($redirect_to, $request, $user) {  //Logion redirect
+	$redirect_to = "./missioncontrol/";
+	return $redirect_to;
+}
+add_filter("pmpro_login_redirect_url", "my_pmpro_login_redirect_url", 10, 3);
+
+function my_pmpro_member_profile_edit_user_object_fields( $user_fields ) {
+	unset( $user_fields['first_name'] );
+	unset( $user_fields['last_name'] );
+	unset( $user_fields['display_name'] );
+	return $user_fields;
+}
+add_filter( 'pmpro_member_profile_edit_user_object_fields', 'my_pmpro_member_profile_edit_user_object_fields' );
+
+function pte_set_avatar_url( $url, $id_or_email, $args ) {
+	$url = PTE_ROOT_URL . "dist/assets/blm-avatar.png";
+	$pteUserIcon = get_user_meta( $id_or_email, 'pte_user_icon', true );
+	if ($pteUserIcon) {
+		$url = PTE_IMAGES_ROOT_URL . $pteUserIcon;
+	}
+	return esc_url_raw($url);
+}
+add_filter( 'get_avatar_url', 'pte_set_avatar_url', 10, 3 );
+
 function ptc_pmpro_email_filter($email) {  //Adds our template around email content.
 
 		alpn_log("ptc_pmpro_email_filter");
     $emailTemplateName = PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
     $emailTemplateHtml = file_get_contents($emailTemplateName);
 
+		$replaceStrings["IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:"] = "Please confirm your email:";
     $replaceStrings["-{pte_email_body}-"] = $email->body;
     $replaceStrings["-{pte_link_id}-"] = "";
 		$replaceStrings["-{pte_email_file_details}-"] = "";
-    $replaceStrings["-{pte_email_signature}-"] = "";
+		$replaceStrings["-{pte_email_signature}-"] = "";
+    $replaceStrings["-{pte_link_button}-"] = "";
+
     $emailTemplateHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $emailTemplateHtml);
 
     $email->body = $emailTemplateHtml;
@@ -314,21 +365,6 @@ function my_init_email_as_username()
 }
 add_action('init', 'my_init_email_as_username');
 
-function remove_tml_profile_fields() {
-	tml_remove_form_field( 'profile', 'first_name' );
-	tml_remove_form_field( 'profile', 'last_name' );
-	tml_remove_form_field( 'profile', 'user_login' );
-	tml_remove_form_field( 'profile', 'personal_options_section_header' );
-	tml_remove_form_field( 'profile', 'admin_bar_front' );
-	tml_remove_form_field( 'profile', 'name_section_header' );
-	tml_remove_form_field( 'profile', 'display_name' );
-	tml_remove_form_field( 'profile', 'contact_info_section_header' );
-	tml_remove_form_field( 'profile', 'url' );
-	tml_remove_form_field( 'profile', 'about_yourself_section_header' );
-	tml_remove_form_field( 'profile', 'description' );
-  tml_remove_form_field( 'profile', 'account_management_section_header' );
-}
-add_action( 'init', 'remove_tml_profile_fields' );
 
 add_filter("pmpro_checkout_confirm_email", "__return_false");  //remove email confirmation on login.
 add_filter("pmpro_checkout_confirm_password", "__return_false");  //remove email confirmation on login.
@@ -433,13 +469,17 @@ function cleanup_pte_user_on_delete( $user_id ) {
 
 	//Handle Fax Numbers
 	pte_release_all_pstn_numbers($user_id);
-
 	//Store vault keys to batch delete
-	$wpdb->get_results(
-		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT pdf_key AS object_key FROM alpn_vault WHERE owner_id = %d AND pdf_key <> ''", $userId, $topicId)
+	$wpdb->query(
+		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT pdf_key AS object_key FROM alpn_vault WHERE owner_id = %d AND pdf_key <> ''", $user_id, $topicId)
 	);
-	$wpdb->get_results(
-		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT file_key AS object_key FROM alpn_vault WHERE owner_id = %d AND file_key <> ''", $userId, $topicId)
+
+	$wpdb->query(
+		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT file_key AS object_key FROM alpn_vault WHERE owner_id = %d AND file_key <> ''", $user_id, $topicId)
+	);
+	//Wp-Forms
+	$wpdb->query(
+		$wpdb->prepare("DELETE FROM wp_posts WHERE ID IN (SELECT form_id FROM alpn_topic_types where owner_id = %d)", $user_id)
 	);
 
 	$whereclause = array('owner_id' => $user_id);
@@ -490,6 +530,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 
   $fieldsAll = $fields;
   $row_id = $userEmail = '';
+	$existingPersonWithEmail = array();
 
 	$formId = $entry['id'];
   $fields = $entry['fields'];
@@ -505,7 +546,6 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 
 	} else if (isset($entry['owner_id']) && $entry['owner_id']) {
 		alpn_log('New Topic Passing in owner_id');
-
 		$userInfo = get_user_by('id', $entry['owner_id']);
 	} else {
 		alpn_log('Logged in User');
@@ -573,23 +613,23 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 				if (isset($mappedFields['person_email']) && $mappedFields['person_email']) {  //person only
 					//Check for contact only dupes and dissallow
 					$altId = $mappedFields['person_email'];  //Email
-					if (!$row_id && ($topicTypeSpecial == 'contact' || $topicTypeSpecial == 'user')) {     //
-						$existingPersonWithEmail = $wpdb->get_results(
-							$wpdb->prepare("SELECT id, name, owner_id, dom_id FROM alpn_topics WHERE alt_id = %s AND (special = 'contact' OR special = 'user') AND owner_id = %d", $altId, $userId)
-						 );
-						if (isset($existingPersonWithEmail[0])) { //pass data via user_meta. I can't figure out how to get data through wpforms.
-							$existingUserLink = "<span class='pte_topic_type_check_title_link' onclick='event.stopPropagation(); alpn_mission_control(\"select_by_mode\", \"{$existingPersonWithEmail[0]->dom_id}\")'>{$existingPersonWithEmail[0]->name}</span>";
-							$last_record_id['id'] = $userId;
-							$errorData = array(
-								"pte_error" => true,
-								"pte_error_id" => 100,
-								"pte_error_message" => "A contact with this unique email address already exists. Please follow this link: {$existingUserLink}"
+						if ($topicTypeSpecial == 'contact') {     //
+							$existingPersonWithEmail = $wpdb->get_results(
+								$wpdb->prepare("SELECT id, name, owner_id, dom_id FROM alpn_topics WHERE alt_id = %s AND (special = 'contact' OR special = 'user') AND owner_id = %d", $altId, $userId)
 							);
-			        $last_record_id['last_return_to'] = json_encode($errorData);
-							$wpdb->replace( 'alpn_user_metadata', $last_record_id );
-							return;
+							if (isset($existingPersonWithEmail[0])) { //pass data via user_meta. I can't figure out how to get data through wpforms.
+								$existingUserLink = "<span class='pte_topic_type_check_title_link' onclick='event.stopPropagation(); alpn_mission_control(\"select_by_mode\", \"{$existingPersonWithEmail[0]->dom_id}\")'>{$existingPersonWithEmail[0]->name}</span>";
+								$last_record_id['id'] = $userId;
+								$errorData = array(
+									"pte_error" => true,
+									"pte_error_id" => 100,
+									"pte_error_message" => "A contact with this unique email address already exists. Please follow this link: {$existingUserLink}"
+								);
+				        $last_record_id['last_return_to'] = json_encode($errorData);
+								$wpdb->replace( 'alpn_user_metadata', $last_record_id );
+								return;
+							}
 						}
-					}
 				}
 
 				//TODO Topic Meta. Network: user-editable status: prospect, active, trusted (need better name). Topic: type.
@@ -607,15 +647,17 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 							unset($topicData['about']);
 							}
 					}
-					//handle image handle ans sync_id.
+					//handle image handle and sync_id.
 					$syncId = "";
 					$topicRow = $wpdb->get_results(
 						$wpdb->prepare("SELECT image_handle, sync_id FROM alpn_topics WHERE id = %d", $row_id)
-					 );
+					);
+
 					if (isset($topicRow[0])) {
 						$tRow = $topicRow[0];
 						$currentImageHandle = $tRow->image_handle;
 						$syncId = $tRow->sync_id;
+
 						if ($topicSchemaKey == "Person") {
 							if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
 								$firstChar = strtolower(substr($mappedFields['person_givenname'], 0, 1));
@@ -625,15 +667,15 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 									$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_n.png";
 								}
 							}
-						} else { //Reguler Topic
-							if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
-								$firstChar = strtolower(substr($topicName, 0, 1));
-								if ($firstChar >= 'a' && $firstChar <= 'z') {
-									$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
-								} else {
-									$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_n.png";
-								}
-							}
+						} else { //Reguler Topic show icons. People show blie name things
+							// if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
+							// 	$firstChar = strtolower(substr($topicName, 0, 1));
+							// 	if ($firstChar >= 'a' && $firstChar <= 'z') {
+							// 		$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
+							// 	} else {
+							// 		$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_n.png";
+							// 	}
+							// }
 						}
 					}
 					$topicData['last_op'] = "edit";
@@ -654,10 +696,12 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
             $data['image_handle'] = $currentImageHandle;
             $data['topic_id'] = $row_id;
 						$firstChar = strtolower(substr($mappedFields['person_givenname'], 0, 1));
-						if ($firstChar && $firstChar >= 'a' && $firstChar <= 'z') {
-							$data['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
-						} else {
-							$data['image_handle'] = "pte_icon_letter_n.png";
+						if ($currentImageHandle == "" ) {
+							if ($firstChar && $firstChar >= 'a' && $firstChar <= 'z') {
+								$data['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
+							} else {
+								$data['image_handle'] = "pte_icon_letter_n.png";
+							}
 						}
 						if (isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] != "[Replace Me, Please]") {
 							$data['topic_name'] = $mappedFields['person_givenname'];
@@ -667,6 +711,9 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 							$data['full_name'] = $mappedFields['person_email'];
 						}
             pte_manage_cc_groups("update_user", $data);
+						wp_update_user( array ('ID' => $userId, 'display_name' =>  $mappedFields['person_givenname']));
+						wp_update_user( array ('ID' => $userId, 'nickname' =>  $mappedFields['person_givenname']));
+						update_user_meta( $userId, "pte_user_icon",  $data['image_handle']);
 
 						// alpn_log("UPDATING USER");
 						// alpn_log($data);
@@ -680,6 +727,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 							"connected_id" => $userId
 						);
 						$wpdb->update( 'alpn_topics', $nameAboutData, $whereClause );
+
           }
 
 					if ($topicTypeSpecial == 'topic') { //update topic
@@ -689,7 +737,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
             $data['topic_name'] = $topicName;
             pte_manage_cc_groups("update_channel", $data);
 					}
-				} else { //add
+				} else { //   ADD
 
 					if (isset($entry['icon_image']) && $entry['icon_image']) {
 						$topicData['image_handle'] = $entry['icon_image'];
@@ -740,6 +788,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
           }
 
           if ($topicTypeSpecial == 'user') { //Add user but don't create CHAT channels or CHAT members -- JIT
+
 						$data = array(
               "sync_type" => "return_create_sync_id",
               "sync_user_id" => $userId,
@@ -758,8 +807,12 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 							$data['topic_name'] = $mappedFields['person_email'];
 							$data['full_name'] = $mappedFields['person_email'];
 						}
+						$data['image_handle'] = $topicData['image_handle'];
             pte_manage_cc_groups("add_user", $data);
-						update_user_meta( $userId, "pte_user_network_id",  $row_id);
+						update_user_meta( $userId, "pte_user_icon",  $topicData['image_handle']);
+					  update_user_meta( $userId, "pte_user_network_id",  $row_id);
+						wp_update_user( array ('ID' => $userId, 'display_name' =>  "Welcome"));
+						wp_update_user( array ('ID' => $userId, 'nickname' =>  "Welcome"));
 				}
       }
 				//Update last record metadata for UI/UX purposes

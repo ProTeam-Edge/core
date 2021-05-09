@@ -44,9 +44,9 @@ if ($topicId) {
 	$whereclause = array('owner_id' => $userId, "topic_id" => $topicId);
 	$wpdb->delete( "alpn_vault", $whereclause );
 	//Any topic links to or from this Topic
-	$whereclause = array('owner_topic_1' => $topicId);
+	$whereclause = array('owner_topic_id_1' => $topicId);
 	$wpdb->delete( "alpn_topic_links", $whereclause );
-	$whereclause = array('owner_topic_2' => $topicId);
+	$whereclause = array('owner_topic_id_2' => $topicId);
 	$wpdb->delete( "alpn_topic_links", $whereclause );
 	//Prioritization Lists
 	$whereclause = array('owner_id' => $userId, "item_id" => $topicId);
@@ -56,16 +56,13 @@ if ($topicId) {
 	$pstnData = array('topic_id' => NULL);
 	$wpdb->update( "alpn_pstn_numbers", $pstnData, $whereclause );
 	if ($topicSpecial == 'contact') {
-		$connectedContactData = $wpdb->get_results($wpdb->prepare("SELECT channel_id, owner_id FROM alpn_topics WHERE connected_topic_id", $topicId));
+		$connectedContactData = $wpdb->get_results($wpdb->prepare("SELECT id, channel_id, connected_topic_id, owner_id FROM alpn_topics WHERE connected_topic_id = %d", $topicId));
+
 		if (isset($connectedContactData[0])) {
 			$connectedChannelId = $connectedContactData[0]->channel_id;
 			$connectedOwnerId = $connectedContactData[0]->owner_id;
-			//Delete shared chat room (will delete room too)
-			$chatRoomRemoveList[] = array(
-				"topic_id" => $topicId,
-				"user_id_to_remove" => $connectedOwnerId
-			);
-			//Remove members from chatrooms
+
+			//Remove members from other rooms
 			$chatRoomsToHandle = $wpdb->get_results($wpdb->prepare("SELECT topic_id FROM alpn_proteams WHERE proteam_member_id = %d AND wp_id <> ''", $topicId));
 			foreach ($chatRoomsToHandle as $value) {
 				$chatRoomRemoveList[] = array(
@@ -81,6 +78,13 @@ if ($topicId) {
 				);
 				pte_manage_cc_groups("delete_member", $deleteMemberData);
 			}
+			//delete this room
+
+			$deleteRoomData = array(
+				"channel_id" => $connectedChannelId
+			);
+			pte_manage_cc_groups("delete_channel_by_channel_id", $deleteRoomData);
+
 			//take them out of any proteams they may be on.
 			$whereclause = array('owner_id' => $userId, 'proteam_member_id' => $topicId);
 			$wpdb->delete( "alpn_proteams", $whereclause );

@@ -119,10 +119,25 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
       $('#channel-messages').on('scroll', function(e) {
         var $messages = $('#channel-messages');
         if (activeChannel) {
+          console.log("HERE0");
+
+          console.log($('#channel-messages ul').height());
+          console.log($('#channel-messages ul').height() - 50);
+          console.log($messages.scrollTop());
+          console.log($messages.height());
+          console.log($messages.scrollTop() + $messages.height());
+
+
+
         if ($('#channel-messages ul').height() - 50 < $messages.scrollTop() + $messages.height()) {
+          console.log("HERE1");
           activeChannel.getMessages(1).then(messages => {
             var newestMessageIndex = messages.items.length ? messages.items[0].index : 0;
+            console.log("HERE2");
+
             if (!isUpdatingConsumption && activeChannel.lastConsumedMessageIndex !== newestMessageIndex) {
+              console.log("HERE3");
+
               isUpdatingConsumption = true;
               activeChannel.updateLastConsumedMessageIndex(newestMessageIndex).then(function() {
                 console.log("Updating Last Consumed Index", newestMessageIndex);
@@ -838,7 +853,9 @@ function pte_select_new_topic($el){
 function pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCount, channelImageHandle = "", channelOwnerId = 0){
   var el, rowHtml;
   channelFriendlyName = channelFriendlyName ? channelFriendlyName : "Not Specified";
-
+  if (channelUniqueId == activeChannel.uniqueName) {
+    return;
+  }
   var imageHandle = "";
   if (channelImageHandle) {
     var imagePath = "https://storage.googleapis.com/pte_media_store_1/" + channelImageHandle;
@@ -856,8 +873,8 @@ function pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCo
 
 function pte_handle_chat_channel(channel){
 
-  console.log("Handling Channel");
-  console.log(channel);
+  // console.log("Handling Channel");
+  // console.log(channel);
 
 
   var channelState = channel.state;
@@ -1275,6 +1292,9 @@ function setActiveChannel(channel) {
       if ($('#channel-messages ul').height() <= $('#channel-messages').height()) {
         channel.updateLastConsumedMessageIndex(newestMessageIndex).then(function(){
           console.log('Updating LCM - get Messages');
+          jQuery("li.pte_chat_list_item[data-cid='" + activeChannel.uniqueName + "']").remove();
+          $('#pte_chat_no_chats_message').show();
+
         });
       }
 

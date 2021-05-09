@@ -139,7 +139,7 @@ $html .= "
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
 
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'>
+					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='vault' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'>
 						<div id='pte_topic_form_title_view'>
 							<span class='fa-stack pte_stacked_icon'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
@@ -168,6 +168,7 @@ $html .= "	</div>
 							</div>
 							<div id='alpn_add_edit_outer_container' class='alpn_add_edit_outer_container'></div>
 							<div id='alpn_vault_preview_embedded'>
+								<img id='pte_refresh_report_loading' class='pte_refresh_report_loading' src='https://alct.pro/wp-content/themes/memberlite-child-master/pdf/web/images/loading-icon.gif'>
 								<div id='pte_pdf_ui'></div>
 								{$pdfViewer}
 							</div>

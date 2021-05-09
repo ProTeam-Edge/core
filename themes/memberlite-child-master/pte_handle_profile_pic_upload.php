@@ -20,6 +20,13 @@ $topicSpecial = isset($qVars['topic_special']) ? $qVars['topic_special'] : 'topi
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 
+
+// alpn_log("Updating Profile Pic");
+// alpn_log($userID);
+// alpn_log($handle);
+// alpn_log($topicId);
+// alpn_log($topicSpecial);
+
 if ($userID && $handle && $topicId) {
 	try {
 
@@ -33,6 +40,7 @@ if ($userID && $handle && $topicId) {
 			);
 			if ($topicSpecial == 'user') {  //replaces or adds metadata value for profile image into the WP system WP function
 				update_user_meta( $userID, "tml_avatar",  $handle);
+				update_user_meta( $userID, "pte_user_icon",  $handle);
 				$data = array(
 					"image_handle" => $handle,
 					"owner_id" => $userID

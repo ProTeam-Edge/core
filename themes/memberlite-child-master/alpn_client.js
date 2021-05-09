@@ -343,7 +343,7 @@ function pte_handle_connection_button(operation, topicId) {
 					connectionEl.find("div#pte_name_container").html(elements.connected_name);
 					connectionEl.find("img#pte_connection_loading").css("display", "none");
 				break;
-				case 'dni':
+				case 'block':
 					var elements = pte_make_connection_elements(json);
 					connectionEl.find("div#pte_button_container").html(elements.button_line).css({"opacity": 1, "pointer-events": "auto"});
 					connectionEl.find("div#pte_icon_container").html(elements.connected_icon);
@@ -382,7 +382,7 @@ function pte_make_connection_elements(connection){
 		case 'connected':
 			connectedName = "<div data-topic-id='" + connectionId + "' data-topic-type-id='' data-topic-special='contact' data-topic-dom-id='" + connectedOwnerDomId + "' data-operation='to_topic_info_by_id' class='pte_connection_name_link' onclick='pte_handle_interaction_link_object(this);'>" + connectionName + "</div>";
 			connectedIcon = "<i class='far fa-user-check' title='Member, Connected'></i>";
-			buttonLine = loadingIndicator + "<button title='Do Not Allow Interaction' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"dni\", \"" + connectionId + "\");'>DNI</button>";
+			buttonLine = loadingIndicator + "<button title='Block Interaction' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"block\", \"" + connectionId + "\");'>Block</button>";
 		break;
 		case 'disconnected':
 			connectedName = connectionName;
@@ -391,12 +391,12 @@ function pte_make_connection_elements(connection){
 		case 'wants_to_connect':
 			connectedName = connectionName;
 			connectedIcon = "<i class='far fa-question-circle' title='Member Wants to Connect'></i>";
-			buttonLine = loadingIndicator + "<button title='Connect with Member' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"connect\", \"" + connectionId + "\");'>Connect</button>";
+			buttonLine = loadingIndicator + "<button title='Connect with Member' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"connect\", \"" + connectionId + "\");'>Connect</button> &nbsp; <button title='Block Interaction' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"block\", \"" + connectionId + "\");'>Block</button>";
 		break;
-		case 'dni':
+		case 'block':
 			connectedName = connectionName;
-			connectedIcon = "<i class='far fa-user-shield' title='Do Not Interact, Connected'></i>";
-			buttonLine = loadingIndicator + "<buttontitle='Allow Interaction' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"un_dni\", \"" + connectionId + "\");'>Interact</button>";
+			connectedIcon = "<i class='far fa-user-shield' title='Blocked, Connected'></i>";
+			buttonLine = loadingIndicator + "<buttontitle='Allow Interaction' class='btn btn-danger btn-sm pte_connected_action_button' onclick='pte_handle_connection_button(\"un_block\", \"" + connectionId + "\");'>Unblock</button>";
 		break;
 	}
 	return {connected_icon: connectedIcon, button_line: buttonLine, connected_name: connectedName};
@@ -428,13 +428,13 @@ function pte_draw_connections_table() {
 		formattedField += "<div id='pte_icon_container' class='pte_vault_5'>";
 		formattedField += connectedIcon;
 		formattedField += "</div>";
-		formattedField += "<div id='pte_name_container' class='pte_vault_row_40 pte_extra_padding_right pte_vault_bold'>";
+		formattedField += "<div id='pte_name_container' class='pte_vault_row_30 pte_extra_padding_right pte_vault_bold'>";
 		formattedField += connectedName;
 		formattedField += "</div>";
-		formattedField += "<div class='pte_vault_row_40 pte_extra_padding_right'>";
+		formattedField += "<div class='pte_vault_row_35 pte_extra_padding_right'>";
 		formattedField += connectionAbout;
 		formattedField += "</div>";
-		formattedField += "<div id='pte_button_container' class='pte_vault_row_15 pte_vault_right'>";
+		formattedField += "<div id='pte_button_container' class='pte_vault_row_30 pte_vault_right'>";
 		formattedField += buttonLine;
 		formattedField += "</div>";
 		formattedField += "</div>";
@@ -448,7 +448,7 @@ function pte_draw_connections_table() {
 
 function alpn_handle_extra_table(extraKey) {
 
-	console.log('alpn_handle_extra_table');
+	//console.log('alpn_handle_extra_table');
 	var formattedField, cell, itemBody;
 	var tableKey = "table_tab_" + extraKey;
 	var tableData = wpDataTables[tableKey].fnGetData();
@@ -473,7 +473,7 @@ function alpn_handle_extra_table(extraKey) {
 	var subjectToken;
 	var ownerName;
 
-	console.log(tableData);
+	//console.log(tableData);
 
 	for (i=0; i< tableData.length; i++) {
 		rowData = tableData[i];
@@ -2783,6 +2783,22 @@ function pte_setup_window_onload() {
 
 jQuery( window ).load( function(){
 
+	//Initialize
+	if (typeof alpn_user_id != "undefined" && alpn_user_id) {
+		window.Userback = window.Userback || {};
+		Userback.access_token = '29911|43846|CoAYHySNQemyYIqBzfBHlEjK2';
+		Userback.name = alpn_user_displayname;
+		Userback.email = alpn_user_email;
+		Userback.custom_data = {
+		    owner_id: alpn_user_id
+		};
+		(function(d) {
+		    var s = d.createElement('script');s.async = true;
+		    s.src = 'https://static.userback.io/widget/v1.js';
+		    (d.head || d.body).appendChild(s);
+		})(document);
+	}
+
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 	// added delay for fixing loading issue TODO figure out exactly whats up and fix it or wait for it, not a timer.
 		setTimeout(function(){
@@ -3411,7 +3427,8 @@ function pte_uppy_topic_icon(){
 				})
 				.on('transloadit:complete', (assembly) => {
 					console.log("Topic Icon Upload Complete...");
-					if (typeof assembly.results !== "undefined") {
+					console.log(assembly);
+					if (typeof assembly.results != "undefined") {
 						var results = assembly['results'].resize_image[0];
 						pte_save_topic_pic(results, 'topic');
 						pte_uppy_topic_icon();
@@ -3789,10 +3806,32 @@ if (response == 'yes' && typeof theObject !== "undefined") {
 		dataType: "json",
 		success: function(json) {
 			alpn_set_vault_to_first_row = true;
+			var vaultCount = wpDataTables.table_vault.fnGetData().length;
 			wpDataTables.table_vault.fnFilter();
+
+			if (vaultCount == 1) {
+				console.log('HANDLE VAULT EMPTY');
+				console.log(vaultCount);
+
+				var url = alpn_templatedir + 'dist/assets/pte_empty_vault.pdf';
+
+				pdfui.openPDFByHttpRangeRequest({
+		        range: {
+		            url: url
+		        }
+		    });
+
+				alpn_oldVaultSelectedId = '';
+
+			}
+
+
+
+
+
 		},
 		error: function() {
-			console.log('problemo edit');
+			console.log('problemo delete');
 		//TODO
 		}
 	})
@@ -4282,10 +4321,27 @@ function pte_setup_pdf_viewer(viewerSettings) {
 						}
 				});
 
-				pdfui.addViewerEventListener(Events.openFileSuccess, function() {
+				pdfui.addViewerEventListener(Events.openFileSuccess, function(e) {
+
+					var fileName = e.info.fileName;
+					var topicMode = jQuery("#pte_selected_topic_meta").data("mode");
+
+					if (fileName == "pte_empty_vault.pdf") {return;}
+					if (topicMode == 'design'){
+
+							console.log("Handling Design Open Success");
+
 							jQuery('#pte_refresh_report_loading').hide();
 							jQuery('#alpn_vault_copy').removeClass('pte_extra_button_disabled').addClass('pte_extra_button_enabled');
 							jQuery('#alpn_vault_copy_go').removeClass('pte_extra_button_disabled').addClass('pte_extra_button_enabled');
+						} else if (topicMode =='vault') {
+							jQuery('#pte_refresh_report_loading').hide();
+
+							console.log("Handling Vault Open Success");
+
+
+						}
+
 		    });
 
 				pdfui.getComponentByName('pte_sidebar').then(function(pteComponent) {
@@ -4303,16 +4359,24 @@ function pte_setup_pdf_viewer(viewerSettings) {
 				window.onresize = function () {
 						pdfui.redraw().catch(function(){});
 				}
+
+				var url = alpn_templatedir + 'dist/assets/pte_empty_vault.pdf';
+
+				pdfui.openPDFByHttpRangeRequest({
+						range: {
+								url: url
+						}
+				});
 		}
 }
 
 function pte_check_viewer_password(tObj){
 	console.log('pte_check_viewer_passcode...');
-
 	var jObj = jQuery(tObj);
 	var md5Password = jObj.data('pte-pe');
 	var vaultId = jObj.data('pte-vi');
 	var permissions = jObj.data('pte-io');
+	var token = jObj.data('pte-token');
 	var md5PasswordSubmitted = md5(jQuery("#pte_viewer_password_input").val());
 	if (md5PasswordSubmitted == md5Password) {
 		var printFiles = "pte_ipanel_button_disabled";
@@ -4325,21 +4389,18 @@ function pte_check_viewer_password(tObj){
 			downloadFiles = 'pte_ipanel_button_enabled';
 	}
 
-	console.log('pte_viewer_file_meta');
-	console.log(pte_viewer_file_meta);
-
 	var toolBar = " \
-		<div class='pte_vault_row_50'> \
+		<div class='pte_vault_row_40'> \
 			<i id='alpn_vault_print' class='far fa-print pte_icon_button " + printFiles + "' title='Print File' onclick='alpn_vault_control(\"print\")'></i> \
 			<i id='alpn_vault_download_original' class='far fa-file-download pte_icon_button " + downloadFiles + "' title='Download Original File' onclick='alpn_vault_control(\"download_original\")'></i> \
 			<i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button " + downloadFiles + "' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i> \
 		</div> \
-		<div class='pte_vault_row_50 pte_vault_right'> \
+		<div class='pte_vault_row_60 pte_vault_right'> \
 		<div class='pte_viewer_info_outer'><div class='pte_viewer_info_inner_message'>File Name</div><div id='pte_viewer_info_filename' class='pte_viewer_info_inner_name'>" + pte_viewer_file_meta.file_name + "</div></div> \
 		<div class='pte_viewer_info_outer' style='margin-left: 10px;'><div class='pte_viewer_info_inner_message'>Description</div><div id='pte_viewer_info_description' class='pte_viewer_info_inner_name'>" + pte_viewer_file_meta.description + "</div></div> \
 		</div> \
 		";
-		pte_view_document(vaultId);
+		pte_view_document(vaultId, token);
 		jQuery('#pte_viewer_toolbar').fadeOut(250, function(){
 			jQuery('#pte_viewer_toolbar').html(toolBar).fadeIn(250);
 		});
@@ -4351,7 +4412,8 @@ function pte_check_viewer_password(tObj){
 
 function pte_view_document(vaultId, token = false) {
 	var security = specialObj.security;
-	//console.log('Viewing Document...');
+	console.log('Viewing Document...');
+	console.log(token);
 
 	if (!token) {
 		var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId + '&security=' + security;
@@ -4369,10 +4431,13 @@ function pte_view_document(vaultId, token = false) {
 		var status = xhr.status;
 		if (status == 204) {  //Premission Denied
 			console.log("Permission Denied");  //TODO handle - shouldn't happen too often cuz shouldnt show up. But yeah, hackers.
+			jQuery("#alpn_vault_preview_embedded").fadeOut(250, function(){
+				jQuery("#alpn_vault_preview_embedded").html("<div class='pmpro_content_message'><div class='pte_membership_message'>This file is no longer available.<br>Please check with the Owner.</div></div>").fadeIn();
+			});
 			return;
 		}
 
-		if ((status >= 200 && status < 300) || status === 304) {
+		if ((status >= 200 && status < 300 && status != 204) || status === 304) {
 			pdfui.openPDFByFile(xhr.response).catch(function (e) {
 					if (e.error === 11 && e.encryptDict.Filter === 'FOPN_foweb') {
 							console.log("ENCRYPTED DOC");
@@ -4567,13 +4632,21 @@ function alpn_vault_control(operation) {
 		case 'download_original':
 			console.log('Downloading Original...');
 			var security = specialObj.security;
-			var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=original&v_id=' + vaultId + '&security=' + security;
+			if (!vaultId && typeof pte_viewer_file_meta != "undefined") {
+				var srcFile = alpn_templatedir + 'alpn_get_vault_file_token.php?which_file=original&token=' + pte_viewer_file_meta.link_token + '&security=' + security;
+			} else {
+				var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=original&v_id=' + vaultId + '&security=' + security;
+			}
 			window.location = srcFile;
 		break;
-		case 'download_pdf':
+		case 'download_pdf':   //TODO Merge
 			console.log('Downloading PDF...');
 			var security = specialObj.security;
-			var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId + '&security=' + security;
+			if (!vaultId && typeof pte_viewer_file_meta != "undefined") {
+				var srcFile = alpn_templatedir + 'alpn_get_vault_file_token.php?which_file=pdf&token=' + pte_viewer_file_meta.link_token + '&security=' + security;
+			} else {
+				var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=original&v_id=' + vaultId + '&security=' + security;
+			}
 			window.location = srcFile;
 		break;
 		case 'print':
@@ -4733,6 +4806,7 @@ function alpn_vault_control(operation) {
 			jQuery('#alpn_name_field').attr('style', 'pointer-events: auto; opacity: 1.0;');
 			jQuery('#alpn_name_field_label').attr('style', 'pointer-events: auto; opacity: 1.0;');
 			if (vaultId) {
+				jQuery('#pte_refresh_report_loading').show();
 				pte_view_document(vaultId);
 			}
 
@@ -5081,6 +5155,9 @@ function pte_save_topic_pic(fileUploaded, source){
 				dataType: "json",
 				success: function(json) {
 
+					console.log("Handling PIC");
+					console.log(json);
+
 					if (source == 'logo') {
 						var alpn_logo_url = alpn_avatar_baseurl + fileHandle;
 						jQuery('#pte_profile_logo_image').attr('src', alpn_logo_url);
@@ -5095,6 +5172,7 @@ function pte_save_topic_pic(fileUploaded, source){
 							break;
 							case 'network':
 							case 'topic':
+								var targetImg = jQuery("div.pte_title_topic_icon_container img#pte_profile_pic_topic").attr("src", alpn_avatar_url);
 								var iconContainer = jQuery('div.alpn_column_1 #alpn_field_' + alpn_oldSelectedId + ' .alpn_topic_icons');
 								iconContainer.html("<img id='user_profile_image' style='height: 32px; border-radius: 50%;' src='" + alpn_avatar_url + "'>");
 							break;
@@ -5589,6 +5667,9 @@ function pte_handle_report_settings(operation) {
 
 						if (status == 204) {  //Premission Denied
 							console.log("Permission Denied");
+							jQuery("#alpn_vault_preview_embedded").fadeOut(250, function(){
+								jQuery("#alpn_vault_preview_embedded").html("<div class='pmpro_content_message'><div class='pte_membership_message'>This file is no longer available.<br>Please check with the Owner.</div></div>").fadeIn();
+							});
 							return;
 						}
 
@@ -5711,7 +5792,7 @@ function pte_handle_delete_topic(response, returnData){
 }
 
 
-function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
+function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){   //mc_proper
 
 	var tabId = jQuery("button.tablinks.pte_tab_button_active").data('tab-id');
 	var subjectToken = jQuery("button.tablinks.pte_tab_button_active").data('stoken');
@@ -5925,11 +6006,12 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 					var mapData = pte_make_map_data('replace_me');
 					pte_manage_history(mapData);
 					//TODO update icon with new image_handle data if needed.
-					var newUser = jQuery("div#alpn_field_" + uniqueRecId);
-					if (newUser.data('nm') == 'yes') { //Put them in edit mode for their topic. Tell em something
+					var theUserEl = jQuery("div#alpn_field_" + uniqueRecId);
+					if (theUserEl.data('nm') == 'yes') { //Put them in edit mode for their topic. Tell em something
 						pte_show_message('green', 'ok', 'Welcome to ProTeam Edge. Please complete and save your personal profile. Keeping it updated because your connections will see it. Otherwise, it is private.');
-						newUser.data('nm', 'no');
+						theUserEl.data('nm', 'no');
 					}
+
 				},
 				error: function() {
 					//TODO
@@ -5964,7 +6046,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 
 			var pteSelectedType = alpn_select_type(uniqueRecId);
 			if (pteSelectedType == 'user') {
-				console.log("Selecting User Topic");
 				var newUser = jQuery("div#alpn_field_" + uniqueRecId);
 				if (newUser.data('nm') == 'yes') { //Put them in edit mode for their topic. Tell em something
 					alpn_mission_control('edit_topic', uniqueRecId);
@@ -5998,7 +6079,17 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){
 					alpn_setup_proteam_member_selector('all');
 					pte_handle_tab_bar_scroll();
 
-
+					var delButtonEl = jQuery("#delete_topic_button");
+					if (delButtonEl.hasClass('pte_ipanel_button_disabled')) {
+						delButtonEl.removeClass('pte_ipanel_button_disabled');
+						delButtonEl.addClass('pte_ipanel_button_enabled');
+					}
+					if (pteSelectedType == 'user') {
+						if (delButtonEl.hasClass('pte_ipanel_button_enabled')) {
+							delButtonEl.removeClass('pte_ipanel_button_enabled');
+							delButtonEl.addClass('pte_ipanel_button_disabled');
+						}
+					}
 					if (!pte_back_button) {
 						var metaObj = jQuery('#pte_selected_topic_meta');
 						var topicDomId = metaObj.data('tdid');
@@ -6192,6 +6283,12 @@ function alpn_handle_topic_done(formId){
 							pte_initialize_topic_controls()
 							alpn_setup_proteam_member_selector('all');
 							pte_handle_tab_bar_scroll();
+
+							if (topicTypeSpecial == "user") {
+								var destImg = jQuery("div#alpn_me_icon img#user_profile_image");
+								var sourceImg = jQuery("div.pte_title_topic_icon_container img#pte_profile_pic_topic");
+								destImg.attr("src", sourceImg.attr("src"));
+							}
 
 						if (returnHandler)	{ //Linked Topic Handler
 							tabId = topicReturnTo.tab_id;

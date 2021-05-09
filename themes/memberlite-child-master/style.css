@@ -11,6 +11,20 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+.pmpro_submit .pmpro_btn-cancel{
+	display: none !important;
+}
+
+div.pmpro_content_message strong:before { content: ' '; display: block; margin-top: 20px;}
+
+body.bbpress header.masthead {
+	display: none;
+}
+
+body.bbpress div.entry-content{
+	margin-top: 30px;
+}
+
 .pte_connection_name_link {
 		color: #0074BB;
 		cursor: pointer;
@@ -363,11 +377,10 @@ button.menu-toggle {
 }
 
 
-
-.pmpro_actions_nav {
-	display: none !important;
+.pmpro_login_wrap,
+.pmpro_lost_password_wrap {
+	margin-top: 50px;
 }
-
 .entry-content > :first-child {
 	margin-top: 15px !important;
 
@@ -473,9 +486,10 @@ nav#mobile-navigation li.current_page_item a {
 .pmpro_content_message p{
 	max-width: 500px;
 	text-align: center;
-	padding: 10px 15px;
+	padding: 20px 30px;
 	margin: 30px auto 30px auto !important;
 	border: 1px solid rgb(192, 192, 192);
+	background-color: white;
 }
 
 .pmpro_btn,
@@ -600,8 +614,10 @@ div#table_reports_filter {margin: 0 0 3px !important;}
 }
 
 .pte_refresh_report_loading{
-	vertical-align: middle;
-	display: inline;
+	position: absolute;
+	right: 5px;
+	top: 10px;
+	display: none;
 }
 
 .pte_max_width_75{
@@ -1000,7 +1016,7 @@ ul#pte_topic_type_properties_list li {
 	font-size: 18px;
 	float: left;
 	vertical-align: middle;
-	line-height: 34px;
+	line-height: 32px;
 }
 
 .pte_html_template_textarea:focus,
@@ -1221,12 +1237,12 @@ input.wpforms-field-large {
 }
 
 .pte_viewer_info_outer{
-	height: 32px;
+	height: fit-content;
 	display: inline-block;
 	background-color: #005587;
 	border: solid 1px #005587;
-	width: 200px;
-	vertical-align: middle;
+	width: 300px;
+	vertical-align: top;
 }
 
 .pte_viewer_info_inner_message{
@@ -1241,7 +1257,8 @@ input.wpforms-field-large {
 }
 
 .pte_viewer_info_inner_name {
-	height: 16px;
+	min-height: 16px;
+	max-height: 45px;
 	line-height: 14px;
 	font-size: 12px;
 	color: #444;
@@ -1250,8 +1267,7 @@ input.wpforms-field-large {
 	border: solid 1px white;
 	text-align: left;
 	padding: 0 3px;
-	white-space: nowrap;
-	overflow-x: hidden;
+	overflow-y: hidden;
 	text-overflow: ellipsis;
 }
 
@@ -1651,6 +1667,7 @@ html::-webkit-scrollbar {
 	margin-top: 0px !important;
 	margin-left: 0px !important;
 	margin-right: 0 !important;
+	position: relative;
 }
 
 #alpn_vault_main_container{
@@ -3867,8 +3884,9 @@ span[aria-labelledby^="select2-alpn_select2_small_"] {
 }
 
 #alpn_me_field{
-	padding: 4px 10px;
 	background-color: #F8F8F8;
+	height: 40px;
+	padding: 4px 10px;
 }
 
 .pte_connected_user_icon{

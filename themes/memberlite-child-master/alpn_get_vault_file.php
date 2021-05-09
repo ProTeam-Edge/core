@@ -2,6 +2,8 @@
 
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
+alpn_log("Starting GET VAULT FILE");
+
 require 'vendor/autoload.php';
 use Google\Cloud\Storage\StorageClient;
 
@@ -15,8 +17,9 @@ if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
 }
+
 if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
-   echo 'Not a valid request.';
+   alpn_log('Not a valid request.');
    die;
 }
 
@@ -29,6 +32,8 @@ $rightsCheckData = array(
   "vault_id" => $vId
 );
 if (!pte_user_rights_check("vault_item", $rightsCheckData)) {
+	alpn_log('RIGHTS');
+
 	http_response_code (204); //TODO fix this
 exit;
 }
@@ -41,20 +46,14 @@ if (isset($results[0])) {
 
 	$mimeType = $results[0]->mime_type;
 	$fileName = $results[0]->file_name;
-	$fileNameExtension = pathinfo($fileName, PATHINFO_EXTENSION);
-
-	if (!$fileNameExtension) {
-		$originalExtension = pathinfo($results[0]->file_key, PATHINFO_EXTENSION);
-		$fileName = "{$fileName}.{$originalExtension}";
-	}
 
 	if ($whichFile == 'pdf') {
 		$objectName = $results[0]->pdf_key ? $results[0]->pdf_key : $results[0]->file_key;
-		$mimeType = "application/pdf";
-		$fileName = ($fileNameExtension == "pdf") ? $results[0]->file_name : $results[0]->file_name . ".pdf";
+		$fileName .= ".pdf";
 	} else {
 		$objectName = $results[0]->file_key;
 	}
+
 try {
 	http_response_code (200);
 
@@ -70,7 +69,7 @@ try {
 	echo $content;
 } catch (\Exception $e) { // Global namespace
 		$pte_response = array("topic" => "pte_get_vault_google_exception", "message" => "Problem accessing Google Vailt.", "data" => $e);
-		pp($pte_response);
+		alpn_log($pte_response);
 		exit;
 }
 } else {

@@ -977,8 +977,10 @@ function pte_make_send_panel($uxMeta) {
 
 	if ($widgetTypeId == "topic_team_invite") {
 		$results = $wpdb->get_results(
-			$wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE t.owner_id = %d AND tt.schema_key = 'Person' AND t.special <> 'user' ORDER BY t.name ASC", $ownerId)
+			$wpdb->prepare("SELECT t.id, t.name, t.topic_content, t.topic_type_id, t.connected_id, t.special, ct.topic_content AS connected_topic_content FROM alpn_topics t LEFT JOIN alpn_topic_types tt on tt.id = t.topic_type_id LEFT JOIN alpn_topics ct ON ct.id = t.connected_id WHERE t.owner_id = %d AND tt.schema_key = 'Person' AND t.special = 'contact' ORDER BY t.name ASC", $ownerId)
 	 );
+
+	 //t.special <> 'user' for persons in topic too
 
 	 $inviteList = array();
 	 foreach ($results as $key => $value) {   //If connected with someone, use their data.

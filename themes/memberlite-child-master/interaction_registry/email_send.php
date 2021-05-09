@@ -74,8 +74,13 @@ function pte_get_registry_email_send() {
                   $linkUid = pte_manage_link("create_link", $linkData);
                   $requestData['link_id'] = $linkUid;
                   $ownerAccountDetails = get_user_by('id', $requestData['owner_id']);
+
+                  alpn_log("Sending From");
+                  alpn_log($ownerAccountDetails);
+
+
                   $ownerEmailAddress = $ownerAccountDetails->user_email;
-                  $ownerEmailAddressName = trim($ownerContent['person_givenname'] . " " . $ownerContent['person_familyname']);
+                  $ownerEmailAddressName = $requestData['owner_friendly_name'];
                   $emailData = array(
                     'link_type' => 'file',
                   	"to_name" => $requestData['send_email_address_name'],

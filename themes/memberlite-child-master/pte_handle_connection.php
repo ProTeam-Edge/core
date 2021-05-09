@@ -23,7 +23,7 @@ $topicDomId = '';
 
 if ($topicId) {
 		$contactData = $wpdb->get_results(
-			$wpdb->prepare("SELECT alt_id, owner_id, topic_content FROM alpn_topics WHERE id = %d", $topicId)
+			$wpdb->prepare("SELECT alt_id, owner_id, topic_content, image_handle FROM alpn_topics WHERE id = %d", $topicId)
 		);
 }
 
@@ -33,6 +33,7 @@ if (isset($contactData[0])) {
 	);
 	if (isset($userTopicType[0])) {
 		$formId = $userTopicType[0]->form_id;
+
 		$topicTypeMeta = json_decode($userTopicType[0]->topic_type_meta, true);
 		$fieldMap = $topicTypeMeta["field_map"];
 		$contactDetailsToForm = array();
@@ -46,7 +47,7 @@ if (isset($contactData[0])) {
 	}
 	switch ($operation) {
 		case "connect":
-			$newTopicId = pte_create_topic($formId, $userId, $contactDetailsToForm); //Does all the heavy lifting based on topic special
+			$newTopicId = pte_create_topic($formId, $userId, $contactDetailsToForm, $contactData[0]->image_handle); //Does all the heavy lifting based on topic special
 
 			$topicResults = $wpdb->get_results(
 				$wpdb->prepare("SELECT id AS '0', name AS '1', connected_owner_id AS '2', about AS '3', connected_status AS '4', 'na' AS '5', connected_owner_dom_id AS '6' FROM alpn_member_connections WHERE id = %d", $newTopicId)
@@ -57,11 +58,11 @@ if (isset($contactData[0])) {
 			}
 			//tODO Sync the other person would be nice
 		break;
-		case "dni":
+		case "block":
 
 
 		break;
-		case "un_dni":
+		case "un_block":
 
 
 		break;

@@ -917,8 +917,8 @@ function pte_get_topic_manager($topicManagerSettings){
   $topicTable = str_replace('table_1', 'table_topic_types', $topicTable);
   $topicTable = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $topicTable);
 
-  $deleteButton =  "<i id='pte_delete_topic_type_button' class='far fa-trash-alt pte_topic_type_button' title='Delete Topic' onclick='pte_delete_topic_link(\"\");'></i>";
-  $duplicateButton =  "<i id='pte_dupe_topic_type_button' class='far fa-clone pte_topic_type_button' title='Delete Topic' onclick='pte_delete_topic_link(\"\");'></i>";
+  $deleteButton =  "<i id='pte_delete_topic_type_button' class='far fa-trash-alt pte_topic_type_button pte_ipanel_button_disabled' title='Delete Topic' onclick='pte_delete_topic_link(\"\");'></i>";
+  $duplicateButton =  "<i id='pte_dupe_topic_type_button' class='far fa-clone pte_topic_type_button pte_ipanel_button_disabled' title='Delete Topic' onclick='pte_delete_topic_link(\"\");'></i>";
   $extraTableControls =  json_encode("<div class='pte_topic_type_buttons'>{$deleteButton}{$duplicateButton}</div>");
 
   $addaTopicHtml = pte_get_topic_list('active_core_topic_types', '', 'pte_active_core_topic_types');
@@ -930,7 +930,7 @@ function pte_get_topic_manager($topicManagerSettings){
       <div class='pte_vault_row_25'>
       <div class='pte_editor_title'>
         <div class='pte_vault_row_75'>
-          Topic Types
+          Topic Types -- DNI/WIP
         </div>
         <div class='pte_vault_row_25 pte_vault_right'>
           &nbsp;
@@ -1121,7 +1121,7 @@ function pte_get_viewer($viewerSettings){
       $linkExpired = (($lastUpdateDate < $now) && ($linkInteractionExpiration > 0)) || ($linkRow->expired == 'true');
 
       if ($linkExpired) {
-        return ("<div>Access to this link has expired for security. Please contact the original sender.</div>");
+        return ("<div class='pmpro_content_message'><div class='pte_membership_message'>Access to this link has expired for security reasons. Please contact the original sender.</div></div>");
       }
 
       $linkInteractionPassword = isset($linkMeta['link_interaction_password']) ? $linkMeta['link_interaction_password'] : '';
@@ -1139,7 +1139,9 @@ function pte_get_viewer($viewerSettings){
         "file_name" => $vaultFileName,
         "description" => $vaultDescription,
         "mime_type" => $vaultMimeType,
-        "modified_data" => $vaultModifiedDate
+        "modified_data" => $vaultModifiedDate,
+        "vault_id" => $vaultId,
+        "link_token" => $linkKey
       ));
 
       $passwordHtml = $md5Password = $viewDocumentHtml = "";
@@ -1151,7 +1153,7 @@ function pte_get_viewer($viewerSettings){
         $showPassword = 'inline-block';
         $toolbar = "<div id='pte_viewer_toolbar' class='pte_viewer_toolbar'>
                       <div class='pte_vault_row_100'>
-                          <div id='pte_viewer_password_container' class='pte_viewer_password_container' style='display: {$showPassword};'>File Passcode:&nbsp;&nbsp;<input type='text' id='pte_viewer_password_input' placeholder='Required...'><div class='pte_button_new' data-pte-pe='{$md5Password}' data-pte-vi='{$vaultId}' data-pte-io='{$linkInteractionOptions}' onclick='pte_check_viewer_password(this);'>Open</div><span id='pte_check_viewer_password_error'></span></div>
+                          <div id='pte_viewer_password_container' class='pte_viewer_password_container' style='display: {$showPassword};'>File Passcode:&nbsp;&nbsp;<input type='text' id='pte_viewer_password_input' placeholder='Required...'><div class='pte_button_new' data-pte-pe='{$md5Password}' data-pte-vi='{$vaultId}' data-pte-io='{$linkInteractionOptions}' data-pte-token='{$linkKey}' onclick='pte_check_viewer_password(this);'>Open</div><span id='pte_check_viewer_password_error'></span></div>
             		      </div>
                     </div>
                   ";
@@ -1166,12 +1168,12 @@ function pte_get_viewer($viewerSettings){
           $copyFile = 'pte_ipanel_button_enabled';
         }
         $toolbar = "<div id='pte_viewer_toolbar' class='pte_viewer_toolbar'>
-                      <div class='pte_vault_row_50'>
+                      <div class='pte_vault_row_40'>
                         <i id='alpn_vault_print' class='far fa-print pte_icon_button {$printFiles}' title='Print File' onclick='alpn_vault_control(\"print\")'></i>
                         <i id='alpn_vault_download_original' class='far fa-file-download pte_icon_button {$downloadFiles}' title='Download Original File' onclick='alpn_vault_control(\"download_original\")'></i>
                         <i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button {$downloadFiles}' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
             		      </div>
-                      <div class='pte_vault_row_50 pte_vault_right'>
+                      <div class='pte_vault_row_60 pte_vault_right'>
                       <div class='pte_viewer_info_outer'><div class='pte_viewer_info_inner_message'>File Name</div><div id='pte_viewer_info_filename' class='pte_viewer_info_inner_name'>{$vaultFileName}</div></div>
                       <div class='pte_viewer_info_outer' style='margin-left: 10px;'><div class='pte_viewer_info_inner_message'>Description</div><div id='pte_viewer_info_description' class='pte_viewer_info_inner_name'>{$vaultDescription}</div></div>
               		    </div>
@@ -2288,11 +2290,13 @@ function pte_manage_user_connection($data){
        if (!$connectedId) {
          //Now go find contact in my Topics by email.
           $user = $wpdb->get_results(
-          	$wpdb->prepare("SELECT id FROM alpn_topics WHERE owner_id = %s AND special = 'contact' AND alt_id = %s", $userId, $contactEmail)
+          	$wpdb->prepare("SELECT id, name, about FROM alpn_topics WHERE owner_id = %s AND special = 'contact' AND alt_id = %s", $userId, $contactEmail)
            );
 
            if (isset($user[0])) {
              $userTopicId = $user[0]->id;
+             $userName = $user[0]->name;
+             $userAbout = $user[0]->about;
 
              $data = array(
               'owner_id' => $userId,
@@ -2300,12 +2304,18 @@ function pte_manage_user_connection($data){
               "contact_id" => $contactId
            		);
          		$newChannelId = pte_manage_cc_groups("get_create_channel", $data);     //create a channel for contact. Adds contact. Stores channel for contact
-
+            $contactTopicData = $wpdb->get_results(
+              $wpdb->prepare("SELECT name, about FROM alpn_topics WHERE id = %d", $contactNetworkId)
+             );
+             $contactName = isset($contactTopicData[0]) ? $contactTopicData[0]->name : "n/a";
+             $contactAbout = isset($contactTopicData[0]) ? $contactTopicData[0]->about : "n/a";
              //user
              $topicData = array(
                'connected_id' => $contactId,
                'connected_network_id' => $contactNetworkId,
-               'connected_topic_id' => $connectedTopicId
+               'connected_topic_id' => $connectedTopicId,
+               'name' => $contactName,
+               'about' => $contactAbout
              );
              $whereClause = array(
                'id' => $userTopicId
@@ -2319,12 +2329,20 @@ function pte_manage_user_connection($data){
               );
             pte_manage_cc_groups("add_member", $data);
 
+            $userTopicData = $wpdb->get_results(
+              $wpdb->prepare("SELECT name, about FROM alpn_topics WHERE id = %d", $userNetworkId)
+             );
+             $userName = isset($userTopicData[0]) ? $userTopicData[0]->name : "n/a";
+             $userAbout = isset($userTopicData[0]) ? $userTopicData[0]->about : "n/a";
+
              //contact
              $topicData = array(
                'connected_id' => $userId,
                'connected_network_id' => $userNetworkId,
                'connected_topic_id' => $userTopicId,
-               'channel_id' => $newChannelId
+               'channel_id' => $newChannelId,
+               'name' => $userName,
+               'about' => $userAbout
              );
              $whereClause = array(
                'id' => $connectedTopicId
@@ -2362,7 +2380,7 @@ function pte_manage_cc_groups($operation, $data) {
 
   $topicId = isset($data['topic_id']) ? $data['topic_id'] : "";
   $userId = isset($data['user_id']) ? $data['user_id'] : "";
-  $syncId = isset($data['sync_id']) ? $data['sync_id'] : "";  
+  $syncId = isset($data['sync_id']) ? $data['sync_id'] : "";
   $topicName = isset($data['topic_name']) && $data['topic_name'] ? $data['topic_name'] : "New";
   $fullName = isset($data['full_name']) && $data['full_name'] ? $data['full_name'] : "";
   $imageHandle = isset($data['image_handle']) && $data['image_handle'] ? $data['image_handle'] : false;
@@ -2376,9 +2394,11 @@ function pte_manage_cc_groups($operation, $data) {
     case "update_channel_image":  //update channel with new name accounting for simple and shared topics.
       alpn_log("UPDATING CHANNEL IMAGE");
       $channelId = pte_manage_cc_groups("get_create_channel", $data);   //get or create for the first time.
-      $channelAttributes = array(
-        'image_handle' => $imageHandle
-      );
+      $channel = $twilio->chat->v2->services($chatServiceId)
+                            ->channels($channelId)
+                            ->fetch();
+      $channelAttributes = json_decode($channel->attributes, true);
+      $channelAttributes['image_handle'] = $imageHandle;
       $channel = $twilio->chat->v2->services($chatServiceId)
       ->channels($channelId)
       ->update(array(
@@ -2389,10 +2409,12 @@ function pte_manage_cc_groups($operation, $data) {
     case "update_channel":  //update channel with new name accounting for simple and shared topics.
       alpn_log("UPDATING CHANNEL");
       $channelId = pte_manage_cc_groups("get_create_channel", $data);   //get or create for the first time.
-      $channelAttributes = array(
-        'image_handle' => $imageHandle,
-        'topic_owner_id' => $ownerId
-      );
+      $channel = $twilio->chat->v2->services($chatServiceId)
+                            ->channels($channelId)
+                            ->fetch();
+      $channelAttributes = json_decode($channel->attributes, true);
+      $channelAttributes['image_handle'] = $imageHandle;
+      $channelAttributes['topic_owner_id'] = $ownerId;
       $channel = $twilio->chat->v2->services($chatServiceId)
       ->channels($channelId)
       ->update(array(
@@ -2669,18 +2691,18 @@ function pte_manage_cc_groups($operation, $data) {
 
       foreach($results as $value) {
 
-        pp("Handled " . $value->name);
-
         if ($value->owner_id) {
 
           try {
-            $attributes = json_encode(array(
-              "image_handle" => $value->image_handle,
-              "full_name" => $value->name,
-              "sync_id" => $value->sync_id
-            ));
+            $user = $twilio->chat->v2->services($chatServiceId)
+                                     ->users($value->owner_id)
+                                     ->fetch();
+            $attributes = json_decode($user->attributes, true);
+            $attributes["image_handle"] = $value->image_handle;
+            $attributes["full_name"] = $value->name;
+            $attributes["sync_id"] = $value->sync_id;
             $updates = array(
-                            "attributes" => $attributes
+                            "attributes" => json_encode($attributes)
                            );
 
             $user = $twilio->chat->v2
@@ -2703,13 +2725,22 @@ function pte_manage_cc_groups($operation, $data) {
     break;
 
     case "update_user":
-      $attributes = json_encode(array(
-        "image_handle" => $imageHandle,
-        "full_name" => $fullName,
-        "sync_id" => $syncId
-      ));
+      $user = $twilio->chat->v2->services($chatServiceId)
+                             ->users($ownerId)
+                             ->fetch();
+      $attributes = json_decode($user->attributes, true);
+      $attributes["image_handle"] = $imageHandle;
+      $attributes["full_name"] = $fullName;
+      $attributes["sync_id"] = $syncId;
+
+
+      alpn_log("Updated DATA... ");
+      alpn_log($attributes);
+
+
+
       $updates = array(
-                      "attributes" => $attributes,
+                      "attributes" => json_encode($attributes),
                       "friendlyName" => $topicName
                      );
 
@@ -2721,17 +2752,42 @@ function pte_manage_cc_groups($operation, $data) {
 		break;
 
     case "update_user_image":
-      $attributes = json_encode(array(
-        "image_handle" => $imageHandle
-      ));
-      $user = $twilio->chat->v2
-        ->services($chatServiceId)
-        ->users($ownerId)
-        ->update(array(
-          "attributes" => $attributes
-        ));
-        alpn_log("Updated user image... " . $ownerId);
-		break;
+      alpn_log("Updating user image... ");
+      try {
+
+        $user = $twilio->chat->v2->services($chatServiceId)
+                               ->users($ownerId)
+                               ->fetch();
+        $attributes = json_decode($user->attributes, true);
+
+
+        alpn_log("Before... ");
+        alpn_log($attributes);
+
+
+
+        $attributes["image_handle"] = $imageHandle;
+
+        alpn_log("After... ");
+        alpn_log($attributes);
+
+        $user = $twilio->chat->v2
+          ->services($chatServiceId)
+          ->users($ownerId)
+          ->update(array(
+            "attributes" => json_encode($attributes, true)
+          ));
+
+          alpn_log("Updated user image... ");
+        } catch (Exception $e) {
+            alpn_log("Tried to Update user image... ");
+            $response = array(
+                'message' =>  $e->getMessage(),
+                'code' => $e->getCode(),
+                'error' => $e
+            );
+            alpn_log($response);
+        }		break;
 
     case "delete_user":
       try {
