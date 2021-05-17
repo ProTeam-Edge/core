@@ -281,7 +281,7 @@ if ($topicEmailRoute || $topicFaxRoute) {
 	$faxHtml = $topicFaxRoute ? "<div title='Copy Fax Number Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Fax Number\", \"{$topicFaxRoute}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Fax: {$topicFaxRouteFormatted}</div>" : "";
 	$routes = "
 			<div class='pte_route_container'>
-				<div class='pte_route_container_title'>Route to This Topic</div>
+				<div class='pte_route_container_title'>Inbound Routes</div>
 				{$emailRouteHtml}
 				{$faxHtml}
 			</div>
@@ -290,7 +290,7 @@ if ($topicEmailRoute || $topicFaxRoute) {
 $friendlyLogoNameHtml = isset($friendlyLogoName) && $friendlyLogoName ? $friendlyLogoName : "Image/Logo";
 
 $imageTitle = ($showLogoAccordion == 'block' || $showIconAccordian == 'block') ? "<div class='pte_accordion_section_title'>Media</div>" : "";
-$interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>Interaction Priority</div>" : "";
+$interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>Priorities</div>" : "";
 $inboundRoutingTitle = ($showEmailAccordian == 'block' || $showFaxAccordian == 'block') ? "<div class='pte_accordion_section_title'>Inbound Routing</div>" : "";
 $importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte_accordion_section_title'>Contacts</div>" : "";
 $settingsAccordion = "

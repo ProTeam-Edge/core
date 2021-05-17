@@ -120,28 +120,36 @@ pte_supported_types_map = {
 }
 
 //zendesk prefill support
-window.zESettings = {
-    webWidget: {
-			position: { horizontal: 'right', vertical: 'top' },
-      offset: {
-        horizontal: '50px',
-        vertical: '20px',
-        mobile: {
-          horizontal: '-10px',
-          vertical: '45px'
-        }
-      }
-    }
-  };
+// window.zESettings = {
+//     webWidget: {
+// 			position: { horizontal: 'right', vertical: 'top' },
+//       offset: {
+//         horizontal: '50px',
+//         vertical: '20px',
+//         mobile: {
+//           horizontal: '-10px',
+//           vertical: '45px'
+//         }
+//       }
+//     }
+//   };
+//
+//   zE(function() {
+// 		if (typeof alpn_user_id !== 'undefined' && alpn_user_id) {
+// 	    zE.identify({
+// 	      name: alpn_user_displayname,
+// 	      email: alpn_user_email
+// 	    });
+// 		}
+//   });
 
-  zE(function() {
-		if (typeof alpn_user_id !== 'undefined' && alpn_user_id) {
-	    zE.identify({
-	      name: alpn_user_displayname,
-	      email: alpn_user_email
-	    });
-		}
-  });
+
+function pte_delete_topic_link(key) {
+	console.log("Deleting Topic Link");
+	console.log(key);
+	alert("Feature still in development...");
+
+}
 
 function pte_UUID() { // Public Domain/MIT
     var d = new Date().getTime();//Timestamp
@@ -4292,7 +4300,7 @@ function pte_setup_pdf_viewer(viewerSettings) {
 							      }
 						  },
 							{
-									 target: " fv--thumbnail-contextmenu",
+									 target: " fv--thumbnail-contextmenu",
 									 action: UIExtension.UIConsts.FRAGMENT_ACTION.REMOVE
 							}
 					],

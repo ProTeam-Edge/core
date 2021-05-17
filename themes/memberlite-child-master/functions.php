@@ -617,7 +617,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 							$existingPersonWithEmail = $wpdb->get_results(
 								$wpdb->prepare("SELECT id, name, owner_id, dom_id FROM alpn_topics WHERE alt_id = %s AND (special = 'contact' OR special = 'user') AND owner_id = %d", $altId, $userId)
 							);
-							if (isset($existingPersonWithEmail[0])) { //pass data via user_meta. I can't figure out how to get data through wpforms.
+							if (isset($existingPersonWithEmail[0]) && $existingPersonWithEmail[0]->id != $row_id) { //pass data via user_meta. I can't figure out how to get data through wpforms.
 								$existingUserLink = "<span class='pte_topic_type_check_title_link' onclick='event.stopPropagation(); alpn_mission_control(\"select_by_mode\", \"{$existingPersonWithEmail[0]->dom_id}\")'>{$existingPersonWithEmail[0]->name}</span>";
 								$last_record_id['id'] = $userId;
 								$errorData = array(

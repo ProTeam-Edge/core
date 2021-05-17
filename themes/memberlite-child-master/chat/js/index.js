@@ -119,28 +119,12 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
       $('#channel-messages').on('scroll', function(e) {
         var $messages = $('#channel-messages');
         if (activeChannel) {
-          console.log("HERE0");
-
-          console.log($('#channel-messages ul').height());
-          console.log($('#channel-messages ul').height() - 50);
-          console.log($messages.scrollTop());
-          console.log($messages.height());
-          console.log($messages.scrollTop() + $messages.height());
-
-
-
         if ($('#channel-messages ul').height() - 50 < $messages.scrollTop() + $messages.height()) {
-          console.log("HERE1");
           activeChannel.getMessages(1).then(messages => {
             var newestMessageIndex = messages.items.length ? messages.items[0].index : 0;
-            console.log("HERE2");
-
             if (!isUpdatingConsumption && activeChannel.lastConsumedMessageIndex !== newestMessageIndex) {
-              console.log("HERE3");
-
               isUpdatingConsumption = true;
               activeChannel.updateLastConsumedMessageIndex(newestMessageIndex).then(function() {
-                console.log("Updating Last Consumed Index", newestMessageIndex);
                 jQuery("li.pte_chat_list_item[data-cid='" + activeChannel.uniqueName + "']").remove();
                 $('#pte_chat_no_chats_message').show();
                 pte_clear_channel_updates(activeChannel.uniqueName);
@@ -623,17 +607,42 @@ function logIn() {
 
           client.on('channelUpdated', function(channelUpdate) {
             console.log("Channel Updated Called");
+            console.log(channelUpdate);
           });
 
           client.on('channelJoined', function(channel) {
             console.log('Channel Joined Called');
-            console.log(channel);
-
+            var body = "Joined";
+            channel.sendMessage(body, {'message_type': 'message'}).then(function() {
+            });
+            var channelFriendlyName = channel.friendlyName;
+            if (isJson(channelFriendlyName)) {
+              var contactData = JSON.parse(channelFriendlyName);
+              if (userContext.identity == contactData.owner_id) {
+                var showIdentity = contactData.contact_id;
+              } else {
+                var showIdentity = contactData.owner_id;
+              }
+              client.getUserDescriptor(showIdentity).then(function(userDescriptor){
+                var userAttributes = userDescriptor.attributes;
+                var channelFriendlyName = userAttributes.full_name;
+                var channelImageHandle = userAttributes.image_handle;
+                //console.log(" Contact for ", channelFriendlyName);
+                pte_add_edit_chat_panel(channel.uniqueName, channelFriendlyName, 2, channelImageHandle, contactData.owner_id);
+              });
+            } else {
+              //console.log(" Topic for ", channelFriendlyName);
+              channel.getAttributes().then(function(attributes){
+                pte_add_edit_chat_panel(channel.uniqueName, channel.friendlyName, 2, attributes.image_handle, attributes.topic_owner_id);
+              });
+            }
           });
 
           client.on('channelLeft', function(channel) {
             console.log('Channel Left');
             console.log(channel);
+
+            //TODO if current topic selected, redraw topic without connected.
 
           });
 
@@ -651,9 +660,13 @@ function logIn() {
         });
 
 
-        client.on('connectionStateChanged', function(channel) {
+        client.on('connectionStateChanged', function(channelState) {
           console.log("Channel State Changed");
-          console.log(channel);
+          if (channelState == "denied") {
+            console.log("DENIED LOGIN BEFORE????");
+            logIn();
+            console.log("DENIED LOGIN AFTER????");
+          }
         });
 
       })
@@ -873,8 +886,8 @@ function pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCo
 
 function pte_handle_chat_channel(channel){
 
-  // console.log("Handling Channel");
-  // console.log(channel);
+   // console.log("Handling Channel");
+   // console.log(channel);
 
 
   var channelState = channel.state;

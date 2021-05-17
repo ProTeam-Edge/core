@@ -11,6 +11,14 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+.pte__pdfui-fullscreen-mode{
+
+}
+
+.pte_vault_item_permissions {
+
+}
+
 .pmpro_submit .pmpro_btn-cancel{
 	display: none !important;
 }
@@ -611,6 +619,96 @@ div#table_reports_filter {margin: 0 0 3px !important;}
 .quick_reports_right{
 	text-align: right;
 	max-width: 35%;
+}
+
+#pte_overlay_message_no_shimmer {
+	position: absolute;
+	top: calc(50% - 50px);
+	left: calc(50% - 160px);
+	padding: 5px 10px;
+	text-align: center;
+	display: inline;
+	width: 320px;
+	border: 1px dotted #D8D8D8;
+}
+
+#pte_overlay_message {
+	position: absolute;
+	top: calc(50% - 50px);
+	left: calc(50% - 160px);
+	padding: 0 75px;
+	display: inline;
+	text-align: center;
+	width: 320px;
+}
+
+.shimmer {
+  text-align: center;
+  color: rgba(255,255,255,0.1);
+  background: -webkit-gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff));
+  background: -moz-gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff));
+  background: gradient(linear, left top, right top, from(#222), to(#222), color-stop(0.5, #fff));
+  -webkit-background-size: 40px 100%;
+  -moz-background-size: 40px 100%;
+  background-size: 40px 100%;
+  -webkit-background-clip: text;
+  -moz-background-clip: text;
+  background-clip: text;
+  -webkit-animation-name: shimmer;
+  -moz-animation-name: shimmer;
+  animation-name: shimmer;
+  -webkit-animation-duration: 2s;
+  -moz-animation-duration: 2s;
+  animation-duration: 2s;
+  -webkit-animation-iteration-count: infinite;
+  -moz-animation-iteration-count: infinite;
+  animation-iteration-count: infinite;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  background-color: #222;
+}
+@-moz-keyframes shimmer {
+  0% {
+    background-position: top left;
+  }
+  100% {
+    background-position: top right;
+  }
+}
+@-webkit-keyframes shimmer {
+  0% {
+    background-position: top left;
+  }
+  100% {
+    background-position: top right;
+  }
+}
+@-o-keyframes shimmer {
+  0% {
+    background-position: top left;
+  }
+  100% {
+    background-position: top right;
+  }
+}
+@keyframes shimmer {
+  0% {
+    background-position: top left;
+  }
+  100% {
+    background-position: top right;
+  }
+}
+
+#pte_overlay_viewer{
+	position: absolute;
+	top: 40px;
+	left: 0;
+	height: calc(100% - 40px);
+	width: 100%;
+	background-color: rgb(240, 240, 240);
+	display: table-cell;
+	z-index: 1000;
 }
 
 .pte_refresh_report_loading{
@@ -1539,7 +1637,9 @@ ul#menu-member-menu li a {
 	overflow-y: auto;
 	overflow-x: hidden;
 	white-space: nowrap;
-	text-overflow: ellipsis;}
+	text-overflow: ellipsis;
+	background-color: white;
+}
 
 #pte_email_ux_container{
 	padding: 5px 10px 10px 10px;

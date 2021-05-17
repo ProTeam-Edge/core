@@ -26,6 +26,9 @@ function pte_get_registry_proteam_invitation_received() {
 
           $requestData = $token->getValue("process_context");
 
+          alpn_log("PTIR");
+          alpn_log($requestData);
+
           $requestData['interaction_type_name'] = "Team Invite";
           $requestData['interaction_template_name'] = $requestData["template_name"];
           $requestData['interaction_type_status'] = "Received";

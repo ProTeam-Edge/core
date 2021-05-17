@@ -18,7 +18,7 @@
 	})(window,document,'script','dataLayer','GTM-THPM5GZ');</script>
 	<!-- End Google Tag Manager -->
 <!-- Start of proteamedge Zendesk Widget script -->
-<script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=333d7fed-1308-4471-bb4e-1e7e6a8700d3"> </script>
+<!-- <script id="ze-snippet" src="https://static.zdassets.com/ekr/snippet.js?key=333d7fed-1308-4471-bb4e-1e7e6a8700d3"> </script>-->
 <!-- End of proteamedge Zendesk Widget script -->
 
 	<meta charset="<?php bloginfo( 'charset' ); ?>">

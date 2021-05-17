@@ -61,9 +61,6 @@ function pte_get_registry_proteam_invitation() {
               $requestData = $newData['context'];
               $tContent = $newData['content'];
 
-              alpn_log('Start Topic Team invitation...RD GOOD');
-              alpn_log($requestData);
-
               $topicPanelData = array(
                 "dom_id" => $requestData['connected_network_dom_id'],
                 "name" => $requestData['network_name'],
@@ -118,7 +115,7 @@ function pte_get_registry_proteam_invitation() {
                       'to_name' => $requestData['network_name'],
                       'link_type' => "",
                       'vault_file_name' => "",
-                      'subject_text' => $requestData['message_title'],
+                      'subject_text' => rawurldecode($requestData['message_title']),
                       'body_text' => nl2br($requestData['message_body']),
                       'link_id' => ""
                     );
@@ -129,6 +126,9 @@ function pte_get_registry_proteam_invitation() {
               }
 
             $token->setValue("process_context", $requestData);
+
+            alpn_log('About to Return?');
+            alpn_log($requestData);
 
             return;
 

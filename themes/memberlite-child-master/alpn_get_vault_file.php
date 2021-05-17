@@ -33,9 +33,9 @@ $rightsCheckData = array(
 );
 if (!pte_user_rights_check("vault_item", $rightsCheckData)) {
 	alpn_log('RIGHTS');
-
-	http_response_code (204); //TODO fix this
-exit;
+	header("PTE-Error-Code: insufficient_rights");
+	http_response_code (204);
+	exit;
 }
 
 $results = $wpdb->get_results(
@@ -54,7 +54,15 @@ if (isset($results[0])) {
 		$objectName = $results[0]->file_key;
 	}
 
+if (!$objectName) {
+	alpn_log('Object Name');
+	header("PTE-Error-Code: error_uploading");
+	http_response_code (204);
+	exit;
+}
+
 try {
+	header("PTE-Error-Code: false");
 	http_response_code (200);
 
 	$storage = new StorageClient([
@@ -70,10 +78,13 @@ try {
 } catch (\Exception $e) { // Global namespace
 		$pte_response = array("topic" => "pte_get_vault_google_exception", "message" => "Problem accessing Google Vailt.", "data" => $e);
 		alpn_log($pte_response);
+		header("PTE-Error-Code: error_uploading");
+		http_response_code (204);
 		exit;
 }
 } else {
-	http_response_code (204); //TODO fix this
+	header("PTE-Error-Code: vault_row_not_found");
+	http_response_code (204);
 }
 echo $html;
 ?>

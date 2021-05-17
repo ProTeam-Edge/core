@@ -595,7 +595,7 @@ function pte_make_message_line ($lineType, $uxMeta) {
 	$templateName =	isset($uxMeta['template_name']) ? $uxMeta['template_name'] : "";
 	$processId =	isset($uxMeta['process_id']) ? $uxMeta['process_id'] : "";
 
-	$messageTitle =	isset($uxMeta['message_title']) && $uxMeta['message_title'] ? $uxMeta['message_title'] : "-";
+	$messageTitle =	isset($uxMeta['message_title']) && $uxMeta['message_title'] ? pte_encode_value(rawurldecode($uxMeta['message_title'])) : "-";
 	$messageBody =	isset($uxMeta['message_body']) && $uxMeta['message_body'] ? $uxMeta['message_body'] : "-";
 
 	if (isset($uxMeta['updated_date']) && $uxMeta['updated_date']) {
