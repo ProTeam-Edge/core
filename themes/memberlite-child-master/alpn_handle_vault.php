@@ -168,7 +168,7 @@ $html .= "	</div>
 							</div>
 							<div id='alpn_add_edit_outer_container' class='alpn_add_edit_outer_container'></div>
 							<div id='alpn_vault_preview_embedded'>
-								<div id='pte_overlay_viewer'><div id='pte_overlay_message_no_shimmer'>No Vault Files</div></div>
+								<div id='pte_overlay_viewer'><div id='pte_overlay_message'></div></div>
 								<img id='pte_refresh_report_loading' class='pte_refresh_report_loading' src='https://alct.pro/wp-content/themes/memberlite-child-master/pdf/web/images/loading-icon.gif'>
 								<div id='pte_pdf_ui'></div>
 								{$pdfViewer}

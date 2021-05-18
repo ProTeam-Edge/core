@@ -39,7 +39,7 @@ if (!pte_user_rights_check("vault_item", $rightsCheckData)) {
 }
 
 $results = $wpdb->get_results(
-	$wpdb->prepare("SELECT mime_type, file_name, pdf_key, file_key FROM alpn_vault WHERE id = %s", $vId)   //TODO check for logged in.
+	$wpdb->prepare("SELECT dom_id, mime_type, file_name, pdf_key, file_key FROM alpn_vault WHERE id = %s", $vId)   //TODO check for logged in.
  );
 
 if (isset($results[0])) {
@@ -62,7 +62,10 @@ if (!$objectName) {
 }
 
 try {
+	$vaultDomId = $results[0]->dom_id;
+
 	header("PTE-Error-Code: false");
+	header("PTE-Vault-Dom-Id: {$vaultDomId}");
 	http_response_code (200);
 
 	$storage = new StorageClient([
