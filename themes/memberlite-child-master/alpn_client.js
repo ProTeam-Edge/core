@@ -62,35 +62,6 @@ access_levels = {'10': 'General', '20': 'Restricted', '30': 'Special', '40': 'Pr
 processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10"};
 
 pte_supported_types_map = {
-	'image/jpeg': 'Image - JPEG',
-	'image/gif': 'Image - GIF',
-	'image/jpg': 'Image - JPG',
-	'image/png': 'Image - PNG',
-	'image/xvg+xml': 'Image - SVG',
-	'image/application/illustrator': 'Illustrator - AI',
-	'application/postscript': 'Illustrator - AI',
-	'application/pdf': 'Document - PDF',
-	'text/plain': 'Text - Plain',
-	'text/html': 'Text - HTML',
-	'text/rtf': 'Text - RTF',
-	'text/richtext': 'Text - RTF',
-	'application/rtf': 'Text - RTF',
-	'application/x-rtf': 'Text - RTF',
-	'application/octet-stream': 'Unknown',
-	'application/msword': 'Word - DOC',
-	'application/vnd.openxmlformats-officedocument.wordprocessingml.document': 'Word - DOCX',
-	'application/vnd.ms-powerpoint': 'PowerPoint - PPT',
-	'application/vnd.openxmlformats-officedocument.presentationml.presentation': 'PowerPoint - PPTX',
-	'application/vnd.ms-excel': 'Excel - XLS',
-	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'Excel - XLSX',
-	'application/vnd.oasis.opendocument.text': 'Open Text - ODT',
-	'application/vnd.oasis.opendocument.presentation': 'Open Presentation - ODP',
-	'application/vnd.oasis.opendocument.spreadsheet': 'Open Spreadsheet - ODS',
-	'application/zip': 'Archive - ZIP',
-	'application/x-zip-compressed': 'Archive - ZIP'
-}
-
-pte_supported_types_map = {
 	'image/jpeg': 'JPEG',
 	'image/gif': 'GIF',
 	'image/jpg': 'JPG',
@@ -2146,12 +2117,12 @@ function alpn_handle_vault_table() {
 				waiting_line += "<img src='" + alpn_templatedir + "ellipsisindicator.gif'>";
 				waiting_line += "</div>";
 			}
-				if (typeof pte_supported_types_map[mimeType] !== "undefined" ) {
+				if (typeof pte_supported_types_map[mimeType] != "undefined" ) {
 					var docType = pte_supported_types_map[mimeType];
 				} else {
 					var docType = "";
 				}
-				docType = docType ? docType : "&nbsp;"
+				docType = docType ? docType : "-"
 
 			ownerHtml = '';
 			ownerName = '';
@@ -2610,9 +2581,10 @@ function pte_setup_window_onload() {
 								});
 							});
 
-							syncClient.on('connectionStateChanged', function(state) {
+							syncClient.on('connectionStateChanged', function(context) {
 								console.log("SYNC CLIENT -- CONNECTION STATE CHANGED");
-								if (state != 'connected') {
+								console.log(context);
+								if (context != 'connected') {
 									//console.log("Sync Client Connected");
 								} else {
 									//console.log("Sync Client Not Connected");
@@ -3832,7 +3804,7 @@ if (response == 'yes' && typeof theObject !== "undefined") {
 				console.log('HANDLE VAULT EMPTY');
 				console.log(vaultCount);
 				pte_show_viewer_overlay("<div id='pte_overlay_message'></div>");
-				jQuery('#pte_refresh_report_loading').hide();
+				//jQuery('#pte_refresh_report_loading').hide();
 				alpn_oldVaultSelectedId = '';
 			}
 		},
@@ -4225,12 +4197,12 @@ function alpn_switch_panel(panel) {
 }
 
 function pte_hide_viewer_overlay() {
-	jQuery('#pte_refresh_report_loading').hide();
+	//jQuery('#pte_refresh_report_loading').hide();
 	jQuery('#pte_overlay_viewer').html("<div id='pte_overlay_message'></div>").hide();
 }
 
 function pte_show_viewer_overlay(messageHtml) {
-	jQuery('#pte_refresh_report_loading').show();
+	//jQuery('#pte_refresh_report_loading').show();
 	jQuery('#pte_overlay_viewer').html(messageHtml).show();
 }
 
@@ -4240,7 +4212,7 @@ function pte_setup_pdf_viewer(viewerSettings) {
 	console.log(viewerSettings);
 
 	pte_show_viewer_overlay("<div id='pte_overlay_message'></div>");
-	jQuery('#pte_refresh_report_loading').hide();
+	//jQuery('#pte_refresh_report_loading').hide();
 
 	var sidebarState = (typeof viewerSettings['sidebar_state'] != "undefined") ? viewerSettings['sidebar_state'] : 'closed';
 
@@ -4451,7 +4423,7 @@ function pte_view_document(vaultId, token = false) {
 					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>File failed to upload<br>Please delete it and try again</div>");
 				break;
 			}
-			jQuery('#pte_refresh_report_loading').hide();
+			//jQuery('#pte_refresh_report_loading').hide();
 			return;
 		}
 
@@ -5661,7 +5633,7 @@ function pte_handle_report_settings(operation) {
 
 	switch(operation) {
 		case 'refresh':
-			jQuery('#pte_refresh_report_loading').show();
+			//jQuery('#pte_refresh_report_loading').show();
 			jQuery('#alpn_vault_copy').removeClass('pte_extra_button_enabled').addClass('pte_extra_button_disabled');
 			jQuery('#alpn_vault_copy_go').removeClass('pte_extra_button_enabled').addClass('pte_extra_button_disabled');
 			var allData = pte_get_report_data(mapData);
@@ -5782,6 +5754,34 @@ function pte_handle_report_settings(operation) {
 	}
 }
 
+	function pte_get_nearest_row (deletedtopicSpecial, deletedTopicDomId) {
+		console.log("GETTING NEAREST");
+		var trObj =  jQuery('div.alpn_column_1 #alpn_field_' + deletedTopicDomId).closest('tr');
+		alpn_oldSelectedId = jQuery("div.alpn_user_container").data("uid");
+		if (deletedtopicSpecial== 'contact') {
+			var table = wpDataTables.table_network;
+		} else if (deletedtopicSpecial == 'topic') {
+			var table = wpDataTables.table_topic;
+		}
+		table.fnDeleteRow(trObj, null, false);
+		var tableData = table.fnGetData();
+
+		if (tableData.length == 0) {
+			table.fnFilterClear();
+		} else {
+			for (i = 0; i < tableData.length; i++) {
+				if (tableData[i][6] != deletedTopicDomId) {
+					alpn_oldSelectedId = tableData[i][6];
+					break;
+				}
+			}
+		}
+		trObj.remove();
+		return alpn_oldSelectedId;
+	}
+
+
+//current
 function pte_handle_delete_topic(response, returnData){
 	console.log("HANDLING DELETE");
 	if (response == 'no') {return;}
@@ -5796,15 +5796,9 @@ function pte_handle_delete_topic(response, returnData){
 		dataType: "json",
 		success: function(json) {
 			console.log('TOPIC DELETE SUCCESS');
-			console.log(json);
-			if (json.topic_special == 'contact') {
-					alpn_oldSelectedId = jQuery("table#table_network").find("div.alpn_topic_cell").data("uid");
-					if (alpn_oldSelectedId) {wpDataTables.table_network.fnFilterClear();}
-			} else if (json.topic_special == 'topic') {
-				alpn_oldSelectedId = jQuery("table#table_topic").find("div.alpn_topic_cell").data("uid");
-				if (alpn_oldSelectedId) {wpDataTables.table_topic.fnFilterClear();}
-			}
-			if (!alpn_oldSelectedId) {alpn_oldSelectedId = jQuery("div.alpn_user_container").data("uid");}
+			var deletedTopicDomId = returnData.topic_dom_id;
+			var deletedtopicSpecial = returnData.topic_special;
+			alpn_oldSelectedId = pte_get_nearest_row(deletedtopicSpecial, deletedTopicDomId);
 			alpn_mission_control('select_by_mode', alpn_oldSelectedId);
 		},
 		error: function() {
@@ -6097,7 +6091,9 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 					}
 					pte_select_tab_when_ready(tabId);
 					pte_initialize_topic_controls();
-					wpforms.ready();
+
+					//TODO BUG HERE> Can we only call wpforms when there's an actual form?
+					//wpforms.ready();
 					alpn_setup_proteam_member_selector('all');
 					pte_handle_tab_bar_scroll();
 

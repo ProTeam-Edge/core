@@ -533,13 +533,16 @@ return emojioneEl;
 
 function logIn() {
 
-//TODO ASAP BEFORE SHIP. NEED TO go back to original mechanism or change out the "request" mechanism for token management
-
   $.getJSON( '../chat/token.php', {
 
     device: 'browser'
 
   }, function(data) {
+
+    if (!data.identity) {
+        console.log("HANDLE CHAT LOGGED OUT - MAIN"); //exit to login
+
+    }
 
     userContext = {identity: data.identity, token: data.token};
 
@@ -551,6 +554,10 @@ function logIn() {
           $.getJSON( '../chat/token.php', {
             device: 'browser'
           }, function(data1) {
+            if (!data1.identity) {
+                console.log("HANDLE CHAT LOGGED OUT - EXPIRED");  //exit to login
+
+            }
             if (data1.token) {
               console.log('Got new token!');
               client.updateToken(data1.token);
@@ -654,9 +661,14 @@ function logIn() {
         });  //End Get Unreads
 
         client.on('connectionError', function(channel) {
-          var channelState = channel.state;
-          var uniqueId = (typeof channelState.uniqueName != "undefined") && channelState.uniqueName ? channelState.uniqueName : channelState.friendlyName;
-          console.log("Connection Error - ", uniqueId);
+          console.log("Connection Error");
+          console.log(channel);
+
+          
+          //var channelState = channel.state;
+          //var uniqueId = (typeof channelState.uniqueName != "undefined") && channelState.uniqueName ? channelState.uniqueName : channelState.friendlyName;
+
+
         });
 
 

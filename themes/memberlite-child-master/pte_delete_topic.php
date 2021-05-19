@@ -111,5 +111,5 @@ if ($topicId) {
 
 }
 
-pte_json_out(array("error" => false, "topic_special" => $topicSpecial));
+pte_json_out(array("error" => false));
 ?>
