@@ -36,6 +36,8 @@ $FCMCREDENTIALSID = FCMCREDENTIALSID;
 	// Create Chat grant
 	$chatGrant = new ChatGrant();
 	$chatGrant->setServiceSid($serviceSid);
+	$chatGrant->setpushCredentialSid($NOTIFYSSID);
+	
 		
 	// Add grant to token
 	$token->addGrant($chatGrant);
