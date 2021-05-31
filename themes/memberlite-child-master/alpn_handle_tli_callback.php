@@ -87,7 +87,7 @@ if (isset($_POST['transloadit'])){
 				 		$rowData["file_key"] = $pteFileKey;
 						$rowData["size_bytes"] = $ptePdfSize + $pteFileSize;
 						$rowData["mime_type"] = $mimeType;
-				 		$rowData["file_name"] = $fullFileName;
+				 		//$rowData["file_name"] = $fullFileName;  //There already from beginning. Don't overwite
 
 				 		$whereClause['upload_id'] = $pteUid;
 				 		$wpdb->update( 'alpn_vault', $rowData, $whereClause );

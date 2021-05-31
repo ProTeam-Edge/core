@@ -64,30 +64,30 @@ if (!$objectName) {
 try {
 	$vaultDomId = $results[0]->dom_id;
 
-	header("PTE-Error-Code: false");
-	header("PTE-Vault-Dom-Id: {$vaultDomId}");
-	http_response_code (200);
-
 	$storage = new StorageClient([
 			'keyFilePath' => '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/proteam-edge-cf8495258f58.json'
 	]);
 	$storage->registerStreamWrapper();
 	$content = file_get_contents("gs://pte_file_store1/{$objectName}");
 
+	http_response_code (200);
+	header("PTE-Error-Code: false");
+	header("PTE-Vault-Dom-Id: {$vaultDomId}");
 	header('Content-Disposition: attachment; filename="' . $fileName . '"');
 	header("Content-Type: {$mimeType}");
 	header("Content-Length: " . strlen($content));
 	echo $content;
 } catch (\Exception $e) { // Global namespace
-		$pte_response = array("topic" => "pte_get_vault_google_exception", "message" => "Problem accessing Google Vailt.", "data" => $e);
-		alpn_log($pte_response);
-		header("PTE-Error-Code: error_uploading");
+		alpn_log('GOOGLE ISSUE GETTING FILE');
+		header("PTE-Error-Code: error_retrieving_file");
 		http_response_code (204);
 		exit;
 }
 } else {
+	alpn_log('Object Not Found');
 	header("PTE-Error-Code: vault_row_not_found");
 	http_response_code (204);
+	exit;
 }
 echo $html;
 ?>

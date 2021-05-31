@@ -539,6 +539,9 @@ function logIn() {
 
   }, function(data) {
 
+    console.log("LOGIN");
+    console.log(data);
+
     if (!data.identity) {
         console.log("HANDLE CHAT LOGGED OUT - MAIN"); //exit to login
 
@@ -560,6 +563,7 @@ function logIn() {
             }
             if (data1.token) {
               console.log('Got new token!');
+              console.log(data1);
               client.updateToken(data1.token);
               userContext = {identity: data1.identity};
             } else {
@@ -619,9 +623,9 @@ function logIn() {
 
           client.on('channelJoined', function(channel) {
             console.log('Channel Joined Called');
-            var body = "Joined";
-            channel.sendMessage(body, {'message_type': 'message'}).then(function() {
-            });
+            // var body = "Joined";
+            // channel.sendMessage(body, {'message_type': 'message'}).then(function() {
+            // });
             var channelFriendlyName = channel.friendlyName;
             if (isJson(channelFriendlyName)) {
               var contactData = JSON.parse(channelFriendlyName);
@@ -664,7 +668,7 @@ function logIn() {
           console.log("Connection Error");
           console.log(channel);
 
-          
+
           //var channelState = channel.state;
           //var uniqueId = (typeof channelState.uniqueName != "undefined") && channelState.uniqueName ? channelState.uniqueName : channelState.friendlyName;
 
@@ -674,6 +678,8 @@ function logIn() {
 
         client.on('connectionStateChanged', function(channelState) {
           console.log("Channel State Changed");
+          console.log(channelState);
+
           if (channelState == "denied") {
             console.log("DENIED LOGIN BEFORE????");
             logIn();
@@ -1113,6 +1119,9 @@ function createObject(message, $el) {
 
 
 function createStandardMessage(message, $el) {
+
+  console.log("STANDARD MESSAGE");
+  console.log(message);
 
   var user = activeChannelUserDescriptors[message.author];
 

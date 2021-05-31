@@ -414,10 +414,9 @@ $html .= "
 							</span>
 						</div>
 						<div class='pte_vault_row_65 pte_vault_right'>
-						<i id='alpn_vault_copy' class='far fa-file-pdf pte_icon_button pte_extra_button_disabled' title='Put this PDF Report in Vault and Stay' onclick='pte_copy_report_to_vault(0);'></i>
 						<span id='alpn_vault_copy_go'class='fa-stack pte_icon_button_nav pte_extra_button_disabled' title='Put this PDF Report in Vault and Go' onclick='pte_copy_report_to_vault(1);'>
-							<i class='far fa-file fa-stack-1x' style='font-size: 24px;'></i>
-							<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 11px; top: 2px;'></i>
+							<i class='far fa-lock-alt fa-stack-1x' style='font-size: 24px; left: -17px;'></i>
+							<i class='fas fa-angle-right fa-stack-1x' style='font-size: 18px; top: 5px;'></i>
 						</span>
 						</div>
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
@@ -450,7 +449,7 @@ $html .= "	</div>
 						<div id='pte_vault_container' class='pte_outer_vault_small'>
 							<div id='alpn_add_edit_outer_container' class='alpn_add_edit_outer_container'></div>
 							<div id='alpn_vault_preview_embedded'>
-							<img id='pte_refresh_report_loading' class='pte_refresh_report_loading' src='https://alct.pro/wp-content/themes/memberlite-child-master/pdf/web/images/loading-icon.gif'>
+							<div id='pte_overlay_viewer'><div id='pte_overlay_message'></div></div>
 								<div id='pte_pdf_ui'></div>
 								{$pdfViewer}
 							</div>

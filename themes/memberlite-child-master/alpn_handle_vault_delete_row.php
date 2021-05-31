@@ -20,7 +20,7 @@ $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 
 global $wpdb;
-
+$whereClause = array();
 //Delete at PTE
 $pte_response = array();
 
@@ -39,7 +39,7 @@ if ($vaultId) {
 
 	try {
 		$results = $wpdb->get_results(
-			$wpdb->prepare("SELECT file_key, pdf_key FROM alpn_vault WHERE id = %d", $vaultId)
+			$wpdb->prepare("SELECT file_key, pdf_key, upload_id FROM alpn_vault WHERE id = %d", $vaultId)
 		 );
 
 		if (isset($results[0])) {
@@ -47,13 +47,14 @@ if ($vaultId) {
 			$vaultInfo = $results[0];
 			$fileKey = $vaultInfo->file_key;
 			$pdfKey = $vaultInfo->pdf_key;
+			$uploadId = $vaultInfo->upload_id;
 			if ($fileKey) {
 				$fileDeleted = delete_from_cloud_storage($fileKey);
 			}
 			if ($pdfKey) {
 				$pdfDeleted = delete_from_cloud_storage($pdfKey);
 			}
-			if ($fileDeleted || $pdfDeleted) {
+			if ($fileDeleted || $pdfDeleted || $uploadId) {
 				$whereClause['id'] = $vaultId;
 				$wpdb->delete( 'alpn_vault', $whereClause );
 				$pte_response = array("error" => false, "message" => "Successfully deleted Vault Item.", "vault_id" => $vaultId);

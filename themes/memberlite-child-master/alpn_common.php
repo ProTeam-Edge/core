@@ -259,6 +259,7 @@ function pte_get_available_topic_fields($formId, $editorMode) {
   }
   }
   sort($tokens);
+
   return json_encode($tokens, true);
 }
 
@@ -1198,6 +1199,7 @@ function pte_get_viewer($viewerSettings){
       $html .= "
           <div id='alpn_vault_preview_embedded'>
               {$toolbar}
+              <div id='pte_overlay_viewer'><div id='pte_overlay_message'></div></div>
               <div id='pte_pdf_ui'></div>
               {$pdfViewer}
           </div>
@@ -2523,6 +2525,9 @@ function pte_manage_cc_groups($operation, $data) {
 
     case "add_member":
 
+
+    alpn_log("Adding Member..." . $userId);
+
       $channelId = pte_manage_cc_groups("get_create_channel", $data);   //get or create for the first time.
 
       if ($channelId) {
@@ -2532,6 +2537,18 @@ function pte_manage_cc_groups($operation, $data) {
             ->channels($channelId)
             ->members
             ->create($userId);
+
+          // $messageAttributes = array("message_type" => "message");
+          // $message = $twilio->chat->v2  //Joined Message
+          //   ->services($chatServiceId)
+          //   ->channels($channelId)
+          //   ->messages
+          //   ->create(array(
+          //       'from' => $userId,
+          //       'body' => "SOMETHING DIFFERENT",
+          //       'attributes' => json_encode($messageAttributes)
+          //     )
+          //   );
 
           alpn_log("Added Member..." . $userId);
 

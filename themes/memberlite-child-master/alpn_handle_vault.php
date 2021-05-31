@@ -102,11 +102,32 @@ if ($topicProfileHandle) {
 //				<i id='alpn_vault_download' class='far fa-cloud-download-alt pte_icon_button' title='Get Original or PDF Item' onclick='alpn_vault_control(\"download\")'></i>
 //				<i id='alpn_vault_edit_original' class='fab fa-google-drive pte_icon_button' title='Open Item in Original Cloud Service' onclick='alpn_vault_control(\"open_original\")'></i>
 
+
+//TODO Data Driven also permissions
+
+$interactionChooser = "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
+$interactionChooser .= "<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>";
+$interactionChooser .= "<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>";
+$interactionChooser .= "<option value='fax' data-icon='far fa-fax'>Send as Fax</option>";
+$interactionChooser .= "</select>";
+
+
+/* old
+
+<i id='alpn_vault_email' class='far fa-envelope pte_icon_button' title='Send an xLink to this vault item by Email using an Interaction.' onclick='alpn_vault_control(\"email\")'></i>
+<i id='alpn_vault_sms' class='far fa-sms pte_icon_button' title='Send an xLink to this vault item by SMS/Text using an Interaction.' onclick='alpn_vault_control(\"sms\")'></i>
+<i id='alpn_vault_fax' class='far fa-fax pte_icon_button' title='Send this vault item by Fax using an Interaction.' onclick='alpn_vault_control(\"fax\")'></i>
+
+<i id='alpn_vault_copy' class='far fa-file-export pte_icon_button' title='Copy File to Linked Topic' onclick='alpn_vault_control(\"copy_file\")'></i>
+
+*/
+
+
 $html="";
 
 $html .= "
 					<div class='outer_button_line'>
-						<div class='pte_vault_row_35'>
+						<div class='pte_vault_row_25'>
 							<span class='fa-stack pte_icon_button_nav' title='Information' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 								<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
@@ -120,17 +141,14 @@ $html .= "
 								<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
 							</span>
 						</div>
-						<div class='pte_vault_row_65 pte_vault_right'>
-							<i id='alpn_vault_email' class='far fa-envelope pte_icon_button' title='Send an xLink to this vault item by Email using an Interaction.' onclick='alpn_vault_control(\"email\")'></i>
-							<i id='alpn_vault_sms' class='far fa-sms pte_icon_button' title='Send an xLink to this vault item by SMS/Text using an Interaction.' onclick='alpn_vault_control(\"sms\")'></i>
-							<i id='alpn_vault_chat' class='far fa-comment-alt-lines pte_icon_button' title='Send an iLink to this vault item in Chat.' onclick='alpn_vault_control(\"insert_chat_vault_item\")' ></i>
+						<div class='pte_vault_row_75 pte_vault_right pte_toolbar_container'>
+							{$interactionChooser} <i id='pte_interaction_start_button' class='far fa-arrow-circle-right alpn_icons_toolbar' title='Start this Interaction' onclick='pte_handle_interaction_start(this);'></i>
 							<div style='display: inline-block; width: 20px;'></div>
-							<i id='alpn_vault_fax' class='far fa-fax pte_icon_button' title='Send this vault item by Fax using an Interaction.' onclick='alpn_vault_control(\"fax\")'></i>
 							<i id='alpn_vault_print' class='far fa-print pte_icon_button' title='Print File' onclick='alpn_vault_control(\"print\")'></i>
 							<i id='alpn_vault_download_original' class='far fa-file-download pte_icon_button' title='Download Original File' onclick='alpn_vault_control(\"download_original\")'></i>
 							<i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
-							<i id='alpn_vault_copy' class='far fa-file-export pte_icon_button' title='Copy File to Linked Topic' onclick='alpn_vault_control(\"copy_file\")'></i>
 							<div style='display: inline-block; width: 20px;'></div>
+							<i id='alpn_vault_chat' class='far fa-comment-alt-lines pte_icon_button' title='Send an link to this vault item in Chat.' onclick='alpn_vault_control(\"insert_chat_vault_item\")' ></i>
 							<i id='alpn_vault_links' class='far fa-link pte_icon_button' title='Manage xLinks for this File' onclick='alpn_vault_control(\"links\")'></i>
 						  <i id='alpn_vault_new' class='far fa-plus-circle pte_icon_button' title='Add New Vault Files' onclick='alpn_vault_control(\"add\")'></i>
 							<i id='alpn_vault_edit' class='far fa-pencil-alt pte_icon_button' title='Edit Vault File Settings' onclick='alpn_vault_control(\"edit\")'></i>
@@ -169,7 +187,6 @@ $html .= "	</div>
 							<div id='alpn_add_edit_outer_container' class='alpn_add_edit_outer_container'></div>
 							<div id='alpn_vault_preview_embedded'>
 								<div id='pte_overlay_viewer'><div id='pte_overlay_message'></div></div>
-								<img id='pte_refresh_report_loading' class='pte_refresh_report_loading' src='https://alct.pro/wp-content/themes/memberlite-child-master/pdf/web/images/loading-icon.gif'>
 								<div id='pte_pdf_ui'></div>
 								{$pdfViewer}
 							</div>
@@ -180,6 +197,20 @@ $html .= "	</div>
 $html = str_replace('table_1', 'table_vault', $html);
 $html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
 
+$html .= "
+<script>
+jQuery('#alpn_selector_interaction_selector').select2({
+	theme: 'bootstrap',
+	width: '180px',
+	allowClear: false,
+	templateSelection: iformat,
+	templateResult: iformat,
+	escapeMarkup: function(text) {
+		return text;
+	}
+});
+</script>
+";
 
 echo $html;
 
