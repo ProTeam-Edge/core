@@ -64,7 +64,30 @@
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
+
+
+  if (firebase && firebase.messaging()) {
+	alert('here')
+	// requesting permission to use push notifications
+	firebase.messaging().requestPermission().then(() => {
+		alert('permissions')
+	  // getting FCM token
+	  firebase.messaging().getToken().then((fcmToken) => {
+		console.log(fcmToken);
+		console.log('success')
+	  }).catch((err) => {
+		console.log(err)
+	  });
+	}).catch((err) => {
+		console.log(err)
+	});
+  } else {
+	console.log('library error')
+  }
+
 </script>
+
+
 <?php do_action( 'memberlite_before_page' ); ?>
 <div id="page" class="hfeed site">
 

@@ -62,24 +62,7 @@ ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
 access_levels = {'5': 'Guest', '10': 'General', '20': 'Restricted', '30': 'Special', '40': 'Private'};
 processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10"};
-if (firebase && firebase.messaging()) {
-	alert('here')
-	// requesting permission to use push notifications
-	firebase.messaging().requestPermission().then(() => {
-		alert('permissions')
-	  // getting FCM token
-	  firebase.messaging().getToken().then((fcmToken) => {
-		console.log(fcmToken);
-		console.log('success')
-	  }).catch((err) => {
-		console.log(err)
-	  });
-	}).catch((err) => {
-		console.log(err)
-	});
-  } else {
-	console.log('library error')
-  }
+
 pte_supported_types_map = {
 	'image/jpeg': 'JPEG',
 	'image/gif': 'GIF',
