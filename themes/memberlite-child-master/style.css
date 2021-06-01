@@ -11,6 +11,11 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+div.outer_button_line select2 {
+}
+.pte_upload_failed{
+	color: rgb(255, 140, 0);
+}
 .pte__pdfui-fullscreen-mode{
 
 }
@@ -1119,11 +1124,11 @@ ul#pte_topic_type_properties_list li {
 
 .pte_html_template_textarea:focus,
 .pte_html_template_textarea{
-	padding: 5px 0 !important;
+	padding: 5px 8px !important;
 	border: 0 !important;
 	resize: none !important;
 	height: 75px !important;
-	background-color: #F8F8F8 !important;
+	background-color: white !important;
 	box-shadow: none !important;
 	color: #444 !important;
 }
@@ -2899,6 +2904,7 @@ ul.pte_important_topic_scrolling_list {
 	margin: 5px 0 0 0;
 	border-top: 0;
 	border: 1px solid rgb(224, 224, 224);
+	background-color: white;
 }
 
 li.pte_important_topic_scrolling_list_item {
@@ -4470,6 +4476,18 @@ table#table_network.wpDataTable td {
 }
 .kt-row-column-wrap {padding: 0}
 
+div.pte_toolbar_container span.select2 {
+	text-align: left;
+	display: inline-block;
+}
+
+.alpn_icons_toolbar {
+	padding: 0 3px 0 3px;
+	font-size: 24px;
+	color: #3172B6;
+	cursor: pointer;
+	vertical-align: middle;
+}
 
 .alpn_icons {
 	padding: 0 3px 0 3px;

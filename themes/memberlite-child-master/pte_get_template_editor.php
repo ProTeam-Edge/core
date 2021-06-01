@@ -136,6 +136,8 @@ if ($formId) {
 		 													type: 'menuitem',
 		 													text: token.text,
 		 													onAction: () => {
+																	console.log('TOKEN');
+																	console.log(token);
 		 															editor.insertContent(`<span data-ttid='`  + token.topic_type_id + `' data-fname='`  + token.field_name + `' class='pte_field_token'>` + token.text + `</span>`);
 		 													}
 		 											}

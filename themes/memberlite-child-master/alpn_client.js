@@ -7,6 +7,8 @@ pte_selected_topic_tab = '';
 pte_selected_topic_tab_content = '';
 pte_active_tabs = [];
 
+const pte_upload_expiration_minutes = 1;
+
 pte_message_to_clear = '';
 
 pte_selected_report_template = '';
@@ -58,7 +60,7 @@ pte_template_editor_loaded = (typeof pte_template_editor_loaded != "undefined" &
 
 ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
-access_levels = {'10': 'General', '20': 'Restricted', '30': 'Special', '40': 'Private'};
+access_levels = {'5': 'Guest', '10': 'General', '20': 'Restricted', '30': 'Special', '40': 'Private'};
 processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10"};
 
 pte_supported_types_map = {
@@ -2022,6 +2024,17 @@ function alpn_handle_topic_type_row_selected(formId) {
 	}
 }
 
+function pte_handle_interaction_start(el){
+	console.log("Interaction Start");
+	var interactionSelector = jQuery('#alpn_selector_interaction_selector');
+	var interactionData = interactionSelector.select2('data');
+	if (typeof interactionData[0] != "undefined") {
+		console.log(interactionData[0]);
+		alpn_vault_control(interactionData[0].id);
+		pte_overlay_success('pte_interaction_start_button');  //Animates button to give user feedback that am interaction is starting. TODO get this right
+	}
+}
+
 function alpn_handle_topic_type_table() {
 
 	console.log("alpn_handle_topic_type_table");
@@ -2084,37 +2097,44 @@ function alpn_handle_vault_table() {
 	var tableData = table.fnGetData();
 	var firstReady = '';
 	var ownerHtml, ownerName, titleHtml, fName, descHtml, addOwnerRow;
+	var accessLevelHtml = '-';
 	//console.log(tableData);
 	var pteSpacer = "<div class='pte_vault_row pte_spacer_height'></div>";
+
+	var topicSpecial = jQuery('#pte_selected_topic_meta').data('special');
 
 	if (tableData.length) {
 		for (i=0; i< tableData.length; i++) {
 			var ownerId = tableData[i][1];
-			var lmdate = dayjs(tableData[i][4]);  //MODIFIED
-			var cdate = dayjs(tableData[i][3]);   //CREATED
+
 			var mimeType = tableData[i][9];
 			var aboutValue = (tableData[i][6]) ? tableData[i][6].replace(/\\(.)/mg, "$1") : " - -";
 			var upload_state = tableData[i][14];
 			var dom_id = tableData[i][11];
 			var access_level = tableData[i][2];
+			if (topicSpecial == 'topic') {
+				accessLevelHtml = access_levels[access_level];
+			}
 			if ((firstReady == '') && (upload_state == 'ready')) {
 				firstReady = tableData[i][11];
 			}
 			var waiting_line = '';
+
+			var lmdate = dayjs(tableData[i][4]).utc(true).local();  //MODIFIED
+			var cdate = dayjs(tableData[i][3]).utc(true).local(); //CREATED
+			var now = dayjs().local();
+
+			var uploading = false;
 			if (upload_state != 'ready') {
-
-
-				//current
-				var now = dayjs();
-				var expirationMinutes = cdate.diff(now, 'minute');
-				console.log("VAULT CREATED DATE");
-				console.log(cdate.format('MMM D, YYYY, h:mma'));
-				console.log(now.format('MMM D, YYYY, h:mma'));
-				console.log("VAULT Minutes");
-				console.log(expirationMinutes);
-
+				uploading = true;
+				var expirationMinutes = now.diff(cdate, 'minute');
 				waiting_line += "<div id='waiting_indicator_row' class='pte_negative_margins pte_vault_border_left pte_vault_border_right pte_vault_right pte_field_padding_right'>";
-				waiting_line += "<img src='" + alpn_templatedir + "ellipsisindicator.gif'>";
+				if (expirationMinutes >= pte_upload_expiration_minutes) {  //expired.
+					uploading = false;
+					waiting_line += "<span class='pte_upload_failed'>Upload Failed</span>";
+				} else {  //waiting
+					waiting_line += "<img src='" + alpn_templatedir + "ellipsisindicator.gif'>";
+				}
 				waiting_line += "</div>";
 			}
 				if (typeof pte_supported_types_map[mimeType] != "undefined" ) {
@@ -2130,7 +2150,7 @@ function alpn_handle_vault_table() {
 				ownerName = tableData[i][16];
 			}
 			addOwnerRow = ownerName ? "<div class='pte_vault_row pte_vault_border_top pte_negative_margins pte_vault_border_left pte_vault_border_right'><div class='pte_vault_row_100 pte_vault_text_small pte_cell_padding pte_vault_centered pte_vault_link' style='vertical-align: middle;'><i id='' class='far fa-user'></i>&nbsp;&nbsp;" + ownerName + "</div></div>" : '';
-			ownerHtml = "<div class='pte_vault_row pte_vault_border_all pte_negative_margins'><div class='pte_vault_row_50 pte_vault_text_small pte_cell_padding pte_vault_centered'>" + cdate.format('MMM D, YYYY, h:mma') + "</div><div class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered'>" + docType + "</div><div class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered' id='pte_vault_permission_content'>" + access_levels[access_level] + "</div></div>"
+			ownerHtml = "<div class='pte_vault_row pte_vault_border_all pte_negative_margins'><div class='pte_vault_row_50 pte_vault_text_small pte_cell_padding pte_vault_centered'>" + cdate.format('MMM D, YYYY, h:mma') + "</div><div class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered'>" + docType + "</div><div class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered' id='pte_vault_permission_content'>" + accessLevelHtml + "</div></div>"
 
 			var formattedField = "<div class='pte_vault_details'>";
 				fName = tableData[i][7].replace(/\\(.)/mg, "$1");
@@ -2146,9 +2166,9 @@ function alpn_handle_vault_table() {
 				formattedField += "</div>";
 			alpnControl = jQuery("[data-uid=" + tableData[i][11] + "]");
 			alpnControl.html(formattedField);
-			//current
-			if (upload_state != 'ready') {
-				//alpnControl.attr("style", "opacity: 0.5; pointer-events: none;");
+
+			if (uploading) {
+				alpnControl.attr("style", "opacity: 0.6; pointer-events: none;");
 			}
 
 			jQuery(alpnControl).click(function(){
@@ -2581,15 +2601,9 @@ function pte_setup_window_onload() {
 								});
 							});
 
-							syncClient.on('connectionStateChanged', function(context) {
-								console.log("SYNC CLIENT -- CONNECTION STATE CHANGED");
-								console.log(context);
-								if (context != 'connected') {
-									//console.log("Sync Client Connected");
-								} else {
-									//console.log("Sync Client Not Connected");
+							syncClient.on('connectionStateChanged', function(state) {
+								console.log("SYNC CLIENT -- CONNECTION STATE CHANGED -- ", state);
 
-								}
 							});
 					});
 
@@ -2928,9 +2942,10 @@ function isEmpty(obj) {
 
 //current
 function alpn_handle_file_submit(payload) {
-	// var domId = payload.dom_id;
-	// jQuery('#alpn_field_' + domId).attr("style", "opacity: 1.0; pointer-events: auto;").find('#waiting_indicator_row').remove();
-	// jQuery('#pte_about_row_' + domId).attr("style", "display: table-row; opacity: 1.0;");
+	var domId = payload.dom_id;
+	jQuery('#alpn_field_' + domId).find('#waiting_indicator_row').remove();
+	jQuery('#alpn_field_' + domId).attr("style", "opacity: 1.0; pointer-events: auto;").find('#waiting_indicator_row').remove();
+
 }
 
 function pte_register_uploads(pteUploads){
@@ -3521,7 +3536,9 @@ if (pte_external == false) {
 			  companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
 			})
 			.on('transloadit:complete', (result) => {
-				alpn_vault_control("add");  //TODO ONLY DO THIS WHEN STILL IN ADD MODE.
+				//alpn_vault_control("add");  //TODO ONLY DO THIS WHEN STILL IN ADD MODE.
+				//console.log("File Uploaded Complete");
+				//console.log(result);
 			})
 		}
 
@@ -3665,6 +3682,29 @@ function pte_create_new_vault_url() {
 }
 
 function pte_set_work_area_html(areaType) {
+
+	console.log("SETTING WORK AREA HTML");
+
+	var topicSpecial = jQuery('#pte_selected_topic_meta').data('special');
+
+	switch(topicSpecial) {
+		case 'user':
+			var permissionsHtml = "";
+		break;
+		case 'contact':
+			var permissionsHtml = "";
+		break;
+		case 'topic':
+			var permissionsHtml = " \
+						<span class='pte_vault_bold'>Required Access Level</span> \
+						<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
+							<option value='10'>General</option> \
+							<option value='20'>Restricted</option> \
+							<option value='40'>Private</option> \
+						</select>";
+		break;
+	}
+
 	if (areaType == 'add-edit') {
 		var workAreaHtml = " \
 				<div class='pte_vault_row'> \
@@ -3672,14 +3712,9 @@ function pte_set_work_area_html(areaType) {
 							<span id='alpn_name_field_label'>Name</span> \
 							<div class='pte_field_padding_right'><input id='alpn_name_field' placeholder='From Upload'></div> \
 						</div> \
-						<div class='pte_vault_row_33 pte_vault_text_xlarge pte_field_padding_right'> \
-							<span class='pte_vault_bold'>Required Access Level</span> \
-							<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
-  							<option value='10'>General</option> \
-								<option value='20'>Restricted</option> \
-								<option value='40'>Private</option> \
-							</select> \
-						</div> \
+						<div class='pte_vault_row_33 pte_vault_text_xlarge pte_field_padding_right'>";
+				workAreaHtml += permissionsHtml;
+				workAreaHtml += "</div> \
 				</div> \
 				<div class='pte_vault_row pte_row_top_margin'> \
 						<div class='pte_vault_row_67 pte_vault_text_xlarge pte_vault_bold pte_field_padding_right'> \
@@ -3688,8 +3723,7 @@ function pte_set_work_area_html(areaType) {
 						</div> \
 						<div class='pte_vault_row_33 pte_vault_text_xlarge pte_field_padding_right'> \
 						</div> \
-				</div> \
-						";
+				</div>";
 	} else { //Links
 		var workAreaHtml = " \
 						<div class='pte_vault_row pte_row_top_margin pte_vault_bold pte_vault_text_xlarge'> \
@@ -3717,6 +3751,10 @@ function pte_set_work_area_html(areaType) {
 }
 
 function pte_set_work_area(operation) {
+
+	console.log("SETTING WORK AREA");
+	console.log(operation);
+
 
 	switch(operation) {
 		case 'add-edit':
@@ -3757,6 +3795,7 @@ function pte_set_work_area(operation) {
 }
 
 function alpn_toggle_vault_work_area(){
+	console.log("TOGGLE WORK AREA");
 	var area_dom = '#alpn_vault_work_area';
 	if (jQuery(area_dom).height() == '0'){
 		jQuery(area_dom).height('125px');
@@ -3766,6 +3805,8 @@ function alpn_toggle_vault_work_area(){
 }
 
 function alpn_open_vault_work_area(){
+	console.log("OPEN WORK AREA");
+
 	var area_dom = '#alpn_vault_work_area';
 	if (jQuery(area_dom).height() == '0'){
 		jQuery(area_dom).height('125px');
@@ -3773,6 +3814,8 @@ function alpn_open_vault_work_area(){
 }
 
 function alpn_close_vault_work_area(){
+	console.log("CLOSE WORK AREA");
+
 	var area_dom = '#alpn_vault_work_area';
 	if (jQuery(area_dom).height() == '125'){
 		jQuery(area_dom).height('0px');
@@ -3781,6 +3824,9 @@ function alpn_close_vault_work_area(){
 }
 
 function pte_handle_delete_response(response, theObject) {
+
+	console.log("Deleting Response");
+	console.log(theObject);
 
 var security = specialObj.security;
 
@@ -3797,6 +3843,9 @@ if (response == 'yes' && typeof theObject !== "undefined") {
 		},
 		dataType: "json",
 		success: function(json) {
+			console.log('HANDLE DELETE RESPONSE');
+			console.log(json);
+
 			alpn_set_vault_to_first_row = true;
 			var vaultCount = wpDataTables.table_vault.fnGetData().length;
 			wpDataTables.table_vault.fnFilter();
@@ -3804,7 +3853,6 @@ if (response == 'yes' && typeof theObject !== "undefined") {
 				console.log('HANDLE VAULT EMPTY');
 				console.log(vaultCount);
 				pte_show_viewer_overlay("<div id='pte_overlay_message'></div>");
-				//jQuery('#pte_refresh_report_loading').hide();
 				alpn_oldVaultSelectedId = '';
 			}
 		},
@@ -4055,12 +4103,12 @@ function pte_get_vault_links(cellId){
 				} else {
 					expirationColor = 'green';
 					expirationDateHtml = (linkInteractionExpiration > 0) ? "Expires: " + expirationDate.format('dddd, MMMM D, YYYY h:mm A') : "Manual Expiration";
-					expireNowButtonHtml = "<i class='fa fa-times-hexagon pte_expire_now' title='Expire URL Now' onclick='pte_expire_url_now(" + link.id + ");'></i>";
+					expireNowButtonHtml = "<i class='fa fa-times-hexagon pte_expire_now' title='Expire xLink Now' onclick='pte_expire_url_now(" + link.id + ");'></i>";
 				}
 				linkInteractionOptions = (typeof meta.link_interaction_options != "undefined") ? meta.link_interaction_options : 0;
 
 				secureURL = "https://" + window.location.hostname + "/viewer/?" + uid;
-				html += "<div class='pte_vault_row pte_vault_text_small'><div title='Copy URL to Clipboard' class='pte_vault_row_40 pte_extra_margins pte_ellipsis pte_topic_link' onclick='pte_topic_link_copy_string(\"Secure URL\", \"" + secureURL + "\");'><i class='far fa-copy'></i> " + targetName + " - " + sentBy + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis'>" + pte_get_link_options_string(linkInteractionOptions) + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis' title='" + expirationDateHtml + "' style='color: " + expirationColor + "; cursor: default;'>" + pte_get_link_expiration_string(linkInteractionExpiration) + expireNowButtonHtml + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis'>" + linkInteractionPassword + "</div></div>";
+				html += "<div class='pte_vault_row pte_vault_text_small'><div title='Copy xLink to clipboard' class='pte_vault_row_40 pte_extra_margins pte_ellipsis pte_topic_link' onclick='pte_topic_link_copy_string(\"Secure xLink\", \"" + secureURL + "\");'><i class='far fa-copy'></i> " + targetName + " - " + sentBy + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis'>" + pte_get_link_options_string(linkInteractionOptions) + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis' title='" + expirationDateHtml + "' style='color: " + expirationColor + "; cursor: default;'>" + pte_get_link_expiration_string(linkInteractionExpiration) + expireNowButtonHtml + "</div><div class='pte_vault_row_20 pte_vault_centered pte_ellipsis'>" + linkInteractionPassword + "</div></div>";
 			}
 			jQuery('#pte_links_table').html(html);
 
@@ -4197,12 +4245,10 @@ function alpn_switch_panel(panel) {
 }
 
 function pte_hide_viewer_overlay() {
-	//jQuery('#pte_refresh_report_loading').hide();
-	jQuery('#pte_overlay_viewer').html("<div id='pte_overlay_message'></div>").hide();
+	jQuery('#pte_overlay_viewer').html("<div id='pte_overlay_message'></div>").fadeOut(300);
 }
 
 function pte_show_viewer_overlay(messageHtml) {
-	//jQuery('#pte_refresh_report_loading').show();
 	jQuery('#pte_overlay_viewer').html(messageHtml).show();
 }
 
@@ -4313,6 +4359,7 @@ function pte_setup_pdf_viewer(viewerSettings) {
 				});
 
 				pdfui.addViewerEventListener(Events.openFileSuccess, function(e) {
+					console.log("Handling OPEN SUCCESS");
 
 					var fileName = e.info.fileName;
 					var topicMode = jQuery("#pte_selected_topic_meta").data("mode");
@@ -4391,13 +4438,14 @@ function pte_view_document(vaultId, token = false) {
 	console.log('Viewing Document...');
 	console.log(token);
 
-	pte_show_viewer_overlay("<div id='pte_overlay_message' class='shimmer'>Getting Vault Item</div>");
+	pte_show_viewer_overlay("<div id='pte_overlay_message' class='shimmer'>Getting Vault File</div>");
 
 	if (!token) {
 		var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId + '&security=' + security;
 	} else {
-		var srcFile = alpn_templatedir + 'alpn_get_vault_file_token.php?which_file=pdf&v_id=' + vaultId + '&security=' + security + '&token=' + token;
+		var srcFile = alpn_templatedir + 'alpn_get_vault_file_token.php?which_file=pdf&token=' + token + '&security=' + security;
 	}
+	console.log(srcFile);
 
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', srcFile, true);
@@ -4406,6 +4454,9 @@ function pte_view_document(vaultId, token = false) {
 		if (xhr.readyState !== 4) {
 			return;
 		}
+		console.log('AJAX...');
+		console.log(xhr);
+
 		var status = xhr.status;
 		if (status == 204) {  //Error. Get code from header.
 			var pteErrorCode = xhr.getResponseHeader("PTE-Error-Code");
@@ -4422,6 +4473,14 @@ function pte_view_document(vaultId, token = false) {
 					console.log("Vault Row Not Found");
 					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>File failed to upload<br>Please delete it and try again</div>");
 				break;
+				case 'error_retrieving_file':
+					console.log("Failure reading file from storage");
+					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>Failed to retrieve filebr>Please try again</div>");  //TODO
+				break;
+				case 'link_expired':
+					console.log("Link Expired");
+					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>Your xLink has expired<br>Please contact the sender/div>");
+				break;
 			}
 			//jQuery('#pte_refresh_report_loading').hide();
 			return;
@@ -4430,7 +4489,12 @@ function pte_view_document(vaultId, token = false) {
 		if ((status >= 200 && status < 300 && status != 204) || status === 304) {
 			//If currently selected vault item has changed or is no longer around, do nothing TODO can we interrupt these rather than wait. Cleanup?
 			var pteVaultDomId = xhr.getResponseHeader("PTE-Vault-Dom-Id");
-			if (alpn_oldVaultSelectedId != pteVaultDomId) {
+			var pteVaultToken = xhr.getResponseHeader("PTE-Vault-Token");
+
+			if (pteVaultDomId && alpn_oldVaultSelectedId != pteVaultDomId) {
+				return;
+			}
+			if (pteVaultToken && token != pteVaultToken) {
 				return;
 			}
 			pdfui.openPDFByFile(xhr.response).catch(function (e) {
@@ -4452,12 +4516,6 @@ function pte_view_document(vaultId, token = false) {
 	};
 	xhr.send();
 }
-/*
-function alpn_handle_close_add_edit(){
-	alpn_close_vault_work_area();
-	alert(1);
-}
-*/
 
 function pte_overlay_success(elId){
 	// TODO
@@ -4773,6 +4831,10 @@ function alpn_vault_control(operation) {
 		break;
 
 		case 'edit':
+
+			console.log("EDIT");
+
+
 				if (!alpn_oldVaultSelectedId) {
 						alpn_set_vault_to_first_row = true;
 						wpDataTables.table_vault.fnFilter();
@@ -4807,6 +4869,9 @@ function alpn_vault_control(operation) {
 		break;
 
 		case 'links':
+
+		console.log("LINKS...");
+
 			//TODO Change to docType	-- UNSAFE. ANYONE CAN JQUERY TO GET FILES????
 			if (!alpn_oldVaultSelectedId) {  //After Add
 					alpn_set_vault_to_first_row = true;
@@ -4829,6 +4894,7 @@ function alpn_vault_control(operation) {
 		break;
 
 		case 'add':   //this is add and edit
+
 			alpn_file_add();
 
 			if (pte_toolbar_active == 'none') {
@@ -5052,6 +5118,9 @@ function pte_handle_message_merge(docType = 'message'){
 	var templateList = jQuery('#alpn_select2_small_template_select');
 	var templateListData = templateList.select2('data');
 
+
+	console.log(templateListData);
+
 	if (typeof templateListData != 'undefined' && typeof templateListData[0] != 'undefined') {
 		selectedTemplateId = parseInt(templateListData[0].id);
 		contextTopicId = parseInt(templateList.data('topic-id'));
@@ -5064,6 +5133,10 @@ function pte_handle_message_merge(docType = 'message'){
 	} else {
 		selectedTargetId = jQuery('#pte_to_line').data('cid');
 	}
+
+	console.log(targetListData);
+	console.log(selectedTargetId);
+
 
 	var sendButton = jQuery('#pte_message_panel_send');
 
@@ -5631,9 +5704,11 @@ function pte_handle_report_settings(operation) {
 	var topicTypeKey = metaObj.data('tkey');
 	var mapData = pte_make_map_data(topicDomId, topicId, topicTypeId, 0, topicTypeSpecial, 0, "to_topic_designer_by_id");
 
+	//current
 	switch(operation) {
 		case 'refresh':
-			//jQuery('#pte_refresh_report_loading').show();
+			pte_show_viewer_overlay("<div id='pte_overlay_message' class='shimmer'>Refreshing Report</div>");
+
 			jQuery('#alpn_vault_copy').removeClass('pte_extra_button_enabled').addClass('pte_extra_button_disabled');
 			jQuery('#alpn_vault_copy_go').removeClass('pte_extra_button_enabled').addClass('pte_extra_button_disabled');
 			var allData = pte_get_report_data(mapData);
@@ -5647,7 +5722,7 @@ function pte_handle_report_settings(operation) {
 				success: function(json) {
 					console.log('pte_handle_report_change - SUCCESS');
 					var filename = "placeholder.pdf";
-					var srcFile = alpn_templatedir + "quick_report_tmp/" + json.pdf_key
+					var srcFile = alpn_templatedir + "quick_report_tmp/" + json.pdf_key;
 
 					var xhr = new XMLHttpRequest();
 					xhr.open('GET', srcFile, true);
@@ -5657,13 +5732,8 @@ function pte_handle_report_settings(operation) {
 							return;
 						}
 						var status = xhr.status;
-						console.log(status);
-
 						if (status == 204) {  //Premission Denied
 							console.log("Permission Denied");
-							jQuery("#alpn_vault_preview_embedded").fadeOut(250, function(){
-								jQuery("#alpn_vault_preview_embedded").html("<div class='pmpro_content_message'><div class='pte_membership_message'>This file is no longer available.<br>Please check with the Owner.</div></div>").fadeIn();
-							});
 							return;
 						}
 

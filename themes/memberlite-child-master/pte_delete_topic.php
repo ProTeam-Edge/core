@@ -56,11 +56,13 @@ if ($topicId) {
 	$pstnData = array('topic_id' => NULL);
 	$wpdb->update( "alpn_pstn_numbers", $pstnData, $whereclause );
 	if ($topicSpecial == 'contact') {
+
 		$connectedContactData = $wpdb->get_results($wpdb->prepare("SELECT id, channel_id, connected_topic_id, owner_id FROM alpn_topics WHERE connected_topic_id = %d", $topicId));
 
 		if (isset($connectedContactData[0])) {
 			$connectedChannelId = $connectedContactData[0]->channel_id;
 			$connectedOwnerId = $connectedContactData[0]->owner_id;
+			$connectedTopicId = $connectedContactData[0]->id;
 
 			//Remove members from other rooms
 			$chatRoomsToHandle = $wpdb->get_results($wpdb->prepare("SELECT topic_id FROM alpn_proteams WHERE proteam_member_id = %d AND wp_id <> ''", $topicId));
@@ -89,9 +91,15 @@ if ($topicId) {
 			$whereclause = array('owner_id' => $userId, 'proteam_member_id' => $topicId);
 			$wpdb->delete( "alpn_proteams", $whereclause );
 			//reset records of my connections.
-			$whereclause = array('connected_topic_id' => $topicId);
+			$whereclause = array('id' => $connectedTopicId);
 			$topicData = array('connected_id' => NULL, 'connected_topic_id' => NULL, 'connected_network_id' => NULL, 'channel_id' => NULL);
 			$wpdb->update( "alpn_topics", $topicData, $whereclause );
+
+			alpn_log($wpdb->last_query);
+			alpn_log($wpdb->last_error);
+
+
+
 		}
 	}
 

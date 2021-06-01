@@ -52,14 +52,11 @@ if ($docType == 'message') {
 	$contextData = $wpdb->get_results(
 	 $wpdb->prepare("SELECT t.id, t.topic_type_id, t.name, t.topic_content, u.id AS important_contact FROM alpn_topics t LEFT JOIN alpn_user_lists u ON u.item_id = t.id AND u.owner_network_id = %d AND u.list_key = 'pte_important_network' WHERE t.id = %d OR t.id = %d", $ownerNetworkId, $contextTopicId, $targetTopicId)
 	 );
+
 	 foreach ($contextData as $key => $value) {
 		  $contextTopicTypeId = $value->topic_type_id;
-		  $contextTopicId = $value->id;
-			$testArray[] = array(
-				"contextTopicId" => $contextTopicId,
-				"targetTopicId" => $targetTopicId
-			);
-			if ($contextTopicId == $targetTopicId) {
+			$currentItemId = $value->id;
+			if ($currentItemId == $targetTopicId) {
 				$contextTopicContent[1] = json_decode($value->topic_content, true);
 				$contactIsImportant = ($value->important_contact) ? true : false;
 			} else {
@@ -76,12 +73,26 @@ if ($templateId) {
 	$doc->loadHTML($templateHtml);
 
 	$allSpans = $doc->getElementsByTagName('span');
+	alpn_log("SPANS");
+
 	foreach ($allSpans as $key => $value) {
 		$spanClass = $value->getAttribute("class");
 		if ($spanClass == 'pte_field_token') {
 			$topicTypeId = base_convert($value->getAttribute("data-ttid"), 36, 10);
 			$fieldName = $value->getAttribute("data-fname");
-			$value->nodeValue = $contextTopicContent[$topicTypeId][$fieldName];
+
+			alpn_log($topicTypeId);
+			alpn_log($contextTopicId);
+			alpn_log($targetTopicId);
+			alpn_log($fieldName);
+			alpn_log($contextTopicContent);
+
+			if (isset($contextTopicContent[$topicTypeId])) {
+				$value->nodeValue = $contextTopicContent[$topicTypeId][$fieldName];
+			} else {
+				$value->nodeValue = $contextTopicContent[1][$fieldName];
+			}
+
 		}
 	}
 	$nodeValue = $doc->getElementsByTagName('html')[0]->nodeValue;

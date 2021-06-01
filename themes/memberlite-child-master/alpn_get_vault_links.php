@@ -25,7 +25,7 @@ $linkOptions = pte_make_link_options_html("work_area");
 $html = "
 		<div class='pte_vault_row pte_tiny_margin_bottom'>
 			<div class='pte_vault_row_100'>
-				<input id='link_interaction_about' class='pte_interaction_input' type='input' placeholder='About xLink'>
+				<input id='link_interaction_about' class='pte_interaction_input' type='input' placeholder='About this xLink'>
 			</div>
 		</div>
 		<div class='pte_vault_row pte_tiny_margin_bottom' style='margin-bottom: 4px !important;'>
