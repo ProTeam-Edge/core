@@ -45,6 +45,8 @@ define('CHATSERVICESID', 'ISd4ca1551946f4360a7dfb215ad84e1d0');
 define('SYNCSERVICEID', 'ISa94e325859c77093fdf5d805d8d3d1fa');
 define('CHANNELSSID', 'CHb368c3a4f22548b2966c7333adf45dc1');
 define('MESSAGINGSERVICEID', 'MG5aa06d950ae9fd9fba6ed78abd176007');
+define('PUSHCREDENTIALSIDDEV', 'CR3f54eee0897fd59ac836fd9cec38e5f0');
+
 define('CALLURL', "https://{$domainName}/wp-content/themes/memberlite-child-master/pte_chat");
 
 define('FAX_DOCUMO_API_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxYzA3MDUxMS04NDcxLTQ5ZDItOWVmYS0yOTdmMWNjY2QwMDQiLCJpYXQiOjE1OTYwNjExNzR9.LjQuTk6iEL0oh6989vKNNoJZQLXfxT3O5EQA69IMzEU');

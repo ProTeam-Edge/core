@@ -18,7 +18,7 @@ $apiKey = APIKEY;
 $secretKey = SECRETKEY;
 $chatServiceId = CHATSERVICESID;
 $syncServiceId = SYNCSERVICEID;
-
+$pushCredentialSid = PUSHCREDENTIALSIDDEV;
 $token = new AccessToken(
     $accountSid,
     $apiKey,
@@ -36,6 +36,8 @@ $token->addGrant($syncGrant);
 
 $chatGrant = new ChatGrant();
 $chatGrant->setServiceSid($chatServiceId);
+$chatGrant->setpushCredentialSid($pushCredentialSid);
+
 $token->addGrant($chatGrant);
 
 // return serialized token and the user's randomly generated ID
