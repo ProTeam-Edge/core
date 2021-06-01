@@ -46,46 +46,7 @@
 </head>
 
 <body <?php body_class(); ?>>
-<!-- The core Firebase JS SDK is always required and must be listed first -->
-<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
 
-<!-- TODO: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-
-<script>
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyDf6aIUvgp5g7nXMwVzbFZ1yTnTCzo4l-Q",
-    authDomain: "alctpro-26fc9.firebaseapp.com",
-    projectId: "alctpro-26fc9",
-    storageBucket: "alctpro-26fc9.appspot.com",
-    messagingSenderId: "1009836905958",
-    appId: "1:1009836905958:web:18dd9a7ceb5b0bae057227"
-  };
-  // Initialize Firebase
-  firebase.initializeApp(firebaseConfig);
-
-
-  if (firebase && firebase.messaging()) {
-	alert('here')
-	// requesting permission to use push notifications
-	firebase.messaging().requestPermission().then(() => {
-		alert('permissions')
-	  // getting FCM token
-	  firebase.messaging().getToken().then((fcmToken) => {
-		console.log(fcmToken);
-		console.log('success')
-	  }).catch((err) => {
-		console.log(err)
-	  });
-	}).catch((err) => {
-		console.log(err)
-	});
-  } else {
-	console.log('library error')
-  }
-
-</script>
 
 
 <?php do_action( 'memberlite_before_page' ); ?>
