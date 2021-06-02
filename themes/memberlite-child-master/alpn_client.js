@@ -2577,6 +2577,7 @@ function pte_setup_window_onload() {
 							if (typeof syncClient != "object") {
 								syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
 							}
+							var client = Twilio.Chat.Client;
 							//firebase addition
 							if (firebase && firebase.messaging()) {
 
@@ -2587,7 +2588,7 @@ function pte_setup_window_onload() {
 								firebase.messaging().getToken().then((fcmToken) => {
 							console.log('reached token');
 							console.log(fcmToken);
-							syncClient.setPushRegistrationId('fcm', fcmToken);
+							client.setPushRegistrationId('fcm', fcmToken);
 
 									// continue with Step 7 here 
 									// ... 
@@ -2603,7 +2604,7 @@ function pte_setup_window_onload() {
 								// can't request permission or permission hasn't been granted to the web app by the user
 								});
 								firebase.messaging().onMessage(payload => {
-									syncClient.handlePushNotification(payload);
+									client.handlePushNotification(payload);
 								});
 							} else {
 								// no Firebase library imported or Firebase library wasn't correctly initialized
