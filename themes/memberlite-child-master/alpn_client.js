@@ -62,7 +62,7 @@ ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
 access_levels = {'5': 'Guest', '10': 'General', '20': 'Restricted', '30': 'Special', '40': 'Private'};
 processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10"};
-alert("test")
+
 pte_supported_types_map = {
 	'image/jpeg': 'JPEG',
 	'image/gif': 'GIF',
@@ -2577,7 +2577,38 @@ function pte_setup_window_onload() {
 							if (typeof syncClient != "object") {
 								syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
 							}
+							//firebase addition
+							if (firebase && firebase.messaging()) {
 
+								// requesting permission to use push notifications
+								firebase.messaging().requestPermission().then(() => {
+							console.log('reached permissions')
+								// getting FCM token
+								firebase.messaging().getToken().then((fcmToken) => {
+							console.log('reached token');
+							console.log(fcmToken);
+							syncClient.setPushRegistrationId('fcm', fcmToken);
+
+									// continue with Step 7 here 
+									// ... 
+									// ... 
+								}).catch((err) => {
+							console.log(err);
+									// can't get token
+								});
+								}).catch((err) => {
+							console.log('firebase error');
+							console.log(err);
+
+								// can't request permission or permission hasn't been granted to the web app by the user
+								});
+								firebase.messaging().onMessage(payload => {
+									syncClient.handlePushNotification(payload);
+								});
+							} else {
+								// no Firebase library imported or Firebase library wasn't correctly initialized
+							}
+							
 							syncClient.map(alpn_sync_id).then(function (map) {
 								map.on('itemAdded', function(item) {
 									var descriptor = item.item.descriptor;
