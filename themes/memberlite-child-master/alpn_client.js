@@ -677,10 +677,6 @@ function pte_handle_widget_interaction(interactionData){ //run the process
 	interactionData.message_title = jQuery('#pte_message_title_field').val();
 	interactionData.message_body = jQuery('#pte_message_body_area').val();
 	interactionData.message_response = jQuery('#pte_message_body_area_response').val();
-	interactionData.fax_field_first = jQuery('#pte_fax_send_input_field_first').val();
-	interactionData.fax_field_last = jQuery('#pte_fax_send_input_field_last').val();
-	interactionData.fax_field_company = jQuery('#pte_fax_send_input_field_company').val();
-	interactionData.fax_field_fax_number = jQuery('#pte_fax_send_input_field_fax_number').val();
 
 	interactionData.link_interaction_password = jQuery('#link_interaction_password').val();
 
@@ -968,15 +964,19 @@ function pte_pstn_handle_next_number() {
 function pte_start_pst_number_rotator(json) {
 	console.log('Got phone numbers - pte_start_pst_number_rotator');
 	var phoneNumber = formattedNumber = html = '';
-	if (typeof json.rows != "undefined" && json.rows) {
+
+	if (typeof json.rows != "undefined" && json.rows.length) {
 		pte_pstn_numbers = json.rows;
 		pte_pstn_index = 0;
 		phoneNumber = pte_pstn_numbers[0].number;
 		formattedNumber = pte_make_formatted_number(phoneNumber);
 		html += "<div id='pte_available_fax_number'>" + formattedNumber + "</div>";
 		html += "<div id='pte_available_buttons'>" + "<button id='pte_pstn_use_number' class='btn btn-danger btn-sm' onclick='pte_pstn_handle_use_number();'>Use</button>" + "<button id='pte_pstn_next_number' class='btn btn-danger btn-sm' onclick='pte_pstn_handle_next_number();'>Next</button>" + "</div>";
-		jQuery("#pte_pstn_number_widget_right").html(html);
+	} else {
+		html += "<div id='pte_available_fax_number'>No numbers found for this area code<br>Please lookup a different area code</div>";
 	}
+	jQuery("#pte_pstn_number_widget_right").html(html);
+
 }
 
 function pte_pstn_widget_lookup(){
@@ -1448,6 +1448,7 @@ function pte_show_process_ux(processId) {
 		var imageUrl = ppCdnBase + "pte_inbox_background_image_" + randomNumber.slice(-4)  + ".png";
 		var html  = "<div id='pte_interactions_message'>";
 				html += "<img id='pte_interactions_message_image' src='" + imageUrl + "'>";
+				//html += "<div id='pte_interactions_message_text'>No Interactions</div>";
 		    html += "</div>";
 		processUx.html(html);
 		pte_interaction_wait_indicator('stop')

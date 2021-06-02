@@ -102,6 +102,9 @@ function pte_save_process(Process $process, $uxMeta) {
 
 function pte_get_process_context($processData) { //TODO make this work for all interaction types when not all of this data is needed.
 
+
+  alpn_log("Handling Process Context");
+
   global $wpdb;
   $processContext = array();
 
@@ -157,11 +160,10 @@ function pte_get_process_context($processData) { //TODO make this work for all i
         $topicData = isset($results[0]) ? $results[0] : (object)array();
     }
 
-    if (isset($results[0])) {    //connected topic information also known as flippity dippity
+    if ($topicData && ($topicData->topic_owner_id != $ownerId)) {    //connected topic information also known as flippity dippity but only if needed
       $topicData = $results[0];
       $topicOwnerId = $topicData->owner_id;
       $connectedTopicId = $topicData->connected_topic_id;
-
       $connectedTopicData = (object)array();
       if ( ($topicOwnerId != $ownerId) && $connectedTopicId) {
 

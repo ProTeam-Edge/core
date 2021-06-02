@@ -92,12 +92,6 @@ function pte_make_interaction_editor_ux($uxMeta) {
 		case 'proteam_invitation_received':
 			$html .= pte_make_invitation_received_panel($uxMeta);
 		break;
-		// case 'message_send':
-		// 	$html .= pte_make_message_panel($uxMeta);
-		// break;
-		// case 'fax_send':
-		// 	$html .= pte_make_fax_panel($uxMeta);
-		// break;
 		case 'fax_send':
 		case 'topic_team_invite':
 		case 'email_send':
@@ -109,8 +103,6 @@ function pte_make_interaction_editor_ux($uxMeta) {
 			$html .= pte_make_info_panel($uxMeta);
 		break;
 	}
-
-	//$html .= pte_make_button_bar($uxMeta);
 
 	$html .= "</div>
 	<script>
@@ -173,26 +165,6 @@ function pte_make_interaction_editor_ux($uxMeta) {
 	";
   return $html;
 }
-
-function pte_make_button_bar($uxMeta){
-	$html = "";
-
-	$buttons = 	isset($uxMeta['buttons']) ? $uxMeta['buttons'] : array();
-
-	$html .= "<div id='pte_interaction_panel_buttons'>
-						<div id='pte_interaction_panel_buttons_container'>
-						";
-
-	$html .= "
-		<i class='far fa-archive pte_interaction_panel_button pte_ipanel_button_enabled' title='File Interaction Away'></i></div>
-	";
-
-	$html .= "</div>
-						</div>";
-
-	return $html;
-}
-
 
 function pte_make_button_line($lineType, $uxMeta) {
 
@@ -362,7 +334,7 @@ function pte_make_button_line($lineType, $uxMeta) {
 			$faxNumbers  = isset($uxMeta['fax_numbers']) ? $uxMeta['fax_numbers'] : array();
 			$faxNumbersById = array();
 			$selectPanel = "<select id='alpn_select2_small_fax_number_select' class='' data-topic-id='{$topicId}'>";
-			$selectPanel .= "<option value='0'>Select or Enter Recipient Information</option>";
+			$selectPanel .= "<option value='0'>Select Fax Recipient...</option>";
 			foreach ($faxNumbers as $key => $value){
 				$id = $value['id'];
 				$name = $value['name'];
@@ -403,8 +375,9 @@ function pte_make_button_line($lineType, $uxMeta) {
 
 function pte_make_interaction_link($linkType, $uxMeta) {
 
-	//alpn_log('pte_make_interaction_link');
-	//alpn_log($uxMeta);
+	alpn_log('pte_make_interaction_link');
+	alpn_log($linkType);
+	alpn_log($uxMeta);
 
 	$currentDomain = PTE_HOST_DOMAIN_NAME;
 
@@ -655,16 +628,6 @@ function pte_make_message_line ($lineType, $uxMeta) {
 		$html = "<div id='pte_fax_send_outer'>";
 		$html .= pte_make_button_line("select_users_with_fax_numbers", $uxMeta);
 		$html .= "
-							<div id='pte_fax_send_name_line'>
-								<div id='pte_fax_send_input_field_first_container'><input id='pte_fax_send_input_field_first' placeholder='First Name'></div>
-								<div id='pte_fax_send_input_field_last_container'><input id='pte_fax_send_input_field_last' placeholder='Last Name'></div>
-								<div style='clear: both;'></div>
-							</div>
-							<div id='pte_fax_send_company_line'>
-								<div id='pte_fax_send_input_field_first_container'><input id='pte_fax_send_input_field_company' placeholder='Company'></div>
-								<div id='pte_fax_send_input_field_fax_number_container'><input id='pte_fax_send_input_field_fax_number' placeholder='Fax Number'></div>
-								<div style='clear: both;'></div>
-							</div>
 							<div id='pte_fax_send_error_line'></div>
 					</div>
 		";
@@ -814,70 +777,6 @@ function pte_make_invitation_received_panel ($uxMeta) {
 		</script>
 		";
 return $html;
-}
-
-
-function pte_make_message_panel($uxMeta) {
-
-	global $wpdb;
-
-	$showExpiration = false; //TODO Implement Revisit.
-	$vaultItemHTML = "";
-
-	$userInfo = wp_get_current_user();
-	$ownerId = $userInfo->data->ID;
-	$messageTypeId = $uxMeta['template_type_id'];
-	//Lookup templates for this user for this template typed
-	$templateData = $wpdb->get_results(
-		$wpdb->prepare("SELECT tt.type_key, tm.id, tm.name FROM alpn_topic_types tt JOIN alpn_templates tm ON tm.type_key = tt.type_key AND tm.template_type = 'message' WHERE tt.owner_id = %d AND tt.id = %d;",$ownerId, $uxMeta['topic_type_id'])
-	);
-
-	$templates = array();
-	foreach ($templateData as $key => $value) {
-		$templates[] = array("id" => $value->id, "short_description" => $value->name, "default_item" => 0);
-	}
-	$uxMeta['templates'] = $templates;
-
-	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : "";
-	$topicName = 	isset($uxMeta['topic_name']) ? $uxMeta['topic_name'] : "";
-	$topicDomId = 	isset($uxMeta['topic_dom_id']) ? $uxMeta['topic_dom_id'] : "";
-	$html = "";
-	$sendType = "<span class='pte_internal_link' data-topic-id='{$topicId}' data-topic-dom-id='{$topicDomId}' data-operation='topic_info' onclick='pte_handle_interaction_link_object(this);'>{$topicName}</span>"; //TODO this needs to change based on type
-	$expirationLineHtml = $showExpiration ? pte_make_expiration_html() : "";
-	$toFromLineHtml = pte_make_data_line('to_from_line', $uxMeta);
-	$regardingLineHtml = pte_make_data_line('regarding_line', $uxMeta);
-	$messageLineHtml = pte_make_message_line('message_editable_new', $uxMeta);
-	$topicTypeId = 	isset($uxMeta['topic_type_id']) ? $uxMeta['topic_type_id'] : 0;
-
-	$networkContactPanel = pte_make_interaction_link('network_panel', $uxMeta);
-	$topicPanel = pte_make_interaction_link('topic_panel', $uxMeta);
-
-	$html .= "
-	<div class='pte_interaction_information_panel'>
-		<div class='proteam_message_panel'>
-			<div style='margin-top: 30px; padding: 0 5px; font-size: 13px; font-weight: normal; line-height: 20px; margin-bottom: 0px;'>
-				{$toFromLineHtml}
-				{$regardingLineHtml}
-				{$messageLineHtml}
-				{$expirationLineHtml}
-				{$networkContactPanel}
-				{$topicPanel}
-			</div>
-		</div>
-		</div>
-    <script>
-    		jQuery('#alpn_select2_small_template_select').select2( {
-    			theme: 'bootstrap',
-    			width: '100%',
-					allowClear: false,
-					minimumResultsForSearch: -1,
-    		});
-				jQuery('#alpn_select2_small_template_select').on('select2:select', function (e) {
-					pte_handle_message_merge('message');
-				});
-    </script>
-		";
-	return $html;
 }
 
 
@@ -1048,87 +947,6 @@ function pte_make_send_panel($uxMeta) {
 					pte_handle_message_merge('message');
 				});
 				pte_handle_message_merge('message');
-    </script>
-		";
-	return $html;
-}
-
-function pte_make_fax_panel($uxMeta) {
-
-	global $wpdb;
-
-	$userInfo = wp_get_current_user();
-	$ownerId = $userInfo->data->ID;
-	$messageTypeId = $uxMeta['template_type_id'];
-
-	//Lookup templates for this user for this template typed
-	$templateData = $wpdb->get_results(
-		$wpdb->prepare("SELECT tt.type_key, tm.id, tm.name FROM alpn_topic_types tt JOIN alpn_templates tm ON tm.type_key = tt.type_key AND tm.template_type = 'message' WHERE tt.owner_id = %d AND tt.id = %d;",$ownerId, $uxMeta['topic_type_id'])
-	);
-
-	$templates = array();
-	foreach ($templateData as $key => $value) {
-		$templates[] = array("id" => $value->id, "short_description" => $value->name, "default_item" => 0);
-	}
-	$uxMeta['templates'] = $templates;
-
-	$faxData = $wpdb->get_results( //all my topics that have fax numbers but not me
-		$wpdb->prepare("SELECT id, name, topic_content, topic_type_id FROM alpn_topics WHERE special != 'user' AND owner_id = %s AND (JSON_EXTRACT(topic_content, '$.organization_faxnumber') != '' OR JSON_EXTRACT(topic_content, '$.person_faxnumber') != '') ORDER BY NAME ASC", $ownerId)
-	);
-
-	$faxNumbers = array();
-	foreach ($faxData as $key => $value) {
-		$faxNumbers[] = array("id" => $value->id, "name" => $value->name, "topic_type_id" => $value->topic_type_id, "topic_content" => json_decode($value->topic_content, true));
-	}
-	$uxMeta['fax_numbers'] = $faxNumbers;
-
-	$topicId = 	isset($uxMeta['topic_id']) ? $uxMeta['topic_id'] : 0;
-	$topicTypeId = 	isset($uxMeta['topic_type_id']) ? $uxMeta['topic_type_id'] : 0;
-	$topicName = 	isset($uxMeta['topic_name']) ? $uxMeta['topic_name'] : "";
-
-	$html = "";
-	$uxMeta['fax_key'] = true;
-	$messageLineHtml = pte_make_message_line('message_editable_new', $uxMeta);
-	$faxSendToHtml = pte_make_message_line('fax_send_to', $uxMeta);
-	$vaultItemHTML = pte_make_interaction_link('vault_item', $uxMeta);
-
-	$linkPanel = pte_make_interaction_link('topic_panel', $uxMeta);
-	if ($topicTypeId == 5) {
-		$linkPanel = pte_make_interaction_link('personal_panel', $uxMeta);
-	}
-
-	$html .= "
-	<div class='pte_interaction_information_panel'>
-		<div class='proteam_message_panel'>
-			<div style='margin-top: 32px; padding: 0 5px; font-size: 13px; font-weight: normal; line-height: 20px; margin-bottom: 0px;'>
-				{$faxSendToHtml}
-				{$messageLineHtml}
-				{$vaultItemHTML}
-				{$linkPanel}
-			</div>
-		</div>
-		</div>
-    <script>
-				jQuery('#alpn_select2_small_template_select').select2( {
-					theme: 'bootstrap',
-					width: '100%',
-					allowClear: false,
-					minimumResultsForSearch: -1
-				});
-				jQuery('#alpn_select2_small_template_select').on('select2:select', function (e) {
-					pte_handle_message_merge('message');
-				});
-
-				jQuery('#alpn_select2_small_fax_number_select').select2( {
-    			theme: 'bootstrap',
-    			width: '100%',
-					allowClear: false
-    		});
-				jQuery('#alpn_select2_small_fax_number_select').on('select2:select', function (e) {
-					var data = e.params.data;
-					pte_handle_fax_number_selected(data);
-					pte_handle_message_merge('message');
-				});
     </script>
 		";
 	return $html;
