@@ -623,9 +623,8 @@ function logIn() {
 
           client.on('channelJoined', function(channel) {
             console.log('Channel Joined Called');
-            // var body = "Joined";
-            // channel.sendMessage(body, {'message_type': 'message'}).then(function() {
-            // });
+            console.log(channel);
+
             var channelFriendlyName = channel.friendlyName;
             if (isJson(channelFriendlyName)) {
               var contactData = JSON.parse(channelFriendlyName);
@@ -1325,16 +1324,12 @@ function setActiveChannel(channel) {
 
       if ($('#channel-messages ul').height() <= $('#channel-messages').height()) {
         channel.updateLastConsumedMessageIndex(newestMessageIndex).then(function(){
-          console.log('Updating LCM - get Messages');
           jQuery("li.pte_chat_list_item[data-cid='" + activeChannel.uniqueName + "']").remove();
           $('#pte_chat_no_chats_message').show();
 
         });
       }
-
-
       $("#message-body-input").data("emojioneArea").setText('').setFocus();
-
 
       return channel.getMembers();
 

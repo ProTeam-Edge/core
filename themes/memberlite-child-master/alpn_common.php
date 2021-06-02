@@ -2265,7 +2265,7 @@ function pte_manage_user_connection($data){
   //TODO Handle exceptions, etc.
 
   alpn_log('pte_manage_user_connection...');
-  //alpn_log($data);
+  alpn_log($data);
 
   global $wpdb;
 
@@ -2362,6 +2362,8 @@ function pte_manage_user_connection($data){
     }
   }
 }
+
+//2118 - CHa7947532b4f04fcc8d1745854be2131c
 
 function pte_manage_cc_groups($operation, $data) {
 
@@ -2467,6 +2469,18 @@ function pte_manage_cc_groups($operation, $data) {
               ->channels($channelId)
               ->members
               ->create($ownerId);
+
+            $messageAttributes = array("message_type" => "message");
+            $message = $twilio->chat->v2  //Joined Message
+              ->services($chatServiceId)
+              ->channels($channelId)
+              ->messages
+              ->create(array(
+                  'from' => $ownerId,
+                  'body' => "Joined",
+                  'attributes' => json_encode($messageAttributes)
+                )
+              );
               $topicData = array(
                 "channel_id" => $channelId
               );
@@ -2527,6 +2541,7 @@ function pte_manage_cc_groups($operation, $data) {
 
 
     alpn_log("Adding Member..." . $userId);
+    alpn_log($data);
 
       $channelId = pte_manage_cc_groups("get_create_channel", $data);   //get or create for the first time.
 
@@ -2538,17 +2553,17 @@ function pte_manage_cc_groups($operation, $data) {
             ->members
             ->create($userId);
 
-          // $messageAttributes = array("message_type" => "message");
-          // $message = $twilio->chat->v2  //Joined Message
-          //   ->services($chatServiceId)
-          //   ->channels($channelId)
-          //   ->messages
-          //   ->create(array(
-          //       'from' => $userId,
-          //       'body' => "SOMETHING DIFFERENT",
-          //       'attributes' => json_encode($messageAttributes)
-          //     )
-          //   );
+          $messageAttributes = array("message_type" => "message");
+          $message = $twilio->chat->v2  //Joined Message
+            ->services($chatServiceId)
+            ->channels($channelId)
+            ->messages
+            ->create(array(
+                'from' => $userId,
+                'body' => "Joined",
+                'attributes' => json_encode($messageAttributes)
+              )
+            );
 
           alpn_log("Added Member..." . $userId);
 

@@ -2316,7 +2316,11 @@ table#table_vault td.column-draw_id{
 #pte_interactions_message_image {
 	width: 150px;
 }
-
+#pte_interactions_message_text{
+	margin-top: 0px;
+	color: rgb(68, 68, 68);
+	text-align: center;
+}
 #pte_interactions_message{
 	margin-top: 5px;
 	text-align: center;

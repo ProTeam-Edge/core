@@ -28,14 +28,14 @@ function pte_get_registry_fax_send() {
   $registryArray = array(
       'send_fax' => function(Token $token) {
             $requestData = $token->getValue("process_context");
-
-
             alpn_log('Start Fax Sending...');
+
             global $wpdb;
+
             $requestData = $token->getValue("process_context");
-            $requestData['interaction_type_name'] = "Fax";
+            $requestData['interaction_type_name'] = "File";
             $requestData['interaction_template_name'] = "";
-            $requestData['interaction_type_status'] = "Send";
+            $requestData['interaction_type_status'] = "Send as Fax";
             $requestData['interaction_to_from_string'] = "To";
             $requestData['interaction_to_from_name'] = "";
             $requestData['interaction_regarding'] = $requestData['topic_name'];
@@ -46,38 +46,47 @@ function pte_get_registry_fax_send() {
 
           //  if ($token->getValue("fax_field_fax_number")) {
 
-
           if ($emailContactTopicId) {    // TODO Why is this not in requestdata by now?
 
+            $results = pte_get_recipient($requestData['owner_network_id'], $emailContactTopicId);
+
+              if (count($results)) {
+
+                 $newData = pte_update_context_with_contact($requestData, $emailContactTopicId, $results);
+                 $requestData = $newData['context'];
+                 $tContent = $newData['content'];
+
+                 $requestData['fax_field_fax_number_plain'] =  preg_replace( '/[^0-9]/', '', $tContent['person_faxnumber'] );
+                 $requestData['fax_field_fax_number_plain'] = count($requestData['fax_field_fax_number_plain']) == 11 ?  $requestData['fax_field_fax_number_plain'] : '1' . $requestData['fax_field_fax_number_plain'];
 
 
+                 $recipientName = trim($tContent['person_givenname'] . " " . $tContent['person_familyname']);
+                 $requestData["recipient_name"] = $requestData["network_name"] = $requestData["send_email_address_name"] = $recipientName;
 
-              $requestData['fax_field_fax_number_plain'] =  preg_replace( '/[^0-9]/', '', $requestData['fax_field_fax_number'] );
-              $requestData['fax_field_fax_number_plain'] = count($requestData['fax_field_fax_number_plain']) == 11 ?  $requestData['fax_field_fax_number_plain'] : '1' . $requestData['fax_field_fax_number_plain'];
-              //Send fax
-              $sendData = array(
-                  'process_id' => $requestData['process_id'],
-                  'network_contact_name' => $requestData['fax_field_first'] . " " . $requestData['fax_field_last'],
-                  'owner_id' => $requestData['owner_id'],
-                  'owner_network_id' => $requestData['owner_network_id'],
-                  'topic_id' => $requestData['topic_id'],
-                  'vault_id' => $requestData['vault_id'],
-                  'vault_pdf_key' => $requestData['vault_pdf_key'],
-                  'vault_file_key' => $requestData['vault_file_key'],
-                  'company_name' => $requestData['fax_field_company'],
-                  'pstn_number' => $requestData['fax_field_fax_number_plain'],
-                  'template_name' => $requestData['template_name'],
-                  'message_title' => $requestData['message_title'],
-                  'message_body' => $requestData['message_body']
-              );
-
-              pte_documo_fax_send($sendData);
+                 //Send fax
+                 $sendData = array(
+                     'process_id' => $requestData['process_id'],
+                     'network_contact_name' => $recipientName,
+                     'owner_id' => $requestData['owner_id'],
+                     'owner_network_id' => $requestData['owner_network_id'],
+                     'topic_id' => $requestData['topic_id'],
+                     'vault_id' => $requestData['vault_id'],
+                     'vault_pdf_key' => $requestData['vault_pdf_key'],
+                     'vault_file_key' => $requestData['vault_file_key'],
+                     'company_name' => "TBD - FIX or REMOVE",
+                     'pstn_number' => $requestData['fax_field_fax_number_plain'],
+                     'template_name' => $requestData['template_name'],
+                     'message_title' => $requestData['message_title'],
+                     'message_body' => $requestData['message_body']
+                 );
+                 pte_documo_fax_send($sendData);
+              }
 
               $token->setValue("process_context", $requestData);
             return;
             }
             $requestData['widget_type_id'] = "fax_send";
-            $requestData['information_title'] = "Send Fax";
+            //$requestData['information_title'] = "Send Fax";
             $requestData['buttons'] =  array(
               "file" => true
               );
@@ -92,10 +101,11 @@ function pte_get_registry_fax_send() {
       'fax_decision' => function(Token $token) {
 
           $requestData = $token->getValue("process_context");
-          $requestData['interaction_file_away_handling'] = "archive_interaction";
 
-          $requestData['interaction_type_status'] = "Sending...";
-          $requestData['interaction_to_from_name'] = $requestData['fax_field_fax_number'];
+
+          $requestData['interaction_to_from_name'] = $requestData['static_name'] = $requestData["recipient_name"];
+          $requestData['interaction_type_status'] = "Sending as Fax...";
+          $requestData['interaction_file_away_handling'] = "archive_interaction";
 
           if ($requestData['documo_processing_status_name'] == 'success') {  //move to sent
 
@@ -122,30 +132,22 @@ function pte_get_registry_fax_send() {
             "file" => true
             );
             $requestData['data_lines'] =  array(
-                "to_recipient_number_line",
-                "regarding_line",
-                "type_line"
+                "to_from_line_static",
+                "regarding_line"
               );
 
-          $requestData['content_lines'] =  array(
+        $requestData['content_lines'] =  array(
               "vault_item",
-              "topic_panel"
-            );
+          );
 
-            if ($requestData['topic_special'] == 'user') {  //Personal
-              $requestData['content_lines'] =  array(
-                "vault_item",
-                "personal_panel"
-                );
-              }
-
-            if ($requestData['topic_special'] == 'network') {  //Network
-              $requestData['content_lines'] =  array(
-                "vault_item",
-                "network_panel"
-                );
-              }
-
+          if ($requestData['network_id']){
+            $requestData['content_lines'][] = "network_panel";
+          }
+          if ($requestData['topic_id'] && $requestData['topic_special'] == 'user') {
+            $requestData['content_lines'][] = "personal_panel";
+          } else {
+            $requestData['content_lines'][] = "topic_panel";
+          }
           $requestData['message_lines'] =  array(
               "message_view_only"
             );
@@ -194,7 +196,7 @@ function pte_get_registry_fax_send() {
 
           $requestData = $token->getValue("process_context");
 
-          $requestData['interaction_type_status'] = "Sent";
+          $requestData['interaction_type_status'] = "Sent as Fax";
           $requestData['interaction_complete'] = true;
 
           $requestData['sync'] = true;
