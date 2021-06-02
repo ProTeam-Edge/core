@@ -2577,7 +2577,7 @@ function pte_setup_window_onload() {
 							if (typeof syncClient != "object") {
 								syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
 							}
-							var client = Twilio.Chat.Client;
+							var client = Twilio.Sync.Client;
 							//firebase addition
 							if (firebase && firebase.messaging()) {
 
