@@ -2588,8 +2588,7 @@ function pte_setup_window_onload() {
 								firebase.messaging().getToken().then((fcmToken) => {
 							console.log('reached token');
 							console.log(fcmToken);
-							client.setPushRegistrationId('fcm', fcmToken);
-
+							
 									// continue with Step 7 here 
 									// ... 
 									// ... 
@@ -2606,7 +2605,7 @@ function pte_setup_window_onload() {
 								firebase.messaging().onMessage(payload => {
 									alert(payload)
 									alert('got notification')
-									client.handlePushNotification(payload);
+								
 								});
 							} else {
 								// no Firebase library imported or Firebase library wasn't correctly initialized
