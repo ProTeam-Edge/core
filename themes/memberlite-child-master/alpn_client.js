@@ -2606,7 +2606,10 @@ function pte_setup_window_onload() {
 									alert(payload)
 									alert('got notification')
 								
-								});
+								}).catch((err) => {
+									console.log(err);
+									alert('error')
+										});
 							} else {
 								// no Firebase library imported or Firebase library wasn't correctly initialized
 							}
