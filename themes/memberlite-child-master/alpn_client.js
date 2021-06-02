@@ -62,7 +62,7 @@ ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
 access_levels = {'5': 'Guest', '10': 'General', '20': 'Restricted', '30': 'Special', '40': 'Private'};
 processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10"};
-
+alert("test")
 pte_supported_types_map = {
 	'image/jpeg': 'JPEG',
 	'image/gif': 'GIF',
