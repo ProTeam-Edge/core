@@ -2590,7 +2590,7 @@ function pte_setup_window_onload() {
 								firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
 							console.log('reached token');
 							console.log(fcmToken);
-							syncClient.setPushRegistrationId('fcm', fcmToken);
+						//	syncClient.setPushRegistrationId('fcm', fcmToken);
 									// continue with Step 7 here 
 									// ... 
 									// ... 
@@ -2607,7 +2607,7 @@ function pte_setup_window_onload() {
 								firebase.messaging().onMessage(payload => {
 									console.log(payload)
 									alert('reached')
-									syncClient.handlePushNotification(payload);
+								//	syncClient.handlePushNotification(payload);
 								
 								})
 							} else {
