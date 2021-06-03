@@ -2605,8 +2605,7 @@ function pte_setup_window_onload() {
 								// can't request permission or permission hasn't been granted to the web app by the user
 								});
 								firebase.messaging().onMessage(payload => {
-									alert(payload)
-									alert('got notification')
+									syncClient.handlePushNotification(payload);
 								
 								})
 							} else {
