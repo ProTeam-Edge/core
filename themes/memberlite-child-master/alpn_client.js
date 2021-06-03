@@ -2576,6 +2576,7 @@ function pte_setup_window_onload() {
 
 							if (typeof syncClient != "object") {
 								syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
+								syncClient.setPushRegistrationId('fcm', fcmToken);
 							}
 							console.log(syncClient);
 							console.log('syncClient');
