@@ -2596,7 +2596,7 @@ function pte_setup_window_onload() {
 								// getting FCM token
 								firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
 							console.log('reached token');
-							console.log(fcmToken);
+							console.log(fcmToken); 
 						client.setPushRegistrationId('fcm', fcmToken);
 									
 								}).catch((err) => {
