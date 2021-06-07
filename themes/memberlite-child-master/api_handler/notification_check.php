@@ -35,7 +35,7 @@ $json = json_decode(file_get_contents('php://input'), true);
 try {
     $notification = $service->notifications->create(
         [
-            'identity' => 126,
+            'identity' => 'fAoQw49JAEwEf3n_EA7pv2:APA91bF9VVIDY-YuSTDnSMPOzy-M_luWMWjFdYxM2EkX7G4r9oZsAKTR6cRgW-nkosGby4Mk3eVN-E-ixIeNaeJo2OYfjBcJLQd3dswNnXaazYnTRKl9TzfUje-uniJoJITBAFCSTy38',
             'body' => 'Hello world!'
         ]
     );
