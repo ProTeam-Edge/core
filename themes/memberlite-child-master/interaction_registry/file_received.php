@@ -51,24 +51,12 @@ function pte_get_registry_file_received() {
                 "message_view_only"
                 );
 
-             $requestData['content_lines'] =  array(
-                "vault_item",
-                "topic_panel"
-              );
 
-            if ($requestData['topic_special'] == 'user') {  //Personal
-              $requestData['content_lines'] =  array(
-                "vault_item",
-                "personal_panel"
-                );
-              }
-
-            if ($requestData['topic_special'] == 'contact') {  //Network
-              $requestData['content_lines'] =  array(
-                "vault_item",
-                "network_panel"
-                );
-              }
+                if ($requestData['topic_id'] && $requestData['topic_special'] == 'user') {
+                  $requestData['content_lines'][] = "personal_panel";
+                } else {
+                  $requestData['content_lines'][] = "topic_panel";
+                }
 
 
             $requestData['sync'] = true;

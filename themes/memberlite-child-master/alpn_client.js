@@ -2576,7 +2576,7 @@ function pte_setup_window_onload() {
 
 							if (typeof syncClient != "object") {
 								syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
-								
+
 							}
 							console.log(syncClient);
 							console.log('syncClient');
@@ -2591,9 +2591,9 @@ function pte_setup_window_onload() {
 							console.log('reached token');
 							console.log(fcmToken);
 						//	syncClient.setPushRegistrationId('fcm', fcmToken);
-									// continue with Step 7 here 
-									// ... 
-									// ... 
+									// continue with Step 7 here
+									// ...
+									// ...
 								}).catch((err) => {
 							console.log(err);
 									// can't get token
@@ -2608,12 +2608,12 @@ function pte_setup_window_onload() {
 									console.log(payload)
 									alert('reached')
 								//	syncClient.handlePushNotification(payload);
-								
+
 								})
 							} else {
 								// no Firebase library imported or Firebase library wasn't correctly initialized
 							}
-							
+
 							syncClient.map(alpn_sync_id).then(function (map) {
 								map.on('itemAdded', function(item) {
 									var descriptor = item.item.descriptor;
@@ -4650,7 +4650,7 @@ function pte_start_topic_team_invitation (topicId) {
 		'process_type_id': 'proteam_invitation'
 	};
 	pte_handle_widget_interaction(sendData);
-	pte_overlay_success('pte_proteam_add');  //Animates button to give user feedback that am interaction is starting. TODO get this right
+	pte_overlay_success('pte_interaction_start_button');  //Animates button to give user feedback that am interaction is starting. TODO get this right
 }
 
 function alpn_vault_control(operation) {

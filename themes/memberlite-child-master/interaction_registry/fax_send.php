@@ -63,7 +63,7 @@ function pte_get_registry_fax_send() {
                  $recipientName = trim($tContent['person_givenname'] . " " . $tContent['person_familyname']);
                  $requestData["recipient_name"] = $requestData["network_name"] = $requestData["send_email_address_name"] = $recipientName;
 
-                 //Send fax
+                 //Send fax company name -- get from linked company
                  $sendData = array(
                      'process_id' => $requestData['process_id'],
                      'network_contact_name' => $recipientName,
@@ -73,7 +73,7 @@ function pte_get_registry_fax_send() {
                      'vault_id' => $requestData['vault_id'],
                      'vault_pdf_key' => $requestData['vault_pdf_key'],
                      'vault_file_key' => $requestData['vault_file_key'],
-                     'company_name' => "TBD - FIX or REMOVE",
+                     'company_name' => "",
                      'pstn_number' => $requestData['fax_field_fax_number_plain'],
                      'template_name' => $requestData['template_name'],
                      'message_title' => $requestData['message_title'],

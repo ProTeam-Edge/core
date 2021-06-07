@@ -282,11 +282,14 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 }
 
 if ($topicEmailRoute || $topicFaxRoute) {
+  //for now skip county code when copying
+
+  $topicFaxRouteNoCounty = substr($topicFaxRoute, 0, 1) == '+' ? substr($topicFaxRoute, 2) : $topicFaxRoute;
 	$topicFaxRouteFormatted = pte_format_pstn_number($topicFaxRoute);
 	$dottedName = str_replace(array(', ', ',', "'", '"'), array('.', '.', "", ""), $topicName);
 	$emailAddress = "{$dottedName} - ProTeam Edge Topic <{$topicEmailRoute}@files.{$domainName}>";
 	$emailRouteHtml = $topicEmailRoute ? "<div title='Copy Email Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Email\", \"{$emailAddress}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Email</div>" : "";
-	$faxHtml = $topicFaxRoute ? "<div title='Copy Fax Number Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Fax Number\", \"{$topicFaxRoute}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Fax: {$topicFaxRouteFormatted}</div>" : "";
+	$faxHtml = $topicFaxRoute ? "<div title='Copy Fax Number Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Fax Number\", \"{$topicFaxRouteNoCounty}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Fax: {$topicFaxRouteFormatted}</div>" : "";
 	$routes = "
 			<div class='pte_route_container'>
 				<div class='pte_route_container_title'>Inbound Routes</div>
@@ -386,12 +389,16 @@ $proteam = $wpdb->get_results(  //get proteam -- pre-connected by alpn_topics_ne
 
 $proTeamMembers = "";
 $pteAddTopicTeamMember = "";
-if ($topicBelongsToUser) {
-  $pteAddTopicTeamMember = "<i id='pte_proteam_add' class='far fa-plus-circle pte_proteam_add_icon' onclick='pte_start_topic_team_invitation({$topicId});' title='Send a Team Invitation Interaction'></i>";
+$interactionChooser = '';
+if ($topicBelongsToUser && $proteamContainer == 'block') {
+  // $pteAddTopicTeamMember = "<i id='pte_proteam_add' class='far fa-plus-circle pte_proteam_add_icon' onclick='pte_start_topic_team_invitation({$topicId});' title='Send a Team Invitation Interaction'></i>";
+  $interactionChooser .= "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
+  $interactionChooser .= "<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>";
+  $interactionChooser .= "</select>";
 }
-
 $topicHasTeamMembers = count($proteam) ? true : false;
-$proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Team</div><div class='pte_proteam_title_right'>{$pteAddTopicTeamMember}</div></div>" : "";
+$proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Team</div><div class='pte_proteam_title_right'></div></div>" : "";
+$showInteractionList = ($proteamContainer == 'block') ? "inline-block" : "none";
 
 if (count($proteam)) {
 $displayNoMembers = "none";
@@ -580,21 +587,23 @@ $tabs = "<div id='pte_tab_wrapper' class='pte_tab_wrapper'><i id='pte_tab_bar_le
 
 $html .= "
 			<div class='outer_button_line'>
-				<div class='pte_vault_row_35'>
-					<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Information' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+				<div class='pte_vault_row_25'>
+					<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Data View' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 						<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
 					</span>
-					<span class='fa-stack pte_icon_button_nav' title='Report' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+					<span class='fa-stack pte_icon_button_nav' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 						<i class='fas fa-drafting-compass fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
 					</span>
-					<span class='fa-stack pte_icon_button_nav' title='Vault' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+					<span class='fa-stack pte_icon_button_nav' title='Vault View' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 						<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
 					</span>
 				</div>
-				<div class='pte_vault_row_65 pte_vault_right'>
+				<div class='pte_vault_row_75 pte_vault_right pte_toolbar_container'>
+          {$interactionChooser} <i id='pte_interaction_start_button' class='far fa-arrow-circle-right alpn_icons_toolbar' title='Start this Interaction' onclick='pte_start_topic_team_invitation({$topicId});' style='display: {$showInteractionList};'></i>
+          <div style='display: inline-block; width: 20px;'></div>
 					  <i class='far fa-pencil-alt pte_icon_button {$pteEditDeleteClass}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>
 		       	<i id='delete_topic_button' class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>
 				</div>
@@ -640,7 +649,20 @@ $html .= "
 						 </div>
 						";
 
-
+            $html .= "
+            <script>
+            jQuery('#alpn_selector_interaction_selector').select2({
+            	theme: 'bootstrap',
+            	width: '180px',
+            	allowClear: false,
+            	templateSelection: iformat,
+            	templateResult: iformat,
+            	escapeMarkup: function(text) {
+            		return text;
+            	}
+            });
+            </script>
+            ";
 echo $html;
 
 ?>

@@ -1351,6 +1351,7 @@ function pte_format_pstn_number($phoneNumber){
 	$firstThree = substr($phoneNumber, 5, 3);
 	$areaCode = substr($phoneNumber, 2, 3);
 	$country = substr($phoneNumber, 0, 2);
+  $country = '';
 	return ($country . " (" . $areaCode . ") " . $firstThree . "-" . $lastFour);
 }
 
@@ -1487,7 +1488,7 @@ function get_network_contact_topics($networkContactId) {
 
   if (isset($resultTopics[0])) {
 
-    $contactTopics .= "<div class='pte_route_container_title'>Teams</div>";
+    $contactTopics .= "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Teams</div><div class='pte_proteam_title_right'></div></div>";
     $contactTopics .= "<div id='pte_contacts_topics_container'>";
     foreach ($resultTopics as $key => $value) {
       $topicList = '';
