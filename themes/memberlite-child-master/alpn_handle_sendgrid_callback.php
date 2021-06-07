@@ -3,13 +3,14 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 use transloadit\Transloadit;
 use PascalDeVink\ShortUuid\ShortUuid;
+use Ramsey\Uuid\Uuid;
 
 //test email abc123rfdsa@files.proteamedge.com
 
 //TODO lots of checking...
 global $wpdb;
 
-//alpn_log('Received Email From SendGrid...');
+alpn_log('Received Email From SendGrid...');
 
 //alpn_log($_FILES);
 
@@ -49,7 +50,6 @@ try {
 		'key'    => $transloaditKey,
 		'secret' => $transloaditSecret,
 	));
-	$shortUuid = new ShortUuid();
 
 	$emailRoute = mailparse_rfc822_parse_addresses($to);
 	if (isset($emailRoute[0])) {
@@ -78,7 +78,8 @@ try {
 				$permissionValue = '40';
 				foreach ($_FILES as $key => $value) {
 					$fileName = $value['name'];
-					$suid = $shortUuid->uuid4();
+					$uuid = Uuid::uuid4();
+					$suid = $uuid->toString();
 					$fname = pathinfo($fileName, PATHINFO_FILENAME);
 					$ext = pathinfo($fileName, PATHINFO_EXTENSION);
 					$fullName = "{$fname}.{$suid}.{$ext}";
@@ -86,6 +87,7 @@ try {
 					$result = move_uploaded_file($value['tmp_name'], $localFile);
 
 					if ($result) {
+
 						$mimeType = $value['type'];
 						$now = date ("Y-m-d H:i:s", time());
 
@@ -106,6 +108,12 @@ try {
 						$wpdb->insert( 'alpn_vault', $rowData );
 						$vaultId = $wpdb->insert_id;
 
+
+						$transloaditTemplateId = "3b83f38410d744caa3060af90cd64bc0";
+						if (PTE_HOST_DOMAIN_NAME == 'alct.pro') {  //dev
+							$transloaditTemplateId = "b51ccbe1760d410c8cf9b409228e6139";
+						}
+		
 						$response = $transloadit->createAssembly(array(
 							'files' => array($localFile),
 							'fields' => array(
@@ -113,9 +121,10 @@ try {
 								'pte_uid' => $suid
 							),
 							'params' => array(
-								'template_id' => '3b83f38410d744caa3060af90cd64bc0'
+								'template_id' => $transloaditTemplateId
 							),
 						));
+
 
 						if (isset($response->data)) {
 							$data = $response->data;

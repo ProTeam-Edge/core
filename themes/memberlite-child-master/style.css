@@ -1637,6 +1637,7 @@ ul#menu-member-menu li a {
 #pte_contacts_topics_container {
 	padding: 5px 10px;
 	border: solid 1px rgb(224, 224, 224);
+	margin-top: 10px;
 	margin-bottom: 15px;
 	max-height: 100px;
 	overflow-y: auto;
@@ -3916,7 +3917,7 @@ dt{
 
 .alpn_icon_topic_list {
 	color: #009BDC;
-	width: 16px;
+	width: 18px;
 	margin-right: 3px;
 	margin-left: -2px;
 	text-align: center;

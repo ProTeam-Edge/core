@@ -2601,7 +2601,7 @@ function pte_setup_window_onload() {
 								}).catch((err) => {
 							console.log('firebase error');
 							console.log(err);
- 
+
 								// can't request permission or permission hasn't been granted to the web app by the user
 								});
 								firebase.messaging().onMessage(payload => {
