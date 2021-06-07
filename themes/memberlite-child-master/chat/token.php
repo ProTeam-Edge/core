@@ -36,9 +36,7 @@ $token->addGrant($syncGrant);
 
 $chatGrant = new ChatGrant();
 $chatGrant->setServiceSid($chatServiceId);
-$serviceSid = NOTIFYSSID;
-$chatGrant->pushCredentialSid($pushCredentialSid);
-//$chatGrant->setpushCredentialSid($pushCredentialSid);
+$chatGrant->setpushCredentialSid($pushCredentialSid);
 
 $token->addGrant($chatGrant);
 
