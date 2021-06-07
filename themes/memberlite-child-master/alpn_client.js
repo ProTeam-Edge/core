@@ -2578,22 +2578,27 @@ function pte_setup_window_onload() {
 								syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
 								
 							}
+							Twilio.Chat.Client.create(token, { logLevel: 'info' })
 							console.log(syncClient);
 							console.log('syncClient');
 							//firebase addition
+							var client;
+							Twilio.Chat.Client.create(token, { logLevel: 'info' })
+							.then(function(createdClient) {
+								client = createdClient;
+							}
 							if (firebase && firebase.messaging()) {
 
 								// requesting permission to use push notifications
 								firebase.messaging().requestPermission().then(() => {
+									
 							console.log('reached permissions')
 								// getting FCM token
 								firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
 							console.log('reached token');
-							console.log(fcmToken);
-						//	syncClient.setPushRegistrationId('fcm', fcmToken);
-									// continue with Step 7 here 
-									// ... 
-									// ... 
+							console.log(fcmToken); 
+						client.setPushRegistrationId('fcm', fcmToken);
+									
 								}).catch((err) => {
 							console.log(err);
 									// can't get token
@@ -2607,7 +2612,7 @@ function pte_setup_window_onload() {
 								firebase.messaging().onMessage(payload => {
 									console.log(payload)
 									alert('reached')
-								//	syncClient.handlePushNotification(payload);
+								client.handlePushNotification(payload);
 								
 								})
 							} else {
