@@ -2578,6 +2578,7 @@ function pte_setup_window_onload() {
 								syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
 
 							}
+							var getChatClient = new Twilio.Chat.Client.create(data.token);
 							console.log(syncClient);
 							console.log('syncClient');
 							//firebase addition
@@ -2590,7 +2591,7 @@ function pte_setup_window_onload() {
 								firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
 							console.log('reached token');
 							console.log(fcmToken);
-					syncClient.setPushRegistrationId('fcm', fcmToken);
+							getChatClient.setPushRegistrationId('fcm', fcmToken);
 								
 								}).catch((err) => {
 							console.log(err);
