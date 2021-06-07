@@ -56,7 +56,7 @@ try {
     //    'message' => 'Notification Sent!'
    // );
     header('Content-type:application/json;charset=utf-8');
-    echo json_encode($response);
+    echo json_encode($service);
 } catch (Exception $e) {
     $response = array(
         'message' => 'Error creating notification: ' . $e->getMessage(),
