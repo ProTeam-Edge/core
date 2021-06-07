@@ -34,7 +34,7 @@ $json = json_decode(file_get_contents('php://input'), true);
 
 
 try {
-serviceSid
+
     $service = $twilio->chat->v2->services($serviceSid)
     ->update(array(
                  "notificationsAddedToChannelEnabled" => True,
