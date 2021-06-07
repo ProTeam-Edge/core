@@ -26,7 +26,8 @@ print($service->sid);
 $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
 $twilio = new Client($sid, $token);
-$serviceSid = NOTIFYSSID;
+//$serviceSid = NOTIFYSSID;
+$serviceSid = CHATSERVICESID;
 //$service = $twilio->notify->v1->services($serviceSid);
 
 $json = json_decode(file_get_contents('php://input'), true);
@@ -34,11 +35,11 @@ $json = json_decode(file_get_contents('php://input'), true);
 
 try {
 serviceSid
-    $service = $twilio->chat->v2->services(CHATSERVICESID)
+    $service = $twilio->chat->v2->services($serviceSid)
     ->update(array(
                  "notificationsAddedToChannelEnabled" => True,
                  "notificationsAddedToChannelSound" => "default",
-                 "notificationsAddedToChannelTemplate" => "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}"
+                 "notificationsAddedToChannelTemplate" => "A New message "
              )
     );
 
