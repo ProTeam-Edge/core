@@ -2606,7 +2606,7 @@ function pte_setup_window_onload() {
 								});
 								firebase.messaging().onMessage(payload => {
 									console.log(payload)
-									alert('reached')
+								//	alert('reached')
 								//	syncClient.handlePushNotification(payload);
 
 								})
