@@ -43,8 +43,8 @@ try {
                  "notificationsAddedToChannelTemplate" => "A New message"
              )
     );
-
-print($service->friendlyName);
+echo '<pre>';
+print($service);
 
     //$notification = $service->notifications->create(
       //  [
