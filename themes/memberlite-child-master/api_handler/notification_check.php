@@ -28,7 +28,7 @@ $token  =AUTHTOKEN;
 $twilio = new Client($sid, $token);
 $serviceSid = NOTIFYSSID;
 $pushCredentialSid = PUSHCREDENTIALSIDDEV;
-$service = $twilio->notify->v1->services($pushCredentialSid);
+$service = $twilio->notify->v1->services($serviceSid);
 
 $json = json_decode(file_get_contents('php://input'), true);
 
