@@ -2593,6 +2593,7 @@ function pte_setup_window_onload() {
 							console.log('reached token');
 							console.log(fcmToken);
 							getChatClient.then(function (chatClient) {
+								alert('added fcm token twilio')
 								chatClient.setPushRegistrationId('fcm', fcmToken);
 							})
 						//	syncClient.setPushRegistrationId('fcm', fcmToken);
