@@ -19,7 +19,7 @@ $apiToken =  $data->apiToken;
 $serviceSid = CHATSERVICESID;
 $NOTIFYSSID = NOTIFYSSID;
 $FCMCREDENTIALSID = FCMCREDENTIALSID;
-
+$PUSHCREDENTIALSIDDEV = PUSHCREDENTIALSIDDEV;
 
 	$get_token = get_option('api_request_token_'.$data->username.'');
 	if($get_token==$apiToken) {
@@ -36,7 +36,7 @@ $FCMCREDENTIALSID = FCMCREDENTIALSID;
 	// Create Chat grant
 	$chatGrant = new ChatGrant();
 	$chatGrant->setServiceSid($serviceSid);
-	$chatGrant->setpushCredentialSid($NOTIFYSSID);
+	$chatGrant->setpushCredentialSid($PUSHCREDENTIALSIDDEV);
 	
 		
 	// Add grant to token
