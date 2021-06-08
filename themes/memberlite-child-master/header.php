@@ -43,6 +43,8 @@
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="renderer" content="webkit">	<link rel="profile" href="http://gmpg.org/xfn/11">
 	<?php wp_head(); ?>
+	<script src="https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js"></script>
+
 </head>
 
 <body <?php body_class(); ?>>
