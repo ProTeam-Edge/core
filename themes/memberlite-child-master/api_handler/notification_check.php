@@ -40,7 +40,7 @@ try {
     ->update(array(
                  "notificationsAddedToChannelEnabled" => True,
                  "notificationsAddedToChannelSound" => "default",
-                 "notificationsAddedToChannelTemplate" => "A New message in ${CHANNEL} from ${USER}: ${MESSAGE}"
+                 "notificationsAddedToChannelTemplate" => "A New message"
              )
     );
 
