@@ -27,37 +27,28 @@ $sid    = ACCOUNT_SID;
 $token  =AUTHTOKEN;
 $twilio = new Client($sid, $token);
 $serviceSid = NOTIFYSSID;
-$pushCredentialSid = PUSHCREDENTIALSIDDEV;
-$service = $twilio->notify->v1->services($serviceSid);
-$chatserviceSid = CHATSERVICESID;
+$alctApikeyssid = alctApikeyssid;
+$alctApisecretkey = alctApisecretkey;
+$client = new Twilio\Rest\Client($alctApikeyssid, $alctApisecretkey, $sid);
+// Send a notification
+$service = $client->notify->v1->services($serviceSid);
+
 $json = json_decode(file_get_contents('php://input'), true);
 
 
 try {
-
-
-    $service = $twilio->chat->v2->services($chatserviceSid)
-    ->update(array(
-                 "notificationsAddedToChannelEnabled" => True,
-                 "notificationsAddedToChannelSound" => "default",
-                 "notificationsAddedToChannelTemplate" => "A New message"
-             )
+    $notification = $service->notifications->create(
+        [
+            'identity' => '162',
+            'body' => 'Hello world!'
+        ]
     );
-echo '<pre>';
-print($service);
 
-    //$notification = $service->notifications->create(
-      //  [
-        //    'identity' => '162',
-          //  'body' => 'Hello world!'
-        //]
-    //);
-
-    //$response = array(
-      //  'message' => 'Notification Sent!'
-    //);
+    $response = array(
+        'message' => 'Notification Sent!'
+    );
     header('Content-type:application/json;charset=utf-8');
-    //echo json_encode($response);
+    echo json_encode($response);
 } catch (Exception $e) {
     $response = array(
         'message' => 'Error creating notification: ' . $e->getMessage(),

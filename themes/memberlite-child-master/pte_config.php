@@ -47,6 +47,9 @@ define('CHANNELSSID', 'CHb368c3a4f22548b2966c7333adf45dc1');
 define('MESSAGINGSERVICEID', 'MG5aa06d950ae9fd9fba6ed78abd176007');
 define('PUSHCREDENTIALSIDDEV', 'CR3f54eee0897fd59ac836fd9cec38e5f0');
 
+define('alctApikeyssid', 'SKda65299852f60bada6e45acfec3d22fc');
+define('alctApisecretkey', 'aN9qEfq2fzCpZpuQltfzgAHGuDnf5vrO');
+
 define('CALLURL', "https://{$domainName}/wp-content/themes/memberlite-child-master/pte_chat");
 
 define('FAX_DOCUMO_API_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxYzA3MDUxMS04NDcxLTQ5ZDItOWVmYS0yOTdmMWNjY2QwMDQiLCJpYXQiOjE1OTYwNjExNzR9.LjQuTk6iEL0oh6989vKNNoJZQLXfxT3O5EQA69IMzEU');
