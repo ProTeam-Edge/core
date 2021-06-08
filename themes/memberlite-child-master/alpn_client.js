@@ -2581,6 +2581,8 @@ function pte_setup_window_onload() {
 							console.log(syncClient);
 							console.log('syncClient');
 							//firebase addition
+							getChatClient = new Twilio.Chat.Client.create(data.token);
+
 							if (firebase && firebase.messaging()) {
 
 								// requesting permission to use push notifications
@@ -2590,6 +2592,9 @@ function pte_setup_window_onload() {
 								firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
 							console.log('reached token');
 							console.log(fcmToken);
+							getChatClient.then(function (chatClient) {
+								chatClient.setPushRegistrationId('fcm', fcmToken);
+							})
 						//	syncClient.setPushRegistrationId('fcm', fcmToken);
 									// continue with Step 7 here
 									// ...
@@ -2605,6 +2610,9 @@ function pte_setup_window_onload() {
 								// can't request permission or permission hasn't been granted to the web app by the user
 								});
 								firebase.messaging().onMessage(payload => {
+									getChatClient.then(function (chatClient) {
+										chatClient.handlePushNotification(payload);
+									})
 									console.log(payload)
 								//	alert('reached')
 								//	syncClient.handlePushNotification(payload);
