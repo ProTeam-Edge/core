@@ -69,7 +69,7 @@ function usernetwork_shortcode($attr) {
 						alpn_user_topic_type_id = {$userTopicTypeId};
 						alpn_contact_topic_type_id = {$contactTopicTypeId};
 						alpn_user_displayname = '{$userDisplayName}';
-						alpn_user_firstName = '{firstName}';
+						alpn_user_firstName = '{$firstName}';
 						alpn_user_email = '{$userEmail}';
 						alpn_avatar_baseurl = '{$avatarUrl}';
 						alpn_avatar_handle = '{$userImageHandle}';
@@ -101,7 +101,7 @@ function usernetwork_shortcode($attr) {
 						alpn_user_topic_type_id = {$userTopicTypeId};
 						alpn_contact_topic_type_id = {$contactTopicTypeId};
 						alpn_user_displayname = '{$userDisplayName}';
-						alpn_user_firstName = '{firstName}';
+						alpn_user_firstName = '{$firstName}';
 						alpn_user_email = '{$userEmail}';
 						alpn_avatar_baseurl = '{$avatarUrl}';
 						alpn_avatar_handle = '{$userImageHandle}';
@@ -147,7 +147,7 @@ function usernetwork_shortcode($attr) {
 						alpn_user_topic_type_id = {$userTopicTypeId};
 						alpn_contact_topic_type_id = {$contactTopicTypeId};
 						alpn_user_displayname = '{$userDisplayName}';
-						alpn_user_firstName = '{firstName}';
+						alpn_user_firstName = '{$firstName}';
 						alpn_user_email = '{$userEmail}';
 						alpn_avatar_baseurl = '{$avatarUrl}';
 						alpn_avatar_handle = '{$userImageHandle}';
@@ -260,7 +260,7 @@ function usernetwork_shortcode($attr) {
 				alpn_user_topic_type_id = {$userTopicTypeId};
 				alpn_contact_topic_type_id = {$contactTopicTypeId};
 				alpn_user_displayname = '{$userDisplayName}';
-				alpn_user_firstName = '{firstName}';
+				alpn_user_firstName = '{$firstName}';
 				alpn_user_email = '{$userEmail}';
 				alpn_avatar_baseurl = '{$avatarUrl}';
 				alpn_avatar_handle = '{$userImageHandle}';
@@ -311,7 +311,7 @@ function usernetwork_shortcode($attr) {
 						 alpn_user_topic_type_id = {$userTopicTypeId};
  						 alpn_contact_topic_type_id = {$contactTopicTypeId};
 						 alpn_user_displayname = '{$userDisplayName}';
-						 alpn_user_firstName = '{firstName}';
+						 alpn_user_firstName = '{$firstName}';
 						 alpn_user_email = '{$userEmail}';
 						 alpn_avatar_baseurl = '{$avatarUrl}';
 						 alpn_avatar_handle = '{$userImageHandle}';
