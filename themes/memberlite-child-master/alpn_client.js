@@ -2615,7 +2615,7 @@ function pte_setup_window_onload() {
 										alert('New message from '+payload.data.author+'\n'+payload.data.twi_body)
 										chatClient.handlePushNotification(payload);
 									})
-									console.log(payload+' alpbn_client.js')
+									console.log('aclient '+payload)
 								//	alert('reached')
 								//	syncClient.handlePushNotification(payload);
 
