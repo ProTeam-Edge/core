@@ -2612,7 +2612,7 @@ function pte_setup_window_onload() {
 								});
 								firebase.messaging().onMessage(payload => {
 									getChatClient.then(function (chatClient) {
-										alert('notification received')
+									
 										chatClient.handlePushNotification(payload);
 									})
 									console.log(payload)
