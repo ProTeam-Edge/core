@@ -2593,7 +2593,7 @@ function pte_setup_window_onload() {
 							console.log('reached token');
 							console.log(fcmToken);
 							getChatClient.then(function (chatClient) {
-						
+
 								chatClient.setPushRegistrationId('fcm', fcmToken);
 							})
 						//	syncClient.setPushRegistrationId('fcm', fcmToken);
@@ -2607,12 +2607,19 @@ function pte_setup_window_onload() {
 								}).catch((err) => {
 							console.log('firebase error');
 							console.log(err);
- 
+
 								// can't request permission or permission hasn't been granted to the web app by the user
+
+
 								});
 								firebase.messaging().onMessage(payload => {
 									getChatClient.then(function (chatClient) {
 										alert('notification received')
+
+										//instead of calling the chat client here, using
+										// 	pte_message_chat_window(messageData);
+
+
 										chatClient.handlePushNotification(payload);
 									})
 									console.log(payload)
@@ -2713,7 +2720,7 @@ function pte_setup_window_onload() {
 								theme: "bootstrap",
 								width: '137px',
 								allowClear: false,
-								placeholder: 'Filter...',
+								placeholder: 'Filter Topics...',
 								minimumResultsForSearch: -1
 							});
 						},

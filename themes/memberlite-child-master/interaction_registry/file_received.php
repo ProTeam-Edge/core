@@ -36,7 +36,7 @@ function pte_get_registry_file_received() {
             $requestData['to_from'] = 'From';
             $requestData['interaction_complete'] = true;
             $requestData['widget_type_id'] = "information";
-            $requestData['information_title'] = "|style_2b|File |style_1b|Received|style_1e| Email Route|style_2e|";
+  //          $requestData['information_title'] = "|style_2b|File |style_1b|Received|style_1e| Email Route|style_2e|";
 
             $requestData['buttons'] =  array(
               "file" => true
