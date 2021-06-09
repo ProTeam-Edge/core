@@ -2606,13 +2606,15 @@ function pte_setup_window_onload() {
 								});
 								}).catch((err) => {
 							console.log('firebase error');
-							console.log(err);
+						console.log(err);
  
 								// can't request permission or permission hasn't been granted to the web app by the user
 								});
 								firebase.messaging().onMessage(payload => {
 									getChatClient.then(function (chatClient) {
+										if(payload.data.author==alpn_user_firstName) {
 										alert('New message from '+payload.data.author+'\n'+payload.data.twi_body)
+										}
 										chatClient.handlePushNotification(payload);
 									})
 									console.log(alpn_user_displayname);
