@@ -30,6 +30,7 @@ function usernetwork_shortcode($attr) {
 			$domId = $results[0]->dom_id;
 			$userName = $results[0]->name;
 			$userDisplayName = addslashes(trim($results[0]->owner_givenname . ' ' . $results[0]->owner_familyname));
+			$firstName = addslashes(trim($results[0]->owner_givenname ));
 			$syncId = $results[0]->sync_id;
 			$standardColorCount = PTE_STANDARD_COLOR_COUNT;
 		} else {
@@ -68,6 +69,7 @@ function usernetwork_shortcode($attr) {
 						alpn_user_topic_type_id = {$userTopicTypeId};
 						alpn_contact_topic_type_id = {$contactTopicTypeId};
 						alpn_user_displayname = '{$userDisplayName}';
+						alpn_user_firstName = '{firstName}';
 						alpn_user_email = '{$userEmail}';
 						alpn_avatar_baseurl = '{$avatarUrl}';
 						alpn_avatar_handle = '{$userImageHandle}';
@@ -99,6 +101,7 @@ function usernetwork_shortcode($attr) {
 						alpn_user_topic_type_id = {$userTopicTypeId};
 						alpn_contact_topic_type_id = {$contactTopicTypeId};
 						alpn_user_displayname = '{$userDisplayName}';
+						alpn_user_firstName = '{firstName}';
 						alpn_user_email = '{$userEmail}';
 						alpn_avatar_baseurl = '{$avatarUrl}';
 						alpn_avatar_handle = '{$userImageHandle}';
@@ -144,6 +147,7 @@ function usernetwork_shortcode($attr) {
 						alpn_user_topic_type_id = {$userTopicTypeId};
 						alpn_contact_topic_type_id = {$contactTopicTypeId};
 						alpn_user_displayname = '{$userDisplayName}';
+						alpn_user_firstName = '{firstName}';
 						alpn_user_email = '{$userEmail}';
 						alpn_avatar_baseurl = '{$avatarUrl}';
 						alpn_avatar_handle = '{$userImageHandle}';
@@ -256,6 +260,7 @@ function usernetwork_shortcode($attr) {
 				alpn_user_topic_type_id = {$userTopicTypeId};
 				alpn_contact_topic_type_id = {$contactTopicTypeId};
 				alpn_user_displayname = '{$userDisplayName}';
+				alpn_user_firstName = '{firstName}';
 				alpn_user_email = '{$userEmail}';
 				alpn_avatar_baseurl = '{$avatarUrl}';
 				alpn_avatar_handle = '{$userImageHandle}';
@@ -306,6 +311,7 @@ function usernetwork_shortcode($attr) {
 						 alpn_user_topic_type_id = {$userTopicTypeId};
  						 alpn_contact_topic_type_id = {$contactTopicTypeId};
 						 alpn_user_displayname = '{$userDisplayName}';
+						 alpn_user_firstName = '{firstName}';
 						 alpn_user_email = '{$userEmail}';
 						 alpn_avatar_baseurl = '{$avatarUrl}';
 						 alpn_avatar_handle = '{$userImageHandle}';
