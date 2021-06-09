@@ -2615,7 +2615,7 @@ function pte_setup_window_onload() {
 										
 										chatClient.handlePushNotification(payload);
 									})
-									console.log(payload)
+									console.log(payload+' alpbn_client.js')
 								//	alert('reached')
 								//	syncClient.handlePushNotification(payload);
 
