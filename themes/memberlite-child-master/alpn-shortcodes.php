@@ -352,7 +352,7 @@ function usernetwork_shortcode($attr) {
 				<span style='display: inline-block;'><i class='far fa-plus-circle alpn_icons' title='Add Topic' onclick='alpn_mission_control(\"add_topic\");'></i></span>
 			</div>
 			</div>
-			<div id='alpn_topic_container_left' class='alpn_topic_container_left pte_hidden_for_now'><select id='alpn_selector_topic_filter' class='alpn_selector'><option></option></select></div>
+			<div id='alpn_topic_container_left' class='alpn_topic_container_left'><select id='alpn_selector_topic_filter' class='alpn_selector'><option></option></select></div>
 			";
 			$html .= do_shortcode("[wpdatatable id=3]");
 
@@ -364,7 +364,7 @@ function usernetwork_shortcode($attr) {
 
 		break;
 
-		case 'task':
+		case 'task':  //Interactions
 
 		// <i class='far fa-repeat-alt' style='color: #3172B6; margin-right: 5px;'></i>18
 		// <i class='far fa-pause-circle' style='color: #3172B6; margin-left: 15px;'></i>
