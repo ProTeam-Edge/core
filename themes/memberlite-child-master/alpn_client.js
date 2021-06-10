@@ -2612,10 +2612,13 @@ function pte_setup_window_onload() {
 								});
 								firebase.messaging().onMessage(payload => {
 									getChatClient.then(function (chatClient) {
+										var author = payload.data.author;
+										if(typeof author !== 'undefined'){
 										if(payload.data.author==alpn_user_firstName) {
 										alert('New message from '+payload.data.author+'\n'+payload.data.twi_body)
 										}
 										chatClient.handlePushNotification(payload);
+										}
 									})
 									console.log(alpn_user_displayname);
 									console.log(payload.data)
