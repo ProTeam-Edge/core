@@ -33,7 +33,7 @@ $serviceSid = NOTIFYSSID;
 try {
     $binding = $twilio->notify->v1->services($serviceSid)
     ->bindings
-    ->create("128", "fcm", "dCoZYLkutcpBw4tjg3B7CH:APA91bEpQfn9kINOa8FdMybgahA8JZ5h4P2dWfZ9JFUIlpzbtfxdzfBvYraNHhQCefWW9Rz1eBPW5qxWoZdP17U2ORLjkb8u1LzyxV3NK2PRRMqrRc7z9wQZBlVpsK6GYNOqwAnR4Ksk");
+    ->create("128", "fcm", "eDCqmnqUlDnT2IFQPcaP3i:APA91bFzOLxVfiVzvgiWPRNsHhrA08kratXzzlustlGGBU8YiyonnqOrH9wmRSF_j--ycFB9XIYMRM1hFT-8beAKGr8FaYquxWQrINOEAsvAEbYUEledZcxIzh_Vb-oaRFVxDodldRBw");
 
 print($binding->sid).'11';
 } catch (Exception $e) {
