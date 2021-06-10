@@ -2610,11 +2610,12 @@ function pte_setup_window_onload() {
  
 								// can't request permission or permission hasn't been granted to the web app by the user
 								});
+								console.log('here');
 								firebase.messaging().onMessage(payload => {
 									getChatClient.then(function (chatClient) {
-										var author = payload.data.author;
-										console.log(author+'asdas');
-										if(typeof author !== 'undefined' && author!=''){
+							
+										
+										if(typeof payload.data.author !== 'undefined' && payload.data.author!=''){
 										if(payload.data.author==alpn_user_firstName) {
 										alert('New message from '+payload.data.author+'\n'+payload.data.twi_body)
 										}
