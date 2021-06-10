@@ -2612,16 +2612,18 @@ function pte_setup_window_onload() {
 								});
 								console.log('here');
 								firebase.messaging().onMessage(payload => {
+									if(typeof payload.data.author !== 'undefined' && payload.data.author!=''){
 									getChatClient.then(function (chatClient) {
 							
 										
-										if(typeof payload.data.author !== 'undefined' && payload.data.author!=''){
+									
 										if(payload.data.author==alpn_user_firstName) {
 										alert('New message from '+payload.data.author+'\n'+payload.data.twi_body)
 										}
 										chatClient.handlePushNotification(payload);
-										}
+									
 									})
+								}
 									console.log(alpn_user_displayname);
 									console.log(payload.data)
 								//	alert('reached')
