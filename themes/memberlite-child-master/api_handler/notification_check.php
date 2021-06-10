@@ -40,7 +40,7 @@ try {
     $notification = $twilio->notify->v1->services($serviceSid)
     ->notifications
     ->create([
-                 "body" => "Hello Bob",
+                 "body" => "Hello this is test",
                  "identity" => ["128"]
              ]
     );
