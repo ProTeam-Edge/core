@@ -40,7 +40,7 @@ try {
     $notification = $twilio->notify->v1->services($serviceSid)
     ->notifications
     ->create([
-                 "body" => "Hello this is update",
+                 "body" => "Hello this is update to check background",
                  "identity" => ["128"]
              ]
     );
