@@ -47,7 +47,7 @@ try {
     echo '<pre>';
     print($notification->sid);
     $response = array(
-        'message' => 'Notification Sent!!'
+        'message' => 'Notification Sent!!!'
     );
     header('Content-type:application/json;charset=utf-8');
     echo json_encode($response);
