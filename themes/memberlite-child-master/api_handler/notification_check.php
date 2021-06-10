@@ -44,7 +44,8 @@ try {
                  "identity" => ["128"]
              ]
     );
-
+    echo '<pre>';
+    print($notification->sid);
     $response = array(
         'message' => 'Notification Sent!'
     );
