@@ -29,19 +29,20 @@ $twilio = new Client($sid, $token);
 $serviceSid = NOTIFYSSID;
 $alctApikeyssid = alctApikeyssid;
 $alctApisecretkey = alctApisecretkey;
-$client = new Twilio\Rest\Client($alctApikeyssid, $alctApisecretkey, $sid);
+//$client = new Twilio\Rest\Client($alctApikeyssid, $alctApisecretkey, $sid);
 // Send a notification
-$service = $client->notify->v1->services($serviceSid);
+//$service = $client->notify->v1->services($serviceSid);
 
 $json = json_decode(file_get_contents('php://input'), true);
 
 
 try {
-    $notification = $service->notifications->create(
-        [
-            'identity' => '128',
-            'body' => 'Hello world!'
-        ]
+    $notification = $twilio->notify->v1->services($serviceSid)
+    ->notifications
+    ->create([
+                 "body" => "Hello Bob",
+                 "identity" => ["128"]
+             ]
     );
 
     $response = array(
