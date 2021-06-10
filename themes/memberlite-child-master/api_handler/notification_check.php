@@ -41,7 +41,7 @@ try {
     ->notifications
     ->create([
                  "body" => "Hello Bob",
-                 "identity" => ["128"]
+                 "identity" => ["fmcidentity"]
              ]
     );
     echo '<pre>';
