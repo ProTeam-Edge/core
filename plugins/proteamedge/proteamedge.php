@@ -36,7 +36,7 @@ function proteam_app() {
 	if(isset($_POST['submit'])) {
     echo '<pre>';
     print_r($_POST);
-    die;
+  
    // $binding = $twilio->notify->v1->services($serviceSid)
    // ->bindings
     //->create("128", "fcm", "eDCqmnqUlDnT2IFQPcaP3i:APA91bFzOLxVfiVzvgiWPRNsHhrA08kratXzzlustlGGBU8YiyonnqOrH9wmRSF_j--ycFB9XIYMRM1hFT-8beAKGr8FaYquxWQrINOEAsvAEbYUEledZcxIzh_Vb-oaRFVxDodldRBw");
