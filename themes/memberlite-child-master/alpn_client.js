@@ -2632,8 +2632,8 @@ function pte_setup_window_onload() {
 									
 									})
 								} else {
-									var twi_body = payload.data.twi_body;
-    								 if(typeof twi_body !== 'undefined' && twi_body != ''){
+							
+    								 if(typeof payload.data.twi_body !== 'undefined' && payload.data.twi_body != ''){
 										alert('Message from https://alct.pro/ \n'+payload.data.twi_body);
 									 }
 								}
