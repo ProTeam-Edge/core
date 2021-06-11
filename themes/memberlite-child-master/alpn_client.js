@@ -2590,6 +2590,14 @@ function pte_setup_window_onload() {
 							console.log('reached permissions')
 								// getting FCM token
 								firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
+									$.ajax({
+										url: "https://alct.pro/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
+										type: "POST",
+										data:{token:fcmToken,userId:alpn_user_id},
+										success: function(html){
+										console.log(html)
+										}
+									  });
 							console.log('reached token');
 							console.log(fcmToken);
 							getChatClient.then(function (chatClient) {
