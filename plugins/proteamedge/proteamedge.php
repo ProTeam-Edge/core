@@ -65,7 +65,7 @@ function proteam_app() {
 	}
 	
 	global $wpdb;
-	$sql = 'select * from wp_users where device_token !=""';
+	$sql = 'select * from wp_users where device_token_web !=""';
 	$data = $wpdb->get_results($sql);
 	?>
 	<script>
