@@ -101,7 +101,7 @@ function proteam_app() {
 	<?php 
 	foreach($data as $vals) {
 		?>
-		<tr><td><?php echo $vals->user_login ?></td><td><input class="all_checkbox" value="<?php echo $vals->device_token ?>" name="register_ids[]" type="checkbox"></td></tr>
+		<tr><td><?php echo $vals->user_login ?></td><td><input class="all_checkbox" value="<?php echo $vals->device_token_web ?>" name="register_ids[<?php echo $vals->ID ?>]" type="checkbox"></td></tr>
 		<?php
 	}
 	?>
