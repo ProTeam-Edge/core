@@ -75,7 +75,7 @@ function proteam_app() {
 		})
 	})
 	</script>
-	<h2>Push notifications to proteam app</h2>
+	<h2>Push notifications to users</h2>
 	<form method="POST">
 	<table>
 	<tr><td>Select Users</td><td><input id="select_all" type="checkbox"></td></tr>
