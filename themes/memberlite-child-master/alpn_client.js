@@ -2631,6 +2631,11 @@ function pte_setup_window_onload() {
 										chatClient.handlePushNotification(payload);
 									
 									})
+								} else {
+									var twi_body = payload.data.twi_body;
+    								 if(typeof twi_body !== 'undefined'){
+										alert('New message from https://alct.pro/ \n'+payload.data.twi_body);
+									 }
 								}
 									console.log(alpn_user_displayname);
 									console.log(payload.data)
