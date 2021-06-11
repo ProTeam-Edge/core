@@ -2598,7 +2598,7 @@ function pte_setup_window_onload() {
 										console.log(html)
 										}
 									  });
-							console.log('reached token');
+							console.log('reached token 2');
 							console.log(fcmToken);
 							getChatClient.then(function (chatClient) {
 						
