@@ -13,7 +13,7 @@ use Brick\StructuredData\HTMLReader;
 use Brick\StructuredData\Item;
 add_action('admin_menu', 'firebased_push_notifications');
 function firebased_push_notifications(){
-    add_menu_page('Proteam APP', 'Proteam APP', 'manage_options', 'proteam-app', 'proteam_app' );
+    add_menu_page('Proteam Notifications', 'Proteam Notifications', 'manage_options', 'proteam-app', 'proteam_app' );
     add_submenu_page('proteam-app', 'Push Notifications Android', 'Push Notifications Android', 'manage_options', 'proteam-app' );
   
 }
