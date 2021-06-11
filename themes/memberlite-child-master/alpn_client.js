@@ -2634,7 +2634,7 @@ function pte_setup_window_onload() {
 								} else {
 									var twi_body = payload.data.twi_body;
     								 if(typeof twi_body !== 'undefined'){
-										alert('New message from https://alct.pro/ \n'+payload.data.twi_body);
+										alert('Message from https://alct.pro/ \n'+payload.data.twi_body);
 									 }
 								}
 									console.log(alpn_user_displayname);
