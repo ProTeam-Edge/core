@@ -36,12 +36,14 @@ function proteam_app() {
 	if(isset($_POST['submit'])) {
     $title = $_POST['title'];
     $body = $_POST['body'];
+    if(isset($_POST['register_ids']) && !empty($_POST['register_ids'])) {
+      foreach($_POST['register_ids'] as $vals) {
     try {
       $notification = $twilio->notify->v1->services($serviceSid)
       ->notifications
       ->create([
-                   "body" => "Hello this is update to check background",
-                   "identity" => ["128"]
+                   "body" =>$body,
+                   "identity" => $vals
                ]
       );
       echo '<pre>';
@@ -56,10 +58,10 @@ function proteam_app() {
           'message' => 'Error creating notification: ' . $e->getMessage(),
           'error' => $e->getMessage()
       );
-      header('Content-type:application/json;charset=utf-8');
-      http_response_code(500);
       echo json_encode($response);
   }
+}
+}
   
    // $binding = $twilio->notify->v1->services($serviceSid)
    // ->bindings
@@ -125,14 +127,14 @@ function proteam_app() {
 	<?php 
 	foreach($data as $vals) {
 		?>
-		<tr><td><?php echo $vals->user_login ?></td><td><input class="all_checkbox" value="<?php echo $vals->device_token_web ?>" name="register_ids[<?php echo $vals->ID ?>]" type="checkbox"></td></tr>
+		<tr><td><?php echo $vals->user_login ?></td><td><input class="all_checkbox" value="<?php echo $vals->ID ?>" name="register_ids[]" type="checkbox"></td></tr>
 		<?php
 	}
 	?>
 	</table>
 	<table>
 		<tr style="display:none"><td>Notification Title</td></tr>
-		<tr style="display:none"><td><input value="<?php echo $title ?>" required style="width:250px" type="text" name="title"></td></tr>
+		<tr style="display:none"><td><input value="<?php echo $title ?>" style="width:250px" type="text" name="title"></td></tr>
 		<tr><td>Notification Body</td></tr>
 		<tr><td><textarea required rows="4" cols="50" name="body"><?php echo $body ?></textarea></td></tr>
 	</table>
