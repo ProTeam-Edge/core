@@ -11,6 +11,11 @@
 use Brick\StructuredData\Reader\RdfaLiteReader;
 use Brick\StructuredData\HTMLReader;
 use Brick\StructuredData\Item;
+use Twilio\Jwt\AccessToken;
+use Twilio\Jwt\Grants\ChatGrant;
+use Twilio\Rest\Client;
+$root = $_SERVER['DOCUMENT_ROOT'];
+require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/sdk/vendor/autoload.php';
 add_action('admin_menu', 'firebased_push_notifications');
 function firebased_push_notifications(){
     add_menu_page('Proteam Notifications', 'Proteam Notifications', 'manage_options', 'proteam-app', 'proteam_app' );
@@ -19,11 +24,8 @@ function firebased_push_notifications(){
 }
 function proteam_app() {
   include_once('../pte_config.php');
-  $root = $_SERVER['DOCUMENT_ROOT'];
-  require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/sdk/vendor/autoload.php';
-  use Twilio\Jwt\AccessToken;
-  use Twilio\Jwt\Grants\ChatGrant;
-  use Twilio\Rest\Client;
+ 
+
   $sid    = ACCOUNT_SID;
   $token  =AUTHTOKEN;
   $twilio = new Client($sid, $token);
