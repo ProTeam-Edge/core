@@ -1,5 +1,6 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
+global $wpdb;
 if(isset($_POST['token']) && !empty($_POST['token'])) {
     $token = $_POST['token'];
     $userId = $_POST['userId'];
