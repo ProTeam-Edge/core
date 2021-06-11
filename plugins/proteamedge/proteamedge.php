@@ -18,17 +18,30 @@ function firebased_push_notifications(){
   
 }
 function proteam_app() {
+  include_once('../pte_config.php');
+  $root = $_SERVER['DOCUMENT_ROOT'];
+  require_once $root.'/wp-content/themes/memberlite-child-master/api_handler/sdk/vendor/autoload.php';
+  use Twilio\Jwt\AccessToken;
+  use Twilio\Jwt\Grants\ChatGrant;
+  use Twilio\Rest\Client;
+  $sid    = ACCOUNT_SID;
+  $token  =AUTHTOKEN;
+  $twilio = new Client($sid, $token);
+  $serviceSid = NOTIFYSSID;
 	$redirect_url = site_url().'/wp-admin/admin.php?page=proteam-app';
 	$firebased_key = 'AAAAAzCVXJg:APA91bHVoQrFxoia9FlJvPKFqWAR79-pS2HPjMGjMYgfvEm5juF2OAnIncUc8fL_2p6QuUJGDgtGQ2yZ6MCYzCbuWF6K-PMWw2dzCOdacXV-2_lMslS-N6JFGjUEAnRt8yotd8xNwJca';
 	$title = $body = '';
 	if(isset($_POST['submit'])) {
+    $binding = $twilio->notify->v1->services($serviceSid)
+    ->bindings
+    ->create("128", "fcm", "eDCqmnqUlDnT2IFQPcaP3i:APA91bFzOLxVfiVzvgiWPRNsHhrA08kratXzzlustlGGBU8YiyonnqOrH9wmRSF_j--ycFB9XIYMRM1hFT-8beAKGr8FaYquxWQrINOEAsvAEbYUEledZcxIzh_Vb-oaRFVxDodldRBw");
 		/* if(isset($_POST['title'])) {
 			$title = $_POST['title'];
 		}
 		if(isset($_POST['body'])) {
 			$body = $_POST['body'];
 		} */
-		if(isset($_POST['register_ids']) && !empty($_POST['register_ids'])) {
+			/*if(isset($_POST['register_ids']) && !empty($_POST['register_ids'])) {
 			$register_ids = $_POST['register_ids'];
 			$msg = array
 			(
@@ -61,6 +74,7 @@ function proteam_app() {
 		else {
 			echo '<script>alert("No device ids found. Either device ids are not submitted to db or you have not selected any user.")</script>';
 		}
+    */
 		
 	}
 	
