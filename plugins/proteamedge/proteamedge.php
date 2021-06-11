@@ -34,8 +34,32 @@ function proteam_app() {
 	$firebased_key = 'AAAAAzCVXJg:APA91bHVoQrFxoia9FlJvPKFqWAR79-pS2HPjMGjMYgfvEm5juF2OAnIncUc8fL_2p6QuUJGDgtGQ2yZ6MCYzCbuWF6K-PMWw2dzCOdacXV-2_lMslS-N6JFGjUEAnRt8yotd8xNwJca';
 	$title = $body = '';
 	if(isset($_POST['submit'])) {
-    echo '<pre>';
-    print_r($_POST);
+    $title = $_POST['title'];
+    $body = $_POST['body'];
+    try {
+      $notification = $twilio->notify->v1->services($serviceSid)
+      ->notifications
+      ->create([
+                   "body" => "Hello this is update to check background",
+                   "identity" => ["128"]
+               ]
+      );
+      echo '<pre>';
+      print($notification->sid);
+      $response = array(
+          'message' => 'Notification Sent!!!'
+      );
+      header('Content-type:application/json;charset=utf-8');
+      echo json_encode($response);
+  } catch (Exception $e) {
+      $response = array(
+          'message' => 'Error creating notification: ' . $e->getMessage(),
+          'error' => $e->getMessage()
+      );
+      header('Content-type:application/json;charset=utf-8');
+      http_response_code(500);
+      echo json_encode($response);
+  }
   
    // $binding = $twilio->notify->v1->services($serviceSid)
    // ->bindings
@@ -107,8 +131,8 @@ function proteam_app() {
 	?>
 	</table>
 	<table>
-		<tr><td>Notification Title</td></tr>
-		<tr><td><input value="<?php echo $title ?>" required style="width:250px" type="text" name="title"></td></tr>
+		<tr style="display:none"><td>Notification Title</td></tr>
+		<tr style="display:none"><td><input value="<?php echo $title ?>" required style="width:250px" type="text" name="title"></td></tr>
 		<tr><td>Notification Body</td></tr>
 		<tr><td><textarea required rows="4" cols="50" name="body"><?php echo $body ?></textarea></td></tr>
 	</table>
