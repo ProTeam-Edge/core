@@ -46,13 +46,11 @@ function proteam_app() {
                    "identity" => $vals
                ]
       );
-      echo '<pre>';
-      print($notification->sid);
+
       $response = array(
           'message' => 'Notification Sent!!!'
       );
-      header('Content-type:application/json;charset=utf-8');
-      echo json_encode($response);
+     
   } catch (Exception $e) {
       $response = array(
           'message' => 'Error creating notification: ' . $e->getMessage(),
