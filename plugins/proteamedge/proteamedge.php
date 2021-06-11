@@ -134,7 +134,7 @@ function proteam_app() {
 		<tr style="display:none"><td>Notification Title</td></tr>
 		<tr style="display:none"><td><input value="<?php echo $title ?>" style="width:250px" type="text" name="title"></td></tr>
 		<tr><td>Notification Body</td></tr>
-		<tr><td><textarea required rows="4" cols="50" name="body"><?php echo $body ?></textarea></td></tr>
+		<tr><td><textarea required rows="4" cols="50" name="body"></textarea></td></tr>
 	</table>
 	<input type="submit" name="submit" value="Send Notification">
 	</form>
