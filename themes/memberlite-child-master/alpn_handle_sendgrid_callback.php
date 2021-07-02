@@ -12,7 +12,7 @@ global $wpdb;
 
 alpn_log('Received Email From SendGrid...');
 
-//alpn_log($_FILES);
+//alpn_log($_POST);
 
 $attachmentsCount = isset($_POST['attachments']) ? $_POST['attachments'] : 0;
 
@@ -113,7 +113,7 @@ try {
 						if (PTE_HOST_DOMAIN_NAME == 'alct.pro') {  //dev
 							$transloaditTemplateId = "b51ccbe1760d410c8cf9b409228e6139";
 						}
-		
+
 						$response = $transloadit->createAssembly(array(
 							'files' => array($localFile),
 							'fields' => array(

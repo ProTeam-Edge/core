@@ -88,22 +88,23 @@ function pte_add_to_proteam($data) {
   $state = isset($data['state']) && $data['state'] ? $data['state'] : "10";
 
   $defaultMemberRights = array(
-		'download' => '0',
-		'share' => '0',
-		'delete' => '0',
-		'fax'  => '0',
-		'email' => '0',
-		'new' => '1',
-		'edit' => '1',
-		'chat' => '1',
-		'action' => '1',
-		'print' => '1',
-		'transfer' => '1',
+    'delete' => 1,
+    'edit' => 1,
+    'new' => 1,
+    'links' => 1,
+    'chat' => 1,
+    'download_pdf' => 1,
+    'download_original' => 1,
+    'print' => 1,
+    'interaction_start' => 1
 		);
+
   $memberRights = isset($data['member_rights']) && $data['member_rights'] ? json_decode($data['member_rights'], true) : $defaultMemberRights;
 
   $connectedType = isset($data['connected_type']) && $data['connected_type'] ? $data['connected_type'] : "external";
   $processId = isset($data['process_id']) && $data['process_id'] ? $data['process_id'] : "";
+
+  $linkedTopicId = isset($data['linked_topic_id']) ? $data['linked_topic_id'] : 0;
 
 	$proTeamData = array( //TODO start IA and store processID
 		'owner_id' => $data['owner_id'],
@@ -114,8 +115,10 @@ function pte_add_to_proteam($data) {
 		'state' => $state,
     'connected_type' => $connectedType,
     'process_id' => $processId,
-		'member_rights' => json_encode($memberRights)
+		'member_rights' => json_encode($memberRights),
+    'linked_topic_id' => $linkedTopicId
 	);
+
 	$wpdb->insert( 'alpn_proteams', $proTeamData );
 
   return $wpdb->insert_id;
@@ -446,9 +449,9 @@ function pte_send_mail ($data) {
 
   $emailTemplateHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $emailTemplateHtml);
 
-  $replyFrom = $fromName . " (using ProTeam Edge)";
+  $replyFrom = $fromName . " (using Vitriva)";
 
-  $email->setFrom("sender@proteamedge.com", $replyFrom);
+  $email->setFrom("sender@vitriva.com", $replyFrom);
   $email->setReplyTo($fromEmail, $fromName);
 
   $email->setSubject($subject);
@@ -725,9 +728,9 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
           $iconImage = '6d906171ee3c42c492d350f52a0056d1.jpg';
           $sampleContact1 = array(
             0 => "{}",
-            4 => "Miranda",
+            4 => "Miranda (sample)",
             2 => "Chang",
-            6 => "Fiduciary (sample)",
+            6 => "Fiduciary",
             5 => "38",
             1 => "adipiscing@eratVivamusnisi.org",
             10 => "https://linkedin.com/arbella32",
@@ -740,9 +743,9 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
           $iconImage = 'b98c23c4d0c2447f83183d394ac8e211.jpg';
           $sampleContact2 = array(
             0 => "{}",
-            4 => "Rudyard",
+            4 => "Rudyard (sample)",
             2 => "Lambert",
-            6 => "Geriatrician (sample)",
+            6 => "Geriatrician",
             5 => "40",
             1 => "laoreet@Suspendisse.org",
             10 => "https://linkedin.com/lambertr01",
@@ -757,9 +760,9 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
           $iconImage = '03d5606550d740de82b9120a16c38ac1.jpg';
           $samplePerson1 = array(
             0 => "{}",
-            4 => "Harriet",
+            4 => "Harriet (sample)",
             2 => "Kalinski",
-            6 => "Customer (sample)",
+            6 => "Customer",
             5 => "41",
             1 => "hkalinski12@xfinity.com",
             10 => "",
@@ -776,12 +779,12 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
           $logoImage = 'c7791a4c74dc43e9897035d2b1e53536.png';
           $sampleOrganization1 = array(
             0 => "{}",
-            7 => "Acme Corporation",
+            7 => "Acme Corporation (sample)",
             5 => "(619) 555-1233",
             3 => "(408) 357-2824",
             2 => "info@acmecorp.cc",
             8 => "https://acmecorp.cc",
-            6 => "Maker of fine rockets and associated gear. (sample)"
+            6 => "Maker of fine rockets and associated gear."
           );
           $sampleOrganization1Id = pte_create_topic($value->form_id, $newOwnerId, $sampleOrganization1, $iconImage, $logoImage);
         }
@@ -789,35 +792,35 @@ function pte_create_default_topics($newOwnerId, $createSampleData = false) {
           $iconImage = '9deaa5a2e2b84bc590daa2c1a409d481.png';
           $sampleGeneral1 = array(
             0 => "{}",
-            2 => "White Paper Research",
-            1 => "A place to organize and discuss our findings and recommendations. (sample)"
+            2 => "White Paper Research (sample)",
+            1 => "A place to organize and discuss our findings and recommendations."
           );
           pte_create_topic($value->form_id, $newOwnerId, $sampleGeneral1, $iconImage);
         }
         if ($createSampleData && $value->type_key == $topicTypeMap['core_place']) {
           $samplePlace1 = array(
             0 => "{}",
-            8 => "Home",
+            8 => "Home (sample)",
             4 => "1029 Summer Breeze Street",
             1 => "San Diego",
             2 => "CA",
             3 => "96192",
             6 => "(619) 555-3957",
             5 => "(408) 357-2824",
-            7 => "Main Residence (sample)",
+            7 => "Main Residence",
             9 => ""
           );
           $samplePlace1Id = pte_create_topic($value->form_id, $newOwnerId, $samplePlace1);
           $samplePlace2 = array(
             0 => "{}",
-            8 => "Office",
+            8 => "Office (sample)",
             4 => "222 Borderline Avenue, Suite B",
             1 => "San Diego",
             2 => "CA",
             3 => "96193",
             6 => "(619) 555-9385",
             5 => "(408) 357-2824",
-            7 => "Headquarters (sample)",
+            7 => "Headquarters",
             9 => ""
           );
           $samplePlace2Id = pte_create_topic($value->form_id, $newOwnerId, $samplePlace2);
@@ -1531,7 +1534,7 @@ function get_routing_email_addresses() {
       $topicName = $value->name;
 
       $dottedName = str_replace(array(', ', ',', "'", '"'), array('.', '.', "", ""), $topicName);
-      $emailAddress = "{$dottedName} - ProTeam Edge Topic <{$value->email_route_id}@files.{$domainName}>";
+      $emailAddress = "{$dottedName} - Vitriva Topic <{$value->email_route_id}@files.{$domainName}>";
 
       $emailAddresses .= "<li class='pte_important_topic_scrolling_list_item'>";
       $emailAddresses .= "<div class='pte_scrolling_item_left' title='Copy Email Address to Clipboard'><div class='pte_pstn_topic_list pte_topic_link' onclick='pte_topic_link_copy_string(\"Email\", \"{$emailAddress}\");'><i class='far fa-copy' style='margin-right: 5px;'></i>" . $topicName  . "</div></div>";
@@ -2078,21 +2081,22 @@ function pte_proteam_state_change_sync($data){
   $ptState =  isset($data['state']) ? $data['state'] : 0;
   $ptId =  isset($data['proteam_row_id']) ? $data['proteam_row_id'] : 0;
   $ownerId = isset($data['owner_id']) ? $data['owner_id'] : 0;
+  $connectedId = isset($data['connected_id']) ? $data['connected_id'] : 0;
   $processId = isset($data['process_id']) ? $data['process_id'] : '';
+  $linkedTopicId = isset($data['linked_topic_id']) ? $data['linked_topic_id'] : 0;
 
 if ($connectedType && $ptState && $ptId) {
 
     $proTeamData = array(
       "connected_type" => $connectedType,
       "state" => $ptState,
-      "process_id" => $processId
+      "process_id" => $processId,
+      "linked_topic_id" => $linkedTopicId
     );
     $whereClause = array(
       "id" => $ptId
     );
     $wpdb->update("alpn_proteams", $proTeamData, $whereClause);
-
-    alpn_log('ProTeams Updated...');
 
     if ($ownerId) {
 
@@ -2105,6 +2109,7 @@ if ($connectedType && $ptState && $ptId) {
       pte_manage_user_sync($syncdata);
       alpn_log('ProTeams Sync Sent...');
     }
+
   }
 }
 
@@ -2548,11 +2553,39 @@ function pte_manage_cc_groups($operation, $data) {
 
       if ($channelId) {
         try {
-          $member = $twilio->chat->v2  //Add user to channel
-            ->services($chatServiceId)
-            ->channels($channelId)
-            ->members
-            ->create($userId);
+          $member = $twilio->chat->v2->services($chatServiceId)   //check if exists. Shouldn't need but
+                                    ->channels($channelId)
+                                    ->members($userId)
+                                    ->fetch();
+
+          $memberSid= $member->sid;
+
+        } catch (Exception $e) {
+            $response = array(
+                'message' =>  $e->getMessage(),
+                'code' => $e->getCode(),
+                'error' => $e
+            );
+            alpn_log('member not found, add');
+            alpn_log($response);
+            $memberSid = false;
+        }
+
+        try {
+
+          if (!$memberSid) {
+
+            alpn_log("Adding Member.." . $userId);
+
+
+            $member = $twilio->chat->v2
+              ->services($chatServiceId)
+              ->channels($channelId)
+              ->members
+              ->create($userId);
+          }
+
+          alpn_log("About to Send.." . $userId);
 
           $messageAttributes = array("message_type" => "message");
           $message = $twilio->chat->v2  //Joined Message
@@ -2586,8 +2619,17 @@ function pte_manage_cc_groups($operation, $data) {
 
 		break;
 
+
+
     case "delete_member":
+
+
+    alpn_log("Deleting Member..." . $userId);
+    alpn_log($data);
     $channelId = pte_manage_cc_groups("get_create_channel", $data);
+
+    alpn_log("Deleting Member 1..." . $channelId);
+
 
     if ($channelId) {  //TODO SEEMS Like this should not require a loop
       try {
@@ -2598,6 +2640,14 @@ function pte_manage_cc_groups($operation, $data) {
           ->read([], 100);
 
           $memberCount = count($members);
+
+
+          alpn_log("Deleting Members");
+          alpn_log($data);
+          alpn_log($memberCount);
+
+
+
            foreach ($members as $record) {
              if ($record->identity == $userId) {
 
@@ -3009,7 +3059,10 @@ function pte_create_panel($value){
     'topicAccessLevel' => $topicAccessLevel,
     'state' => $value->state,
     'checked' => $checked,
-    'connected_contact_status' => $connectedContactStatus
+    'connected_contact_status' => $connectedContactStatus,
+    'linked_topic_id' => $value->linked_topic_id,
+    'linked_topic_name' => $value->linked_topic_name,
+    'linked_topic_dom_id' => $value->linked_topic_dom_id
   );
   return pte_make_rights_panel_view($topicPanelData);
 }
@@ -3017,11 +3070,15 @@ function pte_create_panel($value){
 
 function  pte_make_rights_panel_view($panelData) {
 
-  // alpn_log("pte_make_rights_panel_view");
-  // alpn_log($panelData);
+  alpn_log("pte_make_rights_panel_view");
+  alpn_log($panelData);
 
 	$topicStates = array('10' => "Added", '20' => "Invited", '30' => "Joined", '40' => "Linked", '80' => "Email Sent", '90' => "Declined");
 
+  $linkedTopicId = $panelData['linked_topic_id'];
+  $linkedTopicName = $panelData['linked_topic_name'];
+  $linkedTopicDomId = $panelData['linked_topic_dom_id'];
+  $proTeamRowId = $panelData['proTeamRowId'];
 	$proTeamRowId = $panelData['proTeamRowId'];
   $topicNetworkId = $panelData['topicNetworkId'];
 	$topicDomId = $panelData['topicDomId'];
@@ -3046,9 +3103,16 @@ function  pte_make_rights_panel_view($panelData) {
     $connectedContactStatusIcon = "<i class='far fa-user-check' title='Member, Connected'></i>";
   }
 
+  if ($topicState == 40) {  //Linked Topic
+    $topicStateHtml ="<div title='Visit Linked Topic' data-topic-id='{$linkedTopicId}' data-topic-special='topic' data-topic-dom-id='{$linkedTopicDomId}' data-operation='to_topic_info_by_id' class='team_panel_topic_link' onclick='pte_handle_interaction_link_object(this);'><div class='team_panel_topic_link_icon'>{$linkedTopicName}&nbsp; <i class='far fa-link team_panel_topic_link_icon_actual'></i></div></div>";
+  } else {
+    $topicStateHtml = $topicStates[$topicState];
+  }
+
+
   $permissions = "
     <select id='alpn_select2_small_{$proTeamRowId}' class='alpn_select2_small' data-ptrid='{$proTeamRowId}'>
-      <option value='10' {$generalChecked}>General</option>
+      <option value='10' {$generalChecked}>Shared</option>
       <option value='30' {$restrictedChecked}>Restricted</option>
     </select>
   ";
@@ -3078,30 +3142,45 @@ function  pte_make_rights_panel_view($panelData) {
 
   } else {
     $html = "
-      <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
-        <div class='proTeamPanelUserOuter'>
-          <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
-          <div id='proTeamPanelUserData' class='proTeamPanelUserData'><span id='pte_topic_state'>{$topicStates[$topicState]}</span> &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
+
+    <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
+
+
+      <div class='pte_vault_row_50'>
+          <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName} &nbsp;{$connectedContactStatusIcon}</div>
+          <div id='proTeamPanelUserData' class='proTeamPanelUserData'><span id='pte_topic_state'>{$topicStateHtml}</span></div>
           <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
-        </div>
-        <div class='proTeamPanelSettings'>
-          <div id='pte_proteam_controls' class='pte_proteam_controls' data-id='{$topicNetworkId}'>
-            <table class='pte_proteam_rights_table' data-pte-proteam-id='{$proTeamRowId}'>
-              <tr class='pte_proteam_row'>
-                <td class='pte_proteam_cell_left'>
-                  <div style='display: inline-block; vertical-align: middle; margin-left: 0px; margin-right: 5px; margin-bottom: 3px; font-weight: bold;'>Access:</div><div style='display: inline-block; vertical-align: middle; margin-bottom: 3px; height: 16px;'>{$permissions}</div>
-                  <div class='pte_proteam_row_rights'>
-                    <div class='pte_proteam_cell_rights_left'>{$print}</div><div class='pte_proteam_cell_rights_right'>$share</div>
-                  </div>
-                  <div class='pte_proteam_row_rights'>
-                    <div class='pte_proteam_cell_rights_left'>{$download}</div><div class='pte_proteam_cell_rights_right'></div>
-                  </div>
-                </td>
-              </tr>
-            </table>
-          </div>
-        </div>
       </div>
+
+
+
+      <div class='pte_vault_row_50'>
+
+
+        <div id='pte_proteam_controls' class='pte_proteam_controls' data-id='{$topicNetworkId}'>
+          <table class='pte_proteam_rights_table' data-pte-proteam-id='{$proTeamRowId}'>
+            <tr class='pte_proteam_row'>
+              <td class='pte_proteam_cell_left'>
+                <div style='display: inline-block; vertical-align: middle; margin-left: 0px; margin-right: 5px; margin-bottom: 3px; font-weight: bold;'>Access:</div><div style='display: inline-block; vertical-align: middle; margin-bottom: 3px; height: 16px;'>{$permissions}</div>
+                <div class='pte_proteam_row_rights'>
+                  <div class='pte_proteam_cell_rights_left'>{$print}</div><div class='pte_proteam_cell_rights_right'>$share</div>
+                </div>
+                <div class='pte_proteam_row_rights'>
+                  <div class='pte_proteam_cell_rights_left'>{$download}</div><div class='pte_proteam_cell_rights_right'></div>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+
+
+      </div>
+
+
+
+
+
       ";
   }
 	return $html;

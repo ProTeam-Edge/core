@@ -26,9 +26,6 @@ function pte_get_registry_proteam_invitation_received() {
 
           $requestData = $token->getValue("process_context");
 
-          alpn_log("PTIR");
-          alpn_log($requestData);
-
           $requestData['interaction_type_name'] = "Team Invite";
           $requestData['interaction_template_name'] = $requestData["template_name"];
           $requestData['interaction_type_status'] = "Received";
@@ -55,7 +52,7 @@ function pte_get_registry_proteam_invitation_received() {
             $requestData['do_not_save_interaction'] = true;
             $token->setValue("process_context", $requestData);
             return;
-          }
+          } //end recal interaction
 
           if ($requestOperation == 'update_interaction') {
             alpn_log('Interaction Received Update Interaction');
@@ -71,57 +68,68 @@ function pte_get_registry_proteam_invitation_received() {
             $requestData['request_operation'] = '';
             $token->setValue("process_context", $requestData);
             throw new WaitExecutionException();  //proper way to stop the process and wait
+          } //end update interaction
+
+          if ($buttonOperation == 'decline') {
+            alpn_log('Interaction Received Handle Decline.');
+            //Save and File Away
+            $token->setValue("process_context", $requestData);
+            return; //if successful
           }
 
-          if ($buttonOperation == 'accept' || $buttonOperation == 'decline') {
 
-            if ($buttonOperation == 'accept') {
-              alpn_log('Interaction Received Handle Setting Up ProTeam Relationship.');
-              $connectionLinkType = $token->getValue("connection_link_type");
-              //	$topicStates = array('10' => "Added", '20' => "Invite Sent", '30' => "Joined", '40' => "Linked", '80' => "Email Sent", '90' => "Declined");
-              switch ($connectionLinkType) {
-                case '0': //Join
-                  $connectedState = '30';
-                  $connectedType = 'join';
-                break;
-                case '1': //Link to Existing Topic
-                  $connectedState = '40';
-                  $connectedType = 'link';
-                break;
-                case '2': //Create and Link to New Topic  -- NOT IMPLEMENTED IN FIRST RELEASE
-                  //alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
-                break;
-              }
+          if ($buttonOperation == 'accept') {
+            alpn_log('Interaction Received Handle Setting Up ProTeam Relationship.');
 
-              $proTeamData = array(
-                'owner_id' => $requestData['owner_id'],  //owner_id
-            		'topic_id' => $requestData['connection_link_topic_id'],  //this user's linked topic id
-            		'proteam_member_id' => $requestData['network_id'],
-            		'wp_id' => $requestData['connected_id'],
-                'connected_type' => $connectedType,
-                'access_level' => '10',
-                'state' => $connectedState,
-                'process_id' => $requestData['process_id'],
-                'member_rights' => false  //TODO uses default until we want to specify something here.
-              );
-              $proTeamRowId = pte_add_to_proteam($proTeamData);
-              $requestData['proteam_row_id'] = $proTeamRowId;
-              }
+            alpn_log($requestData);
 
-              if ($buttonOperation == 'decline') {
-                alpn_log('Interaction Received Handle Decline.');
-                //Save and File Away
-                return;
-              }
+            $connectionLinkType = $token->getValue("connection_link_type");
+            $connectionLinkTopicId = $token->getValue("connection_link_topic_id");
 
-              //TODO only do this stuff if all the setup worked for this guy above?
+            $requestData['connection_link_type'] = $connectionLinkType;
+            $requestData['connection_link_topic_id'] = $connectionLinkTopicId;
+
+            //	$topicStates = array('10' => "Added", '20' => "Invite Sent", '30' => "Joined", '40' => "Linked", '80' => "Email Sent", '90' => "Declined");
+            switch ($connectionLinkType) {
+              case '0': //Join
+                $connectedState = '30';
+                $connectedType = 'join';
+                $proTeamRowId = 0;
+              break;
+              case '1': //Link to Existing Topic
+                $connectedState = '40';
+                $connectedType = 'link';
+
+                //Connect other guy to my Linked Topic.  I'm owner.
+
+                $proTeamData = array(
+                  'owner_id' => $requestData['owner_id'],  //owner_id
+                  'topic_id' => $connectionLinkTopicId,
+                  'proteam_member_id' => $requestData['network_id'],
+                  'wp_id' => $requestData['connected_id'],
+                  'connected_type' => $connectedType,
+                  'access_level' => '10',
+                  'state' => $connectedState,
+                  'process_id' => $requestData['process_id'],
+                  'linked_topic_id' => $requestData['topic_id'],
+                  'member_rights' => false  //TODO uses default until we want to specify something here.
+                );
+                $proTeamRowId = pte_add_to_proteam($proTeamData);
+
+              break;
+              case '2': //Create and Link to New Topic  -- NOT IMPLEMENTED IN FIRST RELEASE
+                //alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
+              break;
+            }
+
+            $requestData['proteam_row_id'] = $proTeamRowId;
 
             $updateRequestData = array( //The ol swaparoo
               'process_id' => $requestData['interacts_with_id'],
               'process_type_id' => "proteam_invitation",
               'interaction_network_id' => $requestData['owner_network_id'],
               'connection_link_type' => $requestData['connection_link_type'],
-              'connection_link_topic_id' => $requestData['connection_link_topic_id'],
+              'connection_link_topic_id' => $connectionLinkTopicId,
               'button_operation' =>  $buttonOperation,
               'message_response' =>  $requestData["message_response"]
             );
@@ -134,7 +142,6 @@ function pte_get_registry_proteam_invitation_received() {
               'process_data' => $updateRequestData
             );
             $interactsWithProcessResponse = pte_manage_interaction_proper($data);  //TODO WHEN this is ASYNC, drawing fails. What is being done here that needs to be syncronous?
-
             $token->setValue("process_context", $requestData);
             return; //if successful
           }

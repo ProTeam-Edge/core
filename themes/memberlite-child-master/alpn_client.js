@@ -60,7 +60,7 @@ pte_template_editor_loaded = (typeof pte_template_editor_loaded != "undefined" &
 
 ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
-access_levels = {'5': 'Guest', '10': 'General', '20': 'Restricted', '30': 'Special', '40': 'Private'};
+access_levels = {'5': 'Guest', '10': 'Shared', '20': 'Restricted', '30': 'Special', '40': 'Private'};
 processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10"};
 
 pte_supported_types_map = {
@@ -585,6 +585,7 @@ function alpn_handle_topic_table(theTable) {
 	var topicTypeId = 0;
 	var topicId = 0;
 	var i = j = 0;
+	var isLinked = 0;
 	var iconClass = '';
 
 	if (theTable == 'network') {
@@ -593,7 +594,7 @@ function alpn_handle_topic_table(theTable) {
 		var tableData = wpDataTables.table_topic.fnGetData();
 		var memberIndicatorClass = '';
 	}
-	//console.log(tableData);
+	console.log(tableData);
 	for (i=0; i< tableData.length; i++) {
 
 		rowDetails = tableData[i];
@@ -615,8 +616,11 @@ function alpn_handle_topic_table(theTable) {
 				iconArea = "<div style='font-size: 24px;'><i class='" + rowDetails[13] + "'></i></div>";  //fontawesome icon
 			}
 		} else {  //TOPIC
+
+			isLinked = rowDetails['13'];
+
 			itemOwnerId = parseInt(rowDetails[1]);
-			if (itemOwnerId != alpn_user_id) {
+			if (itemOwnerId != alpn_user_id || isLinked) {
 				memberIndicatorClass = ' pte_member_class';
 			}
 			//console.log(rowDetails);
@@ -2032,7 +2036,7 @@ function pte_handle_interaction_start(el){
 	if (typeof interactionData[0] != "undefined") {
 		console.log(interactionData[0]);
 		alpn_vault_control(interactionData[0].id);
-		pte_overlay_success('pte_interaction_start_button');  //Animates button to give user feedback that am interaction is starting. TODO get this right
+		pte_overlay_success('alpn_vault_interaction_start');  //Animates button to give user feedback that am interaction is starting. TODO get this right
 	}
 }
 
@@ -2338,6 +2342,7 @@ function pte_handle_sync(data, item = false){
 
 	switch(syncSection) {
 		case 'proteam_card_update':
+
 		 var topicStates = {'10': "Added", '20': "Invite Sent", '30': "Joined", '40': "Linked", '80': "Email Sent", '90': "Declined"};
 			console.log("Handling ProTeam Card Update...");
 			var ptId = syncPayload.proteam_row_id;
@@ -2562,120 +2567,148 @@ function iformat(icon) {
     return '<i class="far ' + jQuery(originalOption).data('icon') + ' alpn_icon_topic_list"></i>' + icon.text;
 }
 
+function initializeTwilio() {
+
+	jQuery.getJSON(alpn_templatedir +  'chat/token.php', {
+		device: 'browser'
+	}, function(data) {
+			userContext = {identity: data.identity};
+
+			if (typeof syncClient != "object") {
+				syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
+			}
+			console.log(syncClient);
+			console.log('syncClient');
+
+			//firebase addition
+			getChatClient = new Twilio.Chat.Client.create(data.token);
+
+			if (firebase && firebase.messaging()) {
+
+				// requesting permission to use push notifications
+				firebase.messaging().requestPermission().then(() => {
+			console.log('reached permissions')
+				// getting FCM token
+				firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
+					jQuery.ajax({
+						url: "https://alct.pro/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
+						type: "POST",
+						data:{token:fcmToken,userId:alpn_user_id},
+						success: function(html){
+						console.log(html)
+						}
+						});
+			console.log('reached token 2');
+			console.log(fcmToken);
+			getChatClient.then(function (chatClient) {
+
+				chatClient.setPushRegistrationId('fcm', fcmToken);
+			})
+		//	syncClient.setPushRegistrationId('fcm', fcmToken);
+					// continue with Step 7 here
+					// ...
+					// ...
+				}).catch((err) => {
+			console.log(err);
+					// can't get token
+				});
+				}).catch((err) => {
+			console.log('firebase error');
+		console.log(err);
+
+				// can't request permission or permission hasn't been granted to the web app by the user
+				});
+				console.log('here');
+				firebase.messaging().onMessage(payload => {
+					if(typeof payload.data.author !== 'undefined' && payload.data.author!=''){
+					getChatClient.then(function (chatClient) {
+
+
+
+						if(payload.data.author==alpn_user_firstName) {
+						console.log('New message from '+payload.data.author+'\n'+payload.data.twi_body);
+						}
+						chatClient.handlePushNotification(payload);
+
+					})
+				} else {
+
+						 if(typeof payload.data.twi_body !== 'undefined' && payload.data.twi_body != ''){
+						console.log('Message from https://alct.pro/ \n'+payload.data.twi_body);
+					 }
+				}
+					console.log(alpn_user_displayname);
+					console.log(payload.data)
+				//	alert('reached')
+				//	syncClient.handlePushNotification(payload);
+
+				})
+			} else {
+				// no Firebase library imported or Firebase library wasn't correctly initialized
+			}
+
+			syncClient.map(alpn_sync_id).then(function (map) {
+				map.on('itemAdded', function(item) {
+					var descriptor = item.item.descriptor;
+					var data = descriptor.data;
+					pte_handle_sync(data, item);
+				});
+				map.on('itemUpdated', function(item) {
+					var descriptor = item.item.descriptor;
+					var data = descriptor.data;
+					pte_handle_sync(data, item);
+				});
+			});
+
+			syncClient.on('tokenAboutToExpire', function() {
+				console.log("CLIENT TOKEN ABOUT TO EXPIRE");
+
+				jQuery.getJSON(alpn_templatedir +  'chat/token.php', {
+					device: 'browser'
+				}, function(data1) {
+					console.log("Updating Twilio Token");
+
+
+					if (data1.token) {
+						syncClient.updateToken(data1.token);
+					} else {
+
+						alert('no token');
+					}
+
+				});
+			});
+
+			syncClient.on('connectionStateChanged', function(state) {
+				console.log("SYNC CLIENT -- CONNECTION STATE CHANGED -- ", state);
+
+			});
+	});
+
+
+
+}
+
 
 function pte_setup_window_onload() {
+
+	jQuery( document ).on( 'wake', function(){
+		console.log('WAKE EVENT');
+		if (pte_external == false) {  //Initialize Mission Control
+			if ((typeof syncClient != "undefined") && (syncClient.connectionState != 'connected' )) {
+				console.log('RECONNECTING');
+				location.reload();
+				//initializeTwilio();
+			}
+		}
+
+	});
 
 	if ((typeof alpn_user_id != "undefined") && (alpn_user_id > 0)) {	//Must be logged in
 
 				if (pte_external == false) {   //Initialize Mission Control
 					//Setup Sync
-					jQuery.getJSON(alpn_templatedir +  'chat/token.php', {
-						device: 'browser'
-					}, function(data) {
-							userContext = {identity: data.identity};
-
-							if (typeof syncClient != "object") {
-								syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
-
-							}
-							console.log(syncClient);
-							console.log('syncClient');
-							//firebase addition
-							getChatClient = new Twilio.Chat.Client.create(data.token);
-
-							if (firebase && firebase.messaging()) {
-
-								// requesting permission to use push notifications
-								firebase.messaging().requestPermission().then(() => {
-							console.log('reached permissions')
-								// getting FCM token
-								firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
-									jQuery.ajax({
-										url: "https://alct.pro/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
-										type: "POST",
-										data:{token:fcmToken,userId:alpn_user_id},
-										success: function(html){
-										console.log(html)
-										}
-									  });
-							console.log('reached token 2');
-							console.log(fcmToken);
-							getChatClient.then(function (chatClient) {
-						
-								chatClient.setPushRegistrationId('fcm', fcmToken);
-							})
-						//	syncClient.setPushRegistrationId('fcm', fcmToken);
-									// continue with Step 7 here
-									// ...
-									// ...
-								}).catch((err) => {
-							console.log(err);
-									// can't get token
-								});
-								}).catch((err) => {
-							console.log('firebase error');
-						console.log(err);
- 
-								// can't request permission or permission hasn't been granted to the web app by the user
-								});
-								console.log('here');
-								firebase.messaging().onMessage(payload => {
-									if(typeof payload.data.author !== 'undefined' && payload.data.author!=''){
-									getChatClient.then(function (chatClient) {
-							
-										
-									
-										if(payload.data.author==alpn_user_firstName) {
-										alert('New message from '+payload.data.author+'\n'+payload.data.twi_body)
-										}
-										chatClient.handlePushNotification(payload);
-									
-									})
-								} else {
-							
-    								 if(typeof payload.data.twi_body !== 'undefined' && payload.data.twi_body != ''){
-										alert('Message from https://alct.pro/ \n'+payload.data.twi_body);
-									 }
-								}
-									console.log(alpn_user_displayname);
-									console.log(payload.data)
-								//	alert('reached')
-								//	syncClient.handlePushNotification(payload);
-
-								})
-							} else {
-								// no Firebase library imported or Firebase library wasn't correctly initialized
-							}
-
-							syncClient.map(alpn_sync_id).then(function (map) {
-								map.on('itemAdded', function(item) {
-									var descriptor = item.item.descriptor;
-									var data = descriptor.data;
-									pte_handle_sync(data, item);
-								});
-								map.on('itemUpdated', function(item) {
-									var descriptor = item.item.descriptor;
-									var data = descriptor.data;
-									pte_handle_sync(data, item);
-								});
-							});
-
-							syncClient.on('tokenAboutToExpire', function() {
-								console.log("CLIENT TOKEN ABOUT TO EXPIRE");
-
-								jQuery.getJSON(alpn_templatedir +  'chat/token.php', {
-									device: 'browser'
-								}, function(data1) {
-									console.log("Updating Twilio Token");
-									syncClient.updateToken(data1.token);
-								});
-							});
-
-							syncClient.on('connectionStateChanged', function(state) {
-								console.log("SYNC CLIENT -- CONNECTION STATE CHANGED -- ", state);
-
-							});
-					});
+					initializeTwilio();
 
 					if (jQuery('#alpn_section_alert .wpdt-c :input')[2]) {
 						var alpn_activity_table_obj = JSON.parse(jQuery('#alpn_section_alert .wpdt-c :input')[2].value);
@@ -3666,7 +3699,6 @@ function pte_handle_tab_bar_scroll(){
 }
 
 function alpn_file_add () {
-	//alpn_manage_vault_buttons('');
 	alpn_handle_vault_row_selected('');
 	alpn_switch_panel ('add_edit');
 	pte_uppy_vault_file();
@@ -3766,9 +3798,9 @@ function pte_set_work_area_html(areaType) {
 		break;
 		case 'topic':
 			var permissionsHtml = " \
-						<span class='pte_vault_bold'>Required Access Level</span> \
+						<span class='pte_vault_bold'>File Access Level</span> \
 						<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
-							<option value='10'>General</option> \
+							<option value='10'>Shared</option> \
 							<option value='20'>Restricted</option> \
 							<option value='40'>Private</option> \
 						</select>";
@@ -3923,6 +3955,8 @@ if (response == 'yes' && typeof theObject !== "undefined") {
 				console.log('HANDLE VAULT EMPTY');
 				console.log(vaultCount);
 				pte_show_viewer_overlay("<div id='pte_overlay_message'></div>");
+				alpn_manage_vault_buttons(false);
+				alpn_close_vault_work_area();
 				alpn_oldVaultSelectedId = '';
 			}
 		},
@@ -4003,7 +4037,7 @@ function alpn_prepare_search_field(domSelect) {
 	jQuery(domSelect + ' label').empty();
 	jQuery(domSelect + ' label').append(inputField);
 	jQuery(domSelect + ' label').append("<span style='position: absolute; top: 6px; left: 76px; cursor: pointer; font-size: 14px;'><i class='far fa-times-circle' style='color: #3172B6;' title='Clear Search and Filter'></i></span>");
-	jQuery(domSelect + ' input').attr("placeholder", "Search...").attr("style", "padding-left:6px !important; padding-right:20px !important; border-style: solid; border-width: 1px; border-radius: 0 20px 0 0 !important; border-color: #ccc; height: 24px; width: 100px; font-weight: normal; background-color: white;");
+	jQuery(domSelect + ' input').attr("placeholder", "Search...").attr("style", "border-style: solid; border-width: 1px; border-radius: 0 20px 0 0 !important; border-color: #ccc; height: 24px; width: 100px; font-weight: normal; background-color: white;");
 	jQuery(domSelect + ' label:before').attr("content:'x';display: none; width: 14px; height: 14px; position: absolute; top:5px; left:75px; opacity: .5; z-index: 1000;");
 
 	jQuery(domSelect + '  span').click(
@@ -4205,7 +4239,7 @@ function alpn_handle_vault_row_selected(theCellId) {
 		var theNewRow =  jQuery('#alpn_field_' + theCellId).closest('tr');
 			if (theNewRow.length) {
 				theNewRow.children().attr("style", "background-color: #D8D8D8 !important;");
-				//alpn_manage_vault_buttons(theCellId);
+				alpn_manage_vault_buttons(false);
 				alpn_vault_control("view");
 				if (pte_toolbar_active == 'add') {
 						pte_handle_active_toolbar('edit');
@@ -4228,32 +4262,47 @@ function alpn_handle_vault_row_selected(theCellId) {
 	}
 }
 
-function alpn_manage_vault_buttons(theCellId) {
+function alpn_manage_vault_buttons(theCellId, deleteOnly = false) {
 
 	var objType = 'form';  //Get from row data soon and below. Extend with rights??
 	var objMeta;
 
-	if (theCellId) {
+	if (theCellId) {   //need rights here TODO
 		objMeta = {
-				'new': 1,
-				'view': 1,
-				'edit': 1,
 				'delete': 1,
+				'edit': 1,
+				'new': 1,
+				'links': 1,
 				'chat': 1,
-				'alert': 1,
-				'fax': 1,
-				'email': 1
+				'download_pdf': 1,
+				'download_original': 1,
+				'print': 1,
+				'interaction_start': 1
 			}
+		if (deleteOnly) {
+			objMeta = {
+ 			 'delete': 1,
+ 			 'edit': 0,
+ 			 'new': 1,
+ 			 'links': 0,
+ 			 'chat': 0,
+ 			 'download_pdf': 0,
+ 			 'download_original': 0,
+ 			 'print': 0,
+ 			 'interaction_start': 0
+ 			}
+		}
 	} else { //defaults
 		 objMeta = {
-				'new': 1,
-				'view': 0,
-				'edit': 0,
-				'delete': 0,
-				'chat': 0,
-				'alert': 0,
-				'fax': 0,
-				'email': 0
+			 'delete': 0,
+			 'edit': 0,
+			 'new': 1,
+			 'links': 0,
+			 'chat': 0,
+			 'download_pdf': 0,
+			 'download_original': 0,
+			 'print': 0,
+			 'interaction_start': 0
 			}
 	}
 
@@ -4440,6 +4489,7 @@ function pte_setup_pdf_viewer(viewerSettings) {
 							jQuery('#alpn_vault_copy_go').removeClass('pte_extra_button_disabled').addClass('pte_extra_button_enabled');
 						} else if (topicMode =='vault') {
 							console.log("Handling Vault Open Success");
+							alpn_manage_vault_buttons(true);
 						}
 					pte_hide_viewer_overlay();
 
@@ -4529,6 +4579,7 @@ function pte_view_document(vaultId, token = false) {
 
 		var status = xhr.status;
 		if (status == 204) {  //Error. Get code from header.
+			alpn_manage_vault_buttons(false);
 			var pteErrorCode = xhr.getResponseHeader("PTE-Error-Code");
 			switch(pteErrorCode) {
 				case 'insufficient_rights':
@@ -4552,7 +4603,8 @@ function pte_view_document(vaultId, token = false) {
 					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>Your xLink has expired<br>Please contact the sender/div>");
 				break;
 			}
-			//jQuery('#pte_refresh_report_loading').hide();
+
+			alpn_manage_vault_buttons(true, true);
 			return;
 		}
 
@@ -4683,7 +4735,7 @@ function pte_start_topic_team_invitation (topicId) {
 		'process_type_id': 'proteam_invitation'
 	};
 	pte_handle_widget_interaction(sendData);
-	pte_overlay_success('pte_interaction_start_button');  //Animates button to give user feedback that am interaction is starting. TODO get this right
+	pte_overlay_success('alpn_vault_interaction_start');  //Animates button to give user feedback that am interaction is starting. TODO get this right
 }
 
 function alpn_vault_control(operation) {
@@ -4996,6 +5048,8 @@ function alpn_vault_control(operation) {
 //REMOVE ProTeam Member
 function alpn_proteam_member_delete(proTeamRowId) {
 
+	console.log("alpn_proteam_member_delete HERE");
+
 	var security = specialObj.security;
 	var html = "<div id='alpn_replace_me_" + proTeamRowId + "' style='text-align: center; height: 40px;'><img src='" + alpn_templatedir + "pdf/web/images/loading-icon.gif'></div>";
 	jQuery('#pte_proteam_item_' + proTeamRowId).replaceWith(html);
@@ -5008,6 +5062,8 @@ function alpn_proteam_member_delete(proTeamRowId) {
 		},
 		dataType: "json",
 		success: function(json) {
+
+			console.log("Deleted CHANNEL");
 			var deletedChannelToo = json.deleted_channel_too;
 
 			if (deletedChannelToo) {  //Channel gone, clear chat window by messaging iframe.
@@ -6890,3 +6946,27 @@ function pte_save_vault_meta(){
 		});
 	}
 }
+
+
+(function($){
+
+	var TIMEOUT = 3000;
+	var lastTime = (new Date()).getTime();
+
+	setInterval(function() {
+	  var currentTime = (new Date()).getTime();
+	  if (currentTime > (lastTime + TIMEOUT + 2000)) {
+	    $(document).wake();
+	  }
+	  lastTime = currentTime;
+	}, TIMEOUT);
+
+	$.fn.wake = function(callback) {
+	  if (typeof callback === 'function') {
+	    return $(this).on('wake', callback);
+	  } else {
+	    return $(this).trigger('wake');
+	  }
+	};
+
+})(jQuery);

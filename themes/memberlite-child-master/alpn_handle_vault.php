@@ -10,6 +10,20 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    echo 'Not a valid request.';
    die;
 }
+
+//TODO Data Driven also permissions
+
+$interactionChooser = "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
+$interactionChooser .= "<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>";
+$interactionChooser .= "<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>";
+
+if(!pmpro_hasMembershipLevel('1')) {   //Fax Available to all levels other than Community  //TODO make this dynamic
+	$interactionChooser .= "<option value='fax' data-icon='far fa-fax'>Send as Fax</option>";
+}
+
+$interactionChooser .= "</select>";
+
+
 $siteUrl = get_site_url();
 $ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
@@ -103,24 +117,6 @@ if ($topicProfileHandle) {
 //				<i id='alpn_vault_edit_original' class='fab fa-google-drive pte_icon_button' title='Open Item in Original Cloud Service' onclick='alpn_vault_control(\"open_original\")'></i>
 
 
-//TODO Data Driven also permissions
-
-$interactionChooser = "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
-$interactionChooser .= "<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>";
-$interactionChooser .= "<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>";
-$interactionChooser .= "<option value='fax' data-icon='far fa-fax'>Send as Fax</option>";
-$interactionChooser .= "</select>";
-
-
-/* old
-
-<i id='alpn_vault_email' class='far fa-envelope pte_icon_button' title='Send an xLink to this vault item by Email using an Interaction.' onclick='alpn_vault_control(\"email\")'></i>
-<i id='alpn_vault_sms' class='far fa-sms pte_icon_button' title='Send an xLink to this vault item by SMS/Text using an Interaction.' onclick='alpn_vault_control(\"sms\")'></i>
-<i id='alpn_vault_fax' class='far fa-fax pte_icon_button' title='Send this vault item by Fax using an Interaction.' onclick='alpn_vault_control(\"fax\")'></i>
-
-<i id='alpn_vault_copy' class='far fa-file-export pte_icon_button' title='Copy File to Linked Topic' onclick='alpn_vault_control(\"copy_file\")'></i>
-
-*/
 
 
 $html="";
@@ -142,17 +138,17 @@ $html .= "
 							</span>
 						</div>
 						<div class='pte_vault_row_75 pte_vault_right pte_toolbar_container'>
-							{$interactionChooser} <i id='pte_interaction_start_button' class='far fa-arrow-circle-right alpn_icons_toolbar' title='Start this Interaction' onclick='pte_handle_interaction_start(this);'></i>
+							{$interactionChooser} <i id='alpn_vault_interaction_start' class='far fa-arrow-circle-right alpn_icons_toolbar pte_ipanel_button_disabled' title='Start this Interaction' onclick='pte_handle_interaction_start(this);'></i>
 							<div style='display: inline-block; width: 20px;'></div>
-							<i id='alpn_vault_print' class='far fa-print pte_icon_button' title='Print File' onclick='alpn_vault_control(\"print\")'></i>
-							<i id='alpn_vault_download_original' class='far fa-file-download pte_icon_button' title='Download Original File' onclick='alpn_vault_control(\"download_original\")'></i>
-							<i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
+							<i id='alpn_vault_print' class='far fa-print pte_icon_button pte_ipanel_button_disabled' title='Print File' onclick='alpn_vault_control(\"print\")'></i>
+							<i id='alpn_vault_download_original' class='far fa-file-download pte_icon_button pte_ipanel_button_disabled' title='Download Original File' onclick='alpn_vault_control(\"download_original\")'></i>
+							<i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button pte_ipanel_button_disabled' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
 							<div style='display: inline-block; width: 20px;'></div>
-							<i id='alpn_vault_chat' class='far fa-comment-alt-lines pte_icon_button' title='Send an link to this vault item in Chat.' onclick='alpn_vault_control(\"insert_chat_vault_item\")' ></i>
-							<i id='alpn_vault_links' class='far fa-link pte_icon_button' title='Manage xLinks for this File' onclick='alpn_vault_control(\"links\")'></i>
+							<i id='alpn_vault_chat' class='far fa-comment-alt-lines pte_icon_button pte_ipanel_button_disabled' title='Send an link to this vault item in Chat.' onclick='alpn_vault_control(\"insert_chat_vault_item\")' ></i>
+							<i id='alpn_vault_links' class='far fa-link pte_icon_button pte_ipanel_button_disabled' title='Manage xLinks for this File' onclick='alpn_vault_control(\"links\")'></i>
 						  <i id='alpn_vault_new' class='far fa-plus-circle pte_icon_button' title='Add New Vault Files' onclick='alpn_vault_control(\"add\")'></i>
-							<i id='alpn_vault_edit' class='far fa-pencil-alt pte_icon_button' title='Edit Vault File Settings' onclick='alpn_vault_control(\"edit\")'></i>
-							<i id='alpn_vault_delete' class='far fa-trash-alt pte_icon_button' title='Delete File from Vault' onclick='alpn_vault_control(\"delete\")'></i>
+							<i id='alpn_vault_edit' class='far fa-pencil-alt pte_icon_button pte_ipanel_button_disabled' title='Edit Vault File Settings' onclick='alpn_vault_control(\"edit\")'></i>
+							<i id='alpn_vault_delete' class='far fa-trash-alt pte_icon_button pte_ipanel_button_disabled' title='Delete File from Vault' onclick='alpn_vault_control(\"delete\")'></i>
 						</div>
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>

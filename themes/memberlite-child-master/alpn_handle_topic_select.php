@@ -23,11 +23,6 @@ if(!is_user_logged_in()) {
    exit;
 }
 
-// if(!is_user_logged_in()) {  //need this to redirect the whole window.
-// 	wp_redirect(site_url().'/login');
-// 	exit;
-// }
-
 if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    echo 'Not a valid request.';
    die;
@@ -80,6 +75,7 @@ $results = $wpdb->get_results(
  }
 
 $topicData = $results[0];
+
 $topicTypeId = $topicData->topic_type_id;
 $topicSpecial = $topicData->special;
 $topicTypeName = $topicData->topic_name;
@@ -120,8 +116,11 @@ $subjectToken = '';
 
 $fullMap = $topicMeta['field_map'];
 $topicTabs = array();
-$infoColor = $topicData->connected_id ? '#700000' : '#444';
-$infoTitle = $topicData->connected_id ? 'Info Comes from Contact Topic' : 'Info Comes from Your Topic';
+
+$topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
+
+$infoColor = ($topicData->connected_id || !$topicBelongsToUser) ? '#700000' : '#444';
+$infoTitle = ($topicData->connected_id || !$topicBelongsToUser)  ? 'Info Comes from Contact' : 'Info Comes from Your Topic';
 
 $linkId = 0;
 $topicTabs[] = array(   //Info Page. All Topics Have Them
@@ -185,7 +184,6 @@ foreach ($fullMap as $key => $value) {
 		}
 	}
 }
-$topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
 
 if ($topicProfileHandle) {
 	$topicImage = "<img id='pte_profile_pic_topic' src='{$ppCdnBase}{$topicProfileHandle}' style='height: 35px; width: 35px; margin-left: 10px; border-radius: 50%;'>";
@@ -265,7 +263,13 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 		$showMessageAccordion = "block";
 		$showAddressBookAccordion = "none";   //TODO Turn this back to block to turn it on.
 		$showImportanceAccordions = "block";
-		$showFaxAccordian = "block";
+
+
+    $showFaxAccordian = "none";
+    if(!pmpro_hasMembershipLevel('1')) {   //Fax Available to all levels other than Community  //TODO make this dynamic
+      $showFaxAccordian = "block";
+    }
+
 		$showEmailAccordian = "block";
 
 		$networkOptions = pte_get_topic_list('network_contacts') ;
@@ -384,7 +388,7 @@ $settingsAccordion = "
 ";
 
 $proteam = $wpdb->get_results(  //get proteam -- pre-connected by alpn_topics_network_profile view in db
-	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id, t.alt_id, t.connected_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
+	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id, t.alt_id, t.connected_id, t1.name as linked_topic_name, t1.dom_id AS linked_topic_dom_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id LEFT JOIN alpn_topics t1 ON t1.id = p.linked_topic_id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
  );
 
 $proTeamMembers = "";
@@ -395,10 +399,11 @@ if ($topicBelongsToUser && $proteamContainer == 'block') {
   $interactionChooser .= "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
   $interactionChooser .= "<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>";
   $interactionChooser .= "</select>";
+  $interactionChooser .= " <i id='alpn_vault_interaction_start' class='far fa-arrow-circle-right alpn_icons_toolbar' title='Start this Interaction' onclick='pte_start_topic_team_invitation({$topicId});'></i>";
+
 }
 $topicHasTeamMembers = count($proteam) ? true : false;
 $proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Team</div><div class='pte_proteam_title_right'></div></div>" : "";
-$showInteractionList = ($proteamContainer == 'block') ? "inline-block" : "none";
 
 if (count($proteam)) {
 $displayNoMembers = "none";
@@ -425,32 +430,32 @@ $templates = $wpdb->get_results(
 
 $tabButtons = $tabPanels = $initializeTable = $tabTable = $topicSelector = '';
 
-if ($topicBelongsToUser) {
+if ($topicBelongsToUser) {   //Linked To and Team tabs.
 	//Team Links
 	//Being user by. Linked to me.
 	$linkId++;
 	$topicTabs[] = array(
 		'type' => 'linked',
 		'id' => $linkId,
-		'name' => "Linked by",
+		'name' => "Links",
 		'key' => '',
 		'subject_token' => 'pte_inbound',
 		'owner_topic_id' => $topicId,
 		'topic_title' => 'Links to this Topic'
 	);
 
-	if ($topicHasTeamMembers) {
-		$linkId++;
-		$topicTabs[] = array(
-			'type' => 'linked',
-			'id' => $linkId,
-			'name' => "Team",
-			'key' => '',
-			'subject_token' => 'pte_external',
-			'owner_topic_id' => $topicId,
-			'topic_title' => 'Links to Team Member Topics'
-		);
-	}
+	// if ($topicHasTeamMembers) {
+	// 	$linkId++;
+	// 	$topicTabs[] = array(
+	// 		'type' => 'linked',
+	// 		'id' => $linkId,
+	// 		'name' => "Team",
+	// 		'key' => '',
+	// 		'subject_token' => 'pte_external',
+	// 		'owner_topic_id' => $topicId,
+	// 		'topic_title' => 'Links to Team Member Topics'
+	// 	);
+	// }
 }
 
 $usedTopicTypes = array(); //Needed to handle topic_class and source type key mapping correctly
@@ -518,7 +523,12 @@ foreach ($topicTabs as $key => $value) {
 			$unlinkButton = $topicClass != 'list' ? "<i id='pte_extra_unlink_button' class='far fa-unlink pte_extra_button pte_extra_button_disabled' title='Unlink Topic' onclick='pte_unlink_selected_topic();'></i>" : '';
 			$editButton = $newTypeKey ? "<i id='pte_extra_edit_topic_button' class='far fa-pencil-alt pte_extra_button pte_extra_button_disabled' title='Edit Topic' onclick='pte_edit_topic_link(\"{$newTypeKey}\");'></i>" : "";
 			$addButton =  $newTypeKey ? "<i id='pte_extra_add_topic_button' class='far fa-plus-circle pte_extra_button' title='Create and Link to New {$friendlyName}' onclick='pte_new_topic_link(\"{$newTypeKey}\");'></i>" : "";
+
+
 			$deleteButton =  $newTypeKey ? "<i id='pte_extra_delete_topic_button' class='far fa-trash-alt pte_extra_button pte_extra_button_disabled' title='Delete Topic {$friendlyName}' onclick='pte_delete_topic_link(\"{$newTypeKey}\");'></i>" : "";
+
+
+
 			$makeDefaultButton =  $newTypeKey ? "<i id='pte_extra_default_topic_button' class='far fa-check-circle pte_extra_button pte_extra_button_disabled' title='Make this the Default Topic' onclick='pte_default_topic_link(\"{$newTypeKey}\");'></i>" : "";
 			$editUnlink =  json_encode("<div class='pte_extra_crud_buttons'><div class='pte_extra_filter_container pte_topic_links_list'>{$topicList}</div>{$unlinkButton}{$deleteButton}{$editButton}{$addButton}{$makeDefaultButton}</div>");
 
@@ -602,11 +612,21 @@ $html .= "
 					</span>
 				</div>
 				<div class='pte_vault_row_75 pte_vault_right pte_toolbar_container'>
-          {$interactionChooser} <i id='pte_interaction_start_button' class='far fa-arrow-circle-right alpn_icons_toolbar' title='Start this Interaction' onclick='pte_start_topic_team_invitation({$topicId});' style='display: {$showInteractionList};'></i>
+          {$interactionChooser}
           <div style='display: inline-block; width: 20px;'></div>
-					  <i class='far fa-pencil-alt pte_icon_button {$pteEditDeleteClass}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>
-		       	<i id='delete_topic_button' class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>
-				</div>
+					<i class='far fa-pencil-alt pte_icon_button {$pteEditDeleteClass}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>
+    ";
+
+    //Handle joined topic
+//$topicBelongsToUser
+      if ($userID = $topicOwnerId) {
+        $pteEditDeleteClass = 'pte_ipanel_button_disabled';
+      }
+      $html .= "<i id='delete_topic_button' class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>";
+
+
+
+    $html .= "</div>
 				<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 			</div>
 	  ";
@@ -650,6 +670,9 @@ $html .= "
 						";
 
             $html .= "
+            <style>
+              div#tabcontent_0 .pte_topic_table_label {color: {$infoColor};}
+            </style>
             <script>
             jQuery('#alpn_selector_interaction_selector').select2({
             	theme: 'bootstrap',

@@ -80,8 +80,27 @@ add_action( 'wp_print_styles', 'pte_dequeue_unnecessary_styles' );
 function memberlite_child_enqueue_styles() {
 	  wp_enqueue_style( 'pte_font_awesome', get_template_directory_uri() . '-child-master/fa/css/all.min.css');
     wp_enqueue_style( 'pte_foxit_pdf', get_template_directory_uri() . '-child-master/foxitpdf/lib/UIExtension.css' );
-    wp_enqueue_style( 'memberlite', get_template_directory_uri() . '/style.css' );
-}
+		wp_enqueue_style( 'memberlite', get_template_directory_uri() . '/style.css' );
+
+
+		//Needed everywhere. Wasn't loading at times. Will load additional if version numbers change in wpdatables.
+		wp_enqueue_style( 'vit-wpdatatables-bootstrap', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/bootstrap/wpdatatables-bootstrap.css' );
+		wp_enqueue_style( 'vit-bootstrap-select', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/bootstrap/bootstrap-select/bootstrap-select.min.css' );
+		wp_enqueue_style( 'vit-bootstrap-tagsinput', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/bootstrap/bootstrap-tagsinput/bootstrap-tagsinput.css' );
+		wp_enqueue_style( 'vit-bootstrap-datetimepicket', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/bootstrap/bootstrap-datetimepicker/bootstrap-datetimepicker.min.css' );
+		wp_enqueue_style( 'vit-bootstrap-nouislider', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/bootstrap/bootstrap-nouislider/bootstrap-nouislider.min.css' );
+		wp_enqueue_style( 'vit-wdt-bootstrap-datetimepicker', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/bootstrap/bootstrap-datetimepicker/wdt-bootstrap-datetimepicker.min.css' );
+		wp_enqueue_style( 'vit-bootstrap-colorpicker', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/bootstrap/bootstrap-colorpicker/bootstrap-colorpicker.min.css' );
+		wp_enqueue_style( 'vit-wpd-style', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/style.min.css' );
+		wp_enqueue_style( 'vit-wpd-animate', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/animate/animate.min.css' );
+		wp_enqueue_style( 'vit-wpd-uikit', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/uikit/uikit.css' );
+		wp_enqueue_style( 'vit-wpd-frontend', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/wdt.frontend.min.css' );
+		wp_enqueue_style( 'vit-wpd-skin', get_template_directory_uri() . '/../../plugins/wpdatatables/assets/css/wdt-skins/light.css' );
+
+		wp_enqueue_style( 'vit-wpforms-full', get_template_directory_uri() . '/../../plugins/wpforms/assets/css/wpforms-full.min.css' );
+
+
+	}
 add_action( 'wp_enqueue_scripts', 'memberlite_child_enqueue_styles' );
 
 //Child theme inherits parent theme settings - based on code by @greenshady from https://core.trac.wordpress.org/ticket/27177#comment:14
@@ -233,57 +252,11 @@ add_action('admin_enqueue_scripts', 'alpn_load_script');
 
 add_filter('show_admin_bar', '__return_false'); //Remove top bar
 
-/*
-
-function set_displayname_as_firstname( $user_id )
-{
-    $data = get_userdata( $user_id );
-
-    if ($data->display_name != $data->first_name) {
-        wp_update_user( array ('ID' => $user_id, 'display_name' =>  $data->first_name));
-    }
-}
-
-
-
-
-function alpn_meta_tags() {
-    echo '<meta name="google-site-verification" content="xf6Va1HR87gZJylvcy95OjB5rytoLUbVeT32DRGSsu8" />';
-}
-add_action('wp_head', 'alpn_meta_tags');
-
-
-
-
-//Paid Membership Pro Mods
-add_filter("pmpro_checkout_confirm_email", "__return_false");  //remove email confirmation on login.
-function my_gettext_membership( $output_text, $input_text, $domain ) { //Change "Membership" to "Subscription"
-	if ( ! is_admin() && 'paid-memberships-pro' === $domain ) {
-		$output_text = str_replace( 'Membership Level', 'Subscription', $output_text );
-		$output_text = str_replace( 'membership level', 'subscription', $output_text );
-		$output_text = str_replace( 'membership', 'subscription', $output_text );
-		$output_text = str_replace( 'Membership', 'Subscription', $output_text );
-	}
-	return $output_text;
-}
-add_filter( 'gettext', 'my_gettext_membership', 10, 3 );
-
-//add_action( 'user_register', 'set_displayname_as_firstname' );
-//add_action( 'profile_update', 'set_displayname_as_firstname' );
-
-
-
-	$uploads['subdir'] = '/tml-avatars';
-	$uploads['path'] = $uploads['basedir'] . $uploads['subdir'];
-	$uploads['url'] = $uploads['baseurl'] . $uploads['subdir'];
-
-
-*/
 
 function pmpro_change_error_message( $translated_text, $text, $domain ) {
         switch ( $translated_text ) {
 					case 'Your membership requires approval before you are able to view this content.' :
-							$translated_text = __( '<p>Until we launch ProTeam Edge to the public, your account must be approved by an administrator</p>', 'pmpro-approvals' );
+							$translated_text = __( '<p>Until we launch Vitriva to the public, your account must be approved by an administrator</p>', 'pmpro-approvals' );
 					break;
 					case 'IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated' :
 							$translated_text = __( 'Please confirm your email', 'pmpro-email-confirmation' );
@@ -292,7 +265,7 @@ function pmpro_change_error_message( $translated_text, $text, $domain ) {
               $translated_text = __( 'To activate your membership, please confirm your email address by following the instructions we just sent. If you don\'t see it, check your SPAM folder', 'paid-memberships-pro' );
           break;
 					case 'Important! You must click on the confirmation URL sent to %s before you gain full access to your membership' :
-							$translated_text = __( 'Until we launch ProTeam Edge to the public, your account must be approved by an administrator', 'paid-memberships-pro' );
+							$translated_text = __( 'Until we launch Vitriva to the public, your account must be approved by an administrator', 'paid-memberships-pro' );
 					break;
         }
 
@@ -307,13 +280,13 @@ function my_pmpro_login_redirect_url($redirect_to, $request, $user) {  //Logion 
 }
 add_filter("pmpro_login_redirect_url", "my_pmpro_login_redirect_url", 10, 3);
 
-function my_pmpro_member_profile_edit_user_object_fields( $user_fields ) {
-	unset( $user_fields['first_name'] );
-	unset( $user_fields['last_name'] );
-	unset( $user_fields['display_name'] );
-	return $user_fields;
-}
-add_filter( 'pmpro_member_profile_edit_user_object_fields', 'my_pmpro_member_profile_edit_user_object_fields' );
+// function my_pmpro_member_profile_edit_user_object_fields( $user_fields ) {
+// 	//unset( $user_fields['first_name'] );
+// 	//unset( $user_fields['last_name'] );
+// 	unset( $user_fields['display_name'] );
+// 	return $user_fields;
+// }
+// add_filter( 'pmpro_member_profile_edit_user_object_fields', 'my_pmpro_member_profile_edit_user_object_fields' );
 
 function pte_set_avatar_url( $url, $id_or_email, $args ) {
 	$url = PTE_ROOT_URL . "dist/assets/blm-avatar.png";
@@ -376,13 +349,12 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 
 	$now = date ("Y-m-d H:i:s", time());
 
-  $defaultTopicData = pte_create_default_topics($user_id, true);   //with sample data
+	$userInfo = get_user_by('id', $user_id);
 
+  $defaultTopicData = pte_create_default_topics($user_id, true);   //with sample data
 
 	// alpn_log("Creating New User...");
 	// alpn_log($defaultTopicData);
-
-
 
 	$coreUserFormId = $defaultTopicData['core_user_form_id'];
 	$samplePlace1Id = $defaultTopicData['sample_place_id_1'];
@@ -396,7 +368,7 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 		'id' => $coreUserFormId,  //source user template type  Using custom TT
 		'new_owner' => $user_id,
 		"create_email_route" => $userEmailRouteId,
-		'fields' => array("2" => "[Replace Me, Please]", "4" => "[Replace Me, Please]")    //4 for user topic is person_givenname, 2 = person_familynname
+		'fields' => array("2" => $userInfo->user_lastname, "4" => $userInfo->user_firstname)    //4 for user topic is person_givenname, 2 = person_familynname
 	);
 	$newUserTopicId = alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
 	//Create linkS
@@ -591,7 +563,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 				}
 
 				if (isset($entry['new_owner'])) {
-					$topicName = $userEmail;
+					$topicName = pte_make_string($nameSource, $fields, $alpnNormalizeMap);
 					$topicAbout = $userEmail;
 				} else if ($fields) {
 					$topicName = pte_make_string($nameSource, $fields, $alpnNormalizeMap);
@@ -667,15 +639,6 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 									$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_n.png";
 								}
 							}
-						} else { //Reguler Topic show icons. People show blie name things
-							// if ($currentImageHandle == "" || substr($currentImageHandle, 0, 16) == "pte_icon_letter_") {
-							// 	$firstChar = strtolower(substr($topicName, 0, 1));
-							// 	if ($firstChar >= 'a' && $firstChar <= 'z') {
-							// 		$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_" . $firstChar . ".png";
-							// 	} else {
-							// 		$currentImageHandle = $topicData['image_handle'] = "pte_icon_letter_n.png";
-							// 	}
-							// }
 						}
 					}
 					$topicData['last_op'] = "edit";
@@ -703,20 +666,17 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 								$data['image_handle'] = "pte_icon_letter_n.png";
 							}
 						}
-						if (isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] != "[Replace Me, Please]") {
-							$data['topic_name'] = $mappedFields['person_givenname'];
-	            $data['full_name'] = $topicName;
-						} else {
-							$data['topic_name'] = $mappedFields['person_email'];
-							$data['full_name'] = $mappedFields['person_email'];
-						}
+						$data['topic_name'] = $mappedFields['person_givenname'];
+            $data['full_name'] = $topicName;
             pte_manage_cc_groups("update_user", $data);
-						wp_update_user( array ('ID' => $userId, 'display_name' =>  $mappedFields['person_givenname']));
-						wp_update_user( array ('ID' => $userId, 'nickname' =>  $mappedFields['person_givenname']));
+						wp_update_user([
+						    'ID' => $userId, // this is the ID of the user you want to update.
+						    'first_name' => $mappedFields['person_givenname'],
+								'last_name' => $mappedFields['person_familyname'],
+								'display_name' => $mappedFields['person_givenname'],
+						    'nickname' => $mappedFields['person_givenname'],
+						]);
 						update_user_meta( $userId, "pte_user_icon",  $data['image_handle']);
-
-						// alpn_log("UPDATING USER");
-						// alpn_log($data);
 
 						// update Topic Name and About for all connected
 						$nameAboutData = array(
@@ -800,19 +760,19 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
             $data['owner_id'] = $userId;
 						$data['user_id'] = $userId;
             $data['topic_id'] = $row_id;
-						if (isset($mappedFields['person_givenname']) && $mappedFields['person_givenname'] != "[Replace Me, Please]") {
-							$data['topic_name'] = $mappedFields['person_givenname'];
-	            $data['full_name'] = $topicName;
-						} else {
-							$data['topic_name'] = $mappedFields['person_email'];
-							$data['full_name'] = $mappedFields['person_email'];
-						}
+						$data['topic_name'] = $mappedFields['person_givenname'];
+            $data['full_name'] = $topicName;
 						$data['image_handle'] = $topicData['image_handle'];
             pte_manage_cc_groups("add_user", $data);
+						wp_update_user([
+						    'ID' => $userId, // this is the ID of the user you want to update.
+						    'first_name' => $mappedFields['person_givenname'],
+								'last_name' => $mappedFields['person_familyname'],
+								'display_name' => $mappedFields['person_givenname'],
+						    'nickname' => $mappedFields['person_givenname'],
+						]);
 						update_user_meta( $userId, "pte_user_icon",  $topicData['image_handle']);
-					  update_user_meta( $userId, "pte_user_network_id",  $row_id);
-						wp_update_user( array ('ID' => $userId, 'display_name' =>  "Welcome"));
-						wp_update_user( array ('ID' => $userId, 'nickname' =>  "Welcome"));
+						update_user_meta( $userId, "pte_user_network_id",  $row_id);
 				}
       }
 				//Update last record metadata for UI/UX purposes

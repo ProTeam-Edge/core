@@ -11,6 +11,41 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+.team_linked_topic {
+}
+
+.proteam_user_panel {
+	border: 1px solid #D3D3D3;
+	margin: 0 0 5px 0;
+	padding: 3px 5px;
+	background-color: rgb(253, 253, 253);
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.team_panel_topic_link_icon_actual{
+	color: #700000 !important;
+}
+
+.team_panel_topic_link_icon {
+	display: inline-block;
+	width: 15px;
+	text-align: left;
+
+}
+
+.team_panel_topic_link {
+	color: rgb(0, 116, 187);
+	cursor: pointer;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+a.pmpro_btn-select[href*="level=2"] {
+	display: none;
+}
+
 div.outer_button_line select2 {
 }
 .pte_upload_failed{
@@ -2446,7 +2481,7 @@ button[aria-label="Crop portrait (9:16)"]
 }
 .onoffswitch-label {
     display: block; overflow: hidden; cursor: pointer;
-    border: 1px solid rgb(0, 116, 187); border-radius: 20px;
+		border-radius: 20px;
 }
 .onoffswitch-inner {
     display: block; width: 200%; margin-left: -100%;
@@ -3313,7 +3348,7 @@ table#table_interactions td.column-draw_id {
 }
 
 .pte_ipanel_button_disabled{
-	opacity: 0.5;
+	opacity: 0.6;
 	pointer-events: none;
 	cursor:auto;
 }
@@ -3901,7 +3936,7 @@ dt{
 
 
 
-.site-branding {margin: 0}
+.site-branding {margin: 3px 0 3px 0; line-height: 0;}
 .main-navigation {padding-top: 0; padding-bottom:0}
 .meta-member-inner {padding: 0.2em 0.5em 0.2em 0.5em !important;}
 .wp-block-columns {margin-top: 10px !important;}
@@ -4610,11 +4645,7 @@ div.pte_toolbar_container span.select2 {
 	box-shadow: none !important
 }
 
-.proteam_user_panel {
-	border: 1px solid #D3D3D3;
-	margin: 0 0 5px 0;
-	background-color: rgb(253, 253, 253);
-}
+
 
 .alpn_inner_proteam_manager{
 	margin-top: 10px;
@@ -4748,12 +4779,6 @@ div.pte_toolbar_container span.select2 {
 	margin-right: 3px;
 }
 
-.proTeamPanelUserOuter{
-	display: table-cell;
-	vertical-align: top;
-	padding: 5px 7px;
-	width: 60vw;
-}
 
 .proTeamPanelSettings{
 	display: table-cell;

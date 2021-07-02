@@ -3,6 +3,8 @@ require 'vendor/autoload.php';
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 use Bueltge\Marksimple\Marksimple;
+
+
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
@@ -715,9 +717,9 @@ function pte_make_invitation_received_panel ($uxMeta) {
 	$linkTopicSelect .= "</select>";
 
 	$connectionTypeSelect = "<select id='alpn_select2_small_connection_type_select'>";
-	$connectionTypeSelect .= "<option value='1'>Create Topic Link To</option>";
-	//$connectionTypeSelect .= "<option value='2'>Create New Linked Topic</option>";   TODO implement this
 	$connectionTypeSelect .= "<option value='0'>Join Topic</option>";
+	$connectionTypeSelect .= "<option value='1'>Link to My Topic</option>";
+	//$connectionTypeSelect .= "<option value='2'>Create New Linked Topic</option>";   TODO implement this
 	$connectionTypeSelect .= "</select>";
 
 	$html .= "<div id='pte_invitation_received_panel_outer'>
@@ -729,7 +731,7 @@ function pte_make_invitation_received_panel ($uxMeta) {
 						<div id='pte_topic_connection_type'>
 						{$connectionTypeSelect}
 						</div>
-						<div id='pte_topic_existing'>
+						<div id='pte_topic_existing' style='display: none;'>
 						{$linkTopicSelect}
 						</div>
 						<div id='pte_topic_data_transfer'>

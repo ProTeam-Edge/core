@@ -435,7 +435,7 @@ function usernetwork_shortcode($attr) {
 
 		break;
 
-		case 'chat':
+		case 'vit-chat':
 
 			$audioOnOffHtml = "<div id='alpn_chat_audio_on_off' title='Your audio is off. Press to turn on audio.' onclick='event.stopPropagation(); var data = {\"name\": \"pte_join_audio_current_channel\"}; pte_message_chat_window(data);'><img id='pte_chat_on_off_button' class='pte_chat_title_button' src='{$rootUrl}dist/assets/button_off.png' ><div id='alpn_chat_audio_on_off_text'>OFF</div></div>";
 
@@ -457,6 +457,11 @@ function usernetwork_shortcode($attr) {
 					</div>
 				 	<iframe id='alpn_chat_body' class='alpn_chat_body'></iframe>
 				</div>";
+
+
+				alpn_log('SETTING UP CHAT');
+				alpn_log($html);
+
 		break;
 
 		case 'self':

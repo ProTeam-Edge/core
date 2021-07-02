@@ -160,7 +160,7 @@ function pte_get_registry_proteam_invitation() {
           switch ($buttonOperation) {
             case 'accept':
               alpn_log('Handling Accept...');
-              //alpn_log($requestData);
+              alpn_log($requestData);
               if ($requestData['connected_contact_status'] == 'not_connected_member') {
                 // if member but not connected, connect them, handle as connected.
                 alpn_log('Making connection to not_connected_member...');
@@ -176,7 +176,8 @@ function pte_get_registry_proteam_invitation() {
               }
 
               //add user to chat group if they are a member. For the Topic.
-              if ($requestData['connected_contact_status'] == 'connected_member') {   //add them as long as they are members.
+              if ($requestData['connected_contact_status'] == 'connected_member') {   //add them
+                alpn_log('Making connection to connected_member...');
                 $data = array(
                   'owner_id' => $requestData['owner_id'],
                   'topic_id' => $requestData['topic_id'],
@@ -190,22 +191,23 @@ function pte_get_registry_proteam_invitation() {
               $ptState = 30;
 
               if ($requestData['connection_link_type'] == 1) {  //Link type
-                pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData);
+              //  pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData);  //this adds a bidirectional link if we want to show in table rathern than in proteam card
                 $connectedType = "link";
                 $ptState = 40;
               }
               //Update ProTeam with Join/Link type and Status.
-              if (isset($requestData['proteam_row_id']) && $requestData['proteam_row_id']) {
                 alpn_log('Handling ProTeam Update HERE!!!!...');
                 $data = array(
                   'connected_type' => $connectedType,
                   'state' => $ptState,
-                  'proteam_row_id' => $requestData['proteam_row_id'],
+                  'proteam_row_id' => $requestData['proteam_member_row_id'],
                   'owner_id' => $requestData['owner_id'],
-                  'process_id' => $requestData['process_id']
+                  'process_id' => $requestData['process_id'],
+                  'connected_id' => $requestData['connected_id'],
+                  'linked_topic_id' => $requestData['connection_link_topic_id']
                 );
+                alpn_log($data);
                 pte_proteam_state_change_sync($data);
-              }
               return;
             break;
             case 'decline':
