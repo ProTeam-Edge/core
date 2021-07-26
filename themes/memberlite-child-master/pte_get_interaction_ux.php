@@ -748,15 +748,15 @@ function pte_make_invitation_received_panel ($uxMeta) {
 						switch(data.id) {
 							case '0':
 								jQuery('#pte_topic_existing').hide();
-								jQuery('#pte_topic_data_transfer').hide();
+								// jQuery('#pte_topic_data_transfer').hide();
 							break;
 							case '1':
 								jQuery('#pte_topic_existing').show();
-								jQuery('#pte_topic_data_transfer').hide();
+								// jQuery('#pte_topic_data_transfer').hide();
 							break;
 							case '2':
 								jQuery('#pte_topic_existing').hide();
-								jQuery('#pte_topic_data_transfer').show();
+								// jQuery('#pte_topic_data_transfer').show();
 							break;
 						}
 					}

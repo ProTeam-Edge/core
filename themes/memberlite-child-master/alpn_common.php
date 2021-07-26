@@ -432,6 +432,7 @@ function pte_send_mail ($data) {
   $sendGridKey = SENDGRID_KEY;
   $emailTemplateName =  isset($data['email_template_name']) && $data['email_template_name'] ? PTE_ROOT_PATH . "email_templates/{$data['email_template_name']}" : PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
   $emailTemplateHtml = file_get_contents($emailTemplateName);
+  $fromFirstName = $data['from_first_name'];
   $fromName =  $data['from_name'];
   $fromEmail =  $data['from_email'];
   $toEmail = $data['to_email'];
@@ -441,7 +442,16 @@ function pte_send_mail ($data) {
   $subject =  $data['subject_text'];
 
   $replaceStrings["-{pte_site_domain}-"] = $siteDomain;
+
+
+  $replaceStrings["-{why_received}-"] = "Vitriva Community required correspondence.";
+  if ($fromFirstName) {
+    $replaceStrings["-{why_received}-"] = "{$fromFirstName} asked us to send you this secure link.";
+  }
+
+
   $replaceStrings["-{pte_email_body}-"] = $data['body_text'];
+
   $replaceStrings["-{pte_link_button}-"] = isset($data['link_id']) && $data['link_id'] ? "<div class='pte_button'><a class='pte_button_link' href='https://{$siteDomain}/viewer/?{$data['link_id']}'>View File</a></div>" : "" ;
   $replaceStrings["-{pte_email_file_details}-"] = $fileName;
   $replaceStrings["-{pte_email_signature}-"] = isset($data['email_signature']) && $data['email_signature'] ? $data['email_signature'] : "" ;
@@ -465,6 +475,88 @@ function pte_send_mail ($data) {
   } catch (Exception $e) {
       alpn_log ('Caught exception: '. $e->getMessage());
   }
+}
+
+
+function pte_send_group_mms($data){
+
+  $data = array(
+    "numbers" => array(0 => "+14084100365", 1 => "+16505268577"),
+    "message" => "Hi Baby, it's me geeking out with Group Texting...I need this for Vitriva anyway!"
+  );
+
+
+
+  pp("Group");
+
+
+  $accountSid = ACCOUNT_SID;
+  $authToken = AUTHTOKEN;
+  $messagingServiceId = MESSAGINGSERVICEID;
+
+  $twilio = new Client($accountSid, $authToken);
+
+  $numbers = $data['numbers'];
+  $message = $data['message'];
+
+
+
+      try {
+
+
+        $conversation = $twilio->conversations->v1->conversations
+                                                  ->create([
+                                                           ]
+                                                  );
+
+        pp($conversation->sid);
+
+        // $participant = $twilio->conversations->v1->conversations($conversation->sid)
+        //                                          ->participants
+        //                                          ->create([
+        //                                                       "messagingBindingProjectedAddress" => "+14083518493"
+        //                                                   ]
+        //                                          );
+
+
+
+        foreach ($numbers as $value) {
+          pp($value);
+
+          $participant = $twilio->conversations->v1->conversations($conversation->sid)
+                                         ->participants
+                                         ->create([
+                                                      "messagingBindingAddress" => $value
+                                                  ]
+                                         );
+
+        pp($participant->sid);
+
+      }
+
+        $message = $twilio->conversations->v1->conversations($conversation->sid)
+                                     ->messages
+                                     ->create([
+                                                  "body" => $message,
+                                                  "author" => "friend"
+                                              ]
+                                     );
+
+pp($message->sid);
+
+
+      } catch (Exception $e) {
+          $response = array(
+              'message' =>  $e->getMessage(),
+              'code' => $e->getCode(),
+              'error' => $e
+          );
+          pp("Prob Conversations...");
+          pp($response);
+          return;
+      }
+
+//  pp($data);
 }
 
 
@@ -3062,7 +3154,10 @@ function pte_create_panel($value){
     'connected_contact_status' => $connectedContactStatus,
     'linked_topic_id' => $value->linked_topic_id,
     'linked_topic_name' => $value->linked_topic_name,
-    'linked_topic_dom_id' => $value->linked_topic_dom_id
+    'linked_topic_dom_id' => $value->linked_topic_dom_id,
+    'panel_type' => $value->panel_type,
+    'connected_type' => $value->connected_type,
+    'team_member_wp_id' => $value->wp_id
   );
   return pte_make_rights_panel_view($topicPanelData);
 }
@@ -3070,23 +3165,32 @@ function pte_create_panel($value){
 
 function  pte_make_rights_panel_view($panelData) {
 
+  global $wpdb;
+
+
   alpn_log("pte_make_rights_panel_view");
-  alpn_log($panelData);
+  //pp($panelData);
 
-	$topicStates = array('10' => "Added", '20' => "Invited", '30' => "Joined", '40' => "Linked", '80' => "Email Sent", '90' => "Declined");
+  $userInfo = wp_get_current_user();
+  $userId = $userInfo->data->ID;
+  $userNetworkId = get_user_meta( $userId, 'pte_user_network_id', true );
 
+	$topicStates = array('10' => "ADDED", '20' => "Invited", '30' => "CJ", '40' => "CL", '80' => "Email Sent", '90' => "Declined");
+
+  $panelType = $panelData['panel_type'];
+  $teamMemberWpId = $panelData['team_member_wp_id'];
   $linkedTopicId = $panelData['linked_topic_id'];
   $linkedTopicName = $panelData['linked_topic_name'];
   $linkedTopicDomId = $panelData['linked_topic_dom_id'];
   $proTeamRowId = $panelData['proTeamRowId'];
-	$proTeamRowId = $panelData['proTeamRowId'];
   $topicNetworkId = $panelData['topicNetworkId'];
 	$topicDomId = $panelData['topicDomId'];
   $topicNetworkName = $panelData['topicNetworkName'];
 	$connectedContactStatus = $panelData['connected_contact_status'];
 	$topicAccessLevel = $panelData['topicAccessLevel'];
 	$topicState = $panelData['state'];
-	$checked = $panelData['checked'];
+  $checked = $panelData['checked'];
+	$connectedType = $panelData['connected_type'];
 
   if ($topicAccessLevel == '10') {
     $generalChecked = "SELECTED";
@@ -3101,12 +3205,6 @@ function  pte_make_rights_panel_view($panelData) {
     $connectedContactStatusIcon = "<i class='far fa-user' title='Member, Not Connected'></i>";
   } else if ($connectedContactStatus == 'connected_member') {
     $connectedContactStatusIcon = "<i class='far fa-user-check' title='Member, Connected'></i>";
-  }
-
-  if ($topicState == 40) {  //Linked Topic
-    $topicStateHtml ="<div title='Visit Linked Topic' data-topic-id='{$linkedTopicId}' data-topic-special='topic' data-topic-dom-id='{$linkedTopicDomId}' data-operation='to_topic_info_by_id' class='team_panel_topic_link' onclick='pte_handle_interaction_link_object(this);'><div class='team_panel_topic_link_icon'>{$linkedTopicName}&nbsp; <i class='far fa-link team_panel_topic_link_icon_actual'></i></div></div>";
-  } else {
-    $topicStateHtml = $topicStates[$topicState];
   }
 
 
@@ -3126,63 +3224,156 @@ function  pte_make_rights_panel_view($panelData) {
   $print = (isset($checked['print']) && $checked['print']) ? "<div id='proteam_print' data-item='print' pte-state='set' data-ptid='{$proTeamRowId}' class='proteam_rights_check' onclick='alpn_rights_check(this);'><div class='pte_panel_check'><i class='fa fa-check' style='font-size: 0.9em; color: #4499d7;'></i></div>Print</div>" : "<div id='proteam_print' data-item='print' pte-state='' data-ptid='{$proTeamRowId}' class='proteam_rights_check' onclick='alpn_rights_check(this);'><div class='pte_panel_check'></div>Print</div>";
 
   //if ($connectedContactStatus == 'not_connected_not_member') {
-  if (false) {
-    $html = "
-  		<div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
-        <div class='proTeamPanelUserOuter'>
-          <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
-  				<div id='proTeamPanelUserData' class='proTeamPanelUserData'><span id='pte_topic_state'>{$topicStates[$topicState]}</span> &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
-          <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
-  			</div>
-  			<div class='proTeamPanelSettings'>
-        External
-  			</div>
-  		</div>
-  		";
 
-  } else {
-    $html = "
+  switch ($panelType) {
 
-    <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
+    case 'member':   //Mine
 
-
-      <div class='pte_vault_row_50'>
-          <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName} &nbsp;{$connectedContactStatusIcon}</div>
-          <div id='proTeamPanelUserData' class='proTeamPanelUserData'><span id='pte_topic_state'>{$topicStateHtml}</span></div>
-          <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
-      </div>
-
-
-
-      <div class='pte_vault_row_50'>
-
-
-        <div id='pte_proteam_controls' class='pte_proteam_controls' data-id='{$topicNetworkId}'>
-          <table class='pte_proteam_rights_table' data-pte-proteam-id='{$proTeamRowId}'>
-            <tr class='pte_proteam_row'>
-              <td class='pte_proteam_cell_left'>
-                <div style='display: inline-block; vertical-align: middle; margin-left: 0px; margin-right: 5px; margin-bottom: 3px; font-weight: bold;'>Access:</div><div style='display: inline-block; vertical-align: middle; margin-bottom: 3px; height: 16px;'>{$permissions}</div>
-                <div class='pte_proteam_row_rights'>
-                  <div class='pte_proteam_cell_rights_left'>{$print}</div><div class='pte_proteam_cell_rights_right'>$share</div>
-                </div>
-                <div class='pte_proteam_row_rights'>
-                  <div class='pte_proteam_cell_rights_left'>{$download}</div><div class='pte_proteam_cell_rights_right'></div>
-                </div>
-              </td>
-            </tr>
-          </table>
+      if ($connectedType == 'link') {  //Linked Topic
+        $topicStateHtml ="<div title='Visit Linked Topic' data-topic-id='{$linkedTopicId}' data-topic-special='topic' data-topic-dom-id='{$linkedTopicDomId}' data-operation='to_topic_info_by_id' class='team_panel_topic_link' onclick='pte_handle_interaction_link_object(this);'><div class='team_panel_topic_link_icon'><i class='far fa-link team_panel_topic_link_icon_actual'></i>&nbsp; {$linkedTopicName}</div></div>";
+      } else if ($connectedType == 'join') {
+        $topicStateHtml = "Joined";
+      }
+      $html = "
+      <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
+        <div class='pte_vault_row_50'>
+            <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName} &nbsp;{$connectedContactStatusIcon}</div>
+            <div id='proTeamPanelUserData' class='proTeamPanelUserData'><span id='pte_topic_state'>{$topicStateHtml}</span></div>
+            <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
         </div>
-
-
-
+        <div class='pte_vault_row_50'>
+          <div id='pte_proteam_controls' class='pte_proteam_controls' data-id='{$topicNetworkId}'>
+            <table class='pte_proteam_rights_table' data-pte-proteam-id='{$proTeamRowId}'>
+              <tr class='pte_proteam_row'>
+                <td class='pte_proteam_cell_left'>
+                  <div style='display: inline-block; vertical-align: middle; margin-left: 0px; margin-right: 5px; margin-bottom: 3px; font-weight: bold;'>Access:</div><div style='display: inline-block; vertical-align: middle; margin-bottom: 3px; height: 16px;'>{$permissions}</div>
+                  <div class='pte_proteam_row_rights'>
+                    <div class='pte_proteam_cell_rights_left'>{$print}</div><div class='pte_proteam_cell_rights_right'>$share</div>
+                  </div>
+                  <div class='pte_proteam_row_rights'>
+                    <div class='pte_proteam_cell_rights_left'>{$download}</div><div class='pte_proteam_cell_rights_right'></div>
+                  </div>
+                </td>
+              </tr>
+            </table>
+          </div>
+        </div>
       </div>
+        ";
+
+    break;
+
+    case 'visitor':   //Visitor
+
+      $teamMemberNetworkId = get_user_meta( $teamMemberWpId, 'pte_user_network_id', true );
+
+      if ($userNetworkId == $teamMemberNetworkId) {
+
+        if ($connectedType == 'join') { //joined
+          $linked = '';
+          $showLinkedSelector = 'none';
+        }
+        if ($connectedType == 'link') {  //linked
+          $joined = '';
+          $linked = 'SELECTED';
+          $showLinkedSelector = 'block';
+        }
+
+        $linkTopics = $wpdb->get_results(
+      		$wpdb->prepare("SELECT id, name FROM alpn_topics WHERE special = 'topic' AND owner_id = %s ORDER BY NAME ASC", $teamMemberWpId)
+      	);
+      	$linkTopicSelect = "<select id='alpn_select2_small_link_topic_select_card'>";
+
+      	foreach ($linkTopics as $key => $value) {
+          $selected = ($value->id == $linkedTopicId) ? "SELECTED" : '';
+      		$linkTopicSelect .= "<option value='{$value->id}'  {$selected}>{$value->name}</option>";
+      	}
+      	$linkTopicSelect .= "</select>";
+
+
+      	$connectionTypeSelect = "<select id='alpn_select2_small_connection_type_select_card'>";
+      	$connectionTypeSelect .= "<option value='0' {$joined}>Join Topic</option>";
+      	$connectionTypeSelect .= "<option value='1' {$linked}>Link to My Topic</option>";
+      	//$connectionTypeSelect .= "<option value='2'>Create New Linked Topic</option>";   TODO implement this
+      	$connectionTypeSelect .= "</select>";
+
+
+        $html = "
+        <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
+          <div class='pte_vault_row_50'>
+            <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class=''>{$topicNetworkName}</div>
+            <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Leave</div>
+          </div>
+          <div class='pte_vault_row_50'>
+            <div style='margin-top: 3px;'>
+            {$connectionTypeSelect}
+            </div>
+            <div id='pte_topic_existing_card' style='display: {$showLinkedSelector};''>
+            {$linkTopicSelect}
+            </div>
+          </div>
+        </div>
+        <script>
+    				function pte_handle_connection_type_changed_card(data) {
+    					console.log('pte_handle_connection_type_changed...');
+    					if (typeof data != 'undefined') {
+    						switch(data.id) {
+    							case '0':  //join
+    								jQuery('#pte_topic_existing_card').hide();
+    								// jQuery('#pte_topic_data_transfer_card').hide();
+    							break;
+    							case '1': //linked
+    								jQuery('#pte_topic_existing_card').show();
+    								// jQuery('#pte_topic_data_transfer_card').hide();
+    							break;
+    							case '2':
+    								jQuery('#pte_topic_existing_card').hide();
+    								// jQuery('#pte_topic_data_transfer_card').show();
+    							break;
+    						}
+                data.proteam_row_id = '{$proTeamRowId}';
+                vit_handle_persist_proteam_change(data);
+    					}
+    				}
+    				jQuery('#alpn_select2_small_connection_type_select_card').select2( {
+    					theme: 'bootstrap',
+    					width: '100%',
+    					allowClear: false,
+    					minimumResultsForSearch: -1
+    				});
+    				jQuery('#alpn_select2_small_connection_type_select_card').on('select2:select', function (e) {
+    					pte_handle_connection_type_changed_card(e.params.data);
+    				});
+    				pte_handle_connection_type_changed_card();
+    				jQuery('#alpn_select2_small_link_topic_select_card').select2( {
+    					theme: 'bootstrap',
+    					width: '100%',
+    					allowClear: false,
+    				});
+    		</script>
+          ";
+
+      }
 
 
 
+    break;
 
-
-      ";
   }
+
+    // $html = "
+  	// 	<div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
+    //     <div class='proTeamPanelUserOuter'>
+    //       <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='proTeamPanelUser' onclick='pte_handle_interaction_link_object(this);'>{$topicNetworkName}</div>
+  	// 			<div id='proTeamPanelUserData' class='proTeamPanelUserData'><span id='pte_topic_state'>{$topicStates[$topicState]}</span> &nbsp;|&nbsp; {$connectedContactStatusIcon}</div>
+    //       <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
+  	// 		</div>
+  	// 		<div class='proTeamPanelSettings'>
+    //     External
+  	// 		</div>
+  	// 	</div>
+  	// 	";
+
 	return $html;
 }
 

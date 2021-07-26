@@ -50,7 +50,6 @@
 <body <?php body_class(); ?>>
 
 
-
 <?php do_action( 'memberlite_before_page' ); ?>
 <div id="page" class="hfeed site">
 
@@ -133,12 +132,13 @@
 	<?php if ( ! is_page_template( 'templates/interstitial.php' ) && has_nav_menu( 'primary' ) ) { ?>
 		<?php
 			$sticky_nav = get_theme_mod( 'sticky_nav' );
-			if ( $sticky_nav == true ) { ?>
+			if ( false ) { ?>
 				<div class="site-navigation-sticky-wrapper">
 			<?php }
 		?>
 		<nav id="site-navigation">
 		<?php
+
 			$primary_defaults = array(
 				'theme_location'  => 'primary',
 				'container'       => 'div',
@@ -146,11 +146,18 @@
 				'menu_class'      => 'menu large-12 columns',
 				'fallback_cb'     => false,
 			);
+
+			$currentPage = $wp_query->post->post_title;
+
+			if(!is_user_logged_in()) {
+					$primary_defaults['menu'] = "PTE-Home";
+
+			}
 			wp_nav_menu( $primary_defaults );
 		?>
 		</nav><!-- #site-navigation -->
 		<?php
-			if ( $sticky_nav == true ) { ?>
+			if ( false ) { ?>
 			</div> <!-- .site-navigation-sticky-wrapper -->
 			<script>
 				jQuery(document).ready(function ($) {

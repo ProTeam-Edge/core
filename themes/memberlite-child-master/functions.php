@@ -18,6 +18,17 @@ include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 ini_set('memory_limit', '512M');
 
+global $memberFeatures;
+
+$memberFeatures = array(
+	'fax_1' => false,
+	'fax_2' => false,
+	'template_editor_main' => false,
+	'topic_type_editor_main' => false
+
+);
+
+
 // verify added nonce before submission for wpforms
 use PascalDeVink\ShortUuid\ShortUuid;
 
@@ -206,14 +217,16 @@ function alpn_load_script(){
     );
     wp_enqueue_script( 'alpn_doka' );
 
-    wp_register_script(
-        'alpn_tinymce_editor',
-				get_template_directory_uri() . '/../memberlite-child-master/dist/js/tinymce/tinymce.min.js',
-        array( 'jquery' )
-    );
-    wp_enqueue_script( 'alpn_tinymce_editor' );
+
 
     if (!is_admin()) {
+
+			wp_register_script(
+					'alpn_tinymce_editor',
+					get_template_directory_uri() . '/../memberlite-child-master/dist/js/tinymce_5/tinymce.min.js',
+					array( 'jquery' )
+			);
+			wp_enqueue_script( 'alpn_tinymce_editor' );
 
       wp_register_script(   //TODO Remover WAITME?
             'pte_print_page',
@@ -252,41 +265,81 @@ add_action('admin_enqueue_scripts', 'alpn_load_script');
 
 add_filter('show_admin_bar', '__return_false'); //Remove top bar
 
+add_filter( 'woocommerce_new_customer_data', function( $data ) {
+	$data['user_login'] = $data['user_email'];
 
-function pmpro_change_error_message( $translated_text, $text, $domain ) {
-        switch ( $translated_text ) {
-					case 'Your membership requires approval before you are able to view this content.' :
-							$translated_text = __( '<p>Until we launch Vitriva to the public, your account must be approved by an administrator</p>', 'pmpro-approvals' );
-					break;
-					case 'IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated' :
-							$translated_text = __( 'Please confirm your email', 'pmpro-email-confirmation' );
-					break;
-          case 'Your %s membership will be activated as soon as you confirm your email address' :
-              $translated_text = __( 'To activate your membership, please confirm your email address by following the instructions we just sent. If you don\'t see it, check your SPAM folder', 'paid-memberships-pro' );
-          break;
-					case 'Important! You must click on the confirmation URL sent to %s before you gain full access to your membership' :
-							$translated_text = __( 'Until we launch Vitriva to the public, your account must be approved by an administrator', 'paid-memberships-pro' );
-					break;
+	alpn_log("WOODATA");
+	alpn_log($data);
+
+	return $data;
+} );
+
+function vit_translate__strings( $translated, $untranslated, $domain ) {
+   if ( ! is_admin() ) {
+      switch ( $translated ) {
+      	case 'Username or email address':
+            $translated = 'Email address';
+        break;
+				case 'Lost your password? Please enter your username or email address. You will receive a link to create a new password via email.':
+            $translated = 'Lost your password? Please enter your email address. You will receive a link to create a new password via email.';
+        break;
+				case 'Username or email':
+            $translated = 'Email address';
+        break;
+      }
+   }
+   return $translated;
+}
+add_filter( 'gettext', 'vit_translate__strings', 999, 3 );
+
+
+function wpb_custom_billing_fields( $fields = array() ) {
+
+	unset($fields['billing_first_name']);
+	unset($fields['billing_last_name']);
+	unset($fields['billing_email']);
+	unset($fields['billing_company']);
+	unset($fields['billing_address_1']);
+	unset($fields['billing_address_2']);
+	unset($fields['billing_state']);
+	unset($fields['billing_city']);
+	unset($fields['billing_phone']);
+	unset($fields['billing_postcode']);
+	unset($fields['billing_country']);
+
+	return $fields;
+}
+add_filter('woocommerce_billing_fields','wpb_custom_billing_fields');
+add_filter( 'woocommerce_enable_order_notes_field', '__return_false', 9999 );
+
+function custom_add_subscription_name_to_table( $subscription ) {
+
+    foreach ( $subscription->get_items() as $item_id => $item ) {
+        $_product  = apply_filters( 'woocommerce_subscriptions_order_item_product', $subscription->get_product_from_item( $item ), $item );
+
+        if ( apply_filters( 'woocommerce_order_item_visible', true, $item ) ) {
+
+            echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', sprintf( '<br><a href="%s">%s</a>', get_permalink( $item['product_id'] ), $item['name'] ), $item ) );
+
         }
-
-    return $translated_text;
+    }
 }
-add_filter( 'gettext', 'pmpro_change_error_message', 20, 3 );
+add_action( 'woocommerce_my_subscriptions_after_subscription_id', 'custom_add_subscription_name_to_table', 35 );
 
 
-function my_pmpro_login_redirect_url($redirect_to, $request, $user) {  //Logion redirect
-	$redirect_to = "./missioncontrol/";
-	return $redirect_to;
+function add_loginout_link( $items, $args ) {
+  if (is_user_logged_in() && $args->theme_location == 'meta') {
+		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Account</a></li>';
+		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '">Cart</a></li>';
+    $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="'. wp_logout_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ) .'">Log Out</a></li>';
+  }
+   elseif (!is_user_logged_in() && $args->theme_location == 'meta') {
+    $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Log In &nbsp;|&nbsp; Register</a></li>';
+  }
+   return $items;
 }
-add_filter("pmpro_login_redirect_url", "my_pmpro_login_redirect_url", 10, 3);
+add_filter( 'wp_nav_menu_items', 'add_loginout_link', 10, 2 );
 
-// function my_pmpro_member_profile_edit_user_object_fields( $user_fields ) {
-// 	//unset( $user_fields['first_name'] );
-// 	//unset( $user_fields['last_name'] );
-// 	unset( $user_fields['display_name'] );
-// 	return $user_fields;
-// }
-// add_filter( 'pmpro_member_profile_edit_user_object_fields', 'my_pmpro_member_profile_edit_user_object_fields' );
 
 function pte_set_avatar_url( $url, $id_or_email, $args ) {
 	$url = PTE_ROOT_URL . "dist/assets/blm-avatar.png";
@@ -297,27 +350,6 @@ function pte_set_avatar_url( $url, $id_or_email, $args ) {
 	return esc_url_raw($url);
 }
 add_filter( 'get_avatar_url', 'pte_set_avatar_url', 10, 3 );
-
-function ptc_pmpro_email_filter($email) {  //Adds our template around email content.
-
-		alpn_log("ptc_pmpro_email_filter");
-    $emailTemplateName = PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
-    $emailTemplateHtml = file_get_contents($emailTemplateName);
-
-		$replaceStrings["IMPORTANT! You must follow this link to confirm your email address before your membership is fully activated:"] = "Please confirm your email:";
-    $replaceStrings["-{pte_email_body}-"] = $email->body;
-    $replaceStrings["-{pte_link_id}-"] = "";
-		$replaceStrings["-{pte_email_file_details}-"] = "";
-		$replaceStrings["-{pte_email_signature}-"] = "";
-    $replaceStrings["-{pte_link_button}-"] = "";
-
-    $emailTemplateHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $emailTemplateHtml);
-
-    $email->body = $emailTemplateHtml;
-
-    return $email;
-}
-add_filter("pmpro_email_filter", "ptc_pmpro_email_filter");
 
 
 // Use the email address as username with PMPro checkout. Also hide fields where necessary
@@ -337,10 +369,6 @@ function my_init_email_as_username()
     $_GET['username'] = $_GET['bemail'];
 }
 add_action('init', 'my_init_email_as_username');
-
-
-add_filter("pmpro_checkout_confirm_email", "__return_false");  //remove email confirmation on login.
-add_filter("pmpro_checkout_confirm_password", "__return_false");  //remove email confirmation on login.
 
 
 function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets up default topics and sample data.

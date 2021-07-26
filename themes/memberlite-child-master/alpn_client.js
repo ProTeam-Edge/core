@@ -124,6 +124,43 @@ function pte_delete_topic_link(key) {
 
 }
 
+function vit_handle_persist_proteam_change(data) {
+	console.log("Persisting stuff...");
+	console.log(data);
+
+
+	var linkTopicSelect = jQuery('#alpn_select2_small_link_topic_select_card');
+	var linkTopicSelectData = linkTopicSelect.select2('data');
+	if (typeof linkTopicSelectData != 'undefined' && typeof linkTopicSelectData[0] != 'undefined') {
+		data.selected_topic_id = linkTopicSelectData[0].id;
+	}
+
+	var security = specialObj.security;
+	jQuery.ajax({
+		url: alpn_templatedir + 'vit_update_proteam.php',
+		type: 'POST',
+		data: {
+			'data': JSON.stringify(data),
+			'security': security
+		},
+		dataType: "json",
+		success: function(json) {
+
+			console.log("Persisting Stuff Back");
+			console.log(json);
+
+
+		},
+		error: function() {
+			console.log('problem - updating proteam');
+		//TODO
+		}
+	});
+
+
+
+}
+
 function pte_UUID() { // Public Domain/MIT
     var d = new Date().getTime();//Timestamp
     var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
@@ -1587,7 +1624,7 @@ console.log('pte_handle_interaction_selected...');
 		console.log(selectedDom);
 
 		var theCell = selectedDom.closest('td');
-		theCell.attr("style", "background-color: #D8D8D8 !important;");
+		theCell.attr("style", "background-color: #C6E2FF !important;");
 		pte_selected_interaction_process_id = processId;
 	}
 }
@@ -4468,6 +4505,7 @@ function pte_setup_pdf_viewer(viewerSettings) {
 				});
 
 				pdfui.setEnableJS(false);
+				pdfui.highlightForm(false);
 
 				pdfui.addUIEventListener('fullscreenchange', function(isFullscreen) {
 						if(isFullscreen) {
@@ -6293,19 +6331,23 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 					alpn_setup_proteam_member_selector('all');
 					pte_handle_tab_bar_scroll();
 
+					var metaObj = jQuery('#pte_selected_topic_meta');
+					var topicOwnerId = metaObj.data('oid');
+
+
 					var delButtonEl = jQuery("#delete_topic_button");
 					if (delButtonEl.hasClass('pte_ipanel_button_disabled')) {
 						delButtonEl.removeClass('pte_ipanel_button_disabled');
 						delButtonEl.addClass('pte_ipanel_button_enabled');
 					}
-					if (pteSelectedType == 'user') {
+
+					if (pteSelectedType == 'user' || topicOwnerId != alpn_user_id) {
 						if (delButtonEl.hasClass('pte_ipanel_button_enabled')) {
 							delButtonEl.removeClass('pte_ipanel_button_enabled');
 							delButtonEl.addClass('pte_ipanel_button_disabled');
 						}
 					}
 					if (!pte_back_button) {
-						var metaObj = jQuery('#pte_selected_topic_meta');
 						var topicDomId = metaObj.data('tdid');
 						var topicId = metaObj.data('tid');
 						var topicTypeId = metaObj.data('ttid');

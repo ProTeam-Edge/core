@@ -11,6 +11,176 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+
+.vit_no_marketing_guarantee{
+	margin-bottom: 0;
+	font-size: 16px;
+	line-height: 21px;
+}
+
+.vit_no_marketing_guarantee a{
+	color: #fff3e5 !important;
+
+}
+
+nav.woocommerce-MyAccount-navigation ul {
+	list-style: none;
+	margin-left: 0;
+}
+
+.woocommerce-MyAccount-navigation-link a {
+	color: #3172B6;
+	text-decoration: none;
+}
+
+div#meta-member {
+	display: none;
+}
+
+nav#site-navigation ul.sub-menu {
+	top: 28px;
+}
+
+header.woocommerce-products-header{
+	margin-top: 25px;
+}
+
+header.masthead {
+	display: none;
+}
+
+.vit_home_feature_image {
+	padding: 10px;
+	border: solid 1px #C0C0C0;
+}
+
+.vit_circles_image{
+}
+
+.vit_column_text{
+	font-size: 16px;
+	line-height: 22px;
+	margin: 10px 0 0 0;
+}
+
+.vit_column_text_spacing{
+	padding: 0 25px 0 0;
+}
+
+.vit_column_text_small_bottom{
+	margin-top: 60px;
+}
+
+.vit_feature_title{
+	margin-bottom: 10px;
+	color: #3173b7;
+}
+
+.vit_title_text {
+	font-size: 20px;
+	line-height: 24px;
+	margin: 15px 0;
+}
+
+.vit_peeps_image{
+	max-width: 300px;
+	text-align: center;
+	margin-top: 200px;
+	margin-left: 20px;
+}
+
+.vit_community_column_border{
+
+}
+
+.vit_community_columns{
+	margin: 0px 35px 0 0 !important;
+	background-color: #f0f8ff;
+	padding: 10px 20px;
+	border: solid 1px #C0C0C0;
+}
+
+.site-navigation-sticky-wrapper  {
+	height: 15px;
+}
+
+.bbpress {
+	font-size: 14px;
+	line-height: 18px;
+}
+
+
+#bbp_search_submit{
+	font-size: 15px !important;
+  line-height: 20px !important;
+  padding: 5px 8px !important;
+	margin-left: 5px;
+
+}
+
+
+button[type=submit]:hover, input[class=button]:hover {
+	background: #286090 !important;
+	box-shadow: 1px 2px 4px rgba(0,0,0,0.4) !important;
+	color: #FFF !important;
+	transform: translateY(0) !important;
+}
+
+button[type=submit], input[class=button] {
+	background: rgb(49, 114, 182) !important;
+	box-shadow: 1px 2px 4px rgb(0 0 0 / 40%) !important;
+	color: #FFF !important;
+	transform: translateY(0) !important;
+  border: none !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+	font-family: "Lato", sans-serif !important;
+  font-size: 18px !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  display: inline-block !important;
+  line-height: 28px !important;
+  padding: 5px 15px !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  text-shadow: none !important;
+}
+
+
+body.woocommerce-account div.content-area{
+	margin-top: 25px;
+}
+
+nav.meta-navigation{
+	font-size: 14px;
+	line-height: 20px;
+}
+
+span.show-password-input{
+	right: 10px !important;
+	top: 5px !important;
+}
+
+.content-area input[type=text],
+.content-area input[type=email],
+.content-area input[type=url],
+.content-area input[type=password],
+.content-area input[type=search],
+.content-area textarea,
+.bbpress-wrapper input[type=text],
+.bbpress-wrapper input[type=email],
+.bbpress-wrapper input[type=url],
+.bbpress-wrapper input[type=password],
+.bbpress-wrapper input[type=search],
+.bbpress-wrapper textarea {
+	padding: 5px 8px !important;
+	line-height: 20px !important;
+	font-family: "Lato", sans-serif !important;
+  font-size: 14px !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+}
+
 .team_linked_topic {
 }
 
@@ -21,10 +191,10 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 	background-color: rgb(253, 253, 253);
 	display: flex;
 	flex-wrap: wrap;
+	min-height: 55px;
 }
 
 .team_panel_topic_link_icon_actual{
-	color: #700000 !important;
 }
 
 .team_panel_topic_link_icon {
@@ -40,6 +210,8 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	color: #700000 !important;
+
 }
 
 a.pmpro_btn-select[href*="level=2"] {
@@ -350,8 +522,6 @@ div#pte_editor_container[data-personal-topic="true"] div.wpforms-field-email {
 	pointer-events: none !important;
 }
 
-body.home div#meta-member {
-}
 
 .menu-item-1133 {
 	padding-left: 0 !important;
@@ -431,21 +601,9 @@ button.menu-toggle {
 }
 .entry-content > :first-child {
 	margin-top: 15px !important;
-
 }
-
-div#pmpro_account-membership h3,
-div.pmpro_billing_wrap > :first-child {
-	display: none;
-}
-
-table#pmpro_levels h2 {
-	font-size: 20px;
-	font-weight: bold;
-}
-
-nav#site-navigation ul.sub-menu {
-
+.kt-row-layout-inner{
+	margin-top: 0 !important;
 }
 
 nav#member-navigation ul.sub-menu {
@@ -468,19 +626,6 @@ nav#mobile-navigation ul.sub-menu {
 
 }
 
-.div.tml {
-	margin-top: 30px !important;
-
-}
-
-.pmpro_billing_wrap,
-#pmpro_cancel{
-	margin-top: 30px !important;
-}
-
-.pmpro_btn-cancel{
-	color: white !important;
-}
 
 .meta-member-inner span.user{
 	display: none !important;
@@ -1830,20 +1975,6 @@ html::-webkit-scrollbar {
 	padding-left: 20px;
 }
 
-@media screen and (max-width: 1023px) {
-	.pte_outer_vault_small{
-		width: 100% !important;
-		padding: 0 !important;
-	}
-
-	#pte_topic_form_edit_view_left,
-	#pte_topic_form_edit_view_right{
-		max-width: 100% !important;
-		flex-basis: 100% !important;
-		padding-left: 0 !important;
-		border-left: 0 !important;
-	}
-}
 
 .alpn_vault_work_area {
 	height: 0px;
@@ -2045,6 +2176,7 @@ table#table_vault td.column-draw_id{
 .pte_vault_row_50{
 	flex-grow: 1;
 	flex-basis: 50%;
+	max-width: 50%;
 }
 
 .pte_vault_row_33{
@@ -2441,6 +2573,7 @@ button[aria-label="Crop portrait (9:16)"]
 	display: none;
 }
 
+#pte_topic_existing_card,
 #pte_topic_existing{
 	margin-top: 5px;
 	display: block;
@@ -4399,14 +4532,6 @@ btn {
 }
 
 
-.wpforms-submit:hover,
-.wpforms-page-button:hover {
-	background: #286090 !important;
-	box-shadow: 1px 2px 4px rgba(0,0,0,0.4) !important;
-	color: #FFF !important;
-	transform: translateY(-1px) !important;
-}
-
 .btn-tiny {
     padding: 0px 0px !important;
     font-size: 11px !important;
@@ -4794,6 +4919,9 @@ div.pte_toolbar_container span.select2 {
 	line-height: 18px;
 	color: #0074BB;
 	cursor: pointer;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
 .proTeamPanelUserData{
@@ -5016,4 +5144,43 @@ div.pte_toolbar_container span.select2 {
 	width: 100%;
 	overflow-x: auto;
 	-webkit-overflow-scrolling: touch;
+}
+
+
+
+@media only screen and (min-width: 1160px) {
+}
+
+@media only screen and (min-width: 960px) and (max-width: 1160px) {
+}
+
+@media only screen and (min-width: 768px) and (max-width: 959px) {
+
+}
+
+@media screen and (max-width: 1023px) {
+	.pte_outer_vault_small{
+		width: 100% !important;
+		padding: 0 !important;
+	}
+
+	#pte_topic_form_edit_view_left,
+	#pte_topic_form_edit_view_right{
+		max-width: 100% !important;
+		flex-basis: 100% !important;
+		padding-left: 0 !important;
+		border-left: 0 !important;
+	}
+}
+
+@media only screen and (max-width: 767px) {
+
+	.kt-inside-inner-col {
+		padding: 0 !important;
+	}
+
+	.vit_community_columns{
+		margin: 0 5px !important;
+	}
+
 }

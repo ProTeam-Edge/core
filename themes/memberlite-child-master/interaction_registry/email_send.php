@@ -76,13 +76,15 @@ function pte_get_registry_email_send() {
                   $requestData['link_id'] = $linkUid;
                   $ownerAccountDetails = get_user_by('id', $requestData['owner_id']);
 
-
                   $ownerEmailAddress = $ownerAccountDetails->user_email;
+                  $ownerFirstName = $ownerAccountDetails->first_name;
+
                   $ownerEmailAddressName = $requestData['owner_friendly_name'];
                   $emailData = array(
                     'link_type' => 'file',
                   	"to_name" => $requestData['send_email_address_name'],
                   	"to_email" => $requestData['send_email_address'],
+                    "from_first_name" => $ownerFirstName,
                     "from_name" => $ownerEmailAddressName,
                     "from_email" => $ownerEmailAddress,
                     "link_id" => $linkUid,
@@ -92,6 +94,23 @@ function pte_get_registry_email_send() {
                   	"body_text" => $requestData['message_body'] ? nl2br($requestData['message_body']) : "No Message."
                   );
                 pte_send_mail($emailData);
+
+                if ($requestData["link_interaction_password"]) {  //send second email with passcode, if exists
+                  $emailData = array(
+                    'link_type' => '',
+                    "to_name" => $requestData['send_email_address_name'],
+                    "to_email" => $requestData['send_email_address'],
+                    "from_first_name" => $ownerFirstName,
+                    "from_name" => $ownerEmailAddressName,
+                    "from_email" => $ownerEmailAddress,
+                    "link_id" => '',
+                    "vault_file_name" => '',
+                    "vault_id" => $requestData['vault_id'],
+                    "subject_text" => $requestData['message_title'] ? "Passcode for - " . $requestData['message_title'] : "Passcode for xLink",
+                    "body_text" => "Passcode - " . $requestData["link_interaction_password"]
+                  );
+                  pte_send_mail($emailData);
+                }
               }
 
               $token->setValue("process_context", $requestData);

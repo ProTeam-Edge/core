@@ -341,7 +341,7 @@ if (!isset($results[0])) {
 	if (!$topicBelongsToUser) {
 		$topicOwnerContent = json_decode($record->owner_topic_content, true);
 		$topicOwnerName = isset($topicOwnerContent['person_givenname']) ? $topicOwnerContent['person_givenname']: "Not Specified";
-		$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Topic Owner</div><div id='pte_interaction_owner_inner_name'>{$topicOwnerName}</div></div>";
+		$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Visiting</div><div id='pte_interaction_owner_inner_name'>Owner -- {$topicOwnerName}</div></div>";
 		$permissionLevel = $record->access_level;
 		//TODO Handle if no permissionlevel. Means removed from Proteam or something.
 

@@ -4,12 +4,9 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
-// $fred = array(
-// 	"channel_id" => "CHae34c79174b6492e905ebb175722c46d"
-// );
-//
-// pte_manage_cc_groups("delete_channel_by_channel_id", $fred);
+//  "numbers" => array("number" => "8315882464"),
 
+global $memberFeatures;
 
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
@@ -19,7 +16,7 @@ $domainName = PTE_HOST_DOMAIN_NAME;
 
 
 if(!is_user_logged_in()) {
-   echo '<script>window.location.href = "./login";</script>';
+   echo '<script>window.location.href = "./my-account";</script>';
    exit;
 }
 
@@ -196,7 +193,7 @@ if ($topicProfileHandle) {
 if (!$topicBelongsToUser) {
 	$ownerTopicContent = json_decode($topicData->owner_topic_content, true);
 	$ownerFirst = isset($ownerTopicContent['person_givenname']) ? $ownerTopicContent['person_givenname'] : "Not Specified";
-	$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Topic Owner</div><div id='pte_interaction_owner_inner_name'>{$ownerFirst}</div></div>";
+	$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Visiting</div><div id='pte_interaction_owner_inner_name'>Owner --  {$ownerFirst}</div></div>";
   $showIconAccordian = "none";
 	$showLogoAccordion = "none";
 	$pteEditDeleteClass = 'pte_ipanel_button_disabled';
@@ -266,7 +263,7 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 
 
     $showFaxAccordian = "none";
-    if(!pmpro_hasMembershipLevel('1')) {   //Fax Available to all levels other than Community  //TODO make this dynamic
+    if($memberFeatures['fax_1']) {   //Fax Available to all levels other than Community  //TODO make this dynamic
       $showFaxAccordian = "block";
     }
 
@@ -387,6 +384,7 @@ $settingsAccordion = "
 	</script>
 ";
 
+
 $proteam = $wpdb->get_results(  //get proteam -- pre-connected by alpn_topics_network_profile view in db
 	$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id, t.alt_id, t.connected_id, t1.name as linked_topic_name, t1.dom_id AS linked_topic_dom_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id LEFT JOIN alpn_topics t1 ON t1.id = p.linked_topic_id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
  );
@@ -409,11 +407,11 @@ if (count($proteam)) {
 $displayNoMembers = "none";
 foreach ($proteam as $key => $value) {    //for everyone on the team
 	if ($topicBelongsToUser) {
+    $value->panel_type = 'member';
     $proTeamMembers .= pte_create_panel($value);
 	} else {
-		$proTeamMembers .= "
-			<div>{$value->name}</div>
-		";
+    $value->panel_type = 'visitor';
+    $proTeamMembers .= pte_create_panel($value);
 	}
 }
 } else {
@@ -646,7 +644,7 @@ $html .= "
 					</div>
 			";
 $html .= "
-						<div id='pte_selected_topic_meta' class='pte_vault_row' data-mode='info' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId} data-tia='{$topicImageHandle}'>
+						<div id='pte_selected_topic_meta' class='pte_vault_row' data-mode='info' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId}' data-tia='{$topicImageHandle}'>
 							<div id='pte_topic_form_edit_view_left' class='pte_vault_row_padding_right'>
 								{$tabs}
 							</div>

@@ -1,6 +1,8 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
+global $memberFeatures;
+
 //TODO Check logged in, etc
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
@@ -17,7 +19,7 @@ $interactionChooser = "<select id='alpn_selector_interaction_selector' class='al
 $interactionChooser .= "<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>";
 $interactionChooser .= "<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>";
 
-if(!pmpro_hasMembershipLevel('1')) {   //Fax Available to all levels other than Community  //TODO make this dynamic
+if($memberFeatures['fax_1']) {   //Fax Available to all levels other than Community  //TODO make this dynamic
 	$interactionChooser .= "<option value='fax' data-icon='far fa-fax'>Send as Fax</option>";
 }
 
@@ -80,7 +82,7 @@ if (!isset($results[0])) {
 	if (!$topicBelongsToUser) {
 		$topicOwnerContent = json_decode($record->owner_topic_content, true);
 		$topicOwnerName = isset($topicOwnerContent['person_givenname']) ? $topicOwnerContent['person_givenname']: "Not Specified";
-		$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Topic Owner</div><div id='pte_interaction_owner_inner_name'>{$topicOwnerName}</div></div>";
+		$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Visiting</div><div id='pte_interaction_owner_inner_name'>Owner -- {$topicOwnerName}</div></div>";
 		$permissionLevel = $record->access_level;
 		//TODO Handle if no permissionlevel. Means removed from Proteam or something.
 

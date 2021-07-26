@@ -47,7 +47,7 @@ $html = "
 
 $results = $wpdb->get_results(
 	$wpdb->prepare(
-		"SELECT l.* from alpn_links l LEFT JOIN alpn_vault v ON l.vault_id = v.id WHERE v.owner_id = '%s' AND v.dom_id = '%s' ORDER BY l.last_update DESC;", $ownerId, $cellId)
+		"SELECT l.* FROM alpn_vault v JOIN alpn_links l ON l.vault_id = v.id WHERE v.dom_id = %s ORDER BY l.last_update DESC;", $cellId)
 );
 
 

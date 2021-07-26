@@ -10,6 +10,11 @@ function usernetwork_shortcode($attr) {
 
     $html = $domID = $userTopicId = $userImageHandle = $syncId = $userTopicId = $userTopicTypeId = $contactTopicTypeId = $userDisplayName = $standardColorCount = "";
 
+		if(!is_user_logged_in()) {
+		   echo '<script>window.location.href = "./my-account";</script>';
+		   exit;
+		}
+
 	$templateDirectory = get_template_directory_uri();
 
 	if (is_user_logged_in()) {  //TODO only hit database when needed
@@ -445,7 +450,7 @@ function usernetwork_shortcode($attr) {
 				"<div id='alpn_chat_panel' class='alpn_chat_panel'>
 				<div id='pte_chat_dropzone'>Drop a file here to add it to this Topics File Vault and to send a link in Chat [Coming Soon!]</div>
 				 	<div id='alpn_chat_title' class='alpn_chat_title'>
-						<div id='alpn_chat_title_title'>Conversations&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<span id='pte_chat_topic_name'>--</span></div>
+						<div id='alpn_chat_title_title'>Discussion&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<span id='pte_chat_topic_name'>--</span></div>
 						<div id='alpn_chat_stats'>
 							<div id='alpn_chat_chat'>
 								Chat  &nbsp;&nbsp;<span id='pte_chat_total_unreads'>--</span>
