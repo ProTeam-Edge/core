@@ -1,7 +1,7 @@
 <?php
 
 $hostName = gethostname();
-$domainName = (substr($hostName, 0, 16) == "pte-dev-staging-") ? "alct.pro" : "proteamedge.com";
+$domainName = (substr($hostName, 0, 16) == "pte-dev-staging-") ? "alct.pro" : "vitriva.com";
 
 define('PTE_STANDARD_COLOR_COUNT', 10);
 
@@ -16,13 +16,13 @@ define('PTE_DATE_FORMAT_STRING_PHP', 'M j, Y, g:i a');   //php formatting.
 
 //database
 
-define('DB_HOST_RW', 'sky0001654.mdb0001643.db.skysql.net:5003');
-define('DB_USERNAME_RW', 'DB00002069');
-define('DB_PASSWORD_RW', 'U5lp93,RmjZbSs7199kn1X4');
+define('DB_HOST_RW', 'vit-all.mdb0001643.db.skysql.net:5001');
+define('DB_USERNAME_RW', 'DB00004543');
+define('DB_PASSWORD_RW', '71,nnfSKezJcvfKKYLOgLD,gN');
 
-define('DB_HOST_RO', 'sky0001654.mdb0001643.db.skysql.net:5003');
-define('DB_USERNAME_RO', 'DB00002069');
-define('DB_PASSWORD_RO', 'U5lp93,RmjZbSs7199kn1X4');
+define('DB_HOST_RO', 'vit-all.mdb0001643.db.skysql.net:5001');
+define('DB_USERNAME_RO', 'DB00004543');
+define('DB_PASSWORD_RO', '71,nnfSKezJcvfKKYLOgLD,gN');
 
 //transloadit
 define('TRANSLOADIT_KEY', '0f89b090056541ff8ed17c5136cd7499');

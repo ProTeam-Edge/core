@@ -2628,7 +2628,7 @@ function initializeTwilio() {
 				// getting FCM token
 				firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
 					jQuery.ajax({
-						url: "https://alct.pro/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
+						url: "https://vitriva.com/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
 						type: "POST",
 						data:{token:fcmToken,userId:alpn_user_id},
 						success: function(html){
@@ -2671,7 +2671,7 @@ function initializeTwilio() {
 				} else {
 
 						 if(typeof payload.data.twi_body !== 'undefined' && payload.data.twi_body != ''){
-						console.log('Message from https://alct.pro/ \n'+payload.data.twi_body);
+						console.log('Message from https://vitriva.com/ \n'+payload.data.twi_body);
 					 }
 				}
 					console.log(alpn_user_displayname);
@@ -2930,20 +2930,20 @@ function pte_setup_window_onload() {
 jQuery( window ).load( function(){
 
 	//Initialize
-	if (typeof alpn_user_id != "undefined" && alpn_user_id) {
-		window.Userback = window.Userback || {};
-		Userback.access_token = '29911|43846|CoAYHySNQemyYIqBzfBHlEjK2';
-		Userback.name = alpn_user_displayname;
-		Userback.email = alpn_user_email;
-		Userback.custom_data = {
-		    owner_id: alpn_user_id
-		};
-		(function(d) {
-		    var s = d.createElement('script');s.async = true;
-		    s.src = 'https://static.userback.io/widget/v1.js';
-		    (d.head || d.body).appendChild(s);
-		})(document);
-	}
+	// if (typeof alpn_user_id != "undefined" && alpn_user_id) {
+	// 	window.Userback = window.Userback || {};
+	// 	Userback.access_token = '29911|43846|CoAYHySNQemyYIqBzfBHlEjK2';
+	// 	Userback.name = alpn_user_displayname;
+	// 	Userback.email = alpn_user_email;
+	// 	Userback.custom_data = {
+	// 	    owner_id: alpn_user_id
+	// 	};
+	// 	(function(d) {
+	// 	    var s = d.createElement('script');s.async = true;
+	// 	    s.src = 'https://static.userback.io/widget/v1.js';
+	// 	    (d.head || d.body).appendChild(s);
+	// 	})(document);
+	// }
 
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 	// added delay for fixing loading issue TODO figure out exactly whats up and fix it or wait for it, not a timer.

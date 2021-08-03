@@ -79,7 +79,7 @@ include('alpn-shortcodes.php');
 include('alpn_common.php');
 include('pte_messaging.php');
 
-$wpdb_readonly = new wpdb(DB_USER,DB_PASSWORD,DB_NAME,'sky0001654.mdb0001643.db.skysql.net:5003');  //TODO use this connection anywhere that isn't susceptible to master/slave, add/update lag. Coming from add/update, pass in JSON. use different connection
+$wpdb_readonly = $wpdb;  //TODO use this connection anywhere that isn't susceptible to master/slave, add/update lag. Coming from add/update, pass in JSON. use different connection
 
 function pte_dequeue_unnecessary_styles() {
     wp_dequeue_style( 'font-awesome' );
@@ -265,18 +265,9 @@ add_action('admin_enqueue_scripts', 'alpn_load_script');
 
 add_filter('show_admin_bar', '__return_false'); //Remove top bar
 
-add_filter( 'woocommerce_new_customer_data', function( $data ) {
-	$data['user_login'] = $data['user_email'];
-
-	alpn_log("WOODATA");
-	alpn_log($data);
-
-	return $data;
-} );
-
 function vit_translate__strings( $translated, $untranslated, $domain ) {
    if ( ! is_admin() ) {
-      switch ( $translated ) {
+      switch ( $untranslated ) {
       	case 'Username or email address':
             $translated = 'Email address';
         break;
@@ -286,6 +277,9 @@ function vit_translate__strings( $translated, $untranslated, $domain ) {
 				case 'Username or email':
             $translated = 'Email address';
         break;
+				case 'A password reset email has been sent to the email address on file for your account, but may take several minutes to show up in your inbox. Please wait at least 10 minutes before attempting another reset.':
+					$translated = 'A password reset email has been sent to the specified email address.';
+			break;
       }
    }
    return $translated;
@@ -352,37 +346,17 @@ function pte_set_avatar_url( $url, $id_or_email, $args ) {
 add_filter( 'get_avatar_url', 'pte_set_avatar_url', 10, 3 );
 
 
-// Use the email address as username with PMPro checkout. Also hide fields where necessary
-function my_init_email_as_username()
-{
-  //check for level as well to make sure we're on checkout page
-  if(empty($_REQUEST['level']))
-    return;
+function vit_register ($user_id) {   //Runs on New User. Sets up default topics and sample data.
+	// alpn_log("Creating New User Info...");
+	// alpn_log($user_id);
+	// alpn_log($new_customer_data);
 
-  if(!empty($_REQUEST['bemail']))
-    $_REQUEST['username'] = $_REQUEST['bemail'];
-
-  if(!empty($_POST['bemail']))
-    $_POST['username'] = $_POST['bemail'];
-
-  if(!empty($_GET['bemail']))
-    $_GET['username'] = $_GET['bemail'];
-}
-add_action('init', 'my_init_email_as_username');
-
-
-function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets up default topics and sample data.
 	global $wpdb;
 	$shortUuid = new ShortUuid();
 
 	$now = date ("Y-m-d H:i:s", time());
-
 	$userInfo = get_user_by('id', $user_id);
-
   $defaultTopicData = pte_create_default_topics($user_id, true);   //with sample data
-
-	// alpn_log("Creating New User...");
-	// alpn_log($defaultTopicData);
 
 	$coreUserFormId = $defaultTopicData['core_user_form_id'];
 	$samplePlace1Id = $defaultTopicData['sample_place_id_1'];
@@ -437,19 +411,47 @@ function sync_alpn_user_info_on_register ($user_id) {   //Runs on New User. Sets
 	// alpn_log($samplePerson1EmailId);
 	// alpn_log($userEmailRouteId);
 
-
 }
-add_action('user_register', 'sync_alpn_user_info_on_register');
+add_action( 'user_register', 'vit_register', 5, 1 );
+
+
+function vit_wc_customer_data( $data ) {
+	$shortUuid = new ShortUuid();
+	$data['user_login'] = $shortUuid->uuid4();
+	if (isset($_POST['first_name'])) {
+		$data['first_name'] = $_POST['first_name'];
+		$data['display_name'] = $_POST['first_name'];
+	}
+	if (isset($_POST['last_name'])) {
+		$data['last_name'] = $_POST['last_name'];
+	}
+	$data['role'] = 'subscriber';
+	return $data;
+}
+add_filter( 'woocommerce_new_customer_data', 'vit_wc_customer_data', 10, 1 );
+
+
+function vit_profile_update( $user_id ) {
+	alpn_log("my_profile_update_start");
+	$data = $_POST;
+	if (isset($data['action']) && $data['action'] == 'save_account_details') {
+		alpn_log("my_profile_update");
+		alpn_log($data);
+		$emailAddress = $data['account_email'];
+		alpn_log($user_id);
+		alpn_log($emailAddress);
+	}
+}
+add_action( 'profile_update', 'vit_profile_update' );
+
 
 
 //add_action('profile_update', 'sync_alpn_user_info_on_register');
-
-
-
+function test_plugin_setup_menu(){
+}
 
 function cleanup_pte_user_on_delete( $user_id ) {
 	//TODO WHAT ABOUT ARCHIVING INTERATIONS, Files, ETC?
-
 
 	// see jira for these. Not dangerous, just uses up space. Vault Ids deleted so floating and paying forever so delete.
 	//cloud files
@@ -463,7 +465,6 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	//channels unlimited, no cost. No need to delete unless privacy issue.
 	//CC Groups delete user
 
-
 	$data = array('owner_id' => $user_id);
 	pte_manage_cc_groups("delete_user", $data);
 
@@ -471,11 +472,11 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	pte_release_all_pstn_numbers($user_id);
 	//Store vault keys to batch delete
 	$wpdb->query(
-		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT pdf_key AS object_key FROM alpn_vault WHERE owner_id = %d AND pdf_key <> ''", $user_id, $topicId)
+		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT pdf_key AS object_key FROM alpn_vault WHERE owner_id = %d AND pdf_key <> ''", $user_id)
 	);
 
 	$wpdb->query(
-		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT file_key AS object_key FROM alpn_vault WHERE owner_id = %d AND file_key <> ''", $user_id, $topicId)
+		$wpdb->prepare("INSERT INTO alpn_object_keys_to_delete SELECT file_key AS object_key FROM alpn_vault WHERE owner_id = %d AND file_key <> ''", $user_id)
 	);
 	//Wp-Forms
 	$wpdb->query(

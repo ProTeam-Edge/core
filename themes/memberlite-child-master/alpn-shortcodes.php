@@ -1,6 +1,6 @@
 <?php
 
-function usernetwork_shortcode($attr) {
+function db_shortcode($attr) {
 
 	global $wpdb, $wpdb_readonly; //Wordpress DB Access
 
@@ -504,7 +504,62 @@ return $html;
 
 }
 
-add_shortcode('alpn_network', 'usernetwork_shortcode');
+add_shortcode('alpn_network', 'db_shortcode');
+
+
+function simple_shortcode($data) {
+
+	$html = "";
+
+	extract(shortcode_atts(array(
+		'operation' => 'operation',
+		'option_1' => 'option_1',
+		'option_2' => 'option_2'
+	), $data));
+
+	switch ($operation) {
+
+		case 'logged_status':
+			if (is_user_logged_in()) {
+				$html = $option_1;
+			} else {
+				$html = $option_2;
+			}
+		break;
+
+		case 'admin_check':
+
+			if (is_user_logged_in()) {
+				$userInfo = wp_get_current_user();
+				$userRoles =$userInfo->roles;
+
+				$optionOneIsShortcode = (substr($option_1, 0, 1) == "*") && (substr($option_1, -1) == "*") ? true : false;
+				$optionTwoIsShortcode = (substr($option_2, 0, 1) == "*") && (substr($option_2, -1) == "*") ? true : false;
+
+				if (in_array('administrator', $userRoles)) {
+					if ($optionOneIsShortcode) {
+						$html = do_shortcode("[" . substr($option_1, 1, strlen($option_1) - 2 )  . "]");
+					} else {
+						$html = $option_1;
+					}
+				} else {
+					if ($optionTwoIsShortcode) {
+						$html = do_shortcode("[" . substr($option_2, 1, strlen($option_2) - 2 )  . "]");
+					} else {
+						$html = $option_2;
+					}
+				}
+			}
+
+		break;
+
+	}
+
+	return $html;
+
+}
+add_shortcode('vitriva', 'simple_shortcode');
+
 
 
 ?>
