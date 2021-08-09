@@ -1,22 +1,26 @@
 <?php
 
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
+alpn_log("Handle Connection Start");
 
-if(!is_user_logged_in() ) {
+$qVars = $_POST;
+
+if ( !is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
 }
-if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+
+if(!check_ajax_referer('alpn_script', 'security', FALSE)) {
    echo 'Not a valid request.';
    die;
 }
 
-$qVars = $_POST;
 $operation = isset($qVars['operation']) ? $qVars['operation'] : "";
 $topicId = isset($qVars['topic_id']) ? $qVars['topic_id'] : 0;
-
 $userInfo = wp_get_current_user();
 $userId = $userInfo->data->ID;
+
+
 $userMeta = get_user_meta( $userId, 'pte_user_network_id', true );
 $topicData = $contactData = $contactTopic = $fieldMap = array();
 $topicDomId = '';

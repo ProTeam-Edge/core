@@ -10,10 +10,6 @@ function db_shortcode($attr) {
 
     $html = $domID = $userTopicId = $userImageHandle = $syncId = $userTopicId = $userTopicTypeId = $contactTopicTypeId = $userDisplayName = $standardColorCount = "";
 
-		if(!is_user_logged_in()) {
-		   echo '<script>window.location.href = "./my-account";</script>';
-		   exit;
-		}
 
 	$templateDirectory = get_template_directory_uri();
 
@@ -464,12 +460,31 @@ function db_shortcode($attr) {
 				</div>";
 
 
-				alpn_log('SETTING UP CHAT');
-				alpn_log($html);
+				// alpn_log('SETTING UP CHAT');
+				// alpn_log($html);
 
 		break;
 
 		case 'self':
+
+		if(!is_user_logged_in()) {
+			 echo '<script>window.location.href = "./my-account";</script>';
+			 exit;
+		}
+
+			$hideMissionControl = "";
+			$userRoles =$userInfo->roles;
+			$isAdmin = in_array('administrator', $userRoles);
+			$isContributor = in_array('contributor', $userRoles);
+			$isSubscriber = in_array('subscriber', $userRoles);
+			if ($isSubscriber) {
+					$hideMissionControl = "
+					<script>
+						jQuery('article#post-859 div.entry-content').attr('style', 'opacity: 0.6; pointer-events: none;');
+					</script>
+					";
+			}
+
 
 			if ($fullAvatarUrl) {
 				$profileImage = "<img id='user_profile_image' src='{$fullAvatarUrl}' style='height: 32px; width: 32px; border-radius: 50%;'>";
@@ -477,7 +492,7 @@ function db_shortcode($attr) {
 				$profileImage = "<i class='far fa-address-card alpn_icon_left' style='font-size: 20px;  line-height: 34px;' title='About Me'></i>";
 			}
 
-			$newMember = $results[0]->owner_familyname == "[Replace Me, Please]" ? 'yes' : 'no';
+			$newMember = (false) ? 'yes' : 'no';
 
 			$html .= "
 			<div class='alpn_user_outer' onclick='alpn_mission_control(\"select_by_mode\", \"{$domId}\");'>
@@ -491,6 +506,7 @@ function db_shortcode($attr) {
 					<div style='clear: both;'></div>
 				</div>
 			</div>
+			{$hideMissionControl}
 			";
 			break;
 
@@ -532,11 +548,14 @@ function simple_shortcode($data) {
 			if (is_user_logged_in()) {
 				$userInfo = wp_get_current_user();
 				$userRoles =$userInfo->roles;
+				$isAdmin = in_array('administrator', $userRoles);
+				$isContributor = in_array('contributor', $userRoles);
+				$isSubscriber = in_array('subscriber', $userRoles);
 
 				$optionOneIsShortcode = (substr($option_1, 0, 1) == "*") && (substr($option_1, -1) == "*") ? true : false;
 				$optionTwoIsShortcode = (substr($option_2, 0, 1) == "*") && (substr($option_2, -1) == "*") ? true : false;
 
-				if (in_array('administrator', $userRoles)) {
+				if ($isAdmin) {
 					if ($optionOneIsShortcode) {
 						$html = do_shortcode("[" . substr($option_1, 1, strlen($option_1) - 2 )  . "]");
 					} else {

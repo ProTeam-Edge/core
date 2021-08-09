@@ -279,7 +279,11 @@ function vit_translate__strings( $translated, $untranslated, $domain ) {
         break;
 				case 'A password reset email has been sent to the email address on file for your account, but may take several minutes to show up in your inbox. Please wait at least 10 minutes before attempting another reset.':
 					$translated = 'A password reset email has been sent to the specified email address.';
-			break;
+				break;
+				case 'My Subscription':
+            $translated = 'Subscriptions';
+        break;
+
       }
    }
    return $translated;
@@ -324,7 +328,11 @@ add_action( 'woocommerce_my_subscriptions_after_subscription_id', 'custom_add_su
 function add_loginout_link( $items, $args ) {
   if (is_user_logged_in() && $args->theme_location == 'meta') {
 		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Account</a></li>';
-		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '">Cart</a></li>';
+		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 1514 ) . '">Help</a></li>';
+		if (!WC()->cart->is_empty()){
+			$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '">Cart</a></li>';
+		}
+
     $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="'. wp_logout_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ) .'">Log Out</a></li>';
   }
    elseif (!is_user_logged_in() && $args->theme_location == 'meta') {
@@ -346,10 +354,10 @@ function pte_set_avatar_url( $url, $id_or_email, $args ) {
 add_filter( 'get_avatar_url', 'pte_set_avatar_url', 10, 3 );
 
 
-function vit_register ($user_id) {   //Runs on New User. Sets up default topics and sample data.
+function vit_register ($user_id, $userData) {   //Runs on New User. Sets up default topics and sample data.
 	// alpn_log("Creating New User Info...");
 	// alpn_log($user_id);
-	// alpn_log($new_customer_data);
+	// alpn_log($userData);
 
 	global $wpdb;
 	$shortUuid = new ShortUuid();
@@ -405,6 +413,13 @@ function vit_register ($user_id) {   //Runs on New User. Sets up default topics 
 	);
 	pte_manage_topic_link('add_edit_topic_bidirectional_link', $linkData, $subjectToken);
 
+
+//Send Greeting Email. TODO why is woocommerce not sending it?
+	$mailer = WC()->mailer();
+	$email = $mailer->emails['WC_Email_Customer_New_Account'];
+	$email->template_base = '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/woocommerce/';  //override with local
+	$email->trigger( $user_id, $userData['user_pass'], true );
+
 	//send Personalized Email Attachment to the new Topic
 	// alpn_log('New User Sample Data -- Send some Emails here');
 	// alpn_log($samplePerson1Id);
@@ -412,12 +427,39 @@ function vit_register ($user_id) {   //Runs on New User. Sets up default topics 
 	// alpn_log($userEmailRouteId);
 
 }
-add_action( 'user_register', 'vit_register', 5, 1 );
+add_action( 'user_register', 'vit_register', 5, 2 );
+
+
+function vit_subscription_status_updated($subscription, $new_status, $old_status) {
+	alpn_log("SUB UPDATED");
+	//alpn_log($subscription);
+}
+add_action( 'woocommerce_subscription_status_updated', 'vit_subscription_status_updated', 10, 3 );
+
+function vit_order_status_completed($orderId) {
+	alpn_log("Order Status Completed");
+	//alpn_log($orderId);
+
+}
+add_action( 'woocommerce_order_status_completed', 'vit_order_status_completed', 10, 1 );
+
+
+// woocommerce_order_status_pending
+// woocommerce_order_status_failed
+// woocommerce_order_status_on-hold
+// woocommerce_order_status_processing
+// woocommerce_order_status_completed
+// woocommerce_order_status_refunded
+// woocommerce_order_status_cancelled
+
+
+
 
 
 function vit_wc_customer_data( $data ) {
 	$shortUuid = new ShortUuid();
 	$data['user_login'] = $shortUuid->uuid4();
+	$data['user_nicename'] = $_POST['user_email'];
 	if (isset($_POST['first_name'])) {
 		$data['first_name'] = $_POST['first_name'];
 		$data['display_name'] = $_POST['first_name'];
@@ -426,24 +468,20 @@ function vit_wc_customer_data( $data ) {
 		$data['last_name'] = $_POST['last_name'];
 	}
 	$data['role'] = 'subscriber';
+
 	return $data;
 }
 add_filter( 'woocommerce_new_customer_data', 'vit_wc_customer_data', 10, 1 );
 
 
 function vit_profile_update( $user_id ) {
-	alpn_log("my_profile_update_start");
 	$data = $_POST;
-	if (isset($data['action']) && $data['action'] == 'save_account_details') {
-		alpn_log("my_profile_update");
-		alpn_log($data);
+	if (is_user_logged_in() && isset($data['action']) && $data['action'] == 'save_account_details') {
 		$emailAddress = $data['account_email'];
-		alpn_log($user_id);
-		alpn_log($emailAddress);
+		vit_update_contacts_new_email ($user_id, $emailAddress);
 	}
 }
-add_action( 'profile_update', 'vit_profile_update' );
-
+add_action( 'profile_update', 'vit_profile_update', 10, 1 );
 
 
 //add_action('profile_update', 'sync_alpn_user_info_on_register');

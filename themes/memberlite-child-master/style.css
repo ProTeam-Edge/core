@@ -11,10 +11,34 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
 */
 
+div.woocommerce-tabs li.description_tab {
+	background-color: rgb(49, 114, 182) !important;
 
-.woocommerce-form-register{
-	display: none;
+}
 
+div.woocommerce a.button  {
+	background-color: rgb(49, 114, 182) !important;
+}
+
+.pte_name_container,
+.pte_about_container
+{
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.vit_about_text{
+	font-size: 16px;
+	line-height: 20px;
+}
+
+div.wp-block-kadence-rowlayout {
+	margin-top: 0px !important;
+
+}
+div.woocommerce{
+	margin-top: 40px !important;
 }
 
 form.woocommerce-EditAccountForm p.woocommerce-form-row--first,
@@ -628,14 +652,6 @@ button.menu-toggle {
 	margin-bottom: 5px;
 }
 
-
-.pmpro_login_wrap,
-.pmpro_lost_password_wrap {
-	margin-top: 50px;
-}
-.entry-content > :first-child {
-	margin-top: 15px !important;
-}
 .kt-row-layout-inner{
 	margin-top: 0 !important;
 }

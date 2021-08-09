@@ -449,7 +449,7 @@ function pte_draw_connections_table() {
 		formattedField += "<div id='pte_name_container' class='pte_vault_row_30 pte_extra_padding_right pte_vault_bold'>";
 		formattedField += connectedName;
 		formattedField += "</div>";
-		formattedField += "<div class='pte_vault_row_35 pte_extra_padding_right'>";
+		formattedField += "<div class='pte_about_container pte_vault_row_35 pte_extra_padding_right'>";
 		formattedField += connectionAbout;
 		formattedField += "</div>";
 		formattedField += "<div id='pte_button_container' class='pte_vault_row_30 pte_vault_right'>";
@@ -2930,20 +2930,20 @@ function pte_setup_window_onload() {
 jQuery( window ).load( function(){
 
 	//Initialize
-	// if (typeof alpn_user_id != "undefined" && alpn_user_id) {
-	// 	window.Userback = window.Userback || {};
-	// 	Userback.access_token = '29911|43846|CoAYHySNQemyYIqBzfBHlEjK2';
-	// 	Userback.name = alpn_user_displayname;
-	// 	Userback.email = alpn_user_email;
-	// 	Userback.custom_data = {
-	// 	    owner_id: alpn_user_id
-	// 	};
-	// 	(function(d) {
-	// 	    var s = d.createElement('script');s.async = true;
-	// 	    s.src = 'https://static.userback.io/widget/v1.js';
-	// 	    (d.head || d.body).appendChild(s);
-	// 	})(document);
-	// }
+	if (typeof alpn_user_id != "undefined" && alpn_user_id) {
+		window.Userback = window.Userback || {};
+		Userback.access_token = '29911|43846|CoAYHySNQemyYIqBzfBHlEjK2';
+		Userback.name = alpn_user_displayname;
+		Userback.email = alpn_user_email;
+		Userback.custom_data = {
+		    owner_id: alpn_user_id
+		};
+		(function(d) {
+		    var s = d.createElement('script');s.async = true;
+		    s.src = 'https://static.userback.io/widget/v1.js';
+		    (d.head || d.body).appendChild(s);
+		})(document);
+	}
 
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 	// added delay for fixing loading issue TODO figure out exactly whats up and fix it or wait for it, not a timer.

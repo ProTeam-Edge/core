@@ -385,93 +385,154 @@ function pte_manage_interaction($payload) {
     pte_async_job ($sitePath, array("data" => json_encode($payload)));
 }
 
-function pte_async_job_old ($url, $params) {
-	$fullUrl = "php -f '{$url}' "  . escapeshellarg(serialize($params)) . " > /dev/null &";
-	shell_exec($fullUrl);
-}
 
-function pte_sync_curl($endPoint, $postRequest) {
-  $domainName = PTE_HOST_DOMAIN_NAME;
-  $baseUrl = "https://{$domainName}/wp-content/themes/memberlite-child-master/topics/";
-  $fullUrl = "{$baseUrl}{$endPoint}.php";
-  $headers[] = "Accept: application/json";
-  $options = array(
-      CURLOPT_RETURNTRANSFER => true,
-      CURLOPT_ENCODING => "",
-      CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
-      CURLOPT_FOLLOWLOCATION => true,
-      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-      CURLOPT_POST => true,
-      CURLOPT_CUSTOMREQUEST => "POST",
-      CURLOPT_POSTFIELDS => array('payload' => $postRequest),
-      CURLOPT_URL => $fullUrl,
-      CURLOPT_HTTPHEADER => $headers
+function vit_store_kvp($verificationKey, $data) {
+  global $wpdb;
+  $kvpData = array(
+    "item_key" => $verificationKey,
+    "item_value" => json_encode($data)
   );
-   $ch = curl_init();
-   curl_setopt_array($ch, $options);
-   $response = curl_exec($ch);
-   curl_close($ch);
-   return $response;
+  $wpdb->insert( 'alpn_kvp', $kvpData);
 }
 
-
-function pte_send_wp_mail($data){
-
-  $toEmail = $data['to_email'];
-  $toName =  $data['to_name'];
-  $friendlyToEmail = "{$toName} <{$toEmail}>";
-
-  wp_mail( $friendlyToEmail, $data['subject_text'], "<div>HTML HERE!</div>" . $data['body_text'] );
-
+function vit_get_kvp($verificationKey) {
+  global $wpdb;
+  $kvpData = $wpdb->get_results(
+    $wpdb->prepare("SELECT item_value FROM alpn_kvp WHERE item_key = %s", $verificationKey)
+  );
+  if (isset($kvpData[0])) {
+    $whereclause = array("item_key" => $verificationKey);
+    $wpdb->delete( "alpn_kvp", $whereclause );
+    return json_decode($kvpData[0]->item_value, true);
+  }
+  return array();
 }
 
-function pte_send_mail ($data) {
+//When member changes main email. Update in profile, Also make connections based on members new email if they and other members are double opted in
+function vit_update_contacts_new_email ($userId, $newEmailAddress){
+  global $wpdb;
+  $newMemberData = $whereClause = array();
+  $memberData = $wpdb->get_results(
+    $wpdb->prepare("SELECT id, alt_id, topic_content FROM alpn_topics WHERE owner_id = %d AND special='user'", $userId)
+  );
+  if (isset($memberData[0]) && $memberData[0]->alt_id != $newEmailAddress) {
+    alpn_log('Needs to be updated');
+    //alpn_log($_REQUEST);
+    //update  record
+    $topicContent = json_decode($memberData[0]->topic_content, true);
+    $topicContent['person_email'] = $newEmailAddress;
+    $newMemberData['alt_id'] = $newEmailAddress;
+    $newMemberData['topic_content'] = json_encode($topicContent);
+    $whereClause['id'] = $memberData[0]->id;
+    $wpdb->update( 'alpn_topics', $newMemberData, $whereClause );
+    $connectList = $wpdb->get_results(
+      $wpdb->prepare("SELECT a1.alt_id, a1.connected_owner_id FROM alpn_member_connections_wtc a1 LEFT JOIN alpn_member_connections_wtc a2 ON a2.connected_owner_id = a1.owner_id WHERE a1.owner_id = %d LIMIT 1", $userId)
+    );
+    if (isset($connectList[0])) {
+      alpn_log('Connections List');
+    //  alpn_log($connectList);
+      foreach($connectList as $key => $value) {
+        $verificationKey = pte_get_short_id();
+        $params = array(
+          "verification_key" => $verificationKey
+        );
+        $data = array(
+          "alt_id" => $value->alt_id,
+          "connected_owner_id" => $value->connected_owner_id,
+          "user_id" => $userId
+        );
+        vit_store_kvp($verificationKey, $data);
+        $guzClient = new GuzzleHttp\Client();
+        try {
+          alpn_log("Before Async");
+          $guzClient->requestAsync('GET', PTE_ROOT_URL . "vit_async_connect.php", [
+              'query' => ['verification_key' => $verificationKey]
+          ])->wait();
+        } catch (Exception $e) {
+          alpn_log ($e);
+        }
+      }
+    }
+  }
+}
+
+function pte_send_mail ($data = array()) {
+
   $siteDomain = PTE_HOST_DOMAIN_NAME;
-  $email = new \SendGrid\Mail\Mail();
-  $sendGridKey = SENDGRID_KEY;
-  $emailTemplateName =  isset($data['email_template_name']) && $data['email_template_name'] ? PTE_ROOT_PATH . "email_templates/{$data['email_template_name']}" : PTE_ROOT_PATH . "email_templates/pte_email_template_1.html";
-  $emailTemplateHtml = file_get_contents($emailTemplateName);
+  $emailType = isset($data['email_type']) && $data['email_type'] ? $data['email_type'] : 'view-download';
+  $bodyTitle = isset($data['body_title']) && $data['body_title'] ? $data['body_title'] : 'View File in Browser';
+
+  $mailer = WC()->mailer();
+  $template = 'vit_generic_email_template.php';
+  //format the email
+
   $fromFirstName = $data['from_first_name'];
   $fromName =  $data['from_name'];
   $fromEmail =  $data['from_email'];
   $toEmail = $data['to_email'];
   $toName =  $data['to_name'];
   $linkType =  $data['link_type'];
-  $fileName = isset($data['vault_file_name']) && $data['vault_file_name'] ? "File Name: " . $data['vault_file_name'] : "";
-  $subject =  $data['subject_text'];
+  $fileName = isset($data['vault_file_name']) && $data['vault_file_name'] ? "<span class='element_bold'>File Name</span>: " . $data['vault_file_name'] : "";
+
+  $emailSubject =  $data['subject_text'];
 
   $replaceStrings["-{pte_site_domain}-"] = $siteDomain;
-
 
   $replaceStrings["-{why_received}-"] = "Vitriva Community required correspondence.";
   if ($fromFirstName) {
     $replaceStrings["-{why_received}-"] = "{$fromFirstName} asked us to send you this secure link.";
   }
 
-
   $replaceStrings["-{pte_email_body}-"] = $data['body_text'];
 
-  $replaceStrings["-{pte_link_button}-"] = isset($data['link_id']) && $data['link_id'] ? "<div class='pte_button'><a class='pte_button_link' href='https://{$siteDomain}/viewer/?{$data['link_id']}'>View File</a></div>" : "" ;
+  $replaceStrings["-{pte_link_button}-"] = isset($data['link_id']) && $data['link_id'] ? "<div class='pte_button'><a class='pte_button_link' href='https://{$siteDomain}/viewer/?{$data['link_id']}'>View File...</a></div>" : "" ;
   $replaceStrings["-{pte_email_file_details}-"] = $fileName;
   $replaceStrings["-{pte_email_signature}-"] = isset($data['email_signature']) && $data['email_signature'] ? $data['email_signature'] : "" ;
   //TODO Pick template based on link type or conditional.
 
+  $emailTemplateHtml = "
+    <style>
+    .pte_button_link {
+    	color: white !important;
+    	text-decoration: none !important;
+    }
+    .pte_button {
+  		width: 120px;
+  		height: 30px;
+  		background-color: #0074BB;
+  		text-align: center;
+  		line-height: 24pt;
+  		font-size: 12pt;
+    }
+    .element_bold{
+      font-weight: bold;
+    }
+    </style>
+    <p>
+      <span class='element_bold'>From</span>: {$fromName}<br>
+      <span class='element_bold'>Email</span>: {$fromEmail}
+    </p>
+    <p>-{pte_email_body}-</p>
+    <p>-{pte_email_file_details}-</p>
+    <p>-{pte_link_button}-</p>
+    <p>-{pte_email_signature}-</p>
+  ";
+
   $emailTemplateHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $emailTemplateHtml);
 
-  $replyFrom = $fromName . " (using Vitriva)";
+  $content = 	wc_get_template_html( $template, array(
+  		'email_heading' => $bodyTitle,
+  		'email'         => $mailer,
+      'email_body'    => $emailTemplateHtml
+  	), PTE_ROOT_PATH . 'woocommerce/emails/', PTE_ROOT_PATH . 'woocommerce/emails/');
 
-  $email->setFrom("sender@vitriva.com", $replyFrom);
-  $email->setReplyTo($fromEmail, $fromName);
-
-  $email->setSubject($subject);
-  $email->addTo($toEmail, $toName);
-  $email->addContent("text/html", $emailTemplateHtml );
-
-  $sendgrid = new \SendGrid($sendGridKey);
+  $header = 'Reply-to: ' . $fromName . ' <' . $fromEmail . ">\r\n";
 
   try {
-      $response = $sendgrid->send($email);
+
+    $mailer->send( $toEmail, $emailSubject, $content, $header );
+
+
   } catch (Exception $e) {
       alpn_log ('Caught exception: '. $e->getMessage());
   }
@@ -1422,6 +1483,52 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
   return -1;
 }
 
+
+function pte_sync_curl($endPoint, $postRequest) {
+  $domainName = PTE_HOST_DOMAIN_NAME;
+  $baseUrl = "https://{$domainName}/wp-content/themes/memberlite-child-master/topics/";
+  $fullUrl = "{$baseUrl}{$endPoint}.php";
+  $headers[] = "Accept: application/json";
+  $options = array(
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => "",
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 0,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_POST => true,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => array('payload' => $postRequest),
+      CURLOPT_URL => $fullUrl,
+      CURLOPT_HTTPHEADER => $headers
+  );
+   $ch = curl_init();
+   curl_setopt_array($ch, $options);
+   $response = curl_exec($ch);
+   curl_close($ch);
+   return $response;
+}
+
+ function pte_async_job_old_2 ($url, $postParameters) {
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_POST, TRUE);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, $postParameters);
+    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    curl_setopt($ch, CURLOPT_URL, $url);
+    curl_setopt($ch, CURLOPT_ENCODING, '');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, TRUE);
+    curl_setopt($ch, CURLOPT_POSTREDIR, 3);
+    $pageResponse = curl_exec($ch);
+    curl_close($ch);
+}
+
+
+function pte_async_job_old_1 ($url, $params) {
+	$fullUrl = "php -f '{$url}' "  . escapeshellarg(serialize($params)) . " > /dev/null &";
+	shell_exec($fullUrl);
+}
+
 function pte_async_job ($url, $params) {
     foreach ($params as $key => &$val) {
       if (is_array($val)) $val = implode(',', $val);
@@ -2358,10 +2465,8 @@ function pte_manage_user_sync($data){   ///Must be a user and have a wpid
 }
 
 function pte_manage_user_connection($data){
-
   //If I add you to my network and you add me to your network than we're connected... We then show connected demographics....
   //TODO Handle exceptions, etc.
-
   alpn_log('pte_manage_user_connection...');
   alpn_log($data);
 
@@ -2372,21 +2477,18 @@ function pte_manage_user_connection($data){
   $contactInfo = get_user_by('email', $contactEmail);
 
   if (isset($contactInfo->ID)) {
-
     $contactId = $contactInfo->ID;
     $contactNetworkId = get_user_meta( $contactId, 'pte_user_network_id', true ); //Contact Topic ID
-
     $userId = isset($data['owner_wp_id']) ? $data['owner_wp_id'] : '';
+    alpn_log($userId);
     $userInfo = get_user_by('id', $userId);
     $userEmail =  $userInfo->data->user_email;
     $userNetworkId = get_user_meta( $userId, 'pte_user_network_id', true ); //Owners Topic ID
 
     //go find ME in contact's contacts by email.
-
     $results = $wpdb->get_results(
     	$wpdb->prepare("SELECT id, owner_id, connected_id FROM alpn_topics WHERE owner_id = %s AND special = 'contact' AND alt_id = %s", $contactId, $userEmail)
      );
-
      if (isset($results[0])) {
        $contactId = $results[0]->owner_id;
        $connectedId = $results[0]->connected_id;
@@ -2394,9 +2496,8 @@ function pte_manage_user_connection($data){
        if (!$connectedId) {
          //Now go find contact in my Topics by email.
           $user = $wpdb->get_results(
-          	$wpdb->prepare("SELECT id, name, about FROM alpn_topics WHERE owner_id = %s AND special = 'contact' AND alt_id = %s", $userId, $contactEmail)
+          	$wpdb->prepare("SELECT id, name, about FROM alpn_topics WHERE owner_id = %d AND special = 'contact' AND alt_id = %s", $userId, $contactEmail)
            );
-
            if (isset($user[0])) {
              $userTopicId = $user[0]->id;
              $userName = $user[0]->name;
@@ -2407,7 +2508,14 @@ function pte_manage_user_connection($data){
          			'topic_id' => $userTopicId,
               "contact_id" => $contactId
            		);
+
+              alpn_log("ABOUT TO CREATE CHANNEL");
+
          		$newChannelId = pte_manage_cc_groups("get_create_channel", $data);     //create a channel for contact. Adds contact. Stores channel for contact
+
+            alpn_log($newChannelId);
+
+
             $contactTopicData = $wpdb->get_results(
               $wpdb->prepare("SELECT name, about FROM alpn_topics WHERE id = %d", $contactNetworkId)
              );
@@ -2431,14 +2539,16 @@ function pte_manage_user_connection($data){
               'user_id' => $contactId,
               'owner_id' => $userId
               );
-            pte_manage_cc_groups("add_member", $data);
 
+            alpn_log("ABOUT TO ADD MEMBER");
+            alpn_log($data);
+
+            pte_manage_cc_groups("add_member", $data);
             $userTopicData = $wpdb->get_results(
               $wpdb->prepare("SELECT name, about FROM alpn_topics WHERE id = %d", $userNetworkId)
              );
              $userName = isset($userTopicData[0]) ? $userTopicData[0]->name : "n/a";
              $userAbout = isset($userTopicData[0]) ? $userTopicData[0]->about : "n/a";
-
              //contact
              $topicData = array(
                'connected_id' => $userId,
@@ -2658,18 +2768,15 @@ function pte_manage_cc_groups($operation, $data) {
                 'code' => $e->getCode(),
                 'error' => $e
             );
-            alpn_log('member not found, add');
-            alpn_log($response);
+            alpn_log('could not find the member so add them.');
+            //alpn_log($response);
             $memberSid = false;
         }
 
         try {
 
           if (!$memberSid) {
-
             alpn_log("Adding Member.." . $userId);
-
-
             $member = $twilio->chat->v2
               ->services($chatServiceId)
               ->channels($channelId)

@@ -61,13 +61,13 @@ $connectionEditor .= "</div>";
 								<i class='far fa-user-circle pte_title_icon_margin_right'></i>Connections
 							</div>
 							<div id='pte_topic_form_title_view' class='pte_vault_right'>
-								{$context} <div class='pte_title_topic_icon_container'>{$topicImage}</div>
+							<div class='pte_title_topic_icon_container'></div>
 							</div>
 						</div>
 				";
 
 $html .= "
-						<div id='pte_editor_container' class='pte_vault_row' data-mc='yes' >
+						<div id='pte_editor_container' class='pte_vault_row' >
 							<div id='pte_topic_form_edit_view_left'>
 								{$connectionEditor}
 							</div>
