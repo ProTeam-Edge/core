@@ -54,8 +54,12 @@ function pte_get_registry_email_send() {
 
                   $linkData = array(
                       'link_type' => 'file',
+                      'link_about' => 'Interaction',
                       'send_email_address' => $emailAddress,
                       'send_email_address_name' => $emailAddressName,
+                      'send_email_address_givenname' => $tContent['person_givenname'],
+                      'send_email_address_familyname' => $tContent['person_familyname'],
+                      'send_email_source_topic_id' => $emailContactTopicId,
                       'link_interaction_password' => $requestData["link_interaction_password"],
                       'link_interaction_expiration' => $requestData["link_interaction_expiration"],
                       'link_interaction_options' => $requestData["link_interaction_options"],

@@ -117,6 +117,59 @@ pte_supported_types_map = {
 //   });
 
 
+
+
+function show_cta(html){
+
+	jQuery('#vit_call_to_action_inner').html(html);
+	jQuery('#vit_call_to_action_outer').fadeIn();
+
+}
+
+	function wic_toggle_audio_pause(myAudio) {
+		if (myAudio.paused && myAudio.currentTime >= 0 && !myAudio.started) {
+				myAudio.play();
+				console.log("started");
+		} else {
+				myAudio.pause();
+		}
+}
+
+function vit_create_account_from_topic(topicId){
+
+	console.log("vit_create_account_from_topic");
+  var loadingImage = jQuery("img.vit_connection_loading");
+	var actionInner = jQuery("div#vit_call_to_action_inner");
+
+	loadingImage.css('opacity', 1);
+	actionInner.css({"opacity": 0.7, "pointer-events": "none"});
+
+	var security = specialObj.security;
+	jQuery.ajax({
+		url: alpn_templatedir + 'vit_create_account_from_topic.php',
+		type: 'POST',
+		data: {
+			'topic_id': topicId,
+			'security': security
+		},
+		dataType: "html",
+		success: function(html) {
+			loadingImage.css('opacity', 0);
+			actionInner.html(html).css({"opacity": 1, "pointer-events": "auto"});
+		},
+		error: function() {
+			console.log('problem - creating new account from xlink');
+		//TODO
+		}
+	});
+
+	//does it exist? Yes, forgot password or login.
+	//doesn't exist.  Create user. Check email.
+
+
+}
+
+
 function pte_delete_topic_link(key) {
 	console.log("Deleting Topic Link");
 	console.log(key);
@@ -126,14 +179,15 @@ function pte_delete_topic_link(key) {
 
 function vit_handle_persist_proteam_change(data) {
 	console.log("Persisting stuff...");
-	console.log(data);
-
 
 	var linkTopicSelect = jQuery('#alpn_select2_small_link_topic_select_card');
 	var linkTopicSelectData = linkTopicSelect.select2('data');
 	if (typeof linkTopicSelectData != 'undefined' && typeof linkTopicSelectData[0] != 'undefined') {
 		data.selected_topic_id = linkTopicSelectData[0].id;
 	}
+	data.visiting_owner_id = jQuery("#pte_selected_topic_meta").data("oid");
+
+	console.log(data);
 
 	var security = specialObj.security;
 	jQuery.ajax({
@@ -149,6 +203,38 @@ function vit_handle_persist_proteam_change(data) {
 			console.log("Persisting Stuff Back");
 			console.log(json);
 
+			var isTopicChange = json.is_topic_change;
+			var isConnectionTypeChange = json.is_connection_type_change;
+			var connectedType = json.connected_type;
+			var currentTopicId = json.current_topic_id;
+			var currentTopicDomId = json.current_topic_dom_id;
+			var currentLinkedTopicId = json.current_linked_topic_id;
+			var currentLinkedTopicDomId = json.current_linked_topic_dom_id;
+			var newlinkedTopicId = json.new_linked_topic_id;
+			var newlinkedTopicDomId = json.new_linked_topic_dom_id;
+
+			if (isConnectionTypeChange && connectedType) {
+				if (connectedType == 'join') {
+					var oldCell = jQuery("div.alpn_topic_cell[data-uid='" + currentLinkedTopicDomId + "']");
+					oldCell.find("div.alpn_name").removeClass("pte_member_class");
+					oldCell.find("div.alpn_about").removeClass("pte_member_class");
+				} else if (connectedType == 'link'){
+					var newCell = jQuery("div.alpn_topic_cell[data-uid='" + newlinkedTopicDomId + "']");
+					newCell.find("div.alpn_name").addClass("pte_member_class");
+					newCell.find("div.alpn_about").addClass("pte_member_class");
+					var oldCell = jQuery("div.alpn_topic_cell[data-uid='" + currentTopicDomId + "']");
+					oldCell.find("div.alpn_name").removeClass("pte_member_class");
+					oldCell.find("div.alpn_about").removeClass("pte_member_class");
+				}
+
+			} else if (isTopicChange) {
+				var oldCell = jQuery("div.alpn_topic_cell[data-uid='" + currentLinkedTopicDomId + "']");
+				oldCell.find("div.alpn_name").removeClass("pte_member_class");
+				oldCell.find("div.alpn_about").removeClass("pte_member_class");
+				var newCell = jQuery("div.alpn_topic_cell[data-uid='" + newlinkedTopicDomId + "']");
+				newCell.find("div.alpn_name").addClass("pte_member_class");
+				newCell.find("div.alpn_about").addClass("pte_member_class");
+			}
 
 		},
 		error: function() {
@@ -283,7 +369,7 @@ function pte_extra_control_table(domId){   //actually element
 		pte_active_tabs.splice(tabId, 1);
 	}
 	pte_active_tabs[tabId] = uid;
-	extraSelectedCell.attr("style", "background-color: #D8D8D8 !important;");
+	extraSelectedCell.attr("style", "background-color: #ebe7df !important;");
 	  handleButtonState('enabled', tabId, 'pte_extra_unlink_button');
 		handleButtonState('enabled', tabId, 'pte_extra_edit_topic_button');
 		handleButtonState('enabled', tabId, 'pte_extra_delete_topic_button');
@@ -556,7 +642,7 @@ function alpn_handle_extra_table(extraKey) {
 				if (domId == oldId) {
 					pte_active_row_displaying = true;
 					var extraSelectedCell =  jQuery("div#tabcontent_" + extraKey + ' #alpn_field_' + domId).closest('td');
-					extraSelectedCell.attr("style", "background-color: #D8D8D8 !important;");
+					extraSelectedCell.attr("style", "background-color: #ebe7df !important;");
 					pte_get_form_for_link(extraKey, domId);
 				}
 			}
@@ -2047,7 +2133,7 @@ function alpn_handle_topic_type_row_selected(formId) {
 	if (formId) {
 		var theNewRow =  jQuery("div.alpn_topic_type_cell[data-uid=" + formId + "]").closest('tr');
 		if (theNewRow.length) {
-			theNewRow.children().attr("style", "background-color: #D8D8D8 !important;");
+			theNewRow.children().attr("style", "background-color: #ebe7df !important;");
 			if (typeof pte_template_editor_loaded != "undefined" && pte_template_editor_loaded) {
 					var templateEditorMode = 'message';
 					var templateEditorModeData = jQuery('#alpn_select2_template_type').select2('data');
@@ -2350,7 +2436,7 @@ function pte_handle_mute_audio(){
 
 function pte_handle_sync(data, item = false){
 
-	  //console.log("Handling Sync");
+	  console.log("Handling Sync");
 
 	if (item) { //Migrate to this. I think. How it is supposed to work.
 
@@ -2358,9 +2444,9 @@ function pte_handle_sync(data, item = false){
 		var itemKey = itemObj.key;
 		var itemData = itemObj.value;
 
-		// console.log(itemObj);
-		// console.log(itemKey);
-		// console.log(itemData);
+		 // console.log(itemObj);
+		 // console.log(itemKey);
+		 // console.log(itemData);
 
 
 		switch(itemKey) {
@@ -2375,21 +2461,33 @@ function pte_handle_sync(data, item = false){
 	var syncSection = data.sync_section;
 	var syncPayload = data.sync_payload;
 
-	//console.log("SYNCING SECTION - ", syncSection);
+//	console.log("SYNCING SECTION - ", syncSection);
+//	console.log(syncPayload);
 
 	switch(syncSection) {
 		case 'proteam_card_update':
 
-		 var topicStates = {'10': "Added", '20': "Invite Sent", '30': "Joined", '40': "Linked", '80': "Email Sent", '90': "Declined"};
-			console.log("Handling ProTeam Card Update...");
+		console.log("Handling ProTeam Card Update...");
+		console.log(syncPayload);
+
+			var ptStatusString = "";
+		  var topicStates = {'10': "Added", '20': "Invite", '30': "Joined", '40': "Linked", '80': "Email Sent", '90': "Declined"};
 			var ptId = syncPayload.proteam_row_id;
 			var ptStatus = syncPayload.state;
-			var ptStatusString = topicStates[ptStatus];
+
+			if (syncPayload.connected_type == 'link') {  //Linked Topic
+        ptStatusString ="<div title='Visit Linked Topic' data-topic-id='" + syncPayload.linked_topic_id + "' data-topic-special='topic' data-topic-dom-id='" + syncPayload.linked_topic_dom_id + "' data-operation='to_topic_info_by_id' class='team_panel_topic_link' onclick='pte_handle_interaction_link_object(this);'><div class='team_panel_topic_link_icon'><i class='far fa-link team_panel_topic_link_icon_actual'></i>&nbsp; " + syncPayload.linked_topic_name + "</div></div>";
+      } else if (syncPayload.connected_type == 'join') {
+        ptStatusString = "Joined";
+      } else {
+        ptStatusString = topicStates[ptStatus];
+      }
+
 			var proTeamCard =  jQuery('div.proteam_user_panel[data-id=' + ptId + ']');
 			var statusArea = proTeamCard.find('div#proTeamPanelUserData');
 			var statusText = proTeamCard.find('span#pte_topic_state');
 			statusArea.fadeOut('normal', function(){
-					statusText.text(ptStatusString);
+					statusArea.html(ptStatusString);
 	        statusArea.fadeIn();
 	    });
 		break;
@@ -2410,7 +2508,7 @@ function pte_handle_sync(data, item = false){
 
 		break;
 		case 'interaction_item_update':
-			console.log("Handling interaction_item_update...");
+		console.log("Handling interaction_item_update...");
 
 			var processId = syncPayload.process_id;
 			var messageTitle = syncPayload.message_title;
@@ -2430,11 +2528,26 @@ function pte_handle_sync(data, item = false){
 			informationPanelMessageBody.val(messageBody);
 		break;
 		case 'interaction_update':
-			console.log("Handling interaction_update...");
-			console.log(syncPayload);
+				console.log("Handling interaction_update...");
+				console.log(syncPayload);
+
+				if (syncPayload.error == 'already_on_topic_team') {
+					pte_show_message('blue', 'timed', 'Already on team. Please choose another member.');
+				}
+
+				if (syncPayload.button_operation == "accept" && syncPayload.interaction_complete) {
+					var topicCellOwner = jQuery("div.alpn_topic_cell[data-uid='" + syncPayload.topic_dom_id + "']");
+					var topicCellMember = jQuery("div.alpn_topic_cell[data-uid='" + syncPayload.connection_link_topic_dom_id + "']");
+					topicCellOwner.find("div.alpn_name").addClass("pte_member_class");
+					topicCellOwner.find("div.alpn_about").addClass("pte_member_class");
+					topicCellMember.find("div.alpn_name").addClass("pte_member_class");
+					topicCellMember.find("div.alpn_about").addClass("pte_member_class");
+				}
+
 			if (typeof syncPayload.restart_interaction != "undefined" && syncPayload.restart_interaction) {
 				pte_selected_interaction_process_id = syncPayload.new_interaction_process_id;
 			}
+
 			if (typeof syncPayload.refresh_proteams != "undefined" && syncPayload.refresh_proteams) {
 				var data = {
 					"wp_id": syncPayload.connected_id,
@@ -2444,7 +2557,12 @@ function pte_handle_sync(data, item = false){
 				};
 				pte_add_to_proteam_table(data);
 				alpn_setup_proteam_member_selector(syncPayload.proteam_member_row_id);
+
+				var topicCellOwner = jQuery("div.alpn_topic_cell[data-uid='" + syncPayload.topic_dom_id + "']");
+				topicCellOwner.find("div.alpn_name").addClass("pte_member_class");
+				topicCellOwner.find("div.alpn_about").addClass("pte_member_class");
 			}
+
 			wpDataTables.table_interactions.fnFilterClear();
 		break;
 		case 'file_workflow_update':
@@ -2627,14 +2745,14 @@ function initializeTwilio() {
 			console.log('reached permissions')
 				// getting FCM token
 				firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
-					jQuery.ajax({
-						url: "https://vitriva.com/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
-						type: "POST",
-						data:{token:fcmToken,userId:alpn_user_id},
-						success: function(html){
-						console.log(html)
-						}
-						});
+					// jQuery.ajax({
+					// 	url: "https://wicile.com/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
+					// 	type: "POST",
+					// 	data:{token:fcmToken,userId:alpn_user_id},
+					// 	success: function(html){
+					// 	console.log(html)
+					// 	}
+					// 	});
 			console.log('reached token 2');
 			console.log(fcmToken);
 			getChatClient.then(function (chatClient) {
@@ -2665,13 +2783,13 @@ function initializeTwilio() {
 						if(payload.data.author==alpn_user_firstName) {
 						console.log('New message from '+payload.data.author+'\n'+payload.data.twi_body);
 						}
-						chatClient.handlePushNotification(payload);
+						//chatClient.handlePushNotification(payload);
 
 					})
 				} else {
 
 						 if(typeof payload.data.twi_body !== 'undefined' && payload.data.twi_body != ''){
-						console.log('Message from https://vitriva.com/ \n'+payload.data.twi_body);
+						console.log('Message from https://wicile.com/ \n'+payload.data.twi_body);
 					 }
 				}
 					console.log(alpn_user_displayname);
@@ -3660,21 +3778,21 @@ if (pte_external == false) {
 						showLinkToFileUploadResult: false,
 						animateOpenClose: false
  	    })
-			.use(Uppy.GoogleDrive, {
-				target: Uppy.Dashboard,
-			  companionUrl: Uppy.Transloadit.COMPANION,
-			  companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-			})
-			.use(Uppy.Dropbox, {
-				target: Uppy.Dashboard,
-			  companionUrl: Uppy.Transloadit.COMPANION,
-			  companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-			})
-			.use(Uppy.OneDrive, {
-				target: Uppy.Dashboard,
-			  companionUrl: Uppy.Transloadit.COMPANION,
-			  companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-			})
+			// .use(Uppy.GoogleDrive, {
+			// 	target: Uppy.Dashboard,
+			//   companionUrl: Uppy.Transloadit.COMPANION,
+			//   companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
+			// })
+			// .use(Uppy.Dropbox, {
+			// 	target: Uppy.Dashboard,
+			//   companionUrl: Uppy.Transloadit.COMPANION,
+			//   companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
+			// })
+			// .use(Uppy.OneDrive, {
+			// 	target: Uppy.Dashboard,
+			//   companionUrl: Uppy.Transloadit.COMPANION,
+			//   companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
+			// })
 			.on('transloadit:complete', (result) => {
 				//alpn_vault_control("add");  //TODO ONLY DO THIS WHEN STILL IN ADD MODE.
 				//console.log("File Uploaded Complete");
@@ -4275,7 +4393,7 @@ function alpn_handle_vault_row_selected(theCellId) {
 	if (theCellId) {
 		var theNewRow =  jQuery('#alpn_field_' + theCellId).closest('tr');
 			if (theNewRow.length) {
-				theNewRow.children().attr("style", "background-color: #D8D8D8 !important;");
+				theNewRow.children().attr("style", "background-color: #ebe7df !important;");
 				alpn_manage_vault_buttons(false);
 				alpn_vault_control("view");
 				if (pte_toolbar_active == 'add') {
@@ -4594,7 +4712,7 @@ function pte_check_viewer_password(tObj){
 function pte_view_document(vaultId, token = false) {
 	var security = specialObj.security;
 	console.log('Viewing Document...');
-	console.log(token);
+//	console.log(token);
 
 	pte_show_viewer_overlay("<div id='pte_overlay_message' class='shimmer'>Getting Vault File</div>");
 
@@ -4603,7 +4721,7 @@ function pte_view_document(vaultId, token = false) {
 	} else {
 		var srcFile = alpn_templatedir + 'alpn_get_vault_file_token.php?which_file=pdf&token=' + token + '&security=' + security;
 	}
-	console.log(srcFile);
+	//console.log(srcFile);
 
 	var xhr = new XMLHttpRequest();
 	xhr.open('GET', srcFile, true);
@@ -4617,9 +4735,14 @@ function pte_view_document(vaultId, token = false) {
 
 		var status = xhr.status;
 		if (status == 204) {  //Error. Get code from header.
-			alpn_manage_vault_buttons(false);
+			var isViewer = (typeof pte_viewer_file_meta != 'undefined' && pte_viewer_file_meta) ? true : false;
+			if (!isViewer) {alpn_manage_vault_buttons(false)};
 			var pteErrorCode = xhr.getResponseHeader("PTE-Error-Code");
 			switch(pteErrorCode) {
+				case 'vault_file_deleted':
+					console.log("Vault File Gone");
+					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>This vault item is no longer available</div>");
+				break;
 				case 'insufficient_rights':
 					console.log("Permission Denied");
 					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>Please check with vault owner<br>to get access to this vault item</div>");
@@ -4634,15 +4757,14 @@ function pte_view_document(vaultId, token = false) {
 				break;
 				case 'error_retrieving_file':
 					console.log("Failure reading file from storage");
-					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>Failed to retrieve filebr>Please try again</div>");  //TODO
+					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>Failed to retrieve file<br>Please try again</div>");  //TODO
 				break;
 				case 'link_expired':
 					console.log("Link Expired");
 					pte_show_viewer_overlay("<div id='pte_overlay_message_no_shimmer'>Your xLink has expired<br>Please contact the sender/div>");
 				break;
 			}
-
-			alpn_manage_vault_buttons(true, true);
+			if (!isViewer) {alpn_manage_vault_buttons(true, true)};
 			return;
 		}
 
@@ -4858,7 +4980,7 @@ function alpn_vault_control(operation) {
 			if (!vaultId && typeof pte_viewer_file_meta != "undefined") {
 				var srcFile = alpn_templatedir + 'alpn_get_vault_file_token.php?which_file=pdf&token=' + pte_viewer_file_meta.link_token + '&security=' + security;
 			} else {
-				var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=original&v_id=' + vaultId + '&security=' + security;
+				var srcFile = alpn_templatedir + 'alpn_get_vault_file.php?which_file=pdf&v_id=' + vaultId + '&security=' + security;
 			}
 			window.location = srcFile;
 		break;
@@ -5101,14 +5223,40 @@ function alpn_proteam_member_delete(proTeamRowId) {
 		dataType: "json",
 		success: function(json) {
 
-			console.log("Deleted CHANNEL");
-			var deletedChannelToo = json.deleted_channel_too;
+			console.log("Deleted TTEAM");
+			console.log(json);
 
-			if (deletedChannelToo) {  //Channel gone, clear chat window by messaging iframe.
+			var roomEmpty = json.room_empty;
+
+			if (roomEmpty) {  //Channel gone, clear chat window by messaging iframe.
 				var data = {
 					"name": "pte_channel_deleted"
 				}
 				pte_message_chat_window(data);
+
+				if (json.is_member) {
+					console.log("MEMBER");
+					if (json.tt_data.linked_topic_dom_id) {
+						console.log("LINKED TO JOIN");
+						//Link to Leave creates a Join
+						alpn_mission_control('select_by_mode', json.tt_data.linked_topic_dom_id);
+					} else if (json.tt_data.topic_dom_id) {
+
+						console.log("JOIN TO REMOVE");
+
+						//Join to Leave Removes
+						var topicCell = jQuery("div.alpn_topic_cell[data-uid='" + json.tt_data.topic_dom_id + "']");
+						topicCell.find("div.alpn_name").removeClass("pte_member_class");
+						topicCell.find("div.alpn_about").removeClass("pte_member_class");
+						alpn_oldSelectedId = pte_get_nearest_row('topic', json.tt_data.topic_dom_id);
+						alpn_mission_control('select_by_mode', alpn_oldSelectedId);
+					}
+
+				} else if (json.is_owner) {
+					var linkedTopicCell = jQuery("div.alpn_topic_cell[data-uid='" + json.tt_data.topic_dom_id + "']");
+					linkedTopicCell.find("div.alpn_name").removeClass("pte_member_class");
+					linkedTopicCell.find("div.alpn_about").removeClass("pte_member_class");
+				}
 			}
 			jQuery('#alpn_replace_me_' + proTeamRowId).remove();
 			var proTeamTable = jQuery('#alpn_proteam_selected_outer'); //network topic
@@ -5713,7 +5861,7 @@ function pte_manage_report_table_select(domId){
 	if (domId) {
 		var reportTableCell = jQuery("#alpn_field_" + domId);
 		var cellParent = reportTableCell.parent();
-		cellParent.attr('style', 'background-color: #D8D8D8 !important;')
+		cellParent.attr('style', 'background-color: #ebe7df !important;')
 		pte_selected_report_template = domId;
 		jQuery("#pte_report_button_clone").removeClass('pte_extra_button_disabled').addClass('pte_extra_button_enabled');
 		jQuery("#pte_report_button_delete").removeClass('pte_extra_button_disabled').addClass('pte_extra_button_enabled');
@@ -6447,7 +6595,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 function alpn_reselect () {
 
 	if (alpn_oldSelectedId) {
-		jQuery('div.alpn_column_1 #alpn_field_' + alpn_oldSelectedId).parent().attr('style', 'background-color: #D8D8D8 !important;');
+		jQuery('div.alpn_column_1 #alpn_field_' + alpn_oldSelectedId).parent().attr('style', 'background-color: #ebe7df !important;');
 	}
 	//TODO manage_chat()
 }
@@ -6463,7 +6611,7 @@ function alpn_deselect () {
 function alpn_handle_select(uniqueId) {
 	alpn_deselect();
 	jQuery('div.alpn_column_1 #alpn_field_' + alpn_oldSelectedId).parent().attr('style', 'background-color: #F8F8F8 !important;');
-	jQuery('div.alpn_column_1 #alpn_field_' + uniqueId).parent().attr('style', 'background-color: #D8D8D8 !important;');
+	jQuery('div.alpn_column_1 #alpn_field_' + uniqueId).parent().attr('style', 'background-color: #ebe7df !important;');
 	alpn_oldSelectedId = uniqueId;
 }
 

@@ -18,6 +18,9 @@ include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 ini_set('memory_limit', '512M');
 
+$logId = 'some';
+$logId = 'all';
+
 global $memberFeatures;
 
 $memberFeatures = array(
@@ -27,6 +30,11 @@ $memberFeatures = array(
 	'topic_type_editor_main' => false
 
 );
+
+
+// if ( php_uname('n') == 'wp4' ) {
+//     define('DISABLE_WP_CRON', true);
+// }
 
 
 // verify added nonce before submission for wpforms
@@ -77,9 +85,9 @@ return 48 * 3600;
 
 include('alpn-shortcodes.php');
 include('alpn_common.php');
-include('pte_messaging.php');
+//include('pte_messaging.php');
 
-$wpdb_readonly = $wpdb;  //TODO use this connection anywhere that isn't susceptible to master/slave, add/update lag. Coming from add/update, pass in JSON. use different connection
+$wpdb_readonly = $wpdb;  //TODO not needed anymore
 
 function pte_dequeue_unnecessary_styles() {
     wp_dequeue_style( 'font-awesome' );
@@ -221,12 +229,17 @@ function alpn_load_script(){
 
     if (!is_admin()) {
 
-			wp_register_script(
-					'alpn_tinymce_editor',
-					get_template_directory_uri() . '/../memberlite-child-master/dist/js/tinymce_5/tinymce.min.js',
-					array( 'jquery' )
-			);
-			wp_enqueue_script( 'alpn_tinymce_editor' );
+			global $post;
+			$pageSlug = $post->post_name;
+
+			if ($pageSlug == "templates") {
+				wp_register_script(
+						'alpn_tinymce_editor',
+						get_template_directory_uri() . '/../memberlite-child-master/dist/js/tinymce_5/tinymce.min.js',
+						array( 'jquery' )
+				);
+				wp_enqueue_script( 'alpn_tinymce_editor' );
+			}
 
       wp_register_script(   //TODO Remover WAITME?
             'pte_print_page',
@@ -262,6 +275,13 @@ add_action('wp_enqueue_scripts', 'alpn_load_script');
 add_action('admin_enqueue_scripts', 'alpn_load_script');
 
 //Profile Settings
+
+function bbp_enable_visual_editor( $args = array() ) {
+	$args['tinymce'] = true;
+  return $args;
+}
+add_filter( 'bbp_after_get_the_content_parse_args', 'bbp_enable_visual_editor' );
+
 
 add_filter('show_admin_bar', '__return_false'); //Remove top bar
 
@@ -311,31 +331,61 @@ add_filter('woocommerce_billing_fields','wpb_custom_billing_fields');
 add_filter( 'woocommerce_enable_order_notes_field', '__return_false', 9999 );
 
 function custom_add_subscription_name_to_table( $subscription ) {
-
     foreach ( $subscription->get_items() as $item_id => $item ) {
         $_product  = apply_filters( 'woocommerce_subscriptions_order_item_product', $subscription->get_product_from_item( $item ), $item );
-
         if ( apply_filters( 'woocommerce_order_item_visible', true, $item ) ) {
-
             echo wp_kses_post( apply_filters( 'woocommerce_order_item_name', sprintf( '<br><a href="%s">%s</a>', get_permalink( $item['product_id'] ), $item['name'] ), $item ) );
-
         }
     }
 }
 add_action( 'woocommerce_my_subscriptions_after_subscription_id', 'custom_add_subscription_name_to_table', 35 );
 
+//Override and reformat bbPress notification emails to match and use wc email.
+function vit_wrap_bbpress_forum_subscription_email($content, $topicId, $forumId, $userId) {
+	$mailer = WC()->mailer();
+	$template = 'vit_generic_email_template.php';
+	$newContent = wc_get_template_html( $template, array(
+			'email_heading' => "Conversation Notification",
+			'email'         => $mailer,
+			'email_body'    => $content
+		), PTE_ROOT_PATH . 'woocommerce/emails/', PTE_ROOT_PATH . 'woocommerce/emails/');
+		$toEmail = get_userdata( $userId )->user_email;
+		$emailSubject = "Wiscle Community | " . strip_tags( bbp_get_topic_title( $topicId ) );
+		$mailer->send( $toEmail, $emailSubject, $newContent );
+	return false;
+}
+add_filter( 'bbp_forum_subscription_mail_message', 'vit_wrap_bbpress_forum_subscription_email', 10, 4 );
+
+function vit_wrap_bbpress_subscription_email($content, $replyId, $topicId) {
+	$mailer = WC()->mailer();
+	$template = 'vit_generic_email_template.php';
+	$css = wc_get_template_html( 'emails/email-styles.php' );
+	$newContent = wc_get_template_html( $template, array(
+			'email_heading' => "Conversation Notification",
+			'email'         => $mailer,
+			'email_body'    => $content
+		), PTE_ROOT_PATH . 'woocommerce/emails/', PTE_ROOT_PATH . 'woocommerce/emails/');
+		$userId = bbp_get_reply_author_id( $replyId );
+		$toEmail = get_userdata( $userId )->user_email;
+		$emailSubject = "Wiscle Community | " . strip_tags( bbp_get_topic_title( $topicId ) );
+		$mailer->send( $toEmail, $emailSubject, $newContent );
+	return false;
+}
+add_filter( 'bbp_subscription_mail_message', 'vit_wrap_bbpress_subscription_email', 10, 3 );
+
 
 function add_loginout_link( $items, $args ) {
+
   if (is_user_logged_in() && $args->theme_location == 'meta') {
 		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Account</a></li>';
 		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 1514 ) . '">Help</a></li>';
 		if (!WC()->cart->is_empty()){
 			$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '">Cart</a></li>';
 		}
-
     $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="'. wp_logout_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ) .'">Log Out</a></li>';
   }
    elseif (!is_user_logged_in() && $args->theme_location == 'meta') {
+
     $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Log In &nbsp;|&nbsp; Register</a></li>';
   }
    return $items;
@@ -353,15 +403,15 @@ function pte_set_avatar_url( $url, $id_or_email, $args ) {
 }
 add_filter( 'get_avatar_url', 'pte_set_avatar_url', 10, 3 );
 
-
 function vit_register ($user_id, $userData) {   //Runs on New User. Sets up default topics and sample data.
-	// alpn_log("Creating New User Info...");
+	 alpn_log("Creating New User Info...");
 	// alpn_log($user_id);
-	// alpn_log($userData);
+	 //alpn_log($userData);
+
+	 update_user_meta( $user_id, 'wcr_approve_user_status', 'pending'); //TODO remove after controlled launch
 
 	global $wpdb;
 	$shortUuid = new ShortUuid();
-
 	$now = date ("Y-m-d H:i:s", time());
 	$userInfo = get_user_by('id', $user_id);
   $defaultTopicData = pte_create_default_topics($user_id, true);   //with sample data
@@ -413,12 +463,29 @@ function vit_register ($user_id, $userData) {   //Runs on New User. Sets up defa
 	);
 	pte_manage_topic_link('add_edit_topic_bidirectional_link', $linkData, $subjectToken);
 
-
-//Send Greeting Email. TODO why is woocommerce not sending it?
+	$toEmail = $userInfo->user_email;
+	$myAccount = make_clickable( esc_url( wc_get_page_permalink( 'myaccount' ) ) );
+	$userPass = esc_html( $userData['user_pass'] );
+	$emailTemplateHtml = "
+		<p>Hi {$userInfo->user_firstname},</p>
+		<p>Use your new Wiscle account to publish data, share files and to collaborate with anyone, anywhere on anything.</P>
+		<p>Log in with your email address: <strong>{$toEmail}</strong><br>And secure password: <strong>{$userPass}</strong></p>
+		<p>Log in here: {$myAccount}</p>
+	";
+	$emailSubject = "Your Wiscle account has been created!";
+	$emailHeader = "Welcome to Wiscle";
 	$mailer = WC()->mailer();
-	$email = $mailer->emails['WC_Email_Customer_New_Account'];
-	$email->template_base = '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/woocommerce/';  //override with local
-	$email->trigger( $user_id, $userData['user_pass'], true );
+	$template = 'vit_generic_email_template.php';
+	$content = 	wc_get_template_html( $template, array(
+			'email_heading' => $emailHeader,
+			'email'         => $mailer,
+			'email_body'    => $emailTemplateHtml
+		), PTE_ROOT_PATH . 'woocommerce/emails/', PTE_ROOT_PATH . 'woocommerce/emails/');
+	try {
+		$mailer->send( $toEmail, $emailSubject, $content );
+	} catch (Exception $e) {
+			alpn_log ('Caught exception: '. $e->getMessage());
+	}
 
 	//send Personalized Email Attachment to the new Topic
 	// alpn_log('New User Sample Data -- Send some Emails here');
@@ -443,7 +510,6 @@ function vit_order_status_completed($orderId) {
 }
 add_action( 'woocommerce_order_status_completed', 'vit_order_status_completed', 10, 1 );
 
-
 // woocommerce_order_status_pending
 // woocommerce_order_status_failed
 // woocommerce_order_status_on-hold
@@ -452,8 +518,10 @@ add_action( 'woocommerce_order_status_completed', 'vit_order_status_completed', 
 // woocommerce_order_status_refunded
 // woocommerce_order_status_cancelled
 
-
-
+function vit_breadcrumbs($trail, $crumbs, $r) {
+	return "<a href='https://" . PTE_HOST_DOMAIN_NAME . "/conversations'><img id='vit_breadcrumb_image' src='https://storage.googleapis.com/pte_media_store_1/734d618b-bc2.png'></a> " . $trail;
+}
+add_filter( 'bbp_get_breadcrumb', 'vit_breadcrumbs', 10, 3 );
 
 
 function vit_wc_customer_data( $data ) {
@@ -468,7 +536,6 @@ function vit_wc_customer_data( $data ) {
 		$data['last_name'] = $_POST['last_name'];
 	}
 	$data['role'] = 'subscriber';
-
 	return $data;
 }
 add_filter( 'woocommerce_new_customer_data', 'vit_wc_customer_data', 10, 1 );

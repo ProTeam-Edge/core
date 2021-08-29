@@ -8,7 +8,6 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 global $memberFeatures;
 
-
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
@@ -34,6 +33,8 @@ $ppCdnBase = PTE_IMAGES_ROOT_URL;
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
+
+//pp($userInfo);
 
 $rightsCheckData = array(
   "topic_dom_id" => $recordId
@@ -668,10 +669,11 @@ $html .= "
 						 </div>
 						";
 
+            // <style>
+            //   div#tabcontent_0 .pte_topic_table_label {color: {$infoColor};}
+            // </style>
+
             $html .= "
-            <style>
-              div#tabcontent_0 .pte_topic_table_label {color: {$infoColor};}
-            </style>
             <script>
             jQuery('#alpn_selector_interaction_selector').select2({
             	theme: 'bootstrap',

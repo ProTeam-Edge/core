@@ -25,10 +25,7 @@ function pte_get_registry_proteam_invitation() {
       'request_sent' => function(Token $token) {  //Node 1 - waiting for send
 
           alpn_log('Start Topic Team invitation...');
-
           //TODO mark an interaction as BUSY so that accidental secondary messages are ignored while processing primmary.
-
-
           global $wpdb;
           $requestData = $token->getValue("process_context");
 
@@ -52,7 +49,7 @@ function pte_get_registry_proteam_invitation() {
                  "process_id" => $requestData['process_id'],
                  "topic_id" => $requestData['topic_id'],
                  "proteam_member_id" => $contactData->id,
-                 "wp_id" => $contactData->connected_id
+                 "wp_id" => $contactData->connected_id,
               );
 
               $proTeamData = pte_create_topic_team_member($proTeamData);
@@ -70,8 +67,10 @@ function pte_get_registry_proteam_invitation() {
                 "access_level" => $proTeamData['access_level'],
                 "member_rights" => $proTeamData['member_rights'],
                 "proteam_member_id" => $proTeamData['proteam_member_id'],
-                "state" => $proTeamData['state']
+                "state" => $proTeamData['state'],
+                "panel_type" => "member"
               );
+
               $requestData['initial_proteam_panel_html'] = pte_create_panel($topicPanelData);
               $requestData['proteam_member_row_id'] = $proTeamData['id'];
 
@@ -103,7 +102,7 @@ function pte_get_registry_proteam_invitation() {
               	$interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
                 $requestData['interacts_with_id'] = $interactsWithProcessResponse['process_id'];
 
-              } else {
+              } else {  //NOT CONNECTED SEND EMAIL Experience. Add other contact info to email.
 
                   $userInfo = get_user_by('id', $requestData['owner_id']);
 
@@ -121,19 +120,19 @@ function pte_get_registry_proteam_invitation() {
                     );
                     alpn_log($data);
                     pte_send_mail ($data);
-
                   }
               }
 
             $token->setValue("process_context", $requestData);
 
-            alpn_log('About to Return?');
-            alpn_log($requestData);
-
             return;
 
             } else {
-              $requestData['error'] = "already_on_topic_team";
+              if ($emailContactTopicId) {
+                $requestData['error'] = "already_on_topic_team";
+              } else {
+                //pre-sending
+              }
             }
 
             $requestData['widget_type_id'] = "topic_team_invite";
@@ -157,19 +156,20 @@ function pte_get_registry_proteam_invitation() {
           $requestData['interaction_file_away_handling'] = "archive_interaction";
           $buttonOperation = $token->getValue("button_operation");
 
+
           switch ($buttonOperation) {
             case 'accept':
               alpn_log('Handling Accept...');
               alpn_log($requestData);
               if ($requestData['connected_contact_status'] == 'not_connected_member') {
                 // if member but not connected, connect them, handle as connected.
-                alpn_log('Making connection to not_connected_member...');
+                alpn_log('Making async connection to not_connected_member...');
                 $connectData = array(
-                  'contact_topic_id' => $requestData['connected_contact_topic_id_alt'],
-                  'contact_email' => $requestData['connected_contact_email_alt'],
-                  'owner_wp_id' => $requestData['owner_id']
+                  'connected_owner_id' => $requestData['connected_contact_topic_id_alt'],
+                  'alt_id' => $requestData['connected_contact_email_alt'],
+                  'user_id' => $requestData['owner_id']
                 );
-                pte_manage_user_connection($connectData);
+                vit_send_async_connect($connectData);
                 $requestData['connected_contact_status'] = 'connected_member';
                 $requestData['connected_id'] = $requestData['connected_contact_id_alt'];
                 $requestData['connected_network_id'] = $requestData['connected_contact_topic_id_alt'];
@@ -183,17 +183,18 @@ function pte_get_registry_proteam_invitation() {
                   'topic_id' => $requestData['topic_id'],
                   'user_id' => $requestData['connected_id']
                 );
-                pte_manage_cc_groups("add_member", $data);
+                async_pte_manage_cc_groups("add_member", $data);
               }
 
-              //creates a link between this topic and the connected user topic if link type.
+              //creates a join between this topic and the connected user topic if link type.
               $connectedType = "join";
               $ptState = 30;
 
               if ($requestData['connection_link_type'] == 1) {  //Link type
-              //  pte_manage_topic_link('add_edit_topic_bidirectional_link', $requestData);  //this adds a bidirectional link if we want to show in table rathern than in proteam card
+
                 $connectedType = "link";
                 $ptState = 40;
+
               }
               //Update ProTeam with Join/Link type and Status.
                 alpn_log('Handling ProTeam Update HERE!!!!...');
@@ -204,10 +205,13 @@ function pte_get_registry_proteam_invitation() {
                   'owner_id' => $requestData['owner_id'],
                   'process_id' => $requestData['process_id'],
                   'connected_id' => $requestData['connected_id'],
-                  'linked_topic_id' => $requestData['connection_link_topic_id']
+                  'linked_topic_id' => $requestData['connection_link_topic_id'],
+                  'linked_topic_dom_id' => wic_get_domId_from_topicId($requestData['connection_link_topic_id']),  //TODO combine
+                  'linked_topic_name' => wic_get_topic_name_from_topicId($requestData['connection_link_topic_id'])
                 );
                 alpn_log($data);
                 pte_proteam_state_change_sync($data);
+
               return;
             break;
             case 'decline':

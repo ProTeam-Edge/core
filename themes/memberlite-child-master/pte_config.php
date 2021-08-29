@@ -1,12 +1,13 @@
 <?php
 
 $hostName = gethostname();
-$domainName = (substr($hostName, 0, 16) == "pte-dev-staging-") ? "alct.pro" : "vitriva.com";
+$domainName = (substr($hostName, 0, 16) == "pte-dev-staging-") ? "alct.pro" : "wiscle.com";
 
 define('PTE_STANDARD_COLOR_COUNT', 10);
 
 define('PTE_HOST_DOMAIN_NAME', $domainName);
 define('PTE_ROOT_URL', "https://{$domainName}/wp-content/themes/memberlite-child-master/");
+define('PTE_BASE_URL', "https://{$domainName}/");
 define('PTE_ROOT_PATH', '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/');
 define('PTE_IMAGES_ROOT_URL', 'https://storage.googleapis.com/pte_media_store_1/');
 

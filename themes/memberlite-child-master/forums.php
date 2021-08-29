@@ -6,6 +6,7 @@
  */
 
 get_header(); ?>
+
 	<?php
 		if ( true ) {
 			$columns_class = 'medium-12';

@@ -77,7 +77,6 @@ function pte_get_registry_proteam_invitation_received() {
             return; //if successful
           }
 
-
           if ($buttonOperation == 'accept') {
             alpn_log('Interaction Received Handle Setting Up ProTeam Relationship.');
 
@@ -88,19 +87,28 @@ function pte_get_registry_proteam_invitation_received() {
 
             $requestData['connection_link_type'] = $connectionLinkType;
             $requestData['connection_link_topic_id'] = $connectionLinkTopicId;
+            $requestData['connection_link_topic_dom_id'] = wic_get_domId_from_topicId($connectionLinkTopicId);
 
-            //	$topicStates = array('10' => "Added", '20' => "Invite Sent", '30' => "Joined", '40' => "Linked", '80' => "Email Sent", '90' => "Declined");
+
             switch ($connectionLinkType) {
               case '0': //Join
                 $connectedState = '30';
                 $connectedType = 'join';
                 $proTeamRowId = 0;
+
               break;
               case '1': //Link to Existing Topic
                 $connectedState = '40';
                 $connectedType = 'link';
 
-                //Connect other guy to my Linked Topic.  I'm owner.
+                $ccData = array(
+                  'owner_id' => $requestData['owner_id'],
+                  'topic_id' => $connectionLinkTopicId,
+                  'user_id' => $requestData['connected_id']
+                );
+                async_pte_manage_cc_groups("add_member", $ccData);
+
+                alpn_log($ccData);
 
                 $proTeamData = array(
                   'owner_id' => $requestData['owner_id'],  //owner_id
@@ -120,7 +128,7 @@ function pte_get_registry_proteam_invitation_received() {
               case '2': //Create and Link to New Topic  -- NOT IMPLEMENTED IN FIRST RELEASE
                 //alpn_handle_topic_add_edit ('', $entry, '', '' );	//Add user
               break;
-            }
+            }          //Connect other guy to my Linked Topic.  I'm owner.
 
             $requestData['proteam_row_id'] = $proTeamRowId;
 
@@ -130,6 +138,7 @@ function pte_get_registry_proteam_invitation_received() {
               'interaction_network_id' => $requestData['owner_network_id'],
               'connection_link_type' => $requestData['connection_link_type'],
               'connection_link_topic_id' => $connectionLinkTopicId,
+              'connection_link_topic_dom_id' => $connectionLinkTopicId,
               'button_operation' =>  $buttonOperation,
               'message_response' =>  $requestData["message_response"]
             );

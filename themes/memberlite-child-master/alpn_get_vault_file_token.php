@@ -32,6 +32,13 @@ if (isset($results[0])) {
   $vaultDomId = $result->dom_id;
   $linkMeta = json_decode($result->link_meta, true);
 
+  if (!$vaultDomId) {
+    alpn_log('Vault Item Deleted');
+    header("PTE-Error-Code: vault_file_deleted");
+    http_response_code (204);
+    exit;
+  }
+
   $baseDate =  $result->last_update ? $result->last_update : $result->created_date;
   $linkExpiration = $linkMeta['link_interaction_expiration'];
 
@@ -75,7 +82,7 @@ if (isset($results[0])) {
 
 try {
 	$storage = new StorageClient([
-			'keyFilePath' => '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/proteam-edge-cf8495258f58.json'
+			'keyFilePath' => '/var/www/html/proteamedge/private/proteam-edge-cf8495258f58.json'
 	]);
 	$storage->registerStreamWrapper();
 	$content = file_get_contents("gs://pte_file_store1/{$objectName}");

@@ -100,13 +100,11 @@ function pte_add_to_proteam($data) {
 		);
 
   $memberRights = isset($data['member_rights']) && $data['member_rights'] ? json_decode($data['member_rights'], true) : $defaultMemberRights;
-
   $connectedType = isset($data['connected_type']) && $data['connected_type'] ? $data['connected_type'] : "external";
   $processId = isset($data['process_id']) && $data['process_id'] ? $data['process_id'] : "";
+  $linkedTopicId = isset($data['linked_topic_id']) && $connectedType == "link" ? $data['linked_topic_id'] : 0;
 
-  $linkedTopicId = isset($data['linked_topic_id']) ? $data['linked_topic_id'] : 0;
-
-	$proTeamData = array( //TODO start IA and store processID
+	$proTeamData = array( //TODO
 		'owner_id' => $data['owner_id'],
 		'topic_id' => $data['topic_id'],  //topicContext
 		'proteam_member_id' => $data['proteam_member_id'],
@@ -128,7 +126,7 @@ function delete_from_cloud_storage($fileKey){
   alpn_log("Deleting Vault Item in Cloud Storage.");
 	try {
 		$storage = new StorageClient([
-	    	'keyFilePath' => '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/proteam-edge-cf8495258f58.json'
+	    	'keyFilePath' => '/var/www/html/proteamedge/private/proteam-edge-cf8495258f58.json'
 		]);
     $bucket = $storage->bucket('pte_file_store1');
       $object = $bucket->object($fileKey);
@@ -149,7 +147,7 @@ function storePdf($pdfSettings){
   $doNotUnlinkLocal = $pdfSettings["do_not_unlink_local"];
 	try {
 		$storage = new StorageClient([
-	    	'keyFilePath' => '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/proteam-edge-cf8495258f58.json'
+	    	'keyFilePath' => '/var/www/html/proteamedge/private/proteam-edge-cf8495258f58.json'
 		]);
 		$storage->registerStreamWrapper();
 		$fileContent = file_get_contents($localFile);
@@ -385,7 +383,6 @@ function pte_manage_interaction($payload) {
     pte_async_job ($sitePath, array("data" => json_encode($payload)));
 }
 
-
 function vit_store_kvp($verificationKey, $data) {
   global $wpdb;
   $kvpData = array(
@@ -406,6 +403,19 @@ function vit_get_kvp($verificationKey) {
     return json_decode($kvpData[0]->item_value, true);
   }
   return array();
+}
+
+function vit_send_async_connect($data) {
+  $verificationKey = pte_get_short_id();
+  $params = array(
+    "verification_key" => $verificationKey
+  );
+  vit_store_kvp($verificationKey, $data);
+  try {
+    pte_async_job(PTE_ROOT_URL . "vit_async_connect.php", array('verification_key' => $verificationKey));
+  } catch (Exception $e) {
+    alpn_log ($e);
+  }
 }
 
 //When member changes main email. Update in profile, Also make connections based on members new email if they and other members are double opted in
@@ -432,25 +442,12 @@ function vit_update_contacts_new_email ($userId, $newEmailAddress){
       alpn_log('Connections List');
     //  alpn_log($connectList);
       foreach($connectList as $key => $value) {
-        $verificationKey = pte_get_short_id();
-        $params = array(
-          "verification_key" => $verificationKey
-        );
         $data = array(
           "alt_id" => $value->alt_id,
           "connected_owner_id" => $value->connected_owner_id,
           "user_id" => $userId
         );
-        vit_store_kvp($verificationKey, $data);
-        $guzClient = new GuzzleHttp\Client();
-        try {
-          alpn_log("Before Async");
-          $guzClient->requestAsync('GET', PTE_ROOT_URL . "vit_async_connect.php", [
-              'query' => ['verification_key' => $verificationKey]
-          ])->wait();
-        } catch (Exception $e) {
-          alpn_log ($e);
-        }
+        vit_send_async_connect($data);
       }
     }
   }
@@ -474,11 +471,11 @@ function pte_send_mail ($data = array()) {
   $linkType =  $data['link_type'];
   $fileName = isset($data['vault_file_name']) && $data['vault_file_name'] ? "<span class='element_bold'>File Name</span>: " . $data['vault_file_name'] : "";
 
-  $emailSubject =  $data['subject_text'];
+  $emailSubject =  isset($data['subject_text']) && $data['subject_text'] ? $data['subject_text'] : "No Subject Text";
 
   $replaceStrings["-{pte_site_domain}-"] = $siteDomain;
 
-  $replaceStrings["-{why_received}-"] = "Vitriva Community required correspondence.";
+  $replaceStrings["-{why_received}-"] = "Wiscle Community required correspondence.";
   if ($fromFirstName) {
     $replaceStrings["-{why_received}-"] = "{$fromFirstName} asked us to send you this secure link.";
   }
@@ -543,7 +540,7 @@ function pte_send_group_mms($data){
 
   $data = array(
     "numbers" => array(0 => "+14084100365", 1 => "+16505268577"),
-    "message" => "Hi Baby, it's me geeking out with Group Texting...I need this for Vitriva anyway!"
+    "message" => "Hi Baby, it's me geeking out with Group Texting...I need this for Wiscle anyway!"
   );
 
 
@@ -1167,7 +1164,8 @@ function pte_create_topic_team_member($data) {    //add to proteam.
   		'action' => '1',
   		'print' => '1',
   		'transfer' => '1',
-  		);
+    );
+
   	$defaultAccessLevel = "10";
   	$defaultState = "20";
   	$memberRights = json_encode($defaultMemberRights);
@@ -1252,7 +1250,7 @@ function pte_get_viewer($viewerSettings){
   $linkKey = isset($viewerSettings['link_key']) ? $viewerSettings['link_key'] : '';
 
   $data = $_GET;
-  $html = "";
+  $html = $createAccountHtml = "";
   global $wpdb_readonly;
 
   if (!$linkKey) { //get first variable passed in.
@@ -1274,6 +1272,16 @@ function pte_get_viewer($viewerSettings){
 
       $linkLastUpdate = $linkRow->last_update;
       $linkMeta = json_decode($linkRow->link_meta, true);
+
+      $sendEmail = isset($linkMeta['send_email_address']) && $linkMeta['send_email_address'] ? $linkMeta['send_email_address'] : false;
+      $sendEmailGiven = isset($linkMeta['send_email_address_givenname']) && $linkMeta['send_email_address_givenname'] ? $linkMeta['send_email_address_givenname'] : " - ";
+      $sendEmailFamily = isset($linkMeta['send_email_address_familyname']) && $linkMeta['send_email_address_familyname'] ? $linkMeta['send_email_address_familyname'] : " - ";
+      $sendEmailTopicId = isset($linkMeta['send_email_source_topic_id']) && $linkMeta['send_email_source_topic_id'] ? $linkMeta['send_email_source_topic_id'] : false;
+
+      if ($sendEmailTopicId) {
+        $createAccountHtml = "show_cta('<span title=\"Register instantly using email &nbsp;-&nbsp; {$sendEmail}\" onclick=\"vit_create_account_from_topic({$sendEmailTopicId});\" id=\"vit_call_to_action_link\">Create</span> your free collaboration account. No marketing, ever.');";
+      }
+
       $linkInteractionExpiration = isset($linkMeta['link_interaction_expiration']) ? $linkMeta['link_interaction_expiration'] : 0;
 
       $now = new DateTime();
@@ -1362,8 +1370,9 @@ function pte_get_viewer($viewerSettings){
  			 		<script>
  						alpn_templatedir = '{$templateDirectory}-child-master/';
  	          pte_setup_pdf_viewer({$viewerSettings});
-            {$viewDocumentHtml}
             pte_viewer_file_meta = {$fileMeta};
+            {$viewDocumentHtml}
+            {$createAccountHtml}
  					</script>
       ";
     } else {
@@ -1530,6 +1539,12 @@ function pte_async_job_old_1 ($url, $params) {
 }
 
 function pte_async_job ($url, $params) {
+
+  alpn_log("ABOUT TO ASYNC NEW");
+  alpn_log($url);
+  alpn_log($params);
+
+
     foreach ($params as $key => &$val) {
       if (is_array($val)) $val = implode(',', $val);
         $post_params[] = $key.'='.urlencode($val);
@@ -2194,6 +2209,24 @@ function pte_get_linked_form($domId){   //TODO Merge with select topic
 
 //TODO Make this use SELECT2 AJAX infinite scroll paging.
 
+function wic_get_domId_from_topicId($topicId) {
+  global $wpdb;
+  $results = $wpdb->get_results(
+    $wpdb->prepare(
+      "SELECT dom_id FROM alpn_topics WHERE id = %d", $topicId)
+  );
+  return isset($results[0]) ? $results[0]->dom_id : false;
+}
+
+function wic_get_topic_name_from_topicId($topicId) {
+  global $wpdb;
+  $results = $wpdb->get_results(
+    $wpdb->prepare(
+      "SELECT name FROM alpn_topics WHERE id = %d", $topicId)
+  );
+  return isset($results[0]) ? $results[0]->name : false;
+}
+
 function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKey = '', $hidePlaceholder = false, $emptyMessage = '') {
   global $wpdb_readonly;
   $topicOptions = "";
@@ -2282,7 +2315,7 @@ function pte_proteam_state_change_sync($data){
   $ownerId = isset($data['owner_id']) ? $data['owner_id'] : 0;
   $connectedId = isset($data['connected_id']) ? $data['connected_id'] : 0;
   $processId = isset($data['process_id']) ? $data['process_id'] : '';
-  $linkedTopicId = isset($data['linked_topic_id']) ? $data['linked_topic_id'] : 0;
+  $linkedTopicId = isset($data['linked_topic_id']) && $connectedType == 'link' ? $data['linked_topic_id'] : NULL;
 
 if ($connectedType && $ptState && $ptId) {
 
@@ -2572,6 +2605,25 @@ function pte_manage_user_connection($data){
 }
 
 //2118 - CHa7947532b4f04fcc8d1745854be2131c
+
+
+function async_pte_manage_cc_groups($operation, $data) {
+
+  $data['operation'] = $operation;
+
+  $verificationKey = pte_get_short_id();
+  $params = array(
+    "verification_key" => $verificationKey
+  );
+  vit_store_kvp($verificationKey, $data);
+  try {
+    alpn_log("Before Async");
+    pte_async_job(PTE_ROOT_URL . "vit_async_manage_cc_group.php", array('verification_key' => $verificationKey));
+    alpn_log("After Async");
+  } catch (Exception $e) {
+    alpn_log ($e);
+  }
+}
 
 function pte_manage_cc_groups($operation, $data) {
 
@@ -3105,7 +3157,15 @@ function pp($objtopp) {
 }
 
 function alpn_log($logstr){
-	error_log(print_r($logstr, true) . PHP_EOL, 3, get_theme_file_path() . '/logs/alpn_error.log');
+  global $logId;
+  $logForUsers = array();
+  $logForUsers = array(124, 160, 162, 164, 166, 170, 172, 276, 277);
+  $userInfo = wp_get_current_user();
+  $userId = isset($userInfo->data->ID) && $userInfo->data->ID ? $userInfo->data->ID : 0;
+
+  if ($logId == 'all' || in_array($userId, $logForUsers)) {
+    error_log(date('Y/m/d H:i:s') . ' >>' . PHP_EOL . print_r($logstr, true) . PHP_EOL, 3, get_theme_file_path() . '/logs/alpn_error.log');
+  }
 }
 
 function pte_make_string($theItems, $theFields, $theMap){
@@ -3275,8 +3335,8 @@ function  pte_make_rights_panel_view($panelData) {
   global $wpdb;
 
 
-  alpn_log("pte_make_rights_panel_view");
-  //pp($panelData);
+//  alpn_log("pte_make_rights_panel_view");
+//  alpn_log($panelData);
 
   $userInfo = wp_get_current_user();
   $userId = $userInfo->data->ID;
@@ -3340,6 +3400,8 @@ function  pte_make_rights_panel_view($panelData) {
         $topicStateHtml ="<div title='Visit Linked Topic' data-topic-id='{$linkedTopicId}' data-topic-special='topic' data-topic-dom-id='{$linkedTopicDomId}' data-operation='to_topic_info_by_id' class='team_panel_topic_link' onclick='pte_handle_interaction_link_object(this);'><div class='team_panel_topic_link_icon'><i class='far fa-link team_panel_topic_link_icon_actual'></i>&nbsp; {$linkedTopicName}</div></div>";
       } else if ($connectedType == 'join') {
         $topicStateHtml = "Joined";
+      } else {
+        $topicStateHtml = $topicStates[$topicState];
       }
       $html = "
       <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
@@ -3404,11 +3466,11 @@ function  pte_make_rights_panel_view($panelData) {
       	//$connectionTypeSelect .= "<option value='2'>Create New Linked Topic</option>";   TODO implement this
       	$connectionTypeSelect .= "</select>";
 
-
+        //Modify self panel
         $html = "
         <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
           <div class='pte_vault_row_50'>
-            <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class=''>{$topicNetworkName}</div>
+            <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class='pte_vault_bold'>{$topicNetworkName}</div>
             <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Leave</div>
           </div>
           <div class='pte_vault_row_50'>
@@ -3448,21 +3510,40 @@ function  pte_make_rights_panel_view($panelData) {
     					allowClear: false,
     					minimumResultsForSearch: -1
     				});
-    				jQuery('#alpn_select2_small_connection_type_select_card').on('select2:select', function (e) {
-    					pte_handle_connection_type_changed_card(e.params.data);
-    				});
-    				pte_handle_connection_type_changed_card();
-    				jQuery('#alpn_select2_small_link_topic_select_card').select2( {
+            jQuery('#alpn_select2_small_link_topic_select_card').select2( {
     					theme: 'bootstrap',
     					width: '100%',
     					allowClear: false,
     				});
+    				jQuery('#alpn_select2_small_connection_type_select_card').on('select2:select', function (e) {
+              var newData = e.params.data;
+              newData.list_changed = 'connection_type';
+    					pte_handle_connection_type_changed_card(newData);
+    				});
+            jQuery('#alpn_select2_small_link_topic_select_card').on('select2:select', function (e) {
+              var newData = e.params.data;
+              newData.list_changed = 'topic_id';
+    					pte_handle_connection_type_changed_card(newData);
+            });
+            //pte_handle_connection_type_changed_card();
     		</script>
           ";
 
+      } else {  //connection view panel
+
+        $html = "
+        <div id='pte_proteam_item_{$proTeamRowId}' class='proteam_user_panel' data-name='{$topicNetworkName}' data-id='{$proTeamRowId}'>
+          <div class='pte_vault_row_50'>
+            <div id='proTeamPanelUser' data-network-id='{$topicNetworkId}' data-network-dom-id='{$topicDomId}' data-operation='network_info' class=''>{$topicNetworkName}</div>
+          </div>
+          <div class='pte_vault_row_50' style='font-size: 12px; line-height: 16px;'>
+            Double Opt-In Intro Experience Coming Soon
+          </div>
+        </div>
+        <script>
+        </script>
+          ";
       }
-
-
 
     break;
 

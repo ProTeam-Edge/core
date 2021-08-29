@@ -354,16 +354,20 @@ function pte_manage_interaction_proper($data) {
     $requestData = $token->getValue("process_context");
 
     $recalled = isset($requestData['request_operation']) && $requestData['request_operation'] == 'recall_interaction' ? true : false;
-    if ($recalled) {
+    $restart = isset($requestData['restart_interaction']) && $requestData['restart_interaction'] ? true : false;
+
+    if ($recalled) {  //RECALLED
       alpn_log('Deleting because recalled...' . $requestData['process_id']);
 
       $whereClause = array('process_id' => $requestData['process_id']);
       $wpdb->delete( 'alpn_interactions', $whereClause);
 
-    } else {
+    } else {  //ALL else
 
-      if (isset($requestData['restart_interaction']) && $requestData['restart_interaction']) { //TODO start a new one and delete the old one rather than
+      if ($restart) {
+
         alpn_log('Restarting Process...' . $requestData['process_id']);
+
         $newData = array(
           'process_id' => "",
           'process_type_id' => $requestData['process_type_id'],
@@ -381,8 +385,11 @@ function pte_manage_interaction_proper($data) {
         $whereClause = array('process_id' => $requestData['process_id']);
         $wpdb->delete( 'alpn_interactions', $whereClause);
 
-      } else { //save existing process
+
+      } else { //KEEP GOING
+
         pte_save_process($process, $requestData);
+
       }
 
       $sync = isset($requestData['sync']) ? $requestData['sync'] : false;
@@ -398,6 +405,7 @@ function pte_manage_interaction_proper($data) {
       }
 
     }
+
   } else { //TODO Handle No process
 
   }

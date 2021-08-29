@@ -65,7 +65,7 @@ try {
 	$vaultDomId = $results[0]->dom_id;
 
 	$storage = new StorageClient([
-			'keyFilePath' => '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/proteam-edge-cf8495258f58.json'
+			'keyFilePath' => '/var/www/html/proteamedge/private/proteam-edge-cf8495258f58.json'
 	]);
 	$storage->registerStreamWrapper();
 	$content = file_get_contents("gs://pte_file_store1/{$objectName}");

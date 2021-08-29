@@ -80,6 +80,7 @@ function pte_get_registry_sms_send() {
 
                   $linkData = array(
                       'link_type' => 'file',
+                      'link_about' => 'Interaction',
                       'send_email_address' => $emailAddress,
                       'send_email_address_name' => $emailAddressName,
                       'send_mobile_number' => $mobileNumber,

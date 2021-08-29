@@ -81,15 +81,19 @@
 ?>
  columns site-branding">
 
-				<?php memberlite_the_custom_logo(); ?>
 
-				<h1 class="site-title"><a href="<?php echo esc_url( home_url( '/' ) ); ?>" rel="home"><?php bloginfo( 'name' ); ?></a></h1>
+ <?php //memberlite_the_custom_logo(); ?>
 
-				<span class="site-description"><?php bloginfo( 'description' ); ?></span>
+				<?php
+					$image = wp_get_attachment_image_src( 6956 );
+		    ?>
+		 		 <a href="https://wiscle.com"><img src="<?php echo $image[0]; ?>" alt="Wiscile Network"></a>
 
 			</div><!-- .column4 -->
 
-			<?php if ( ! empty( $show_header_right ) ) { ?>
+			<?php
+				//<span onclick="speechSynthesis.speak(new SpeechSynthesisUtterance('wiscle'));">Say it</span>
+				if ( ! empty( $show_header_right ) ) { ?>
 				<div class="medium-<?php echo esc_attr( memberlite_getColumnsRatio( 'header-right' ) ); ?> columns header-right
 												<?php
 												if ( $meta_login == false ) {
@@ -128,6 +132,8 @@
 	</header><!-- #masthead -->
 
 	<?php do_action( 'memberlite_before_site_navigation' ); ?>
+
+	<?php echo '<div id="vit_call_to_action_outer"><img id="vit_connection_loading" class="vit_connection_loading" src="' . PTE_ROOT_URL . 'pdf/web/images/loading-icon.gif" alt="Loading"><div id="vit_call_to_action_inner"></div></div>'; ?>
 
 	<?php if ( ! is_page_template( 'templates/interstitial.php' ) && has_nav_menu( 'primary' ) ) { ?>
 		<?php
@@ -181,8 +187,14 @@
 
 	<div id="content" class="site-content">
 
-	<?php get_template_part( 'components/header/masthead' ); ?>
+	<?php get_template_part( 'components/header/masthead' );
+	 ?>
 
 	<?php if ( ! is_page_template( 'templates/fluid-width.php' )  && ! is_page_template( 'templates/blank.php' ) && ! is_404() ) { ?>
 		<div class="row">
-	<?php } ?>
+	<?php }
+
+
+
+
+	?>
