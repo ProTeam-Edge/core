@@ -93,6 +93,11 @@ function createAndStorePdf($reportSettings){
 		if ($zip) {
 			while ($zip_entry = zip_read($zip)) {
 				$zen = zip_entry_name($zip_entry);
+				$testUuid = substr($zen, 0, 36);
+				$UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+				if (preg_match($UUIDv4, $testUuid)) {  //TODO removing uuid for zip if in there but should really be metadata
+					$zen = substr($zen, 36);
+				}
 				if (zip_entry_filesize($zip_entry)) {
 					$zeo = formatBytes(zip_entry_filesize($zip_entry)) . "b";
 					$urls[] = "{$zen} ({$zeo})";

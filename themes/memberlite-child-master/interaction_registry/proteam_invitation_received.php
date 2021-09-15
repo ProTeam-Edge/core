@@ -73,6 +73,23 @@ function pte_get_registry_proteam_invitation_received() {
           if ($buttonOperation == 'decline') {
             alpn_log('Interaction Received Handle Decline.');
             //Save and File Away
+            $updateRequestData = array( //The ol swaparoo
+              'process_id' => $requestData['interacts_with_id'],
+              'process_type_id' => "proteam_invitation",
+              'interaction_network_id' => $requestData['owner_network_id'],
+              'button_operation' =>  $buttonOperation,
+              'message_response' =>  $requestData["message_response"]
+            );
+
+            $data = array(  //call originating process with new data (accept/decline)
+              'process_id' => $requestData['interacts_with_id'],
+              'process_type_id' => "proteam_invitation",
+              'owner_network_id' => $requestData['connected_network_id'],
+              'owner_id' => $requestData['connected_id'],
+              'process_data' => $updateRequestData
+            );
+            pte_manage_interaction_proper($data);
+
             $token->setValue("process_context", $requestData);
             return; //if successful
           }

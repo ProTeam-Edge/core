@@ -5,6 +5,10 @@ var activeChannel;
 var activeChannelMeta = {};
 var activeChannelPage;
 var activeChannelUserDescriptors = {};
+var speechEvents = {};
+
+var delayBetweenBeeps = 20000; //mililseconds
+var lastBeepTime = new Date();
 
 var activeVideoRoom = false;
 
@@ -29,8 +33,8 @@ var domProcessorSubsequentTimes = 3000;
 var Video = Twilio.Video;
 var Chat = Twilio.Chat;
 
-
 var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
+var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
 
   $(document).ready(function() {
 
@@ -39,6 +43,7 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
       ( function () {
         //Pass messages from chat parent to iframe
         pte_set_chat("disabled");
+
 
         window.addEventListener( "message", ( event ) => {
 
@@ -126,9 +131,9 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
               isUpdatingConsumption = true;
               activeChannel.updateLastConsumedMessageIndex(newestMessageIndex).then(function() {
                 jQuery("li.pte_chat_list_item[data-cid='" + activeChannel.uniqueName + "']").remove();
-                $('#pte_chat_no_chats_message').show();
                 pte_clear_channel_updates(activeChannel.uniqueName);
                 isUpdatingConsumption = false;
+                wsc_handle_no_chats();
               });
             }
           });
@@ -171,6 +176,8 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
         activeChannelMetaSnapshot.name = "pte_audio_ended";
         pte_parent_message_send(activeChannelMetaSnapshot);
         try {
+          console.log("LEAVING...");
+          speechEvents.stop();
           activeVideoRoom.disconnect();
         } catch (e) {
           console.log("Error disconnecting");
@@ -335,24 +342,32 @@ var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
     }
 
     function pte_start_audio(roomChannelSid) {
+
       console.log('Starting Audio');
+
       var token = userContext.token;
       if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-        Video.createLocalTracks({
+        navigator.mediaDevices.getUserMedia({
           audio: true
-        }).then(localTracks => {
-          localTracks.forEach(function(track) {
-              track.disable();  //enter room muting my track
+        }).then(function(mediaStream) {
+          var options = {'interval': '100'};
+          speechEvents = hark(mediaStream, options);
+          speechEvents.on('speaking', function() {
+            console.log('speaking');
           });
-
+          speechEvents.on('stopped_speaking', function() {
+            console.log('stopped_speaking');
+          });
+          var localTracks = mediaStream.getTracks();
+          localTracks.forEach(function(track) {
+              track.enabled = false;  //enter room muting my track
+              //console.log(track);
+          });
           return Video.connect(token, {
             name: roomChannelSid,
             tracks: localTracks
-          }).catch(error => {
-            console.log('Error Creating Video Room');
-            console.log(error);
           });
-        }).then(room => {
+        }).then(function(room) {
           activeVideoRoom = room;
           var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
           activeChannelMetaSnapshot.name = "pte_audio_started";
@@ -573,6 +588,93 @@ function logIn() {
           });
         });
 
+        //firebase addition
+
+        console.log("FIREBASE");
+        console.log(firebase);
+
+        if (firebase && firebase.messaging()) {
+
+          // requesting permission to use push notifications
+            firebase.messaging().requestPermission().then(() => {
+
+
+            console.log('reached permissions')
+          // getting FCM token
+            firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
+
+              console.log("TOKEN", fcmToken);
+              console.log("userContext", userContext);
+
+            jQuery.ajax({
+            	url: "https://wiscle.com/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
+            	type: "POST",
+            	data:{token: fcmToken, userId: userContext.identity},
+            	success: function(html){
+                  console.log("SAVED FCM");
+            	     console.log(html);
+            	 }
+            	});
+
+
+              console.log('reached token 2');
+              console.log(fcmToken);
+
+              client.setPushRegistrationId('fcm', fcmToken);
+
+            }).catch((err) => {
+                console.log("CANT GET TOKEN");
+                console.log(err);
+              // can't get token
+            });
+
+          }).catch((err) => {
+            console.log('firebase error');
+            console.log(err);
+          // can't request permission or permission hasn't been granted to the web app by the user
+          });
+
+          firebase.messaging().onMessage(payload => {
+            console.log("MESSAGE");
+            console.log(payload);
+          });
+
+        //   firebase.messaging().onMessage(payload => {
+        //
+        //     console.log('Message Received...');
+        //     console.log(payload);
+        //
+        //     if(typeof payload.data.author !== 'undefined' && payload.data.author!=''){
+        //
+        //       // getChatClient.then(function (chatClient) {
+        //       //
+        //       //
+        //       // 	if(payload.data.author==alpn_user_firstName) {
+        //       // 		console.log('New message from '+payload.data.author+'\n'+payload.data.twi_body);
+        //       // 	}
+        //       // 	//chatClient.handlePushNotification(payload);
+        //       //
+        //       // });
+        //
+        //   } else {
+        //
+        //     if(typeof payload.data.twi_body !== 'undefined' && payload.data.twi_body != ''){
+        //       console.log('Message from https://wiscle.com/ \n'+payload.data.twi_body);
+        //     }
+        //   }
+        //     // console.log(alpn_user_displayname);
+        //     // console.log(payload.data)
+        //   //	alert('reached')
+        //   //	syncClient.handlePushNotification(payload);
+        //
+        // });
+
+        } else {
+
+          // no Firebase library imported or Firebase library wasn't correctly initialized
+        }
+
+
         client.getSubscribedChannels().then(function(paginator) {
           //console.log('Getting Channels..');
           //console.log(paginator);
@@ -617,8 +719,8 @@ function logIn() {
           });
 
           client.on('channelUpdated', function(channelUpdate) {
-            console.log("Channel Updated Called");
-            console.log(channelUpdate);
+            //console.log("Channel Updated Called");
+            //console.log(channelUpdate);
           });
 
           client.on('channelJoined', function(channel) {
@@ -634,6 +736,7 @@ function logIn() {
                 var showIdentity = contactData.owner_id;
               }
               client.getUserDescriptor(showIdentity).then(function(userDescriptor){
+
                 var userAttributes = userDescriptor.attributes;
                 var channelFriendlyName = userAttributes.full_name;
                 var channelImageHandle = userAttributes.image_handle;
@@ -808,13 +911,27 @@ function pte_add_edit_video_panel(channelUniqueId, channelFriendlyName, channelI
   $("ul#pte_audio_activity_list").append(el);
 }
 
+function wsc_handle_no_chats() {
+  if (!$('#pte_chat_activity_list li').length) {
+    if ($('#pte_chat_no_chats_message').css('display') == 'none') {
+      $('#pte_chat_no_chats_message').show();
+      var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
+      activeChannelMetaSnapshot.name = "pte_update_chat_total";
+      activeChannelMetaSnapshot.chat_total_unreads = "--";
+      pte_parent_message_send(activeChannelMetaSnapshot);
+    }
+  }
+}
+
 function pte_process_new_chat_dom(){
-  //console.log("Processing new chat dom");
+  // console.log("Processing new chat dom");
+  // console.log(userChannelsDom);
   if (userChannelsDom.length) {
     var userChannelsDomCopy = jQuery.extend(true, [], userChannelsDom);  //Snapshot of array
     userChannelsDom = [];
     var currentCount, currentDomId, newDom, newDomCount, newDomId, chatActivity, chatActivityList, handled, updated;
     chatActivity = $('#pte_chat_activity_list');
+
     for (var key in userChannelsDomCopy) {
       chatActivityList = $('#pte_chat_activity_list li');
       newDom = $(userChannelsDomCopy[key]);
@@ -863,6 +980,8 @@ function pte_process_new_chat_dom(){
     activeChannelMetaSnapshot.name = "pte_update_chat_total";
     activeChannelMetaSnapshot.chat_total_unreads = totalChatUnreads;
     pte_parent_message_send(activeChannelMetaSnapshot);
+  } else {
+    wsc_handle_no_chats();
   }
 }
 
@@ -883,7 +1002,7 @@ function pte_select_new_topic($el){
 function pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCount, channelImageHandle = "", channelOwnerId = 0){
   var el, rowHtml;
   channelFriendlyName = channelFriendlyName ? channelFriendlyName : "Not Specified";
-  if (channelUniqueId == activeChannel.uniqueName) {
+  if (typeof activeChannel != "undefined" && typeof activeChannel.uniqueName != "undefined" && channelUniqueId == activeChannel.uniqueName) {
     return;
   }
   var imageHandle = "";
@@ -899,13 +1018,13 @@ function pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCo
   rowHtml += "</div>";
   el.append(rowHtml);
   userChannelsDom.push(el);
+  //beep();
 }
 
 function pte_handle_chat_channel(channel){
 
-   // console.log("Handling Channel");
-   // console.log(channel);
-
+  // console.log("Handling Channel");
+  // console.log(channel);
 
   var channelState = channel.state;
   var channelUniqueId = channel.uniqueName;
@@ -939,6 +1058,8 @@ function pte_handle_chat_channel(channel){
         }
       });
   }
+} else {
+  console.log("ERROR? No Topic ID");
 }
 }
 
@@ -1119,8 +1240,8 @@ function createObject(message, $el) {
 
 function createStandardMessage(message, $el) {
 
-  console.log("STANDARD MESSAGE");
-  console.log(message);
+  // console.log("STANDARD MESSAGE");
+  // console.log(message);
 
   var user = activeChannelUserDescriptors[message.author];
 
@@ -1325,8 +1446,6 @@ function setActiveChannel(channel) {
       if ($('#channel-messages ul').height() <= $('#channel-messages').height()) {
         channel.updateLastConsumedMessageIndex(newestMessageIndex).then(function(){
           jQuery("li.pte_chat_list_item[data-cid='" + activeChannel.uniqueName + "']").remove();
-          $('#pte_chat_no_chats_message').show();
-
         });
       }
       $("#message-body-input").data("emojioneArea").setText('').setFocus();
@@ -1485,6 +1604,23 @@ if(!String.linkify) {
           .replace(emailAddressPattern, '<a class="pte_chat_mailto_link" href="mailto:$&">$&</a>');
   };
 }
+
+function beep() {
+  var dateNow = new Date();
+  var seconds = Math.abs(lastBeepTime - dateNow);
+  console.log("BEEP SECONDS");
+  console.log(seconds);
+  if (seconds >= delayBetweenBeeps) {
+    var audio = new Audio(siteBase + 'chat/beep.mp3');
+    try {
+      audio.play();
+      lastBeepTime = dateNow;
+    } catch (e) {
+      console.log("Cannot Beep Until User Interacts with Page...");
+    }
+  }
+}
+
 
 window.addEventListener('beforeunload', function(event){
   //console.log ("BEFORE UNLOAD");

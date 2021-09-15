@@ -75,8 +75,12 @@ if (!isset($results[0])) {
 	$topicProfileHandle = $record->profile_handle;
 	$topicOwnerId = $record->owner_id;
 	$context = $topicName;
+	$accessLevel = $record->access_level;
+
 
 	$topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
+	$designViewClass = $topicBelongsToUser ? "" : "pte_ipanel_button_disabled";
+
 	$permissionLevel = 0;
 	$ownerName = "";
 	$ownerFirstName = "";
@@ -404,7 +408,7 @@ $html .= "
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 								<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
 							</span>
-							<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+							<span class='fa-stack pte_icon_button_nav pte_icon_report_selected {$designViewClass}' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 								<i class='fas fa-drafting-compass fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
 							</span>
@@ -422,7 +426,7 @@ $html .= "
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
 
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='design' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-tkey='{$typeKey}' data-oid='{$topicOwnerId}'>
+					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='design' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-tkey='{$typeKey}' data-oid='{$topicOwnerId}' data-wal='{$accessLevel}'>
 						<div id='pte_topic_form_title_view'>
 							<span class='fa-stack pte_stacked_icon'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>

@@ -73,17 +73,24 @@ if (!isset($results[0])) {
 	$topicProfileHandle = $record->profile_handle;
 	$topicOwnerId = $record->owner_id;
 	$context = $topicName;
+	$accessLevel = $record->access_level ? $record->access_level : "40";  //private
 
 	$topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
+	$designViewClass = $topicBelongsToUser ? "" : "pte_ipanel_button_disabled";
+
 	$permissionLevel = 0;
 	$ownerName = "";
 	$ownerFirstName = "";
 
+	//pp($accessLevel);
+
 	if (!$topicBelongsToUser) {
+
 		$topicOwnerContent = json_decode($record->owner_topic_content, true);
 		$topicOwnerName = isset($topicOwnerContent['person_givenname']) ? $topicOwnerContent['person_givenname']: "Not Specified";
 		$ownerFirstName = "<div id='pte_interaction_owner_outer'><div id='pte_interaction_owner_inner_message'>Visiting</div><div id='pte_interaction_owner_inner_name'>Owner -- {$topicOwnerName}</div></div>";
 		$permissionLevel = $record->access_level;
+
 		//TODO Handle if no permissionlevel. Means removed from Proteam or something.
 
 	} else {
@@ -92,7 +99,6 @@ if (!isset($results[0])) {
 			if ($connectedId) {
 			}
 	}
-
 
 	if ($topicTypeSpecial == 'user') {
 		$context = "Personal";
@@ -130,7 +136,7 @@ $html .= "
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 								<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
 							</span>
-							<span class='fa-stack pte_icon_button_nav' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+							<span class='fa-stack pte_icon_button_nav {$designViewClass}' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 								<i class='fas fa-drafting-compass fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
 							</span>
@@ -155,7 +161,7 @@ $html .= "
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
 
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='vault' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'>
+					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='vault' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'  data-wal='{$accessLevel}'>
 						<div id='pte_topic_form_title_view'>
 							<span class='fa-stack pte_stacked_icon'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>

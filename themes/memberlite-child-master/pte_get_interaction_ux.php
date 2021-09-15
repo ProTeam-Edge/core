@@ -1009,19 +1009,6 @@ function pte_make_link_expiration_html($id = ''){
 	return $selectPanel;
 }
 
-function pte_get_link_expiration_string($value){
-	$linkExpirationMap = array(
-		"30" => "30 Mins",
-		"60" => "1 Hour",
-		"480" => "8 Hours",
-		"1440" => "1 Day",
-		"2880" => "2 Days",
-		"10080" => "1 Week",
-		"0" => "Manual"
-	);
-	return $linkExpirationMap[$value];
-}
-
 function pte_make_expiration_html(){
 	$selectPanel = "  <div style='margin-top: 4px; width: 100%;'>
 											<div style='width: 80px; display: inline-block; font-weight: bold;  vertical-align: text-bottom;'  title='Only if Incomplete'>

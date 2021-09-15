@@ -23,7 +23,7 @@ $rowToDelete = isset($qVars['rowToDelete']) ? $qVars['rowToDelete'] : '';
 
 $proTeamMemberResults = $wpdb->get_results(
 	$wpdb->prepare(
-		"SELECT p.owner_id, p.topic_id, p.wp_id, p.connected_type, p.linked_topic_id, t1.dom_id AS topic_dom_id, t2.dom_id AS linked_topic_dom_id FROM alpn_proteams p LEFT JOIN alpn_topics t1 ON t1.id = p.topic_id LEFT JOIN alpn_topics t2 on t2.id = p.linked_topic_id WHERE p.id = %d", $rowToDelete)
+		"SELECT p.owner_id, p.topic_id, p.process_id, p.wp_id, p.connected_type, p.linked_topic_id, t1.dom_id AS topic_dom_id, t2.dom_id AS linked_topic_dom_id FROM alpn_proteams p LEFT JOIN alpn_topics t1 ON t1.id = p.topic_id LEFT JOIN alpn_topics t2 on t2.id = p.linked_topic_id WHERE p.id = %d", $rowToDelete)
  );
 
 $results = $ptRow = array();
@@ -62,11 +62,6 @@ if (isset($proTeamMemberResults[0])) {
 		 );
 		 $wpdb->update( 'alpn_proteams', $proTeamData, $whereClause );
 
-		 // alpn_log("DELETING AHDELETERIGHTS");
-		 // alpn_log($whereClause);
-		 // alpn_log($wpdb->last_query);
-		 // alpn_log($wpdb->last_error);
-
 	}
 
 	$ccData = array(
@@ -74,7 +69,7 @@ if (isset($proTeamMemberResults[0])) {
 		'topic_id' => $topicId,
 		'user_id' => $wpId
 	);
-	$roomEmpty = pte_manage_cc_groups("delete_member", $ccData);
+	$roomEmpty = pte_manage_cc_groups("delete_member", $ccData);  //Need Synch because $roomEmpty required
 
 	// Delete this ProTeam Record.
 	$whereClause = array(

@@ -8,6 +8,9 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 global $memberFeatures;
 
+// global $wp_filter;
+// pp( $wp_filter["wp_mail"] );
+
 $replaceStrings = array();
 $html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
@@ -35,6 +38,8 @@ $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
 //pp($userInfo);
+
+
 
 $rightsCheckData = array(
   "topic_dom_id" => $recordId
@@ -93,6 +98,7 @@ $topicHtml = stripcslashes($topicData->html_template);
 $typeKey = $topicData->type_key;
 $nameMap = pte_name_extract($topicMeta['field_map']);
 $fieldMap = array_flip($nameMap);
+$accessLevel = $topicData->access_level;
 
 $topicEmailRoute = $topicData->email_route_id;
 $topicFaxRoute = $topicData->pstn_number;
@@ -117,6 +123,8 @@ $fullMap = $topicMeta['field_map'];
 $topicTabs = array();
 
 $topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
+
+$designViewClass = $topicBelongsToUser ? "" : "pte_ipanel_button_disabled";
 
 $infoColor = ($topicData->connected_id || !$topicBelongsToUser) ? '#700000' : '#444';
 $infoTitle = ($topicData->connected_id || !$topicBelongsToUser)  ? 'Info Comes from Contact' : 'Info Comes from Your Topic';
@@ -310,14 +318,14 @@ $importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte
 $settingsAccordion = "
 	{$imageTitle}
 	<button id='pte_topic_photo_accordion' class='pte_accordion'  style='display: {$showIconAccordian};' title='Change Personal Topic Icon'>{$profilePicTitle}</button>
-	<div id='pte_topic_icon_container' class='pte_panel' data-height='325px' style='display: {$showIconAccordian};' >
-		<div id='pte_profile_image_selector' style='height: 100%; width: 100%;'></div>
-		<div id='pte_profile_image_crop' style='height: 100%; width: 100%; display: none;'></div>
+	<div id='pte_topic_icon_container' data-height='325px' style='display: {$showIconAccordian};'>
+    <div id='pte_profile_image_selector'></div>
+		<div id='pte_profile_image_crop'></div>
 	</div>
 	<button id='pte_topic_logo_accordion' class='pte_accordion' style='display: {$showLogoAccordion};' title='Change {$friendlyLogoNameHtml}'>{$friendlyLogoNameHtml}</button>
-	<div class='pte_panel pte_extra_margin_after' data-height='325px' style='display: {$showLogoAccordion}; '>
-		<div id='pte_profile_logo_selector' style='height: 100%; width: 100%;'></div>
-		<div id='pte_profile_logo_crop' style='height: 100%; width: 100%; display: none;'></div>
+  <div id='pte_topic_logo_container' class='pte_extra_margin_after' data-height='325px' style='display: {$showLogoAccordion}; '>
+    <div id='pte_profile_logo_selector'></div>
+    <div id='pte_profile_logo_crop'></div>
 	</div>
 	{$interActionImportanceTitle}
 	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showImportanceAccordions};' title='Adjust Contact Importance'>VIP Contacts</button>
@@ -521,16 +529,14 @@ foreach ($topicTabs as $key => $value) {
 			$localFilterId = "alpn_local_selector_topic_filter_{$key}";
 			$topicFiler = "<div class='pte_extra_filter_container pte_link_table_filter'><select id='{$localFilterId}' class='alpn_selector'><option></option></select></div>";
 			$unlinkButton = $topicClass != 'list' ? "<i id='pte_extra_unlink_button' class='far fa-unlink pte_extra_button pte_extra_button_disabled' title='Unlink Topic' onclick='pte_unlink_selected_topic();'></i>" : '';
-			$editButton = $newTypeKey ? "<i id='pte_extra_edit_topic_button' class='far fa-pencil-alt pte_extra_button pte_extra_button_disabled' title='Edit Topic' onclick='pte_edit_topic_link(\"{$newTypeKey}\");'></i>" : "";
-			$addButton =  $newTypeKey ? "<i id='pte_extra_add_topic_button' class='far fa-plus-circle pte_extra_button' title='Create and Link to New {$friendlyName}' onclick='pte_new_topic_link(\"{$newTypeKey}\");'></i>" : "";
-
-
-			$deleteButton =  $newTypeKey ? "<i id='pte_extra_delete_topic_button' class='far fa-trash-alt pte_extra_button pte_extra_button_disabled' title='Delete Topic {$friendlyName}' onclick='pte_delete_topic_link(\"{$newTypeKey}\");'></i>" : "";
+			$editButton = $topicClass != 'topic' && $newTypeKey ? "<i id='pte_extra_edit_topic_button' class='far fa-pencil-alt pte_extra_button pte_extra_button_disabled' title='Edit Topic' onclick='pte_edit_topic_link(\"{$newTypeKey}\");'></i>" : "";
+			$addButton =  $topicClass != 'topic' && $newTypeKey ? "<i id='pte_extra_add_topic_button' class='far fa-plus-circle pte_extra_button' title='Create and Link to New {$friendlyName}' onclick='pte_new_topic_link(\"{$newTypeKey}\");'></i>" : "";
+			$deleteButton =  $topicClass != 'topic' && $newTypeKey ? "<i id='pte_extra_delete_topic_button' class='far fa-trash-alt pte_extra_button pte_extra_button_disabled' title='Delete Topic {$friendlyName}' onclick='pte_delete_topic_link(\"{$newTypeKey}\");'></i>" : "";
 
 
 
 			$makeDefaultButton =  $newTypeKey ? "<i id='pte_extra_default_topic_button' class='far fa-check-circle pte_extra_button pte_extra_button_disabled' title='Make this the Default Topic' onclick='pte_default_topic_link(\"{$newTypeKey}\");'></i>" : "";
-			$editUnlink =  json_encode("<div class='pte_extra_crud_buttons'><div class='pte_extra_filter_container pte_topic_links_list'>{$topicList}</div>{$unlinkButton}{$deleteButton}{$editButton}{$addButton}{$makeDefaultButton}</div>");
+			$editUnlink =  json_encode("<div class='pte_extra_crud_buttons'><div class='pte_extra_filter_container pte_topic_links_list'>{$topicList}</div>{$unlinkButton}{$makeDefaultButton}{$deleteButton}{$editButton}{$addButton}</div>");
 
 			$initializeTable = "
 				<script>
@@ -602,7 +608,7 @@ $html .= "
 						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 						<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
 					</span>
-					<span class='fa-stack pte_icon_button_nav' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+					<span class='fa-stack pte_icon_button_nav {$designViewClass}' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 						<i class='fas fa-drafting-compass fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
 					</span>
@@ -646,7 +652,7 @@ $html .= "
 					</div>
 			";
 $html .= "
-						<div id='pte_selected_topic_meta' class='pte_vault_row' data-mode='info' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId}' data-tia='{$topicImageHandle}'>
+						<div id='pte_selected_topic_meta' class='pte_vault_row' data-mode='info' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId}' data-tia='{$topicImageHandle}' data-wal='{$accessLevel}'>
 							<div id='pte_topic_form_edit_view_left' class='pte_vault_row_padding_right'>
 								{$tabs}
 							</div>

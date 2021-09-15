@@ -1,6 +1,8 @@
 <?php
 include('../../../wp-blog-header.php');
 
+alpn_log("VAULT FILES START");
+
 global $wpdb;
 
 //TODO Check logged in, etc. Good Request. User-ID in all mysql
@@ -12,8 +14,10 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    echo 'Not a valid request.';
    die;
 }
+
 $qVars = $_POST;
 $topicId = isset($qVars['topicId']) ? $qVars['topicId'] : '';
+$topicOwnerId = isset($qVars['topic_owner_id']) ? $qVars['topic_owner_id'] : 0;
 $description = isset($qVars['description']) ? $qVars['description'] : '';
 $pteUploads = isset($qVars['pte_file_data']) ? $qVars['pte_file_data'] : array();
 $permissionValue = isset($qVars['permissionValue']) ? $qVars['permissionValue'] : '40';
@@ -26,13 +30,15 @@ if (isset($pteUploads[0])) {
 
 	foreach ($pteUploads as $key => $value) {
 		$fileName = $value['name'];
+		$originalExt = $value['original_ext'];
 		$mimeType = $value['mimeType'];
 		$fileSource = "";
 		$uploadId = $value['pte_uid'];
 		$now = date ("Y-m-d H:i:s", time());
 
 		$rowData = array(
-			"owner_id" => $userID,
+			"creator_id" => $userID,
+			"owner_id" => $topicOwnerId,
 			"upload_id" => $uploadId,
 			"name" => 'File',
 			"file_name" => $fileName,
@@ -43,9 +49,14 @@ if (isset($pteUploads[0])) {
 			"description" => $description,
 			"file_source" => $fileSource,
 			"access_level" => $permissionValue,
+			"original_ext" => $originalExt,
 			"status" => 'added'
 		);
 		$wpdb->insert( 'alpn_vault', $rowData );      //TODO make into a single insert...Optimization
+
+		alpn_log($rowData);
+		alpn_log($wpdb->last_query);
+		alpn_log($wpdb->last_error);
 
 		$pteItems[] = $rowData;
 	}

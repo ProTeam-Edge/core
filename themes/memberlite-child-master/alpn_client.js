@@ -60,6 +60,9 @@ pte_template_editor_loaded = (typeof pte_template_editor_loaded != "undefined" &
 
 ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
+topicStates = {'10': "Added", '20': "Invited", '30': "Joined", '40': "Linked", '80': "External", '80': "Email Sent", '90': "Declined"};
+
+
 access_levels = {'5': 'Guest', '10': 'Shared', '20': 'Restricted', '30': 'Special', '40': 'Private'};
 processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10"};
 
@@ -178,14 +181,21 @@ function pte_delete_topic_link(key) {
 }
 
 function vit_handle_persist_proteam_change(data) {
+
 	console.log("Persisting stuff...");
+
 
 	var linkTopicSelect = jQuery('#alpn_select2_small_link_topic_select_card');
 	var linkTopicSelectData = linkTopicSelect.select2('data');
+
+	console.log(linkTopicSelect);
+
+
 	if (typeof linkTopicSelectData != 'undefined' && typeof linkTopicSelectData[0] != 'undefined') {
 		data.selected_topic_id = linkTopicSelectData[0].id;
 	}
 	data.visiting_owner_id = jQuery("#pte_selected_topic_meta").data("oid");
+	data.current_topic_id = jQuery("#pte_selected_topic_meta").data("tid");
 
 	console.log(data);
 
@@ -199,10 +209,13 @@ function vit_handle_persist_proteam_change(data) {
 		},
 		dataType: "json",
 		success: function(json) {
-
 			console.log("Persisting Stuff Back");
 			console.log(json);
-
+			if (json.error) {
+				pte_show_message('blue', 'timed', 'You are already on this team. Please choose another Topic.');
+				jQuery('select#alpn_select2_small_link_topic_select_card').val(json.current_link_id).trigger('change');
+				return;
+			}
 			var isTopicChange = json.is_topic_change;
 			var isConnectionTypeChange = json.is_connection_type_change;
 			var connectedType = json.connected_type;
@@ -610,19 +623,19 @@ function alpn_handle_extra_table(extraKey) {
 		cellId = "div#tabcontent_" + extraKey + " #alpn_field_" + rowData[4];
 
 		if (connectedTopicClass == 'LINKYES') {
-			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold' data-link-id='" + linkId  + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
+			topicLink = "<div title='Go to Topic' id='" + pte_topic_link_id + "' class='pte_topic_list pte_vault_bold' data-link-id='" + linkId  + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 		} else if (connectedTopicClass == 'topic' || connectedTopicClass == 'link'){
-			topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
+			topicLink = "<div title='Go to Topic' id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='topic_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial  + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 
 			if (connectedTopicSpecial == 'contact') {
-				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
+				topicLink = "<div  title='Go to Topic' id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='network_info' data-network-dom-id='" + domId + "' data-network-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 			}
 
 			if (connectedTopicSpecial == 'user') {
-				topicLink = "<div id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
+				topicLink = "<div  title='Go to Topic' id='" + pte_topic_link_id + "' class='pte_topic_links_title pte_vault_bold' data-operation='personal_info' data-topic-dom-id='" + domId + "' data-topic-id='" + connectedTopicId + "' data-topic-type-id='" + connectedTopicTypeId + "' data-topic-special='" + connectedTopicSpecial + "' data-link-id='" + linkId + "' data-default='" + defaultTopic + "'>" + itemName + defaultTopicIcon + "</div>" + topicOwnerName;
 			}
 		} else {
-			topicLink = "<div class='pte_topic_list pte_vault_bold'>" + itemName + "</div>";
+			topicLink = "<div title='Select this Table Row' class='pte_topic_list pte_vault_bold'>" + itemName + "</div>";
 		}
 
 		cellObj = jQuery(cellId);
@@ -631,7 +644,7 @@ function alpn_handle_extra_table(extraKey) {
 		formattedField += "<div class='pte_vault_row_35 pte_extra_padding_right'>";
 		formattedField += topicLink;
 		formattedField += "</div>";
-		formattedField += "<div class='pte_vault_row_65'>";
+		formattedField += "<div title='Select this Table Row' class='pte_vault_row_65'>";
 		formattedField += itemBody;
 		formattedField += "</div>";
 		formattedField += "</div>";
@@ -1781,11 +1794,15 @@ function pte_interaction_wait_indicator(operation = 'stop') {
 	}
 }
 
-function pte_handle_file_away(tObj){
+function pte_handle_file_away(tObj, processId = false){
 
 	console.log('pte_handle_file_away...');
-	var jObj = jQuery(tObj);
-	var processId = jObj.data('pid');
+
+	if (!processId) {
+		var jObj = jQuery(tObj);
+		processId = jObj.data('pid');
+	}
+
 	var security = specialObj.security;
 
 	pte_interaction_wait_indicator('start');
@@ -1802,6 +1819,9 @@ function pte_handle_file_away(tObj){
 			pte_select_first_interaction = true;
 			pte_handle_interaction_skip_table_reselect = false;
 			wpDataTables.table_interactions.fnFilterClear();
+
+			//TODO change to hide panel
+
 			pte_interaction_wait_indicator('stop');
 
 },
@@ -2223,8 +2243,10 @@ function alpn_handle_vault_table() {
 	const strWidth = 25;
 	var table = wpDataTables.table_vault;
 	var tableData = table.fnGetData();
+	console.log("VAULT");
+	console.log(tableData);
 	var firstReady = '';
-	var ownerHtml, ownerName, titleHtml, fName, descHtml, addOwnerRow;
+	var ownerHtml, ownerName, titleHtml, fName, descHtml, addOwnerRow, creatorId;
 	var accessLevelHtml = '-';
 	//console.log(tableData);
 	var pteSpacer = "<div class='pte_vault_row pte_spacer_height'></div>";
@@ -2240,9 +2262,7 @@ function alpn_handle_vault_table() {
 			var upload_state = tableData[i][14];
 			var dom_id = tableData[i][11];
 			var access_level = tableData[i][2];
-			if (topicSpecial == 'topic') {
 				accessLevelHtml = access_levels[access_level];
-			}
 			if ((firstReady == '') && (upload_state == 'ready')) {
 				firstReady = tableData[i][11];
 			}
@@ -2274,11 +2294,15 @@ function alpn_handle_vault_table() {
 
 			ownerHtml = '';
 			ownerName = '';
-			if (ownerId != alpn_user_id) {
-				ownerName = tableData[i][16];
+			creatorId = tableData[i][16];
+
+			if (creatorId != alpn_user_id) {
+				ownerName = tableData[i][17];
 			}
+
 			addOwnerRow = ownerName ? "<div class='pte_vault_row pte_vault_border_top pte_negative_margins pte_vault_border_left pte_vault_border_right'><div class='pte_vault_row_100 pte_vault_text_small pte_cell_padding pte_vault_centered pte_vault_link' style='vertical-align: middle;'><i id='' class='far fa-user'></i>&nbsp;&nbsp;" + ownerName + "</div></div>" : '';
-			ownerHtml = "<div class='pte_vault_row pte_vault_border_all pte_negative_margins'><div class='pte_vault_row_50 pte_vault_text_small pte_cell_padding pte_vault_centered'>" + cdate.format('MMM D, YYYY, h:mma') + "</div><div class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered'>" + docType + "</div><div class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered' id='pte_vault_permission_content'>" + accessLevelHtml + "</div></div>"
+
+			ownerHtml = "<div class='pte_vault_row pte_vault_border_all pte_negative_margins'><div class='pte_vault_row_50 pte_vault_text_small pte_cell_padding pte_vault_centered'>" + cdate.format('MMM D, YYYY, h:mma') + "</div><div id='wsc_file_doc_type' class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered'>" + docType + "</div><div class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered' id='pte_vault_permission_content'>" + accessLevelHtml + "</div></div>"
 
 			var formattedField = "<div class='pte_vault_details'>";
 				fName = tableData[i][7].replace(/\\(.)/mg, "$1");
@@ -2471,7 +2495,6 @@ function pte_handle_sync(data, item = false){
 		console.log(syncPayload);
 
 			var ptStatusString = "";
-		  var topicStates = {'10': "Added", '20': "Invite", '30': "Joined", '40': "Linked", '80': "Email Sent", '90': "Declined"};
 			var ptId = syncPayload.proteam_row_id;
 			var ptStatus = syncPayload.state;
 
@@ -2528,14 +2551,22 @@ function pte_handle_sync(data, item = false){
 			informationPanelMessageBody.val(messageBody);
 		break;
 		case 'interaction_update':
+
 				console.log("Handling interaction_update...");
 				console.log(syncPayload);
+
+				// if (syncPayload.connected_contact_status == 'not_connected_not_member' && syncPayload.interaction_complete) {
+				// 		var ptId = syncPayload.proteam_row_id;
+				// 		var proTeamCard =  jQuery('div.proteam_user_panel[data-id=' + ptId + ']');
+				// 		var statusArea = proTeamCard.find('div#proTeamPanelUserData');
+				// 		statusArea.html(topicStates['70']);
+				// }
 
 				if (syncPayload.error == 'already_on_topic_team') {
 					pte_show_message('blue', 'timed', 'Already on team. Please choose another member.');
 				}
 
-				if (syncPayload.button_operation == "accept" && syncPayload.interaction_complete) {
+				if (syncPayload.button_operation == "accept" && syncPayload.interaction_complete && syncPayload.connection_link_type != "0") {
 					var topicCellOwner = jQuery("div.alpn_topic_cell[data-uid='" + syncPayload.topic_dom_id + "']");
 					var topicCellMember = jQuery("div.alpn_topic_cell[data-uid='" + syncPayload.connection_link_topic_dom_id + "']");
 					topicCellOwner.find("div.alpn_name").addClass("pte_member_class");
@@ -2544,11 +2575,28 @@ function pte_handle_sync(data, item = false){
 					topicCellMember.find("div.alpn_about").addClass("pte_member_class");
 				}
 
+				if (syncPayload.button_operation == "decline" && syncPayload.interaction_complete) {
+
+				//	console.log("DECLINING");
+
+				}
+
 			if (typeof syncPayload.restart_interaction != "undefined" && syncPayload.restart_interaction) {
 				pte_selected_interaction_process_id = syncPayload.new_interaction_process_id;
+				//Clear ProTeam Record UI
+				jQuery('#pte_proteam_item_' + syncPayload.proteam_member_row_id).remove();
+				var proTeamTable = jQuery('#alpn_proteam_selected_outer'); //network topic
+				if (proTeamTable.children().length) {
+					jQuery("#pte_no_proteam_members").hide();
+				} else {
+					jQuery("#pte_no_proteam_members").show();
+				}
+				var topicCellOwner = jQuery("div.alpn_topic_cell[data-uid='" + syncPayload.topic_dom_id + "']");
+				topicCellOwner.find("div.alpn_name").removeClass("pte_member_class");
+				topicCellOwner.find("div.alpn_about").removeClass("pte_member_class");
 			}
 
-			if (typeof syncPayload.refresh_proteams != "undefined" && syncPayload.refresh_proteams) {
+			if ( (typeof syncPayload.refresh_proteams != "undefined" && syncPayload.refresh_proteams) && (typeof syncPayload.restart_interaction == "undefined") ) {
 				var data = {
 					"wp_id": syncPayload.connected_id,
 					"dom_id": syncPayload.connected_network_dom_id,
@@ -2566,13 +2614,12 @@ function pte_handle_sync(data, item = false){
 			wpDataTables.table_interactions.fnFilterClear();
 		break;
 		case 'file_workflow_update':
+		console.log("Handling file_workflow_update...");
 			console.log("Handling file_workflow_update...");
-			var payload = {
-				'dom_id': syncPayload.dom_id
-			};
-			alpn_handle_file_submit(payload);
+			for (i = 0; i < syncPayload.length; i++) {
+				alpn_handle_file_submit({'dom_id': syncPayload[i].dom_id, 'mime_type': syncPayload[i].mime_type, 'description': syncPayload[i].description, 'file_name': syncPayload[i].file_name});
+			}
 		break;
-
 		case 'user_list_update':
 			console.log("Handling user_list_update...");
 			wpDataTables.table_interactions.fnFilterClear();
@@ -2735,73 +2782,6 @@ function initializeTwilio() {
 			console.log(syncClient);
 			console.log('syncClient');
 
-			//firebase addition
-			getChatClient = new Twilio.Chat.Client.create(data.token);
-
-			if (firebase && firebase.messaging()) {
-
-				// requesting permission to use push notifications
-				firebase.messaging().requestPermission().then(() => {
-			console.log('reached permissions')
-				// getting FCM token
-				firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
-					// jQuery.ajax({
-					// 	url: "https://wicile.com/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
-					// 	type: "POST",
-					// 	data:{token:fcmToken,userId:alpn_user_id},
-					// 	success: function(html){
-					// 	console.log(html)
-					// 	}
-					// 	});
-			console.log('reached token 2');
-			console.log(fcmToken);
-			getChatClient.then(function (chatClient) {
-
-				chatClient.setPushRegistrationId('fcm', fcmToken);
-			})
-		//	syncClient.setPushRegistrationId('fcm', fcmToken);
-					// continue with Step 7 here
-					// ...
-					// ...
-				}).catch((err) => {
-			console.log(err);
-					// can't get token
-				});
-				}).catch((err) => {
-			console.log('firebase error');
-		console.log(err);
-
-				// can't request permission or permission hasn't been granted to the web app by the user
-				});
-				console.log('here');
-				firebase.messaging().onMessage(payload => {
-					if(typeof payload.data.author !== 'undefined' && payload.data.author!=''){
-					getChatClient.then(function (chatClient) {
-
-
-
-						if(payload.data.author==alpn_user_firstName) {
-						console.log('New message from '+payload.data.author+'\n'+payload.data.twi_body);
-						}
-						//chatClient.handlePushNotification(payload);
-
-					})
-				} else {
-
-						 if(typeof payload.data.twi_body !== 'undefined' && payload.data.twi_body != ''){
-						console.log('Message from https://wicile.com/ \n'+payload.data.twi_body);
-					 }
-				}
-					console.log(alpn_user_displayname);
-					console.log(payload.data)
-				//	alert('reached')
-				//	syncClient.handlePushNotification(payload);
-
-				})
-			} else {
-				// no Firebase library imported or Firebase library wasn't correctly initialized
-			}
-
 			syncClient.map(alpn_sync_id).then(function (map) {
 				map.on('itemAdded', function(item) {
 					var descriptor = item.item.descriptor;
@@ -2852,7 +2832,7 @@ function pte_setup_window_onload() {
 		if (pte_external == false) {  //Initialize Mission Control
 			if ((typeof syncClient != "undefined") && (syncClient.connectionState != 'connected' )) {
 				console.log('RECONNECTING');
-				location.reload();
+				//location.reload();
 				//initializeTwilio();
 			}
 		}
@@ -3201,26 +3181,34 @@ function isEmpty(obj) {
 //current
 function alpn_handle_file_submit(payload) {
 	var domId = payload.dom_id;
-	jQuery('#alpn_field_' + domId).find('#waiting_indicator_row').remove();
-	jQuery('#alpn_field_' + domId).attr("style", "opacity: 1.0; pointer-events: auto;").find('#waiting_indicator_row').remove();
+	var vaultItem = jQuery("div.alpn_vault_cell[data-uid='" + payload.dom_id + "']");
+	vaultItem.attr("style", "opacity: 1.0; pointer-events: auto;").find('#waiting_indicator_row').remove();
+	vaultItem.find('div#pte_vault_desc_content').html(payload.description);
 
+	var aboutField = jQuery('textarea#alpn_about_field');
+	if (!aboutField.val()) {
+		aboutField.val(payload.description);
+	}
+	vaultItem.find('div#wsc_file_doc_type').html(pte_supported_types_map[payload.mime_type]);
 }
 
 function pte_register_uploads(pteUploads){
-
+	console.log("REGISTER UPLOADS");
 	var pte_file_data = [];
-	var file = id = mimeType = "";
+	var file = id = mimeType = originalExt = "";
 	for (var key in pteUploads) {
 		file = pteUploads[key];
-		id = file['meta']['pte_uid'];
-		mimeType = file['type'];
-		name = file['name'];
-		pte_file_data.push({"pte_uid": id, "mimeType": mimeType, "name": name});
+		 id = file.name.substring(0, 36);
+		 mimeType = file.type;
+		 name = file.name.substring(36);
+		 originalExt = file.extension;
+		 pte_file_data.push({"pte_uid": id, "mimeType": mimeType, "name": name, "original_ext": originalExt});
 	}
-
 	var topicId = jQuery('.alpn_container_title_2').data('topic-id');
 	var description = jQuery('#alpn_about_field').val();   //About/Description
 	var permissions = jQuery('#alpn_selector_sharing').find(':selected');
+	var topicOwnerId = jQuery('#pte_selected_topic_meta').data('oid');
+
 	if (typeof permissions[0] !== "undefined") {
 		var permissionValue = permissions[0]['value'];
 	} else{
@@ -3234,11 +3222,13 @@ function pte_register_uploads(pteUploads){
 		}
 	}
 	var security = specialObj.security;
+
 	jQuery.ajax({
 		url: alpn_templatedir + 'alpn_handle_vault_files_start.php',
 		type: 'POST',
 		data: {
 			topicId: topicId,
+			topic_owner_id: topicOwnerId,
 			description: description,
 			permissionValue: permissionValue,
 			security: security,
@@ -3247,12 +3237,16 @@ function pte_register_uploads(pteUploads){
 		dataType: "json",
 		success: function(json) {
 
+			console.log(json);
+			var accessLevel =  (typeof json.data[0].access_level != "undefined") ?  json.data[0].access_level : 40;
+
 			if (pte_external == false) { // Uses same file workflow as extension so special case.
 				alpn_set_vault_to_first_row = false;
 				wpDataTables.table_vault.fnFilter();
 				//alpn_handle_vault_table_row_selected(jQuery('#table_form_search tbody tr:first')[0]);
 				jQuery('#alpn_about_field').val('');
-				jQuery('#alpn_selector_sharing').val('40').trigger('change');
+				jQuery('#wis_permission_container').html(wis_get_permissionHtml());
+				jQuery('select#alpn_selector_sharing').val(accessLevel).trigger('change');
 			}
 		},
 		error: function() {
@@ -3340,230 +3334,111 @@ function pte_uppy_chrome_extension(){
 
 }
 
-function pte_uppy_topic_logo_uppyeditor(){
-
-	if (pte_external == false) {
-
-		var fileCounter = 0;
-		var allowedFileTypes = ['image/jpeg', 'image/jpg',	'image/png', 'image/xvg+xml'];
-
-		jQuery('#pte_profile_logo_selector').empty();
-
-		var fileCounter = 0;
-		var uppyTopicLogo = Uppy.Core({
-			id: "pte_profile_logo_selector",
-		  debug: true,
-		  autoProceed: false,
-			allowMultipleUploads: false,
-		  restrictions: {
-		    maxFileSize: 1024 * 1024 * 5,
-		    maxNumberOfFiles: 1,
-		    minNumberOfFiles: 1,
-		    allowedFileTypes: allowedFileTypes
-		  },
-		  locale: {
-		    strings: {
-		      youCanOnlyUploadFileTypes: 'Please select an image file',
-					encoding: "Processing..."
-		    }
-		  }
-		})
-		.use(Uppy.Transloadit, {
-			 service: 'https://api2.transloadit.com',
-		   waitForEncoding: true,
-		   importFromUploadURLs: false,
-		   alwaysRunAssembly: false,
-		   signature: null,
-		   fields: {},
-		   limit: 1,
-			 params: {
-			    auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
-			    template_id: 'dd30dd60dd6140d4a74ee83ab874e313'
-	  		}
-	   })
-		 .use(Uppy.Dashboard, {
-	 	          inline: true,
-	 	          target: '#pte_profile_logo_selector',
-	 						note: '',
-	 						width: "100%",
-	  					height: "390px",
-							proudlyDisplayPoweredByUppy: false,
-							showProgressDetails: true,
-							showLinkToFileUploadResult: false,
-							animateOpenClose: false,
-							metaFields: [
-    							{ id: 'name', name: 'Name', placeholder: 'file name' }
-  						]
-	 	    })
-				.use(Uppy.ImageEditor, {
-					target: Uppy.Dashboard,
-					id: 'pteImageEditor',
-					quality: 0.8,
-					cropperOptions: {
-						dragMode: 'none',
-						viewMode: 0,
-						background: false,
-						autoCropArea: 0.75,
-						autoCrop: 1,
-						initialAspectRatio: 1,
-						aspectRatio: 1,
-						responsive: true,
-						movable: false,
-						rotatable: true,
-						scalable: true,
-						zoomOnTouch: false,
-						zoomOnWheel: false
-					}
-				})
-				.on('transloadit:complete', (assembly) => {
-					console.log("Topic Logo Upload Complete...");
-					if (typeof assembly.results !== "undefined") {
-						var results = assembly['results'].resize_image[0];
-						pte_save_topic_pic(results, 'logo');
-						pte_uppy_topic_logo();
-				}
-				})
-
-
-		}
-}
-
-/*
-
-.use(Uppy['image-editor'], {
-	quality: 0.8,
-	cropperOptions: {
-		viewMode: 1,
-		background: false,
-		autoCropArea: 1,
-		responsive: true
-	}
-})
-
-
-*/
-
-
 function pte_uppy_topic_logo(){
 
-	if (pte_external == false && jQuery('#pte_profile_logo_selector').length) {
+	if (pte_external == false && jQuery("#pte_profile_logo_selector").length) {
 
-		var fileCounter = 0;
-		var allowedFileTypes = ['image/jpeg', 'image/jpg',	'image/png', 'image/xvg+xml'];
+		var allowedFileTypes = ['.jpeg', '.jfif', '.jpeg', '.jpg', '.gif', '.png', '.webp'];
 
 		jQuery('#pte_profile_logo_crop').empty();
 		jQuery('#pte_profile_logo_selector').empty();
 
-		var doka = Doka.create(document.querySelector('#pte_profile_logo_crop'),
-		{
-		    utils: ['crop', 'filter'],
-				allowButtonCancel: true,
-				allowDropFiles: false,
-				allowAutoClose: false,
-				cropAllowRotate: false,
-				cropAllowImageTurnLeft: false,
-				cropAllowImageFlipHorizontal: false,
-				cropAllowImageFlipVertical: false,
-				oncancel: function(){
-					fileCounter--;
-				}
-		});
-
-		var fileCounter = 0;
-		var uppyTopicLogo = Uppy.Core({
+	uppyTopicLogo = new Uppy.Core({
 			id: "pte_profile_logo_selector",
 		  debug: true,
 		  autoProceed: true,
 			allowMultipleUploads: false,
-			onBeforeFileAdded: function(file) {
-				if (file.handledByDoka) return true;
-				if (fileCounter >= 1) return false;
-				if (!allowedFileTypes.includes(file.type)) return false;
-	 		 jQuery('#pte_profile_logo_selector').hide();
-	 		 jQuery('#pte_profile_logo_crop').show();
-	 		 if (file.preview) {
-	 			 if (file.source == 'Dropbox') {
-	 				 var previewUrl = file.preview; //TODO find a usable version of the image -- getting auth error messages when trying to get this preview. Need to use authorized
-	 				 console.log(previewUrl);
-	 			 } else if (file.source == 'GoogleDrive') {
-	 				 var previewUrl = file.preview.substring(0, file.preview.indexOf("="));
-	 			 }
-	 			 var xhr = new XMLHttpRequest();
-	 			 xhr.open('GET', previewUrl, true);
-	 			 xhr.responseType = 'blob';
-	 			 xhr.onload = function(e) {
-	 				 if (this.status == 200) {
-	 					 var myBlob = this.response;
-	 					 doka.edit(myBlob).then(output => {
-	 						 jQuery('#pte_profile_logo_crop').hide();
-	 						 jQuery('#pte_profile_logo_selector').show();
-	 						 if (output) {
-									file['data'] = output.file;
-	 								file['handledByDoka'] = true;
-	 								uppyTopicLogo.addFile(file);
-	 						 }
-	 					 });
-	 				 }
-	 			 };
-	 			 xhr.send();
-	 		 } else {
-	 			 doka.edit(file.data).then(output => {
-	 				 jQuery('#pte_profile_logo_crop').hide();
-	 				 jQuery('#pte_profile_logo_selector').show();
-	 				 if (output) {
-						 file['data'] = output.file;
-						 file['handledByDoka'] = true;
-						 uppyTopicLogo.addFile(file);
-	 				 }
-	 			 });
-	 		 }
-	 		 return false;
-	    },
-		  restrictions: {
-		    maxFileSize: 1024 * 1024 * 5,
-		    maxNumberOfFiles: 1,
-		    minNumberOfFiles: 1,
-		    allowedFileTypes: allowedFileTypes
-		  },
-		  locale: {
-		    strings: {
-		      youCanOnlyUploadFileTypes: 'Please select an image file',
-					encoding: "Processing..."
-		    }
-		  }
+			onBeforeFileAdded: function(file){
+				if (!allowedFileTypes.includes("." + file.extension.toLowerCase()) ) {
+					console.log("NOT SUPPORTED");  //TODO handle error message
+					return false;
+				}
+				if (typeof file.meta.__handledByEditor != "undefined") {return true}
+				var uppyEditor = jQuery('#pte_profile_logo_selector');
+				var pinturaEditor = jQuery('#pte_profile_logo_crop');
+				uppyEditor.hide();
+				pinturaInstanceTopicLogo = jQuery.fn.pintura.appendDefaultEditor('#pte_profile_logo_crop',
+						{
+							src: file.data,
+							utils: ['crop', 'filter', 'finetune'],
+							enableButtonClose: true,
+							enablePasteImage: true,
+							finetuneOptions: [
+								['brightness', (locale) => 'Brt'],
+								['contrast', (locale) => 'Ctr'],
+								['saturation', (locale) => 'Sat'],
+								['exposure', (locale) => 'Exp']
+							]
+						});
+						pinturaInstanceTopicLogo
+							.on('process', (e) => {
+								uppyTopicLogo.reset();
+								uppyTopicLogo.addFile({
+									 name: file.name,
+									 type: file.mime,
+									 data: e.dest,
+									 meta: {
+										 __handledByEditor: true
+									 },
+									 source: 'Pintura',
+									 isRemote: false
+								});
+								pinturaEditor.hide();
+								uppyEditor.fadeIn();
+							});
+
+							pinturaInstanceTopicLogo
+							.on('close', () => {
+								pinturaInstanceTopicLogo.destroy();
+								uppyTopicLogo.reset();
+								pinturaEditor.hide();
+								uppyEditor.fadeIn();
+							});
+				pinturaEditor.fadeIn().find("div.pintura-editor").css("background-color", "rgb(255, 255, 254)");
+				return false;
+				},
+				  restrictions: {
+				    maxFileSize: 1024 * 1024 * 5,
+				    maxNumberOfFiles: 1,
+				    minNumberOfFiles: 1,
+				    allowedFileTypes: allowedFileTypes
+				  },
+				  locale: {
+				    strings: {
+				      youCanOnlyUploadFileTypes: 'Please select an image file',
+							encoding: "Processing...",
+							browseFiles: "Browse Files...",
+							dropPasteFiles: "%{browse}"
+				    }
+				  }
 		})
+		.use(Uppy.Dashboard, {
+						 inline: true,
+						 target: '#pte_profile_logo_selector',
+						 note: '',
+						 width: "100%",
+						 height: "325px",
+						 proudlyDisplayPoweredByUppy: false,
+						 showProgressDetails: true,
+						 showLinkToFileUploadResult: false,
+						 animateOpenClose: false
+			   })
 		.use(Uppy.Transloadit, {
-			 service: 'https://api2.transloadit.com',
-		   waitForEncoding: true,
-		   importFromUploadURLs: false,
-		   alwaysRunAssembly: false,
-		   signature: null,
-		   fields: {},
-		   limit: 1,
-			 params: {
-			    auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
-			    template_id: 'dd30dd60dd6140d4a74ee83ab874e313'
-	  		}
+						 service: 'https://api2.transloadit.com',
+					   waitForEncoding: true,
+					   importFromUploadURLs: false,
+					   alwaysRunAssembly: false,
+					   signature: null,
+					   fields: {},
+					   limit: 1,
+						 params: {
+						    auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
+						    template_id: 'dd30dd60dd6140d4a74ee83ab874e313'
+				  		}
 	   })
-		 .use(Uppy.Dashboard, {
-	 	          inline: true,
-	 	          target: '#pte_profile_logo_selector',
-	 						note: '',
-	 						width: "100%",
-	  					height: "325px",
-							proudlyDisplayPoweredByUppy: false,
-							showProgressDetails: true,
-							showLinkToFileUploadResult: false,
-							animateOpenClose: false
-	 	    })
-				.use(Uppy.GoogleDrive, {
-					target: Uppy.Dashboard,
-					companionUrl: Uppy.Transloadit.COMPANION,
-					companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-				})
 				.on('transloadit:complete', (assembly) => {
 					console.log("Topic Logo Upload Complete...");
-					if (typeof assembly.results !== "undefined") {
+					if (typeof assembly.results != "undefined") {
 						var results = assembly['results'].resize_image[0];
 						pte_save_topic_pic(results, 'logo');
 						pte_uppy_topic_logo();
@@ -3576,123 +3451,110 @@ function pte_uppy_topic_icon(){
 
 	if (pte_external == false && jQuery("#pte_profile_image_selector").length) {
 
-		var fileCounter = 0;
-		var allowedFileTypes = ['image/jpeg', 'image/jpg',	'image/png', 'image/xvg+xml'];
+		var allowedFileTypes = ['.jpeg', '.jfif', '.jpeg', '.jpg', '.gif', '.png', '.webp'];
 
 		jQuery('#pte_profile_image_crop').empty();
 		jQuery('#pte_profile_image_selector').empty();
 
-		var doka = Doka.create(document.querySelector('#pte_profile_image_crop'),
-		{
-		    utils: ['crop', 'filter'],
-				allowButtonCancel: true,
-				allowDropFiles: false,
-				allowAutoClose: false,
-				cropAspectRatio: 1,
-				cropAllowRotate: false,
-				cropAllowImageTurnLeft: false,
-				cropAllowImageFlipHorizontal: false,
-				cropAllowImageFlipVertical: false,
-				oncancel: function(){
-					fileCounter--;
-				}
-		});
-
-		var uppyTopicIcon = Uppy.Core({
+	uppyTopicIcon = new Uppy.Core({
 			id: "pte_profile_image_selector",
 		  debug: true,
 		  autoProceed: true,
 			allowMultipleUploads: false,
-			onBeforeFileAdded: function(file) {
-	      if (file.handledByDoka) return true;
-				if (fileCounter >= 1) return false;
-				if (!allowedFileTypes.includes(file.type)) return false;
-				jQuery('#pte_profile_image_selector').hide();
-				jQuery('#pte_profile_image_crop').show();
-				if (file.preview) {
-					if (file.source == 'Dropbox') {
-						var previewUrl = file.preview; //TODO find a usable version of the image -- getting auth error messages when trying to get this preview. Need to use authorized
-						console.log(previewUrl);
-					} else if (file.source == 'GoogleDrive') {
-						var previewUrl = file.preview.substring(0, file.preview.indexOf("="));
-					}
-					var xhr = new XMLHttpRequest();
-					xhr.open('GET', previewUrl, true);
-					xhr.responseType = 'blob';
-					xhr.onload = function(e) {
-					  if (this.status == 200) {
-					    var myBlob = this.response;
-							doka.edit(myBlob).then(output => {
-								jQuery('#pte_profile_image_crop').hide();
-								jQuery('#pte_profile_image_selector').show();
-								if (output) {
-									file['data'] = output.file;
-									file['isRemote'] = false;
-	 								file['handledByDoka'] = true;
-	 								uppyTopicIcon.addFile(file);
-								}
-							});
-					  }
-					};
-					xhr.send();
-				} else {
-					doka.edit(file.data).then(output => {
-						jQuery('#pte_profile_image_crop').hide();
-						jQuery('#pte_profile_image_selector').show();
-						if (output) {
-							file['data'] = output.file;
-							file['handledByDoka'] = true;
-							uppyTopicIcon.addFile(file);
-						}
-					});
+			onBeforeFileAdded: function(file){
+				if (!allowedFileTypes.includes("." + file.extension.toLowerCase()) ) {
+					console.log("NOT SUPPORTED");  //TODO handle error message
+					return false;
 				}
+
+				if (typeof file.meta.__handledByEditor != "undefined") {return true}
+
+				var uppyEditor = jQuery('#pte_profile_image_selector');
+				var pinturaEditor = jQuery('#pte_profile_image_crop');
+
+				uppyEditor.hide();
+				pinturaInstanceTopicIcon = jQuery.fn.pintura.appendDefaultEditor('#pte_profile_image_crop',
+						{
+							src: file.data,
+							utils: ['crop', 'filter', 'finetune'],
+							imageCropAspectRatio: 1,
+							enablePasteImage: true,
+							enableButtonClose: true,
+							finetuneOptions: [
+						    ['brightness', (locale) => 'Brt'],
+								['contrast', (locale) => 'Ctr'],
+								['saturation', (locale) => 'Sat'],
+								['exposure', (locale) => 'Exp']
+							]
+						});
+						pinturaInstanceTopicIcon
+							.on('process', (e) => {
+								uppyTopicIcon.reset();
+								uppyTopicIcon.addFile({
+									 name: file.name,
+									 type: file.mime,
+									 data: e.dest,
+									 meta: {
+										 __handledByEditor: true
+									 },
+									 source: 'Pintura',
+									 isRemote: false
+								});
+								pinturaEditor.hide();
+								uppyEditor.fadeIn();
+							});
+
+							pinturaInstanceTopicIcon
+							.on('close', () => {
+								pinturaInstanceTopicIcon.destroy();
+								uppyTopicIcon.reset();
+								pinturaEditor.hide();
+								uppyEditor.fadeIn();
+							});
+				pinturaEditor.fadeIn().find("div.pintura-editor").css("background-color", "rgb(255, 255, 254)");
 				return false;
-	    },
-		  restrictions: {
-		    maxFileSize: 1024 * 1024 * 5,
-		    maxNumberOfFiles: 1,
-		    minNumberOfFiles: 1,
-		    allowedFileTypes: allowedFileTypes
-		  },
-		  locale: {
-		    strings: {
-		      youCanOnlyUploadFileTypes: 'Please select an image file',
-					encoding: "Processing..."
-		    }
-		  }
+				},
+				  restrictions: {
+				    maxFileSize: 1024 * 1024 * 5,
+				    maxNumberOfFiles: 1,
+				    minNumberOfFiles: 1,
+				    allowedFileTypes: allowedFileTypes
+				  },
+				  locale: {
+				    strings: {
+				      youCanOnlyUploadFileTypes: 'Please select an image file',
+							encoding: "Processing...",
+							browseFiles: "Browse Files...",
+							dropPasteFiles: "%{browse}"
+				    }
+				  }
 		})
+		.use(Uppy.Dashboard, {
+						 inline: true,
+						 target: '#pte_profile_image_selector',
+						 note: '',
+						 width: "100%",
+						 height: "325px",
+						 proudlyDisplayPoweredByUppy: false,
+						 showProgressDetails: true,
+						 showLinkToFileUploadResult: false,
+						 animateOpenClose: false
+			   })
 		.use(Uppy.Transloadit, {
-			 service: 'https://api2.transloadit.com',
-		   waitForEncoding: true,
-		   importFromUploadURLs: false,
-		   alwaysRunAssembly: false,
-		   signature: null,
-		   fields: {},
-		   limit: 1,
-			 params: {
-			    auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
-			    template_id: '6945a1a9bf0041b183f445b5796bc998'
-	  		}
+						 service: 'https://api2.transloadit.com',
+					   waitForEncoding: true,
+					   importFromUploadURLs: false,
+					   alwaysRunAssembly: false,
+					   signature: null,
+					   fields: {},
+					   limit: 1,
+						 params: {
+						    auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
+						    template_id: '6945a1a9bf0041b183f445b5796bc998'
+				  		}
 	   })
-		 .use(Uppy.Dashboard, {
-	 	          inline: true,
-	 	          target: '#pte_profile_image_selector',
-	 						note: '',
-	 						width: "100%",
-	  					height: "325px",
-							proudlyDisplayPoweredByUppy: false,
-							showProgressDetails: true,
-							showLinkToFileUploadResult: false,
-							animateOpenClose: false
-	 	    })
-				.use(Uppy.GoogleDrive, {
-					target: Uppy.Dashboard,
-					companionUrl: Uppy.Transloadit.COMPANION,
-					companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-				})
 				.on('transloadit:complete', (assembly) => {
 					console.log("Topic Icon Upload Complete...");
-					console.log(assembly);
 					if (typeof assembly.results != "undefined") {
 						var results = assembly['results'].resize_image[0];
 						pte_save_topic_pic(results, 'topic');
@@ -3716,20 +3578,18 @@ if (pte_external == false) {
 	}
 	jQuery('#alpn_add_edit_outer_container').html("<div id='alpn_add_edit_outer_uppy'>");
 
-	pte_uppy_vault_instances[pte_uppy_instance_id] = Uppy.Core({
+var localInstance = pte_uppy_vault_instances[pte_uppy_instance_id] = new Uppy.Core({
 		id: alpn_add_edit_outer_uppy,
 	  debug: true,
 	  autoProceed: true,
 		allowMultipleUploads: false,
 		onBeforeFileAdded: (file, files) => {
-			file['meta']['pte_uid'] = pte_UUID();
-			file['meta']['pte_source'] = file.source;
+			 file['name'] = pte_UUID() + file['name'];
 			return true;
-	},
+		},
 		onBeforeUpload: (files) => {
-			pte_uppy_vault_instances[pte_uppy_instance_id].setMeta({ pte_uppy_instance_id:  pte_uppy_instance_id})
 			pte_register_uploads(files);
-		return true;
+			return true;
 		},
 	  restrictions: {
 	    maxFileSize: 1024 * 1024 * 100,
@@ -3740,33 +3600,24 @@ if (pte_external == false) {
 			encoding: "Registering...",
 	    strings: {
 	      youCanOnlyUploadFileTypes: 'Should Not See This...',
+				dropPasteImportFiles: 'Upload or import files using Transloadit, our trusted partner. Wiscle branding coming soon.'
 	    }
 	  }
 	})
-.use(Uppy.Transloadit, {  //TODO Filter application/octet-stream mimetype. Crashes Transloadit
-		 service: 'https://api2.transloadit.com',
-	   waitForMetadata: true,
-		 waitForEncoding: false,
-	   importFromUploadURLs: false,
-	   alwaysRunAssembly: false,
-	   signature: null,
-	   fields: {},
-	   limit: 4,
-			getAssemblyOptions (file) {
-				return {
-					params: {
- 				    auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
-						template_id: 'b51ccbe1760d410c8cf9b409228e6139'   //DEV TEMPLATE
- 				    //template_id: '3b83f38410d744caa3060af90cd64bc0'  //PROD TEMPLATE TODO-PICK BASED ON ACTUAL
- 		  		},
-					fields: {
-						pte_uid: file.meta.pte_uid,
-						pte_source: file.meta.pte_source,
-						pte_uppy_instance_id: file.meta.pte_uppy_instance_id
-					}
-				}
-			}
-   })
+		.use(Uppy.Transloadit, {
+				params: {
+				 auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
+				 template_id: 'b51ccbe1760d410c8cf9b409228e6139'
+			 },
+				 service: 'https://api2.transloadit.com',
+			   waitForMetadata: false,
+				 waitForEncoding: false,
+			   importFromUploadURLs: false,
+			   alwaysRunAssembly: false,
+			   signature: null,
+			   limit: 8
+	   	})
+
 	 .use(Uppy.Dashboard, {
  	          inline: true,
  	          target: '#alpn_add_edit_outer_uppy',
@@ -3778,25 +3629,20 @@ if (pte_external == false) {
 						showLinkToFileUploadResult: false,
 						animateOpenClose: false
  	    })
-			// .use(Uppy.GoogleDrive, {
-			// 	target: Uppy.Dashboard,
-			//   companionUrl: Uppy.Transloadit.COMPANION,
-			//   companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-			// })
-			// .use(Uppy.Dropbox, {
-			// 	target: Uppy.Dashboard,
-			//   companionUrl: Uppy.Transloadit.COMPANION,
-			//   companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-			// })
-			// .use(Uppy.OneDrive, {
-			// 	target: Uppy.Dashboard,
-			//   companionUrl: Uppy.Transloadit.COMPANION,
-			//   companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-			// })
-			.on('transloadit:complete', (result) => {
-				//alpn_vault_control("add");  //TODO ONLY DO THIS WHEN STILL IN ADD MODE.
-				//console.log("File Uploaded Complete");
-				//console.log(result);
+			.use(Uppy.GoogleDrive, {
+				target: Uppy.Dashboard,
+			  companionUrl: Uppy.Transloadit.COMPANION,
+			  companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
+			})
+			.use(Uppy.Dropbox, {
+				target: Uppy.Dashboard,
+			  companionUrl: Uppy.Transloadit.COMPANION,
+			  companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
+			})
+			.use(Uppy.OneDrive, {
+				target: Uppy.Dashboard,
+			  companionUrl: Uppy.Transloadit.COMPANION,
+			  companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
 			})
 		}
 
@@ -3938,29 +3784,105 @@ function pte_create_new_vault_url() {
 		})
 }
 
-function pte_set_work_area_html(areaType) {
+function wis_init_alpn_selector_sharing(){
 
-	console.log("SETTING WORK AREA HTML");
+	jQuery("select#alpn_selector_sharing").select2({
+		theme: "bootstrap",
+		width: '100%',
+		allowClear: false,
+		minimumResultsForSearch: -1
+	}).on("select2:select", function (e) {
+		pte_save_vault_meta();
+	});
+}
 
-	var topicSpecial = jQuery('#pte_selected_topic_meta').data('special');
+function wis_get_permissionHtml() {
+
+	var selectedTopicMeta = jQuery("div#pte_selected_topic_meta");
+
+	console.log("wis_get_permissionHtml");
+
+
+	var topicSpecial = selectedTopicMeta.data('special');
+	var topicOwnerId = selectedTopicMeta.data("oid");
+	var userLevel = selectedTopicMeta.data("wal");
+	var permissionsHtml = "";
+	var vaultItemOwnerId = 0;
+	var vaultItemCreatorId = 0;
+
+	var isAdding = alpn_oldVaultSelectedId ? false : true;
+
+	var trObj =  jQuery('div.alpn_column_2 #alpn_field_' + alpn_oldVaultSelectedId).closest('tr');
+
+	if ((typeof wpDataTables !== "undefined") && trObj) {
+		var rowData = wpDataTables.table_vault.fnGetData(trObj);
+		if (typeof rowData != "undefined" && rowData) {
+			vaultItemOwnerId = rowData[1];
+			vaultItemCreatorId = rowData[16];
+		}
+	}
+
+	console.log(topicSpecial);
+	console.log(vaultItemOwnerId);
+	console.log(topicOwnerId);
 
 	switch(topicSpecial) {
 		case 'user':
-			var permissionsHtml = "";
+			permissionsHtml = "";
 		break;
 		case 'contact':
-			var permissionsHtml = "";
-		break;
-		case 'topic':
-			var permissionsHtml = " \
+				if (alpn_user_id == vaultItemOwnerId || isAdding) {
+					permissionsHtml = " \
 						<span class='pte_vault_bold'>File Access Level</span> \
 						<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
 							<option value='10'>Shared</option> \
-							<option value='20'>Restricted</option> \
 							<option value='40'>Private</option> \
-						</select>";
+						</select><script>wis_init_alpn_selector_sharing();</script>";
+				} else {
+					permissionsHtml = "";
+				}
+		break;
+		case 'topic':
+			if (alpn_user_id == topicOwnerId) {
+				permissionsHtml = " \
+							<span class='pte_vault_bold'>File Access Level</span> \
+							<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
+								<option value='10'>Shared</option> \
+								<option value='20'>Restricted</option> \
+								<option value='40'>Private</option> \
+							</select><script>wis_init_alpn_selector_sharing();</script>";
+			} else { //Visitor should only be shown options they have permissions to
+				if (alpn_user_id == vaultItemCreatorId || isAdding) {
+					if (userLevel == "10") {
+						permissionsHtml = " \
+									<span class='pte_vault_bold'>File Access Level</span> \
+									<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
+										<option value='10'>Shared</option> \
+									</select><script>wis_init_alpn_selector_sharing();</script>";
+					} else {
+						permissionsHtml = " \
+									<span class='pte_vault_bold'>File Access Level</span> \
+									<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
+										<option value='10'>Shared</option> \
+										<option value='20'>Restricted</option> \
+									</select><script>wis_init_alpn_selector_sharing();</script>";
+					}
+				}
+			}
 		break;
 	}
+	return permissionsHtml;
+}
+
+
+function pte_set_work_area_html(areaType) {
+	console.log("SETTING WORK AREA HTML");
+	var selectedTopicMeta = jQuery("div#pte_selected_topic_meta");
+	var topicSpecial = selectedTopicMeta.data('special');
+	var topicOwnerId = selectedTopicMeta.data("oid");
+	var userLevel = selectedTopicMeta.data("wal");
+
+	var permissionsHtml = wis_get_permissionHtml();
 
 	if (areaType == 'add-edit') {
 		var workAreaHtml = " \
@@ -3969,7 +3891,7 @@ function pte_set_work_area_html(areaType) {
 							<span id='alpn_name_field_label'>Name</span> \
 							<div class='pte_field_padding_right'><input id='alpn_name_field' placeholder='From Upload'></div> \
 						</div> \
-						<div class='pte_vault_row_33 pte_vault_text_xlarge pte_field_padding_right'>";
+						<div id='wis_permission_container' class='pte_vault_row_33 pte_vault_text_xlarge pte_field_padding_right'>";
 				workAreaHtml += permissionsHtml;
 				workAreaHtml += "</div> \
 				</div> \
@@ -4000,18 +3922,14 @@ function pte_set_work_area_html(areaType) {
 						</div> \
 				</div> \
 						";
-
 	}
-
 	jQuery('#alpn_vault_work_area').html(workAreaHtml);
-
 }
 
 function pte_set_work_area(operation) {
 
 	console.log("SETTING WORK AREA");
 	console.log(operation);
-
 
 	switch(operation) {
 		case 'add-edit':
@@ -4028,22 +3946,25 @@ function pte_set_work_area(operation) {
 				}
 			}
 			pte_set_work_area_html('add-edit');
-			jQuery('#alpn_selector_sharing').select2({
-				theme: "bootstrap",
-				width: '100%',
-				allowClear: false,
-				minimumResultsForSearch: -1
-			}).on("select2:select", function (e) {
-				pte_save_vault_meta();
-			});
+
+			var sharingExists = (typeof jQuery("select#alpn_selector_sharing option[value='10']")[0] == "undefined") ? false : true;
+			var restrictedExists = (typeof jQuery("select#alpn_selector_sharing option[value='20']")[0] == "undefined") ? false : true;
+			var privateExists = (typeof jQuery("select#alpn_selector_sharing option[value='40']")[0] == "undefined") ? false : true;
+
+			var usePermissions = 10;
+			if (privateExists && permissionValue == 40) {
+				usePermissions = 40;
+			} else if (restrictedExists && permissionValue >= 20 ) {  //TODO somehow both 20 and 30 mean restricted legacy
+				usePermissions = 20;
+				permissionValue = 20;
+			}
 			jQuery('#alpn_name_field').val(fileName).donetyping(function(){
 				pte_save_vault_meta();
 			});
 			jQuery('#alpn_about_field').val(formAbout).donetyping(function(){
 				pte_save_vault_meta();
 			});
-			jQuery('#alpn_selector_sharing').val(permissionValue).trigger('change');
-
+			jQuery('#alpn_selector_sharing').val(usePermissions).trigger('change');
 		break;
 		case 'links':
 			pte_set_work_area_html('links');
@@ -4410,7 +4331,10 @@ function alpn_handle_vault_row_selected(theCellId) {
 				var descField = selectedRowData[6].replace(/\\(.)/mg, "$1"); //stripslashes
 				jQuery('#alpn_name_field').val(nameField);
 				jQuery('#alpn_about_field').val(descField);
-				jQuery('#alpn_selector_sharing').val(selectedRowData[2]).trigger('change');
+
+				jQuery('#wis_permission_container').html(wis_get_permissionHtml());
+ 			  jQuery('select#alpn_selector_sharing').val(selectedRowData[2]).trigger('change');
+
 			}
 	} else {
 		alpn_oldVaultSelectedId = '';
@@ -4711,6 +4635,7 @@ function pte_check_viewer_password(tObj){
 
 function pte_view_document(vaultId, token = false) {
 	var security = specialObj.security;
+
 	console.log('Viewing Document...');
 //	console.log(token);
 
@@ -5235,8 +5160,10 @@ function alpn_proteam_member_delete(proTeamRowId) {
 				pte_message_chat_window(data);
 
 				if (json.is_member) {
+
 					console.log("MEMBER");
 					if (json.tt_data.linked_topic_dom_id) {
+
 						console.log("LINKED TO JOIN");
 						//Link to Leave creates a Join
 						alpn_mission_control('select_by_mode', json.tt_data.linked_topic_dom_id);
@@ -5257,6 +5184,8 @@ function alpn_proteam_member_delete(proTeamRowId) {
 					linkedTopicCell.find("div.alpn_name").removeClass("pte_member_class");
 					linkedTopicCell.find("div.alpn_about").removeClass("pte_member_class");
 				}
+
+				pte_handle_file_away(false, json.tt_data.process_id);
 			}
 			jQuery('#alpn_replace_me_' + proTeamRowId).remove();
 			var proTeamTable = jQuery('#alpn_proteam_selected_outer'); //network topic
@@ -5539,7 +5468,7 @@ function pte_save_topic_pic(fileUploaded, source){
 
 					if (source == 'logo') {
 						var alpn_logo_url = alpn_avatar_baseurl + fileHandle;
-						jQuery('#pte_profile_logo_image').attr('src', alpn_logo_url);
+						jQuery('img.pte_logo_image_screen').attr('src', alpn_logo_url);
 						pte_set_accordion('#pte_topic_logo_accordion', 'close');
 					} else {
 						alpn_avatar_url = alpn_avatar_baseurl + fileHandle;
@@ -7092,11 +7021,11 @@ function pte_save_vault_meta(){
 			var permissionValue = '40';	 //Private though should never be empty
 		}
 
-		// console.log('Saving Vault Meta');
-		// console.log(vaultId);
-		// console.log(fieldName);
-		// console.log(description);
-		// console.log(permissionValue);
+		console.log('Saving Vault Meta');
+		console.log(vaultId);
+		console.log(fieldName);
+		console.log(description);
+		console.log(permissionValue);
 	var security = specialObj.security;
 		jQuery.ajax({
 			url: alpn_templatedir + 'alpn_handle_update_vault_meta.php',

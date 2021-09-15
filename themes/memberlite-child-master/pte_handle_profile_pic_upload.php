@@ -21,11 +21,11 @@ $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 
 
-// alpn_log("Updating Profile Pic");
-// alpn_log($userID);
-// alpn_log($handle);
-// alpn_log($topicId);
-// alpn_log($topicSpecial);
+alpn_log("Updating Profile Pic");
+alpn_log($userID);
+alpn_log($handle);
+alpn_log($topicId);
+alpn_log($topicSpecial);
 
 if ($userID && $handle && $topicId) {
 	try {
@@ -46,6 +46,13 @@ if ($userID && $handle && $topicId) {
 					"owner_id" => $userID
 				);
 				pte_manage_cc_groups("update_user_image", $data);
+			} else if ($topicSpecial == 'topic') {
+				$data = array(
+					"topic_id" => $topicId,
+					"image_handle" => $handle,
+					"owner_id" => $userID
+				);
+				pte_manage_cc_groups("update_channel_image", $data);
 			}
 		}
 		$whereClause['owner_id'] = $userID;

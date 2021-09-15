@@ -35,7 +35,7 @@ if ($topicId) {
 		 } else {
 			 $forgotPassword = PTE_BASE_URL . "my-account/lost-password";
 			 $loginPage = PTE_BASE_URL . "my-account";
-			 $html = "Account already exists for:&nbsp; {$emailAddress} &nbsp;&nbsp;<a class='vit_forgot_password_link' href='{$forgotPassword}'>Forgot Password</a>";
+			 $html = "Account exists:&nbsp; {$emailAddress} &nbsp;<a class='vit_forgot_password_link' href='{$forgotPassword}'>Forgot Password</a>";
 		 }
 	}
 }

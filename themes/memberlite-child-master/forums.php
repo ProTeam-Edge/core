@@ -14,7 +14,7 @@ get_header(); ?>
 			$columns_class = 'medium-' . esc_attr( memberlite_getColumnsRatio() );
 		}
 	?>
-	<div id="primary" class="<?php echo esc_attr( $columns_class ); ?> columns content-area">
+	<div id="YO" class="<?php echo esc_attr( $columns_class ); ?> columns content-area">
 		<?php do_action( 'memberlite_before_main' ); ?>
 		<main id="main" class="site-main" role="main">
 			<?php do_action( 'memberlite_before_loop' ); ?>

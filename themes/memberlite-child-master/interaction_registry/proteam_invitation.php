@@ -50,6 +50,7 @@ function pte_get_registry_proteam_invitation() {
                  "topic_id" => $requestData['topic_id'],
                  "proteam_member_id" => $contactData->id,
                  "wp_id" => $contactData->connected_id,
+                 "state" => $requestData['connected_id'] || $requestData['connected_contact_id_alt'] ? "20" : "70"
               );
 
               $proTeamData = pte_create_topic_team_member($proTeamData);
@@ -102,24 +103,29 @@ function pte_get_registry_proteam_invitation() {
               	$interactsWithProcessResponse = pte_manage_interaction_proper($data);  //start new interaction targeting $ownerId
                 $requestData['interacts_with_id'] = $interactsWithProcessResponse['process_id'];
 
+
               } else {  //NOT CONNECTED SEND EMAIL Experience. Add other contact info to email.
 
                   $userInfo = get_user_by('id', $requestData['owner_id']);
-
                   if (isset($userInfo->data)) {
-                    $data = array(
-                      'from_name' => $requestData['owner_friendly_name'],
-                      'from_email' => $userInfo->data->user_email,
-                      'to_email' => $requestData['alt_id'] ,
-                      'to_name' => $requestData['network_name'],
-                      'link_type' => "",
-                      'vault_file_name' => "",
-                      'subject_text' => rawurldecode($requestData['message_title']),
-                      'body_text' => nl2br($requestData['message_body']),
-                      'link_id' => ""
+
+                    $emailData = array(
+                      'link_type' => '',
+                    	"to_name" => $requestData['network_name'],
+                    	"to_email" => $requestData['alt_id'],
+                      "from_first_name" => '',
+                      "from_name" => $requestData['owner_friendly_name'],
+                      "from_email" => $userInfo->data->user_email,
+                      "topic_id" => $requestData['topic_id'],
+                      "link_id" => '',
+                      "vault_file_name" => '',
+                      "vault_file_description" => '',
+                      "vault_id" => '',
+                    	"subject_text" => $requestData['message_title'] ? $requestData['message_title'] : "Team Invitation Received",
+                    	"body_text" => $requestData['message_body'] ? nl2br($requestData['message_body']) : "No Message",
+                      "email_type" => "proteam_invitation"
                     );
-                    alpn_log($data);
-                    pte_send_mail ($data);
+                    pte_send_mail ($emailData);
                   }
               }
 
@@ -155,6 +161,9 @@ function pte_get_registry_proteam_invitation() {
         //  $requestData['initial_proteam_panel_html'] = '';
           $requestData['interaction_file_away_handling'] = "archive_interaction";
           $buttonOperation = $token->getValue("button_operation");
+
+          alpn_log("About to handle button");
+          alpn_log($requestData);
 
 
           switch ($buttonOperation) {
@@ -209,22 +218,25 @@ function pte_get_registry_proteam_invitation() {
                   'linked_topic_dom_id' => wic_get_domId_from_topicId($requestData['connection_link_topic_id']),  //TODO combine
                   'linked_topic_name' => wic_get_topic_name_from_topicId($requestData['connection_link_topic_id'])
                 );
-                alpn_log($data);
+                //alpn_log($data);
                 pte_proteam_state_change_sync($data);
 
               return;
             break;
             case 'decline':
               alpn_log('Handling Decline...');
+
               $data = array(
                 'connected_type' => 'none',
                 'state' => 90,  //declined
-                'proteam_row_id' => $requestData['proteam_row_id'],
+                'proteam_row_id' => $requestData['proteam_member_row_id'],
                 'owner_id' => $requestData['owner_id'],
                 'process_id' => $requestData['process_id']
               );
               pte_proteam_state_change_sync($data);
               return;
+
+
             break;
             case 'update':
               alpn_log('Handling Update...');
@@ -270,7 +282,6 @@ function pte_get_registry_proteam_invitation() {
               throw new WaitExecutionException();
             break;
           }
-
 
           $requestData['widget_type_id'] = "information";
           $requestData['interaction_to_from_name'] = $requestData["network_name"];

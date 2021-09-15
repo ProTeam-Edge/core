@@ -92,10 +92,16 @@ function pte_get_registry_email_send() {
                     "from_name" => $ownerEmailAddressName,
                     "from_email" => $ownerEmailAddress,
                     "link_id" => $linkUid,
+                    'link_interaction_password' => $requestData["link_interaction_password"],
+                    'link_interaction_expiration' => $requestData["link_interaction_expiration"],
+                    'link_interaction_options' => $requestData["link_interaction_options"],                    
+                    "topic_id" => $requestData['topic_id'],
                     "vault_file_name" => $requestData['vault_file_name'],
+                    "vault_file_description" => $requestData['vault_file_description'],
                     "vault_id" => $requestData['vault_id'],
-                  	"subject_text" => $requestData['message_title'] ? $requestData['message_title'] : "File Received",
-                  	"body_text" => $requestData['message_body'] ? nl2br($requestData['message_body']) : "No Message."
+                  	"subject_text" => $requestData['message_title'] ? $requestData['message_title'] : "Secure File xLink Received",
+                  	"body_text" => $requestData['message_body'] ? nl2br($requestData['message_body']) : "No Message",
+                    "email_type" => "view-download"
                   );
                 pte_send_mail($emailData);
 
@@ -111,7 +117,8 @@ function pte_get_registry_email_send() {
                     "vault_file_name" => '',
                     "vault_id" => $requestData['vault_id'],
                     "subject_text" => $requestData['message_title'] ? "Passcode for - " . $requestData['message_title'] : "Passcode for xLink",
-                    "body_text" => "Passcode - " . $requestData["link_interaction_password"]
+                    "body_text" => "Passcode - " . $requestData["link_interaction_password"],
+                    "email_type" => "separate-password"
                   );
                   pte_send_mail($emailData);
                 }

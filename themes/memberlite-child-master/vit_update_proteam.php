@@ -22,6 +22,7 @@ $qVars = $_POST;
 $data = isset($qVars['data']) ? json_decode(stripslashes($qVars['data']), true) : array();
 
 $statusType = isset($data['id']) ? $data['id'] : 'error';
+$currentTopicId = isset($data['current_topic_id']) && $data['current_topic_id'] ? $data['current_topic_id'] : false;
 $linkedTopicId = isset($data['selected_topic_id']) && $data['selected_topic_id'] ? $data['selected_topic_id'] : false;
 $proteamRowId = isset($data['proteam_row_id']) && $data['proteam_row_id'] ? $data['proteam_row_id'] : false;
 $visitingOwnerId = isset($data['visiting_owner_id']) && $data['visiting_owner_id'] ? $data['visiting_owner_id'] : false;
@@ -56,6 +57,13 @@ if ($proteamRowId && $statusType != 'error') {
 
 if ($listChange == "topic_id") {
 //  Link Topic ID Change. Remove from one, add to others
+
+		$checkDupe =  wsc_check_team_dupe($linkedTopicId, $visitingOwnerId, $proteamRowId);
+		if ($checkDupe['is_dupe']) {
+			pte_json_out(array("error" => "Already on Team", "current_link_id" => $checkDupe['current_link_id']));
+			exit;
+		 }
+
 		$isTopicChange = true;
 
 		$ccData = array(
@@ -142,7 +150,14 @@ $wpdb->update( 'alpn_proteams', $proTeamData, $whereClause );
 	 			 $wpdb->update( 'alpn_proteams', $proTeamData, $whereClause );
 
 			 	break;
-			 	case '1':  //From Join to Link OR Topic Change.
+			 	case '1':  //From Join to Link
+
+				 $checkDupe =  wsc_check_team_dupe($linkedTopicId, $visitingOwnerId, $proteamRowId);
+				 if ($checkDupe['is_dupe']) {
+					 pte_json_out(array("error" => "Already on Team", "current_link_id" => $checkDupe['current_link_id']));
+					 exit;
+					}
+
 			 		$topicState = "40";
 			 		$connectedType = "link";
 

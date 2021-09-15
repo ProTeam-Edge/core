@@ -17,9 +17,13 @@
 
 defined( 'ABSPATH' ) || exit;
 
-do_action( 'woocommerce_email_header', $email_heading, $email ); ?>
+echo "<style>
+  h1{
+    font-size: 18px !important;
+  }
+</style>";
 
-<?php
+do_action( 'woocommerce_email_header', $email_heading, $email );
 
 echo $email_body;
 

@@ -287,7 +287,7 @@ function db_shortcode($attr) {
 							<div class='alpn_section_head_left'>Contacts</div>
 							<div class='alpn_section_head_right'>
 								<i class='far fa-user-circle alpn_icons' title='Manage Connections' onclick='alpn_mission_control(\"manage_connections\", \"\", alpn_contact_topic_type_id);'></i>
-								<i class='far fa-plus-circle alpn_icons' title='Add Network Contact' onclick='alpn_mission_control(\"add_topic\", \"\", alpn_contact_topic_type_id);'></i>
+								<i class='far fa-plus-circle alpn_icons' title='Add/Import Contacts' onclick='alpn_mission_control(\"add_topic\", \"\", alpn_contact_topic_type_id);'></i>
 							</div>
 						</div>
 						<div id='alpn_selector_container_left' class='alpn_selector_container_left pte_hidden_for_now'>

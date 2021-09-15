@@ -41,9 +41,30 @@
     </div>
 
   <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
-  <script src="./js/twilio-chat.min.js"></script>
-  <script src="./js/twilio-video.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.textcomplete/1.8.5/jquery.textcomplete.min.js"></script>
+
+  <script type="text/javascript" src="./js/twilio-chat.min.js"></script>
+  <script type="text/javascript" src="./js/twilio-video.min.js"></script>
+  <script type="text/javascript" src="./js/hark.bundle.js"></script>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.6.3/firebase-messaging.js"></script>
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyDf6aIUvgp5g7nXMwVzbFZ1yTnTCzo4l-Q",
+    authDomain: "alctpro-26fc9.firebaseapp.com",
+    projectId: "alctpro-26fc9",
+    storageBucket: "alctpro-26fc9.appspot.com",
+    messagingSenderId: "1009836905958",
+    appId: "1:1009836905958:web:18dd9a7ceb5b0bae057227"
+  };
+  // Initialize Firebase
+  firebase.initializeApp(firebaseConfig);
+</script>
+
   <script type="text/javascript" src="./js/vendor/emojionearea.min.js"></script>
   <script type="text/javascript" src="./js/index.js"></script>
 

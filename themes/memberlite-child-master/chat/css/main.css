@@ -50,6 +50,9 @@
   line-height: 18px;
   color: rgb(49, 114, 182);
   cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .pte_chat_activity_unreads{

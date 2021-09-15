@@ -453,66 +453,204 @@ function vit_update_contacts_new_email ($userId, $newEmailAddress){
   }
 }
 
+function wsc_get_permissions_string($value){
+  $permissionStrings = array(
+    "0" => "View Only",
+    "1" => "View and Print",
+    "2" => "View, Print, Copy and Download"
+  );
+  return $permissionStrings[$value];
+}
+
+function pte_get_link_expiration_string($value){
+	$linkExpirationMap = array(
+    "0" => "Does Not Expire",
+		"30" => "30 Mins",
+		"60" => "1 Hour",
+		"480" => "8 Hours",
+		"1440" => "1 Day",
+		"2880" => "2 Days",
+		"10080" => "1 Week"
+	);
+	return $linkExpirationMap[$value];
+}
+
 function pte_send_mail ($data = array()) {
 
+  global $wpdb;
+
   $siteDomain = PTE_HOST_DOMAIN_NAME;
+  $smallUser = PTE_ROOT_URL . "dist/assets/small_user_w.png";
+
   $emailType = isset($data['email_type']) && $data['email_type'] ? $data['email_type'] : 'view-download';
-  $bodyTitle = isset($data['body_title']) && $data['body_title'] ? $data['body_title'] : 'View File in Browser';
+  $topicId = isset($data['topic_id']) && $data['topic_id'] ? $data['topic_id'] : false;
+
+  $passWordString = isset($data['link_interaction_password']) && $data['link_interaction_password'] ? "Required" : "Not Required";
+  $linkInteractionExpiration = isset($data['link_interaction_expiration']) && $data['link_interaction_expiration'] ? pte_get_link_expiration_string($data['link_interaction_expiration']) : "Does Not Expire";
+  $linkInteractionOptions = isset($data['link_interaction_options']) && $data['link_interaction_options'] ? wsc_get_permissions_string($data['link_interaction_options']) : "View Only";
+
+  $fromName =  $data['from_name'];
+  $fromEmail =  $data['from_email'];
 
   $mailer = WC()->mailer();
   $template = 'vit_generic_email_template.php';
   //format the email
 
-  $fromFirstName = $data['from_first_name'];
-  $fromName =  $data['from_name'];
-  $fromEmail =  $data['from_email'];
+  $fromFirstName = isset($data['from_first_name']) && $data['from_first_name'] ? $data['from_first_name'] : false;
+
   $toEmail = $data['to_email'];
   $toName =  $data['to_name'];
-  $linkType =  $data['link_type'];
-  $fileName = isset($data['vault_file_name']) && $data['vault_file_name'] ? "<span class='element_bold'>File Name</span>: " . $data['vault_file_name'] : "";
 
-  $emailSubject =  isset($data['subject_text']) && $data['subject_text'] ? $data['subject_text'] : "No Subject Text";
+  $isLink = isset($data['link_type']) && $data['link_type'] == "file" ? true : false;
+
+  $emailSubject =  isset($data['subject_text']) && $data['subject_text'] ? $data['subject_text'] : "No Subject";
+
+  $fileName = isset($data['vault_file_name']) && $data['vault_file_name'] ? $data['vault_file_name'] : " -";
+  $fileDescription = isset($data['vault_file_description']) && $data['vault_file_description'] ? $data['vault_file_description'] : " -";
+  $fileLinkButton = isset($data['link_id']) && $data['link_id'] ? "<div class='pte_button' title='Securely View this File at Wiscle.com'><a class='pte_button_link' href='https://{$siteDomain}/viewer/?{$data['link_id']}'>View File in Browser...</a></div>" : "" ;
 
   $replaceStrings["-{pte_site_domain}-"] = $siteDomain;
-
-  $replaceStrings["-{why_received}-"] = "Wiscle Community required correspondence.";
-  if ($fromFirstName) {
-    $replaceStrings["-{why_received}-"] = "{$fromFirstName} asked us to send you this secure link.";
-  }
-
   $replaceStrings["-{pte_email_body}-"] = $data['body_text'];
 
-  $replaceStrings["-{pte_link_button}-"] = isset($data['link_id']) && $data['link_id'] ? "<div class='pte_button'><a class='pte_button_link' href='https://{$siteDomain}/viewer/?{$data['link_id']}'>View File...</a></div>" : "" ;
-  $replaceStrings["-{pte_email_file_details}-"] = $fileName;
-  $replaceStrings["-{pte_email_signature}-"] = isset($data['email_signature']) && $data['email_signature'] ? $data['email_signature'] : "" ;
-  //TODO Pick template based on link type or conditional.
+  $topicInfoSection = "";
+  if ($topicId) {
+    $topicInfo = $wpdb->get_results(
+      $wpdb->prepare("SELECT t.name, t.about, t2.topic_content, t.email_route_id, f.pstn_number FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.owner_id AND t2.special = 'user' LEFT JOIN alpn_pstn_numbers f ON f.topic_id = t.id WHERE t.id = %d", $topicId)
+    );
+
+    if (isset($topicInfo[0])) {
+
+      $topicInfo = $topicInfo[0];
+
+      $pstnRoutingNumber = $topicInfo->pstn_number? pte_format_pstn_number($topicInfo->pstn_number) : "--";
+      $emailRoutingAddress = $topicInfo->email_route_id ? $topicInfo->email_route_id . "@files.wiscle.com" : "--";
+      $topicContent = json_decode($topicInfo->topic_content, true);
+      $fromFirstName = $topicContent['person_givenname'] ? $topicContent['person_givenname'] : "Wiscle Member";
+      $topicName = $topicInfo->name ? $topicInfo->name : "--";
+      $topicAbout = $topicInfo->about ? $topicInfo->about : "--";
+
+      if ($topicId && $emailType == "proteam_invitation"){
+        $topicInfoSection = "
+        <div id='wsc_table_description_0'>Invitation to Collaborate</div>
+        <div id='wsc_table_description_1'>Regarding:</div>
+        <table class='wsc_file_table'>
+          <tr class='wsc_file_row'>
+            <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>Topic Name</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$topicName}</td>
+          </tr>
+          <tr>
+            <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>About</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$topicAbout}</td>
+          </tr>
+        </table>
+        <div id='wsc_table_description_2'>Route files to this Topic by:</div>
+        <table class='wsc_file_table'>
+          <tr class='wsc_file_row'>
+            <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>Email</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$emailRoutingAddress}</td>
+          </tr>
+          <tr>
+            <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>Fax</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$pstnRoutingNumber}</td>
+          </tr>
+        </table>
+        ";
+      }
+    }
+  }
+  $replaceStrings["-{wsc_topic_info_section}-"] = $topicInfoSection;
+
+  $noFormatEmail = str_replace("@", "<span>@</span>", $fromEmail);
+  $noFormatEmail = str_replace(".", "<span>.</span>", $fromEmail);
+  $bodyTitle =  "<span title='Sent From'><img style='vertical-align: top;' src='{$smallUser}'>{$fromName} -- {$noFormatEmail}</span>";
+
+  $linkSection = "";
+  if ($isLink) {
+    $linkSection = "
+    <div id='wsc_table_description_0'>Secure File xLink Received</div>
+    <div id='wsc_table_description_2'>Regarding:</div>
+    <table class='wsc_file_table'>
+      <tr class='wsc_file_row'>
+        <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>Topic</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$topicName}</td>
+      </tr>
+      <tr>
+        <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>About</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$topicAbout}</td>
+      </tr>
+      <tr class='wsc_file_row'>
+        <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>File Name</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$fileName}</td>
+      </tr>
+      <tr>
+        <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>Description</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$fileDescription}</td>
+      </tr>
+      <tr>
+        <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>Permissions</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$linkInteractionOptions}</td>
+      </tr>
+      <tr>
+        <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>Expiration</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$linkInteractionExpiration}</td>
+      </tr>
+      <tr>
+        <td class='wsc_file_left_cell wsc_file_borders wsc_bg_white'>Passcode</td><td class='wsc_file_right_cell wsc_file_borders wsc_bg_white'>{$passWordString}</td>
+      </tr>
+      <tr>
+        <td class='wsc_file_left_cell'>{$fileLinkButton}</td><td class='wsc_file_right_cell'></td>
+      </tr>
+    </table>
+    ";
+  }
+
+  $replaceStrings["-{wsc_link_section}-"] = $linkSection;
 
   $emailTemplateHtml = "
     <style>
+    #wsc_table_description_0{
+      margin-bottom: 20px;
+      color: #005587;
+      text-align: left;
+      line-height: 24pt;
+      font-size: 18pt;
+    }
+    #wsc_table_description_1{
+    }
+    #wsc_table_description_2{
+      margin-top: 30px;
+    }
+    .wsc_file_table{
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .wsc_file_left_cell{
+      width: 35%;
+      font-weight: bold;
+      padding: 3px 5px !important;
+      vertical-align: top;
+    }
+    .wsc_file_right_cell{
+      width: 65%;
+      padding: 3px 5px !important;
+      vertical-align: top;
+    }
+    .wsc_bg_white {
+      background-color: white;
+    }
     .pte_button_link {
     	color: white !important;
-    	text-decoration: none !important;
+      text-decoration: none !important;
+    }
+    .wsc_file_borders {
+      border: solid 1px #dcdcdc;
     }
     .pte_button {
-  		width: 120px;
+  		width: 180px;
   		height: 30px;
   		background-color: #0074BB;
   		text-align: center;
   		line-height: 24pt;
   		font-size: 12pt;
+      margin-top: 20px;
     }
     .element_bold{
       font-weight: bold;
     }
     </style>
-    <p>
-      <span class='element_bold'>From</span>: {$fromName}<br>
-      <span class='element_bold'>Email</span>: {$fromEmail}
-    </p>
     <p>-{pte_email_body}-</p>
-    <p>-{pte_email_file_details}-</p>
-    <p>-{pte_link_button}-</p>
-    <p>-{pte_email_signature}-</p>
+    <p>-{wsc_link_section}-</p>
+    <p>-{wsc_topic_info_section}-</p>
   ";
 
   $emailTemplateHtml = str_replace(array_keys($replaceStrings), $replaceStrings, $emailTemplateHtml);
@@ -523,13 +661,12 @@ function pte_send_mail ($data = array()) {
       'email_body'    => $emailTemplateHtml
   	), PTE_ROOT_PATH . 'woocommerce/emails/', PTE_ROOT_PATH . 'woocommerce/emails/');
 
-  $header = 'Reply-to: ' . $fromName . ' <' . $fromEmail . ">\r\n";
+  if ($fromName && $fromEmail){
+    $header = 'Reply-to: ' . $fromName . ' <' . $fromEmail . ">\r\n";
+  }
 
   try {
-
     $mailer->send( $toEmail, $emailSubject, $content, $header );
-
-
   } catch (Exception $e) {
       alpn_log ('Caught exception: '. $e->getMessage());
   }
@@ -542,10 +679,6 @@ function pte_send_group_mms($data){
     "numbers" => array(0 => "+14084100365", 1 => "+16505268577"),
     "message" => "Hi Baby, it's me geeking out with Group Texting...I need this for Wiscle anyway!"
   );
-
-
-
-  pp("Group");
 
 
   $accountSid = ACCOUNT_SID;
@@ -1150,6 +1283,7 @@ function pte_create_topic_team_member($data) {    //add to proteam.
     $proTeamMemberId = isset($data['proteam_member_id']) ? $data['proteam_member_id'] : '';
     $wpId = isset($data['wp_id']) ? $data['wp_id'] : '';
     $processId = isset($data['process_id']) ? $data['process_id'] : '';
+    $state = isset($data['state']) ? $data['state'] : '20';
 
   	//TODO make this a user options
   	$defaultMemberRights = array(
@@ -1167,7 +1301,6 @@ function pte_create_topic_team_member($data) {    //add to proteam.
     );
 
   	$defaultAccessLevel = "10";
-  	$defaultState = "20";
   	$memberRights = json_encode($defaultMemberRights);
 
   	$proTeamData = array( //TODO start IA and store processID
@@ -1177,7 +1310,7 @@ function pte_create_topic_team_member($data) {    //add to proteam.
       'process_id' => $processId,
 		  'wp_id' => $wpId,
   		'access_level' => $defaultAccessLevel,
-  		'state' => $defaultState,
+  		'state' => $state,
   		'member_rights' => $memberRights
   	);
   	$wpdb->insert( 'alpn_proteams', $proTeamData );
@@ -1278,7 +1411,7 @@ function pte_get_viewer($viewerSettings){
       $sendEmailFamily = isset($linkMeta['send_email_address_familyname']) && $linkMeta['send_email_address_familyname'] ? $linkMeta['send_email_address_familyname'] : " - ";
       $sendEmailTopicId = isset($linkMeta['send_email_source_topic_id']) && $linkMeta['send_email_source_topic_id'] ? $linkMeta['send_email_source_topic_id'] : false;
 
-      if ($sendEmailTopicId) {
+      if ($sendEmailTopicId && !is_user_logged_in()) {
         $createAccountHtml = "show_cta('<span title=\"Register instantly using email &nbsp;-&nbsp; {$sendEmail}\" onclick=\"vit_create_account_from_topic({$sendEmailTopicId});\" id=\"vit_call_to_action_link\">Create</span> your free collaboration account. No marketing, ever.');";
       }
 
@@ -1343,8 +1476,8 @@ function pte_get_viewer($viewerSettings){
                         <i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button {$downloadFiles}' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
             		      </div>
                       <div class='pte_vault_row_60 pte_vault_right'>
-                      <div class='pte_viewer_info_outer'><div class='pte_viewer_info_inner_message'>File Name</div><div id='pte_viewer_info_filename' class='pte_viewer_info_inner_name'>{$vaultFileName}</div></div>
-                      <div class='pte_viewer_info_outer' style='margin-left: 10px;'><div class='pte_viewer_info_inner_message'>Description</div><div id='pte_viewer_info_description' class='pte_viewer_info_inner_name'>{$vaultDescription}</div></div>
+                      <div class='pte_viewer_info_outer wsc_w_small'><div class='pte_viewer_info_inner_message'>File Name</div><div id='pte_viewer_info_filename' class='pte_viewer_info_inner_name'>{$vaultFileName}</div></div>
+                      <div class='pte_viewer_info_outer wsc_w_large' style='margin-left: 10px;'><div class='pte_viewer_info_inner_message'>Description</div><div id='pte_viewer_info_description' class='pte_viewer_info_inner_name'>{$vaultDescription}</div></div>
               		    </div>
                     </div>
                   ";
@@ -1748,7 +1881,7 @@ function get_routing_email_addresses() {
       $topicName = $value->name;
 
       $dottedName = str_replace(array(', ', ',', "'", '"'), array('.', '.', "", ""), $topicName);
-      $emailAddress = "{$dottedName} - Vitriva Topic <{$value->email_route_id}@files.{$domainName}>";
+      $emailAddress = "{$dottedName} - Wiscle <{$value->email_route_id}@files.{$domainName}>";
 
       $emailAddresses .= "<li class='pte_important_topic_scrolling_list_item'>";
       $emailAddresses .= "<div class='pte_scrolling_item_left' title='Copy Email Address to Clipboard'><div class='pte_pstn_topic_list pte_topic_link' onclick='pte_topic_link_copy_string(\"Email\", \"{$emailAddress}\");'><i class='far fa-copy' style='margin-right: 5px;'></i>" . $topicName  . "</div></div>";
@@ -2303,9 +2436,33 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
   return $topicOptions;
 }
 
+
+function wsc_check_team_dupe($linkedTopicId, $visitingOwnerId, $proteamRowId){
+  alpn_log("Checking Team Dupe...");
+  global $wpdb;
+  $isDupe = false;
+  $currentLinkId = 0;
+
+  $proTeam = $wpdb->get_results(
+    $wpdb->prepare(
+      "SELECT id FROM alpn_proteams WHERE topic_id = %d AND wp_id = %d", $linkedTopicId, $visitingOwnerId)
+   );
+
+   if (isset($proTeam[0])) {
+    $isDupe = true;
+    $currentLink = $wpdb->get_results(
+       $wpdb->prepare(
+         "SELECT linked_topic_id FROM alpn_proteams WHERE id = %d", $proteamRowId)
+        );
+     $currentLinkId = isset($currentLink[0]) ? $currentLink[0]->linked_topic_id : 0;
+   }
+
+  return array("is_dupe" => $isDupe, "current_link_id" => $currentLinkId);
+}
+
 function pte_proteam_state_change_sync($data){
   alpn_log("pte_proteam_state_change_sync...");
-  //alpn_log($data);
+  alpn_log($data);
 
   global $wpdb;
 
@@ -2665,8 +2822,8 @@ function pte_manage_cc_groups($operation, $data) {
       $channel = $twilio->chat->v2->services($chatServiceId)
                             ->channels($channelId)
                             ->fetch();
-      $channelAttributes = json_decode($channel->attributes, true);
-      $channelAttributes['image_handle'] = $imageHandle;
+      $channelAttributes = json_decode($channel->attributes, true);  //Start with what's there
+      $channelAttributes['image_handle'] = $imageHandle;   //Overwrite New
       $channel = $twilio->chat->v2->services($chatServiceId)
       ->channels($channelId)
       ->update(array(
@@ -3342,7 +3499,7 @@ function  pte_make_rights_panel_view($panelData) {
   $userId = $userInfo->data->ID;
   $userNetworkId = get_user_meta( $userId, 'pte_user_network_id', true );
 
-	$topicStates = array('10' => "ADDED", '20' => "Invited", '30' => "CJ", '40' => "CL", '80' => "Email Sent", '90' => "Declined");
+	$topicStates = array('10' => "ADDED", '20' => "Invited", '30' => "CJ", '40' => "CL", '70' => "External", '80' => "Email Sent", '90' => "Declined");
 
   $panelType = $panelData['panel_type'];
   $teamMemberWpId = $panelData['team_member_wp_id'];
@@ -3358,6 +3515,8 @@ function  pte_make_rights_panel_view($panelData) {
 	$topicState = $panelData['state'];
   $checked = $panelData['checked'];
 	$connectedType = $panelData['connected_type'];
+
+  $canEditProteam = ($topicState == '70') ? "none" : "block";
 
   if ($topicAccessLevel == '10') {
     $generalChecked = "SELECTED";
@@ -3397,7 +3556,7 @@ function  pte_make_rights_panel_view($panelData) {
     case 'member':   //Mine
 
       if ($connectedType == 'link') {  //Linked Topic
-        $topicStateHtml ="<div title='Visit Linked Topic' data-topic-id='{$linkedTopicId}' data-topic-special='topic' data-topic-dom-id='{$linkedTopicDomId}' data-operation='to_topic_info_by_id' class='team_panel_topic_link' onclick='pte_handle_interaction_link_object(this);'><div class='team_panel_topic_link_icon'><i class='far fa-link team_panel_topic_link_icon_actual'></i>&nbsp; {$linkedTopicName}</div></div>";
+        $topicStateHtml ="<div title='Visit Linked Topic' data-topic-id='{$linkedTopicId}' data-topic-special='topic' data-topic-dom-id='{$linkedTopicDomId}' data-operation='to_topic_info_by_id' class='team_panel_topic_link' onclick='pte_handle_interaction_link_object(this);'><i class='far fa-link team_panel_topic_link_icon_actual'></i> {$linkedTopicName}</div>";
       } else if ($connectedType == 'join') {
         $topicStateHtml = "Joined";
       } else {
@@ -3411,7 +3570,7 @@ function  pte_make_rights_panel_view($panelData) {
             <div style='font-weight: normal; color: rgb(0, 116, 187); cursor: pointer; font-size: 11px; line-height: 16px;' onclick='alpn_proteam_member_delete({$proTeamRowId});'>Remove</div>
         </div>
         <div class='pte_vault_row_50'>
-          <div id='pte_proteam_controls' class='pte_proteam_controls' data-id='{$topicNetworkId}'>
+          <div id='pte_proteam_controls' class='pte_proteam_controls' data-id='{$topicNetworkId}' style='display: {$canEditProteam};'>
             <table class='pte_proteam_rights_table' data-pte-proteam-id='{$proTeamRowId}'>
               <tr class='pte_proteam_row'>
                 <td class='pte_proteam_cell_left'>

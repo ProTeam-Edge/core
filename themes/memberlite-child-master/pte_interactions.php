@@ -123,7 +123,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
   $vaultPdfKey = $vaultFileKey = '';
   if ($vaultId) {
     $results = $wpdb->get_results(
-      $wpdb->prepare("SELECT topic_id, pdf_key, file_key, dom_id, file_name FROM alpn_vault WHERE id = %s", $vaultId)
+      $wpdb->prepare("SELECT topic_id, pdf_key, file_key, dom_id, file_name, description FROM alpn_vault WHERE id = %s", $vaultId)
      );
      if (isset($results[0])) {
        $vaultPdfKey = $results[0]->pdf_key;
@@ -131,6 +131,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
        $vaultTopicId = $results[0]->topic_id;
        $vaultDomId = $results[0]->dom_id;
        $vaultFileName = $results[0]->file_name;
+       $vaultFileDescription = $results[0]->description;
      }
   }
 
@@ -194,6 +195,7 @@ function pte_get_process_context($processData) { //TODO make this work for all i
       'vault_pdf_key' => $vaultPdfKey,
       'vault_file_key' => $vaultFileKey,
       'vault_file_name' => $vaultFileName,
+      'vault_file_description' => $vaultFileDescription,
       "created_date" =>   $now,
       'owner_network_id' => $ownerNetworkId,
       'owner_id' => $ownerId,
@@ -356,11 +358,19 @@ function pte_manage_interaction_proper($data) {
     $recalled = isset($requestData['request_operation']) && $requestData['request_operation'] == 'recall_interaction' ? true : false;
     $restart = isset($requestData['restart_interaction']) && $requestData['restart_interaction'] ? true : false;
 
-    if ($recalled) {  //RECALLED
+    if ($recalled) {  //RECALLED -- Handled on Recipients Side
+
       alpn_log('Deleting because recalled...' . $requestData['process_id']);
 
       $whereClause = array('process_id' => $requestData['process_id']);
       $wpdb->delete( 'alpn_interactions', $whereClause);
+
+      //remove from ProTeam
+
+      $whereClause = array(
+        'process_id' => $requestData['interacts_with_id']
+      );
+      $wpdb->delete( 'alpn_proteams', $whereClause );
 
     } else {  //ALL else
 

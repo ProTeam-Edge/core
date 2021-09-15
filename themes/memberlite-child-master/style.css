@@ -11,6 +11,130 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 fff5ee
 */
 
+.wsc_marketplace_pricing{
+	margin-top: 30px;
+}
+
+a.added_to_cart.wc-forward {
+	font-size: 14px;
+	margin-left: 5px;
+	color: rgb(49, 114, 182);
+	vertical-align: top;
+}
+
+.woocommerce-Tabs-panel--description h2{
+	display: none;
+}
+
+.woocommerce .woocommerce-ordering select {
+	padding: 5px 10px;
+}
+
+figure.woocommerce-product-gallery__wrapper img.wp-post-image{
+	max-width: 180px;
+	max-height: 180px;
+	object-fit: contain;
+}
+
+img.size-woocommerce_thumbnail{
+	max-width: 115px;
+	max-height: 115px;
+	object-fit: contain;
+	border-radius: 0 !important;
+}
+
+article#post-6995 img.size-woocommerce_thumbnail{
+	max-width: 75px;
+	max-height: 75px;
+}
+
+dl.variation{
+	font-size: 14px;
+}
+
+.wsc_w_small{
+		width: 200px;
+}
+.wsc_w_large{
+		width: 350px;
+}
+
+div.entry-content{
+	overflow: hidden;
+}
+
+.wp-block-table.is-style-stripes tbody tr:nth-child(odd) {
+    background-color: #faf0e6;
+}
+
+table.has-fixed-layout tr td:first-child {
+    width: 75%;
+}
+
+.fca-ept-column {
+	min-width: 320px;
+	padding-left: 30px !important;
+	padding-right: 30px !important;
+}
+.fca-ept-features-div li{
+	line-height: 35px !important;
+}
+
+div.bbp-reply-author img {
+	width: 50px;
+	height: 50px;
+}
+
+button[type=submit], input[class=button] {
+	box-shadow: none !important;
+	background: rgb(49, 114, 182) !important;
+	color: #FFF !important;
+	transform: none !important;
+  border: none !important;
+  border-radius: 3px !important;
+  cursor: pointer !important;
+	font-family: "Lato", sans-serif !important;
+  font-size: 18px !important;
+  font-style: normal !important;
+  font-weight: normal !important;
+  display: inline-block !important;
+  line-height: 28px !important;
+  padding: 5px 15px !important;
+  text-align: center !important;
+  text-decoration: none !important;
+  text-shadow: none !important;
+}
+
+button:hover, input[type=button]:hover, input[type=reset]:hover, input[type=submit]:hover, button:focus, input[type=button]:focus, input[type=reset]:focus, input[type=submit]:focus, button:active, input[type=button]:active, input[type=reset]:active, input[type=submit]:active, .btn:hover, .btn:active, .btn:focus, a.pmpro_btn:active, #main div.em-search-main button.em-search-submit:hover
+{
+	background-color: #3172B6;
+	box-shadow: 1px 2px 4px rgb(0 0 0 / 40%);
+	color: white;
+	transform: none;
+}
+
+div.uppy-Dashboard-AddFiles-title {
+	font-size: 16px !important;
+}
+
+div.pte_updated_message div{
+	font-size: 10px;
+}
+
+body.bbpress div.row {
+	margin-left: 187px;
+	margin-right: 187px;
+}
+
+
+body.bbpress header#masthead div.row  {
+	min-width: 1162px;
+}
+body.bbpress header#masthead div.header-right  {
+  margin-top: 5px;
+	line-height: 20px;
+}
+
 figure.wic_audio_el audio{
 		display: none;
 }
@@ -40,8 +164,8 @@ a.vit_forgot_password_link{
 
 div#vit_call_to_action_outer{
 	position: absolute;
-	top: 10px;
-	left: calc((100% / 2) - 150px);
+	top: 13px;
+	left: calc((100% / 2) - 300px);
 	text-align: left;
 	display: none;
 	font-size: 14px;
@@ -49,6 +173,10 @@ div#vit_call_to_action_outer{
 
 div#vit_call_to_action_inner{
 	display: inline-block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+
 }
 
 span#vit_call_to_action_link {
@@ -308,34 +436,6 @@ header.woocommerce-products-header{
 }
 
 
-button[type=submit]:hover, input[class=button]:hover {
-	background: #286090 !important;
-	box-shadow: 1px 2px 4px rgba(0,0,0,0.4) !important;
-	color: #FFF !important;
-	transform: translateY(0) !important;
-}
-
-button[type=submit], input[class=button] {
-	background: rgb(49, 114, 182) !important;
-	box-shadow: 1px 2px 4px rgb(0 0 0 / 40%) !important;
-	color: #FFF !important;
-	transform: translateY(0) !important;
-  border: none !important;
-  border-radius: 3px !important;
-  cursor: pointer !important;
-	font-family: "Lato", sans-serif !important;
-  font-size: 18px !important;
-  font-style: normal !important;
-  font-weight: normal !important;
-  display: inline-block !important;
-  line-height: 28px !important;
-  padding: 5px 15px !important;
-  text-align: center !important;
-  text-decoration: none !important;
-  text-shadow: none !important;
-}
-
-
 body.woocommerce-account div.content-area{
 	margin-top: 25px;
 }
@@ -390,7 +490,6 @@ span.show-password-input{
 	display: inline-block;
 	width: 15px;
 	text-align: left;
-
 }
 
 .team_panel_topic_link {
@@ -399,7 +498,6 @@ span.show-password-input{
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
-
 }
 
 div.outer_button_line select2 {
@@ -1701,7 +1799,6 @@ input.wpforms-field-large {
 	display: inline-block;
 	background-color: #005587;
 	border: solid 1px #005587;
-	width: 300px;
 	vertical-align: top;
 }
 
@@ -3113,9 +3210,9 @@ button[aria-label="Crop portrait (9:16)"]
 	width: 90%;
 	border-radius: 0;
 	height: 20px;
-	line-height: 16px;
-	font-size: 10px;
-	padding: 3px;
+	line-height: 16px !important;
+	font-size: 10px !important;
+	padding: 3px !important;
 	display: block;
 	text-align: center;
 
@@ -3985,6 +4082,9 @@ dt{
 	padding: 0 !important;
 	font-weight: normal !important;
 }
+article#post-4276 dt{
+	margin: 0 5px 0 0 !important;
+}
 
 .fv__search-panel-form-checkbox,
 .fv__search-panel-form-checkbox-2{
@@ -4136,7 +4236,7 @@ dt{
   padding: 5px 7px;
   width: 100%;
   text-align: left;
-  border: 1px solid #C8C8C8;
+  border: 0;
   outline: none;
   box-shadow: none;
   border-radius: 0;
@@ -4166,11 +4266,11 @@ dt{
 	content: "\f105";}
 
 .pte_accordion_minus{
-	border-bottom: 1px dotted #C8C8C8;
+	border-bottom: 0;
 }
 
 .pte_accordion_plus{
-  border-bottom: 1px solid #C8C8C8;
+  border-bottom: 0;
 
 }
 
@@ -4190,6 +4290,34 @@ dt{
 	content: "\f105";
 }
 
+
+div#pte_profile_logo_selector,
+div#pte_profile_image_selector{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+}
+
+div#pte_profile_logo_crop,
+div#pte_profile_image_crop{
+	position: absolute;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	display: none;
+}
+
+div#pte_topic_logo_container,
+div#pte_topic_icon_container{
+	  padding: 0 0;
+	  overflow: hidden;
+	  transition: height 0.3s;
+	  margin-bottom: 5px;
+		position: relative;
+}
 
 
 .pte_panel {
@@ -5317,7 +5445,7 @@ div.pte_toolbar_container span.select2 {
 
 
 
-@media only screen and (max-width: 1280px) {
+@media only screen and (max-width: 1279px) {
 	.vit_home_col_1,
 	.vit_home_col_3
 	{
@@ -5325,6 +5453,18 @@ div.pte_toolbar_container span.select2 {
 	}
 	.vit_home_col_2 {
 		flex-basis: 100% !important;
+	}
+
+	div#vit_call_to_action_outer{
+		top: 33px;
+		left: 40px;
+		font-size: 12px;
+		line-height: 14px;
+	}
+	a#hp_vit_cta{
+		font-size: 12px;
+		font-weight: normal;
+		line-height: 14px;
 	}
 }
 
@@ -5352,9 +5492,25 @@ div.pte_toolbar_container span.select2 {
 
 @media only screen and (max-width: 767px) {
 
-	a#hp_vit_cta{
-		margin-left: 100px;
+	div#vit_call_to_action_outer{
+		top: 41px;
+		left: 30px;
 		font-size: 12px;
+		line-height: 14px;
+	}
+
+	table.has-fixed-layout tr td:first-child {
+	    width: 60%;
+	}
+	
+	a#hp_vit_cta{
+		font-size: 12px;
+		font-weight: normal;
+		line-height: 14px;
+	}
+
+	.wsc_w_small{
+		width: 350px;
 	}
 
 	.kt-inside-inner-col {
