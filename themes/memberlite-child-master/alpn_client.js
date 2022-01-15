@@ -54,6 +54,8 @@ pte_local_date = new Date()
 pte_timezone_offset = pte_local_date.getTimezoneOffset();
 //TODO LOTS MORE SUPPORTED IMAGE FROM TYPES.  ALSO Missed doc mimetypes? PPT?
 
+wsc_work_area_open = false;
+
 pte_chrome_extension = (typeof pte_chrome_extension != "undefined" && pte_chrome_extension) ? pte_chrome_extension : false;
 pte_topic_manager_loaded = (typeof pte_topic_manager_loaded != "undefined" && pte_topic_manager_loaded) ? pte_topic_manager_loaded : false;
 pte_template_editor_loaded = (typeof pte_template_editor_loaded != "undefined" && pte_template_editor_loaded) ? pte_template_editor_loaded : false;
@@ -184,12 +186,10 @@ function vit_handle_persist_proteam_change(data) {
 
 	console.log("Persisting stuff...");
 
-
 	var linkTopicSelect = jQuery('#alpn_select2_small_link_topic_select_card');
 	var linkTopicSelectData = linkTopicSelect.select2('data');
 
 	console.log(linkTopicSelect);
-
 
 	if (typeof linkTopicSelectData != 'undefined' && typeof linkTopicSelectData[0] != 'undefined') {
 		data.selected_topic_id = linkTopicSelectData[0].id;
@@ -255,9 +255,6 @@ function vit_handle_persist_proteam_change(data) {
 		//TODO
 		}
 	});
-
-
-
 }
 
 function pte_UUID() { // Public Domain/MIT
@@ -730,7 +727,6 @@ function alpn_handle_topic_table(theTable) {
 		var tableData = wpDataTables.table_topic.fnGetData();
 		var memberIndicatorClass = '';
 	}
-	console.log(tableData);
 	for (i=0; i< tableData.length; i++) {
 
 		rowDetails = tableData[i];
@@ -875,7 +871,7 @@ function pte_handle_widget_interaction(interactionData){ //run the process
 		dataType: "json",
 		success: function(json) { //UI udates handled vaia sync
 
-			//console.log(interactionData);
+			console.log(json);
 
 		},
 		error: function() {
@@ -1630,7 +1626,6 @@ function pte_handle_remove_list_item(item) {
 function pte_get_active_video_rooms() {
 
 	var security = specialObj.security;
-
 	if (typeof alpn_templatedir != "undefined" && alpn_templatedir && security) {
 
 		jQuery.ajax({
@@ -1760,8 +1755,8 @@ function pte_handle_active_filed_change(tObj){
 			wpDataTables.table_interactions.addOnDrawCallback( function(){
 				pte_interactions_table();
 			})
-			wpDataTables.table_interactions.fnSettings().oLanguage.sZeroRecords = 'No Interactions';
-			wpDataTables.table_interactions.fnSettings().oLanguage.sEmptyTable = 'No Interactions';
+			wpDataTables.table_interactions.fnSettings().oLanguage.sZeroRecords = 'No Workflows';
+			wpDataTables.table_interactions.fnSettings().oLanguage.sEmptyTable = 'No Workflows';
 			pte_select_first_interaction = true;
 			pte_interactions_table();
 
@@ -2072,7 +2067,8 @@ function pte_select_new_topic_from_id(topicId, vaultData = {}) {
 			},
 			dataType: "json",
 			success: function(json) {
-				console.log('RETURNING FROM GET CHANNEL...');
+				// console.log('RETURNING FROM GET CHANNEL...');
+				// console.log(json);
 				if (typeof json[0] != "undefined") {
 					var topicData = json[0];
 					var linkData = {
@@ -2244,8 +2240,8 @@ function alpn_handle_vault_table() {
 	var table = wpDataTables.table_vault;
 	var tableData = table.fnGetData();
 	console.log("VAULT");
-	console.log(tableData);
 	var firstReady = '';
+	var aboutValue = "";
 	var ownerHtml, ownerName, titleHtml, fName, descHtml, addOwnerRow, creatorId;
 	var accessLevelHtml = '-';
 	//console.log(tableData);
@@ -2258,7 +2254,7 @@ function alpn_handle_vault_table() {
 			var ownerId = tableData[i][1];
 
 			var mimeType = tableData[i][9];
-			var aboutValue = (tableData[i][6]) ? tableData[i][6].replace(/\\(.)/mg, "$1") : " - -";
+			    aboutValue = (tableData[i][6]) ? tableData[i][6].replace(/\\(.)/mg, "$1") : " - -";
 			var upload_state = tableData[i][14];
 			var dom_id = tableData[i][11];
 			var access_level = tableData[i][2];
@@ -2303,6 +2299,8 @@ function alpn_handle_vault_table() {
 			addOwnerRow = ownerName ? "<div class='pte_vault_row pte_vault_border_top pte_negative_margins pte_vault_border_left pte_vault_border_right'><div class='pte_vault_row_100 pte_vault_text_small pte_cell_padding pte_vault_centered pte_vault_link' style='vertical-align: middle;'><i id='' class='far fa-user'></i>&nbsp;&nbsp;" + ownerName + "</div></div>" : '';
 
 			ownerHtml = "<div class='pte_vault_row pte_vault_border_all pte_negative_margins'><div class='pte_vault_row_50 pte_vault_text_small pte_cell_padding pte_vault_centered'>" + cdate.format('MMM D, YYYY, h:mma') + "</div><div id='wsc_file_doc_type' class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered'>" + docType + "</div><div class='pte_vault_row_25 pte_vault_text_small pte_vault_border_left pte_vault_centered' id='pte_vault_permission_content'>" + accessLevelHtml + "</div></div>"
+
+			aboutValue = aboutValue ? aboutValue : " - -";
 
 			var formattedField = "<div class='pte_vault_details'>";
 				fName = tableData[i][7].replace(/\\(.)/mg, "$1");
@@ -2366,6 +2364,7 @@ function pte_start_chat(indexType, recordId){
 			if (typeof json[0] != "undefined") {
 				var data = json[0];
 				data['name'] = 'pte_chat_message';
+				data['security'] = security;
 				pte_message_chat_window(data);
 			} else {
 				console.log("Topic ID for Chat Not Found..." + recordId);
@@ -2649,6 +2648,9 @@ function pte_open_chat_panel(){
 		var channelName;
 
 		switch(name) {
+			case 'pte_channel_logged_out':
+				window.location.href = "./my-account";
+			break;
 			case 'pte_handle_mute_button':
 				var muteButtonText = jQuery("#alpn_chat_audio_mute_text");
 				var muteButtonImage = jQuery("#pte_chat_mute_button");
@@ -2771,16 +2773,23 @@ function iformat(icon) {
 
 function initializeTwilio() {
 
-	jQuery.getJSON(alpn_templatedir +  'chat/token.php', {
+	jQuery.getJSON(alpn_templatedir +  './chat/token.php', {
 		device: 'browser'
 	}, function(data) {
+
 			userContext = {identity: data.identity};
 
-			if (typeof syncClient != "object") {
-				syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
+			if (!data.identity) {
+					console.log("HANDLE CHAT LOGGED OUT - MAIN"); //exit to login
+					window.location.href = "./my-account";
 			}
-			console.log(syncClient);
+
+			 // if (typeof syncClient != "object") {
+				syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
+			//}
+
 			console.log('syncClient');
+			console.log(syncClient);
 
 			syncClient.map(alpn_sync_id).then(function (map) {
 				map.on('itemAdded', function(item) {
@@ -2796,52 +2805,72 @@ function initializeTwilio() {
 			});
 
 			syncClient.on('tokenAboutToExpire', function() {
-				console.log("CLIENT TOKEN ABOUT TO EXPIRE");
 
-				jQuery.getJSON(alpn_templatedir +  'chat/token.php', {
+				console.log("CLIENT TOKEN ABOUT TO EXPIRE MAIN");
+				jQuery.getJSON(alpn_templatedir +  './chat/token.php', {
 					device: 'browser'
 				}, function(data1) {
-					console.log("Updating Twilio Token");
-
-
 					if (data1.token) {
 						syncClient.updateToken(data1.token);
+						console.log("Updating Twilio Token CLIENT");
 					} else {
-
 						alert('no token');
 					}
-
 				});
 			});
 
-			syncClient.on('connectionStateChanged', function(state) {
-				console.log("SYNC CLIENT -- CONNECTION STATE CHANGED -- ", state);
-
+			syncClient.on('connectionStateChanged', function(channelState) {
+				console.log("SYNC CLIENT -- CONNECTION STATE CHANGED -- ", channelState);
+				if (channelState == "denied") {
+					console.log("SYNC CLIENT DENIED LOGIN");
+					syncClient = null;
+					initializeTwilio();
+					console.log("Handling DENIED by clearing client and initializing");
+				}
 			});
 	});
-
-
 
 }
 
 
 function pte_setup_window_onload() {
 
-	jQuery( document ).on( 'wake', function(){
-		console.log('WAKE EVENT');
-		if (pte_external == false) {  //Initialize Mission Control
-			if ((typeof syncClient != "undefined") && (syncClient.connectionState != 'connected' )) {
-				console.log('RECONNECTING');
-				//location.reload();
-				//initializeTwilio();
-			}
-		}
 
-	});
+		// // Active
+		// window.addEventListener('focus', function(){
+		// 	console.log("WINDOW RECEIVED FOCUS");
+		// 	var title = jQuery('title').text();
+		// 	var favicon = jQuery('link[rel=icon]').attr('href');
+		// 	// console.log(title);
+		// 	// console.log(favicon);
+		// });
+		//
+		// // Inactive
+		// window.addEventListener('blur', function(){
+		// 	console.log("WINDOW LOST FOCUS");
+		// 	var title = jQuery('title').text();
+		// 	var favicon = jQuery('link[rel=icon]').attr('href');
+		// 	// console.log(title);
+		// 	// console.log(favicon);
+		// });
+
+
+	// jQuery( document ).on( 'wake', function(){
+	// 	console.log('WAKE EVENT');
+	// 	if (pte_external == false) {  //Initialize Mission Control
+	// 		if ((typeof syncClient != "undefined") && (syncClient.connectionState != 'connected' )) {
+	// 			//console.log('RECONNECTING');
+	// 			// location.reload();
+	// 			// initializeTwilio();
+	// 		}
+	// 	}
+	//
+	// });
 
 	if ((typeof alpn_user_id != "undefined") && (alpn_user_id > 0)) {	//Must be logged in
 
 				if (pte_external == false) {   //Initialize Mission Control
+
 					//Setup Sync
 					initializeTwilio();
 
@@ -2862,6 +2891,13 @@ function pte_setup_window_onload() {
 							return text;
 						}
 					});
+
+					if (typeof wsc_topic_operation != "undefined" && typeof wsc_destination_topic_id != "undefined" && wsc_topic_operation == 'go_to_chat' && wsc_destination_topic_id) {
+						setTimeout(function(){
+							pte_select_new_topic_from_id(wsc_destination_topic_id);
+							pte_open_chat_panel();
+						}, 1000);
+					}
 
 					alpn_wait_for_ready(10000, 250,  //Network Table
 						function(){
@@ -2923,8 +2959,8 @@ function pte_setup_window_onload() {
 							},
 							function(){ //Handle Success
 								console.log("Success about to init interaction stuff..."); //TODO Handle Error
-								wpDataTables[alpn_activity_table_id].fnSettings().oLanguage.sZeroRecords = 'No Interactions';
-								wpDataTables[alpn_activity_table_id].fnSettings().oLanguage.sEmptyTable = 'No Interactions';
+								wpDataTables[alpn_activity_table_id].fnSettings().oLanguage.sZeroRecords = 'No Workflows';
+								wpDataTables[alpn_activity_table_id].fnSettings().oLanguage.sEmptyTable = 'No Workflows';
 								wpDataTables[alpn_activity_table_id].addOnDrawCallback( function(){
 									pte_interactions_table();
 								})
@@ -3045,9 +3081,9 @@ jQuery( window ).load( function(){
 
 	pte_external =  pte_chrome_extension || pte_topic_manager_loaded || pte_template_editor_loaded;
 	// added delay for fixing loading issue TODO figure out exactly whats up and fix it or wait for it, not a timer.
-		setTimeout(function(){
-		console.log("WORKED ONLOAD SETUP");
-		pte_setup_window_onload();
+
+	setTimeout(function(){
+			pte_setup_window_onload();
 	}, 500);
 
 	if (!pte_external) {pte_get_active_video_rooms();}
@@ -3106,25 +3142,12 @@ jQuery( window ).load( function(){
 	if (typeof alpn_templatedir != "undefined" && alpn_templatedir) {
 
 		Dropzone.autoDiscover = false;
-		jQuery("#pte_chat_dropzone").dropzone({
-				uploadMultiple: false,
-			  addedfile: function (file) {
-					console.log("DROPPED ON CHAT"),
-					console.log(file);
-					this.removeFile(file);
-					jQuery("#pte_chat_dropzone").hide();
-					jQuery("#pte_topic_dropzone").hide();
-				},
-			  url: alpn_templatedir + 'pte_donotdelete.php',
-        addRemoveLinks: true
-    });
 		jQuery("#pte_topic_dropzone").dropzone({
 				uploadMultiple: false,
 				addedfile: function (file) {
 					console.log("DROPPED ON TOPIC"),
 					console.log(file);
 					this.removeFile(file);
-					jQuery("#pte_chat_dropzone").hide();
 					jQuery("#pte_topic_dropzone").hide();
 				},
 				url: alpn_templatedir + 'pte_donotdelete.php',
@@ -3135,14 +3158,12 @@ jQuery( window ).load( function(){
 		document.ondragenter = (e) => {
 		    if(!draggedFile) {
 		        draggedFile = true;
-						jQuery("#pte_chat_dropzone").show();
 						jQuery("#pte_topic_dropzone").show();
 					}
 		}
 		document.ondragleave = (e) => {
 		    if (!e.fromElement && draggedFile) {
 		        draggedFile = false;
-						jQuery("#pte_chat_dropzone").hide();
 						jQuery("#pte_topic_dropzone").hide();
 	    }
 		}
@@ -3183,17 +3204,25 @@ function alpn_handle_file_submit(payload) {
 	var domId = payload.dom_id;
 	var vaultItem = jQuery("div.alpn_vault_cell[data-uid='" + payload.dom_id + "']");
 	vaultItem.attr("style", "opacity: 1.0; pointer-events: auto;").find('#waiting_indicator_row').remove();
-	vaultItem.find('div#pte_vault_desc_content').html(payload.description);
+	var aboutValue = payload.description ? payload.description : " - -";
+
+	//vaultItem.find('div#pte_vault_desc_content').html(aboutValue);
 
 	var aboutField = jQuery('textarea#alpn_about_field');
-	if (!aboutField.val()) {
-		aboutField.val(payload.description);
-	}
+	aboutField.val(aboutValue);
+
+
 	vaultItem.find('div#wsc_file_doc_type').html(pte_supported_types_map[payload.mime_type]);
 }
 
 function pte_register_uploads(pteUploads){
 	console.log("REGISTER UPLOADS");
+
+	var permissionContainer = jQuery('div#wis_permission_container');
+	var descriptionContainer = jQuery('div#wis_description_container');
+	permissionContainer.attr('style', 'pointer-events: none; opacity: 0.50;');
+	descriptionContainer.attr('style', 'pointer-events: none; opacity: 0.50;');
+
 	var pte_file_data = [];
 	var file = id = mimeType = originalExt = "";
 	for (var key in pteUploads) {
@@ -3236,7 +3265,6 @@ function pte_register_uploads(pteUploads){
 		},
 		dataType: "json",
 		success: function(json) {
-
 			console.log(json);
 			var accessLevel =  (typeof json.data[0].access_level != "undefined") ?  json.data[0].access_level : 40;
 
@@ -3338,7 +3366,7 @@ function pte_uppy_topic_logo(){
 
 	if (pte_external == false && jQuery("#pte_profile_logo_selector").length) {
 
-		var allowedFileTypes = ['.jpeg', '.jfif', '.jpeg', '.jpg', '.gif', '.png', '.webp'];
+		var allowedFileTypes = ['.jpeg', '.jpeg', '.jpg', '.gif', '.png'];
 
 		jQuery('#pte_profile_logo_crop').empty();
 		jQuery('#pte_profile_logo_selector').empty();
@@ -3589,6 +3617,8 @@ var localInstance = pte_uppy_vault_instances[pte_uppy_instance_id] = new Uppy.Co
 		},
 		onBeforeUpload: (files) => {
 			pte_register_uploads(files);
+			pte_handle_active_toolbar('none');
+
 			return true;
 		},
 	  restrictions: {
@@ -3600,7 +3630,7 @@ var localInstance = pte_uppy_vault_instances[pte_uppy_instance_id] = new Uppy.Co
 			encoding: "Registering...",
 	    strings: {
 	      youCanOnlyUploadFileTypes: 'Should Not See This...',
-				dropPasteImportFiles: 'Upload or import files using Transloadit, our trusted partner. Wiscle branding coming soon.'
+				dropPasteImportFiles: 'Upload or import files. Drag and drop and more sources coming soon!'
 	    }
 	  }
 	})
@@ -3896,7 +3926,7 @@ function pte_set_work_area_html(areaType) {
 				workAreaHtml += "</div> \
 				</div> \
 				<div class='pte_vault_row pte_row_top_margin'> \
-						<div class='pte_vault_row_67 pte_vault_text_xlarge pte_vault_bold pte_field_padding_right'> \
+						<div id='wis_description_container' class='pte_vault_row_67 pte_vault_text_xlarge pte_vault_bold pte_field_padding_right'> \
 							Description \
 							<textarea id='alpn_about_field' placeholder='Describe your vault entry so it can be easily found...' class='pte_field_padding_right'></textarea> \
 						</div> \
@@ -3977,8 +4007,10 @@ function alpn_toggle_vault_work_area(){
 	var area_dom = '#alpn_vault_work_area';
 	if (jQuery(area_dom).height() == '0'){
 		jQuery(area_dom).height('125px');
+		wsc_work_area_open = true;
 	} else {
 		jQuery(area_dom).height('0px');
+		wsc_work_area_open = false;
 	}
 }
 
@@ -3988,6 +4020,7 @@ function alpn_open_vault_work_area(){
 	var area_dom = '#alpn_vault_work_area';
 	if (jQuery(area_dom).height() == '0'){
 		jQuery(area_dom).height('125px');
+		wsc_work_area_open = true;
 	}
 }
 
@@ -3997,6 +4030,7 @@ function alpn_close_vault_work_area(){
 	var area_dom = '#alpn_vault_work_area';
 	if (jQuery(area_dom).height() == '125'){
 		jQuery(area_dom).height('0px');
+		wsc_work_area_open = false;
 		pdfui.redraw();
 	}
 }
@@ -4146,28 +4180,31 @@ function alpn_select_type(uniqueRecId){
 }
 
 function pte_handle_active_toolbar (buttonType){
+
+	console.log("Handling Active Button");
+
 	switch(buttonType) {
 		case 'add':
-			pte_toolbar_active = 'add';
 			jQuery('#alpn_vault_new').css("color", "rgb(0, 132, 238)");
 			jQuery('#alpn_vault_links').css("color", "#3172B6");
 			jQuery('#alpn_vault_edit').css("color", "#3172B6");
 		break;
 		case 'edit':
-			pte_toolbar_active = 'edit';
 			jQuery('#alpn_vault_new').css("color", "#3172B6");
 			jQuery('#alpn_vault_links').css("color", "#3172B6");
-			jQuery('#alpn_vault_edit').css("color", "rgb(0, 132, 238)");
+			if (wsc_work_area_open){
+				jQuery('#alpn_vault_edit').css("color", "rgb(0, 132, 238)");
+			} else {
+				jQuery('#alpn_vault_edit').css("color", "#3172B6");
+			}
 		break;
 		case 'links':
-			pte_toolbar_active = 'links';
 			jQuery('#alpn_vault_new').css("color", "#3172B6");
 			jQuery('#alpn_vault_links').css("color", "rgb(0, 132, 238)");
 			jQuery('#alpn_vault_edit').css("color", "#3172B6");
 			pte_get_vault_links();
 		break;
 		case 'none':
-			pte_toolbar_active = 'none';
 			jQuery('#alpn_vault_new').css("color", "#3172B6");
 			jQuery('#alpn_vault_links').css("color", "#3172B6");
 			jQuery('#alpn_vault_edit').css("color", "#3172B6");
@@ -4307,23 +4344,38 @@ function pte_get_vault_links(cellId){
 }
 
 function alpn_handle_vault_row_selected(theCellId) {
+
+	console.log("HANDLING ROW SELECTED");
+	console.log(theCellId);
+
 	pte_clear_message();
+
 	var theOldRow =  jQuery('#alpn_field_' + alpn_oldVaultSelectedId).closest('tr');
+
 	jQuery(theOldRow).children().attr("style", "background-color: white !important;");
 	alpn_oldVaultSelectedId =	theCellId;
+
 	if (theCellId) {
+
+		//TODO Handle non owner
+		var permissionContainer = jQuery('div#wis_permission_container');
+		var descriptionContainer = jQuery('div#wis_description_container');
+		permissionContainer.attr('style', 'pointer-events: auto; opacity: 1.00;');
+		descriptionContainer.attr('style', 'pointer-events: auto; opacity: 1.00;');
+
 		var theNewRow =  jQuery('#alpn_field_' + theCellId).closest('tr');
 			if (theNewRow.length) {
 				theNewRow.children().attr("style", "background-color: #ebe7df !important;");
-				alpn_manage_vault_buttons(false);
+
+				alpn_manage_vault_buttons('lock');
+				jQuery('#alpn_vault_interaction_start').css("pointer-events", "none").css("cursor", "progress");
+
 				alpn_vault_control("view");
-				if (pte_toolbar_active == 'add') {
-						pte_handle_active_toolbar('edit');
-				}
 
 				if (pte_toolbar_active == 'links') {
 					pte_get_vault_links(theCellId);
 				}
+
 				var selectedRowData = wpDataTables.table_vault.fnGetData(theNewRow);
 				//TODO filter name field to match valid filename characteristics
 				// OR filter characters at download time.
@@ -4337,41 +4389,69 @@ function alpn_handle_vault_row_selected(theCellId) {
 
 			}
 	} else {
+		console.log("ACTIVE TOOLBAR NO CELLID", pte_toolbar_active);
 		alpn_oldVaultSelectedId = '';
 	}
 }
 
 function alpn_manage_vault_buttons(theCellId, deleteOnly = false) {
 
+	console.log("MANAGING VAULT BUTTONS");
+
 	var objType = 'form';  //Get from row data soon and below. Extend with rights??
 	var objMeta;
 
-	if (theCellId) {   //need rights here TODO
+	var isConnected = jQuery("div#pte_selected_topic_meta").data("con");
+	var isSpecial = jQuery("div#pte_selected_topic_meta").data("special");
+
+	if (theCellId == 'lock') {
+
 		objMeta = {
-				'delete': 1,
-				'edit': 1,
-				'new': 1,
-				'links': 1,
-				'chat': 1,
-				'download_pdf': 1,
-				'download_original': 1,
-				'print': 1,
-				'interaction_start': 1
+			'delete': -1,
+			'edit': -1,
+			'new': -1,
+			'links': -1,
+			'chat': -1,
+			'download_pdf': -1,
+			'download_original': -1,
+			'print': -1,
+			'interaction_start': -1
+		 }
+
+	} else if (theCellId) {
+
+			if (theCellId === true) {
+				theCellId = alpn_oldVaultSelectedId;
 			}
-		if (deleteOnly) {
+
+			//TODO GET THESE DYNAMICALLY FROM PROTEAM IF VISITING. WARN!
 			objMeta = {
- 			 'delete': 1,
- 			 'edit': 0,
- 			 'new': 1,
- 			 'links': 0,
- 			 'chat': 0,
- 			 'download_pdf': 0,
- 			 'download_original': 0,
- 			 'print': 0,
- 			 'interaction_start': 0
- 			}
-		}
+					'delete': 1,
+					'edit': 1,
+					'new': 1,
+					'links': 1,
+					'chat': 1,
+					'download_pdf': 1,
+					'download_original': 1,
+					'print': 1,
+					'interaction_start': 1
+				}
+			if (deleteOnly) {
+				objMeta = {
+	 			 'delete': 1,
+	 			 'edit': 0,
+	 			 'new': 1,
+	 			 'links': 0,
+	 			 'chat': 0,
+	 			 'download_pdf': 0,
+	 			 'download_original': 0,
+	 			 'print': 0,
+	 			 'interaction_start': 0
+	 			}
+			}
+
 	} else { //defaults
+
 		 objMeta = {
 			 'delete': 0,
 			 'edit': 0,
@@ -4386,33 +4466,41 @@ function alpn_manage_vault_buttons(theCellId, deleteOnly = false) {
 	}
 
 	var table = wpDataTables.table_vault;
-	var theRow =  jQuery('#alpn_field_' + theCellId).closest('tr');
+	var theRow = jQuery('#alpn_field_' + theCellId).closest('tr');
 	var selectedRowData = table.fnGetData(theRow);
 	var theButton;
 
 	for( var key in objMeta ) {
 		theButton = jQuery("#alpn_vault_" + key);
-		if (objMeta[key]) {
-			theButton.attr("style", "opacity: 1; pointer-events: auto;")
-		} else {
-			theButton.attr("style", "opacity: 0.6; pointer-events: none;")
+
+		if (objMeta[key] == 1) {  //TODO GENERALIZE
+			if ((key == 'chat' && isConnected == false)) {
+				theButton.css("opacity", "0.60").css("pointer-events", "none").css("cursor", "none");
+			} else {
+				theButton.css("opacity", "1").css("pointer-events", "auto").css("cursor", "pointer");
+			}
+
+		} else if (objMeta[key] == 0) {
+			theButton.css("opacity", "0.60").css("pointer-events", "none").css("cursor", "none");
+		} else if (objMeta[key] == -1) {
+			theButton.css("pointer-events", "none").css("cursor", "none");
 		}
 	}
 
-	var openableFile = false;
-	if (selectedRowData) {
-		var fileSource = selectedRowData[15];
-		var mimeType = selectedRowData[9];
-		if (fileSource == 'googledrive' || fileSource == 'onedrive' || fileSource == 'onedriveforbusiness') {
-			if (mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || mimeType == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || mimeType == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
-				jQuery('#alpn_vault_edit_original').attr('style', 'pointer-events: auto; opacity: 1.0;');
-				openableFile = true;
-			}
-		}
-	}
-	if (!openableFile) {
-			jQuery('#alpn_vault_edit_original').attr('style', 'pointer-events: none; opacity: 0.5;');
-	}
+	// var openableFile = false;
+	// if (selectedRowData) {
+	// 	var fileSource = selectedRowData[15];
+	// 	var mimeType = selectedRowData[9];
+	// 	if (fileSource == 'googledrive' || fileSource == 'onedrive' || fileSource == 'onedriveforbusiness') {
+	// 		if (mimeType == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || mimeType == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || mimeType == 'application/vnd.openxmlformats-officedocument.presentationml.presentation') {
+	// 			jQuery('#alpn_vault_edit_original').attr('style', 'pointer-events: auto; opacity: 1.0;');
+	// 			openableFile = true;
+	// 		}
+	// 	}
+	// }
+	// if (!openableFile) {
+	// 		jQuery('#alpn_vault_edit_original').attr('style', 'pointer-events: none; opacity: 0.5;');
+	// }
 }
 
 function alpn_switch_panel(panel) {
@@ -4569,7 +4657,7 @@ function pte_setup_pdf_viewer(viewerSettings) {
 							jQuery('#alpn_vault_copy_go').removeClass('pte_extra_button_disabled').addClass('pte_extra_button_enabled');
 						} else if (topicMode =='vault') {
 							console.log("Handling Vault Open Success");
-							alpn_manage_vault_buttons(true);
+							alpn_vault_control('edit', "internal");
 						}
 					pte_hide_viewer_overlay();
 
@@ -4690,6 +4778,7 @@ function pte_view_document(vaultId, token = false) {
 				break;
 			}
 			if (!isViewer) {alpn_manage_vault_buttons(true, true)};
+			wsc_reset_ww_list();
 			return;
 		}
 
@@ -4716,6 +4805,7 @@ function pte_view_document(vaultId, token = false) {
 					}
 			})
 		} else {
+			wsc_reset_ww_list();
 			console.log("ERROR OPENING FILE");
 			console.log(xhr);
 			console.log(status);
@@ -4814,16 +4904,12 @@ function pte_copy_report_to_vault(actionOnReturn){
 }
 
 
-function pte_start_topic_team_invitation (topicId) {
-	var sendData = {
-		'topic_id': topicId,
-		'process_type_id': 'proteam_invitation'
-	};
-	pte_handle_widget_interaction(sendData);
-	pte_overlay_success('alpn_vault_interaction_start');  //Animates button to give user feedback that am interaction is starting. TODO get this right
-}
 
-function alpn_vault_control(operation) {
+function alpn_vault_control(operation, originator = 'user') {
+
+	console.log("Vault Control");
+	console.log(operation);
+
 	//Get Row Context
 	var trOb, rowData, s_id, from_id;
 	var vaultId = '';
@@ -4837,9 +4923,12 @@ function alpn_vault_control(operation) {
 	var filesource = '';
 	var mimeType = '';
 	var id = '';
-	var topicId = '';
+
+
+	var topicId = jQuery("div#pte_selected_topic_meta").data('tid');
 
 	if (alpn_oldVaultSelectedId) {
+
 		trObj =  jQuery('#alpn_field_' + alpn_oldVaultSelectedId).closest('tr');
 
 		if ((typeof wpDataTables !== "undefined") && trObj) {
@@ -4855,7 +4944,6 @@ function alpn_vault_control(operation) {
 			fileSource = rowData[15];
 			mimeType = rowData[9];
 			permissionValue = rowData[2];
-			topicId = rowData[13].replace(/\D/g,'');
 		}
 	}
 
@@ -4886,6 +4974,9 @@ function alpn_vault_control(operation) {
 				"permission": permissionValue,
 				"object_type": "vault_item"
 			};
+
+
+			pte_open_chat_panel();
 			pte_message_chat_window(messageData);
 
 		break;
@@ -4924,6 +5015,14 @@ function alpn_vault_control(operation) {
 			});
 		break;
 
+		case 'team_invite':
+			var sendData = {
+				'topic_id': topicId,
+				'process_type_id': 'proteam_invitation'
+			};
+			pte_handle_widget_interaction(sendData);
+			pte_overlay_success('alpn_vault_interaction_start');  //Animates button to give user feedback that am interaction is starting. TODO get this right
+		break;
 		case 'sms':
 			var typeSelected = alpn_select_type(alpn_oldVaultSelectedId);
 			var sendData = {
@@ -5037,39 +5136,12 @@ function alpn_vault_control(operation) {
 
 		break;
 
-		case 'edit':
-
-			console.log("EDIT");
-
-
-				if (!alpn_oldVaultSelectedId) {
-						alpn_set_vault_to_first_row = true;
-						wpDataTables.table_vault.fnFilter();
-			}
-			alpn_switch_panel('view');
-
-			if (pte_toolbar_active == 'none') {
-				pte_set_work_area('add-edit');
-				alpn_open_vault_work_area();
-				pte_handle_active_toolbar('edit');
-			} else if (pte_toolbar_active == 'edit') {
-				alpn_close_vault_work_area();
-				pte_handle_active_toolbar('none');
-			} else {
-				pte_handle_active_toolbar('edit');
-				pte_set_work_area('add-edit');
-			}
-
-		jQuery('#alpn_name_field').attr('style', 'pointer-events: auto; opacity: 1.0;');
-		jQuery('#alpn_name_field_label').attr('style', 'pointer-events: auto; opacity: 1.0;');
-
-		break;
 		case 'view':
 			//TODO Change to docType	-- UNSAFE. ANYONE CAN JQUERY TO GET FILES????
 			alpn_switch_panel('view');
 			jQuery('#alpn_name_field').attr('style', 'pointer-events: auto; opacity: 1.0;');
 			jQuery('#alpn_name_field_label').attr('style', 'pointer-events: auto; opacity: 1.0;');
-			if (vaultId) {
+		if (vaultId) {
 				pte_view_document(vaultId);
 			}
 
@@ -5078,44 +5150,90 @@ function alpn_vault_control(operation) {
 		case 'links':
 
 		console.log("LINKS...");
+		console.log(pte_toolbar_active);
 
-			//TODO Change to docType	-- UNSAFE. ANYONE CAN JQUERY TO GET FILES????
-			if (!alpn_oldVaultSelectedId) {  //After Add
-					alpn_set_vault_to_first_row = true;
-					wpDataTables.table_vault.fnFilter();
-			}
 			alpn_switch_panel('view');
 
-			if (pte_toolbar_active == 'none') {
+			if (pte_toolbar_active == 'edit') {
 				pte_set_work_area('links');
 				alpn_open_vault_work_area();
+				pte_toolbar_active = 'links';
 				pte_handle_active_toolbar('links');
 			} else if (pte_toolbar_active == 'links') {
 				alpn_close_vault_work_area();
-				pte_handle_active_toolbar('none');
+				pte_toolbar_active = 'edit';
+				pte_handle_active_toolbar('edit');
 			} else {
-				pte_handle_active_toolbar('links');
 				pte_set_work_area('links');
+				pte_toolbar_active = 'links';
+				pte_handle_active_toolbar('links');
 			}
 
 		break;
 
+		case 'edit':
+
+			console.log("EDIT");
+			console.log(pte_toolbar_active);
+
+			alpn_switch_panel('view');
+
+ 			if (pte_toolbar_active == 'edit' || pte_toolbar_active == 'none') {
+				pte_set_work_area('add-edit');
+				alpn_manage_vault_buttons(true);
+				if (originator == 'user') {
+					alpn_toggle_vault_work_area();
+				}
+				pte_toolbar_active = 'edit';
+				pte_handle_active_toolbar('edit');
+			} else if (pte_toolbar_active == 'add') {
+				alpn_manage_vault_buttons(true);
+				pte_handle_active_toolbar('edit');
+				pte_toolbar_active = 'edit';
+			} else if (pte_toolbar_active == 'links') {
+				pte_set_work_area('add-edit');
+				alpn_manage_vault_buttons(true);
+				pte_handle_active_toolbar('edit');
+				pte_toolbar_active = 'edit';
+			}
+		jQuery('#alpn_name_field').attr('style', 'pointer-events: auto; opacity: 1.0;');
+		jQuery('#alpn_name_field_label').attr('style', 'pointer-events: auto; opacity: 1.0;');
+
+		wsc_reset_ww_list();
+		wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
+		wsc_add_ww("<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>");
+		wsc_add_ww("<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>");
+		wsc_add_ww("<option value='fax' data-icon='far fa-fax'>Send as Fax</option>");
+
+		break;
+
 		case 'add':   //this is add and edit
+		console.log("ADDING");
+		console.log(pte_toolbar_active);
+		//EDIT/OPEN WORK AREA. CLOSE DO
+			alpn_manage_vault_buttons(false);
 
-			alpn_file_add();
-
-			if (pte_toolbar_active == 'none') {
+ 			if (pte_toolbar_active == 'none' || pte_toolbar_active == 'edit') {
+				alpn_handle_vault_row_selected('');
+				alpn_switch_panel ('add_edit');
+				pte_uppy_vault_file();
 				pte_set_work_area('add-edit');
 				alpn_open_vault_work_area();
+				pte_toolbar_active = 'add';
 				pte_handle_active_toolbar('add');
-			} else if (pte_toolbar_active == 'add') {
-				alpn_close_vault_work_area();
-				alpn_set_vault_to_first_row = true;
-				wpDataTables.table_vault.fnFilter();
-				pte_handle_active_toolbar('none');
-			} else {
-				pte_handle_active_toolbar('add');
+			} else if (pte_toolbar_active == 'add'){
+				 alpn_close_vault_work_area();
+				 alpn_set_vault_to_first_row = true;
+				 wpDataTables.table_vault.fnFilter();
+				 pte_toolbar_active = 'edit';
+				 pte_handle_active_toolbar('edit');
+			} else if (pte_toolbar_active == 'links'){
+				alpn_handle_vault_row_selected('');
+				alpn_switch_panel ('add_edit');
+				pte_uppy_vault_file();
 				pte_set_work_area('add-edit');
+				pte_toolbar_active = 'add';
+				pte_handle_active_toolbar('add');
 			}
 
 			jQuery('#alpn_name_field_label').attr('style', 'pointer-events: none; opacity: 0.5;');
@@ -6219,8 +6337,10 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 		}
 		break;
 		case 'pdf_topic':
-		var security = specialObj.security;
-		console.log('PDF TOPIC...');
+
+			jQuery('#alpn_vault_interaction_start').css("pointer-events", "none").css("cursor", "progress");
+			var security = specialObj.security;
+			console.log('PDF TOPIC...');
 			jQuery.ajax({
 				url: alpn_templatedir + 'alpn_handle_topic_pdf.php',
 				type: 'POST',
@@ -6240,6 +6360,12 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 						var viewerSettings = {
 								'sidebar_state': 'closed'
 						}
+
+					alpn_oldVaultSelectedId = '';
+
+					wsc_reset_ww_list();
+					wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
+
 					pte_setup_pdf_viewer(viewerSettings);
 					if (!pte_back_button) {
 						var metaObj = jQuery('#pte_selected_topic_meta');
@@ -6368,6 +6494,9 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 		break;
 
 		case 'select_topic':
+
+			jQuery('#alpn_vault_interaction_start').css("pointer-events", "none").css("cursor", "progress");
+
 			pte_active_tabs = []; //reset all row-selected state for tabs
 			pte_selected_report_template = '';  //TODO unless switching between types
 
@@ -6411,6 +6540,10 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 					var metaObj = jQuery('#pte_selected_topic_meta');
 					var topicOwnerId = metaObj.data('oid');
 
+					alpn_oldVaultSelectedId = '';
+
+					wsc_reset_ww_list();
+					wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
 
 					var delButtonEl = jQuery("#delete_topic_button");
 					if (delButtonEl.hasClass('pte_ipanel_button_disabled')) {
@@ -6449,8 +6582,10 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 		break;
 
 		case 'vault':
-		var security = specialObj.security;
+			var security = specialObj.security;
+
 			console.log("Selecting Vault...");
+			jQuery('#alpn_vault_interaction_start').css("pointer-events", "none").css("cursor", "progress");
 			pte_handle_active_toolbar('none');  //Resets active toolbar if needed
 
 			if (pte_back_button) {
@@ -6476,7 +6611,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 						var viewerSettings = {
 								'sidebar_state': 'closed'
 						}
-						pte_setup_pdf_viewer(viewerSettings);
+					pte_setup_pdf_viewer(viewerSettings);
 
 					if (jQuery('#alpn_outer_vault .wpdt-c :input')[2]) {
 						if (pte_global_vault_item_dom_id) {
@@ -6495,8 +6630,12 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 						wpDataTables.table_vault.fnSettings().oLanguage.sZeroRecords = 'No Vault Items';
 						wpDataTables.table_vault.fnSettings().oLanguage.sEmptyTable = 'No Vault Items';
 						wpDataTables.table_vault.addOnDrawCallback( function(){
+							var vaultRowData = wpDataTables.table_vault.fnGetData(0);
+							if (!vaultRowData) {  //UX best place to clear WW list when there are none.
+								wsc_reset_ww_list();
+							}
 							alpn_handle_vault_table();
-						})
+						});
 					}
 
 					if (!pte_back_button) {
@@ -6519,6 +6658,41 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 			console.log('Mission Control Error');
 		break;
 	}
+}
+
+function wsc_reset_ww_list(){
+	jQuery('#alpn_vault_interaction_start').css("pointer-events", "auto").css("cursor", "pointer");
+	jQuery('#alpn_selector_interaction_selector').empty().select2({
+		placeholder: '- - - -',
+		theme: 'bootstrap',
+		width: '100%',
+		allowClear: false,
+		templateSelection: iformat,
+		templateResult: iformat,
+		escapeMarkup: function(text) {
+			return text;
+		},
+		'language':{
+			'noResults' : function () { return 'No Workflows Available'; }
+		}
+	});
+}
+
+
+function wsc_add_ww(newItem, rules = false) {
+	//TODO create more rules. For now, it filters topic special only
+	var metaObj = jQuery('#pte_selected_topic_meta');
+	var topicSpecial = metaObj.data('special');
+	var wiscleWorkflowSelector = jQuery('#alpn_selector_interaction_selector');
+	var newItemJ = jQuery(newItem);
+	var itemKey = newItemJ.attr('value');
+	if (!rules || rules == topicSpecial) {
+		if (!wiscleWorkflowSelector.find("option[value='" + itemKey + "']").length) {
+			wiscleWorkflowSelector.append(newItemJ).trigger('change');
+		}
+	}
+
+
 }
 
 function alpn_reselect () {
@@ -7065,27 +7239,3 @@ function pte_save_vault_meta(){
 		});
 	}
 }
-
-
-(function($){
-
-	var TIMEOUT = 3000;
-	var lastTime = (new Date()).getTime();
-
-	setInterval(function() {
-	  var currentTime = (new Date()).getTime();
-	  if (currentTime > (lastTime + TIMEOUT + 2000)) {
-	    $(document).wake();
-	  }
-	  lastTime = currentTime;
-	}, TIMEOUT);
-
-	$.fn.wake = function(callback) {
-	  if (typeof callback === 'function') {
-	    return $(this).on('wake', callback);
-	  } else {
-	    return $(this).trigger('wake');
-	  }
-	};
-
-})(jQuery);

@@ -56,6 +56,7 @@ class quick_report extends \koolreport\KoolReport
 		 if (isset($userInfo[0])) {
 			 foreach ($userInfo as $key => $value) {
 				 if ($value->id == $topicId) {
+					 $topicLogoUrl = "";
 					 $logoHandle = $value->logo_handle;
 					 if ($logoHandle) {
 						 $topicLogoUrl = "<img class='pte_logo_image_print'  src='{$imageBaseUrl}{$logoHandle}'>";
@@ -76,21 +77,22 @@ class quick_report extends \koolreport\KoolReport
 					}
 				 if ($value->id == $userMeta) {
 					 $this->params['user_content'] = json_decode($value->topic_content, true);
-					 $this->params['user_content']['logo_url']  = $imageBaseUrl . $value->logo_handle;
-					 $this->params['user_content']['image_url']  = $imageBaseUrl . $value->image_handle;
+					 $this->params['user_content']['logo_url']  = $value->logo_handle ? $imageBaseUrl . $value->logo_handle : "";
+					 $this->params['user_content']['image_url']  = $value->image_handle ? $imageBaseUrl . $value->image_handle : "";
 					}
 				 if ($value->id == $placeTopicId) {
 					 $this->params['place_content'] = json_decode($value->topic_content, true);
-					 $this->params['place_content']['logo_url']  = $imageBaseUrl . $value->logo_handle;
-					 $this->params['place_content']['image_url']  = $imageBaseUrl . $value->image_handle;
+					 $this->params['place_content']['logo_url']  = $value->logo_handle ? $imageBaseUrl . $value->logo_handle : "";
+					 $this->params['place_content']['image_url']  = $value->image_handle ? $imageBaseUrl . $value->image_handle : "";
 				 }
 				 if ($value->id == $organizationTopicId) {
 					 $this->params['organization_content']= json_decode($value->topic_content, true);
-					 $this->params['organization_content']['logo_url']  = $imageBaseUrl . $value->logo_handle;
-					 $this->params['organization_content']['image_url']  = $imageBaseUrl . $value->image_handle;
+					 $this->params['organization_content']['logo_url']  = $value->logo_handle ? $imageBaseUrl . $value->logo_handle : "FREDDY";
+					 $this->params['organization_content']['image_url']  = $value->image_handle ? $imageBaseUrl . $value->image_handle : "";
 				 }
 			 }
 		 }
+
 			//Info
 			$subjectToken = 'pte_main_topic_0';
 			$dataSource = array(
@@ -159,6 +161,7 @@ class quick_report extends \koolreport\KoolReport
 								}
 
 								//TODO Optimize by only creating data sources for needed ones. Creating too many for filtered links
+
 
 								$dataSource = array(
 			 					 "class"=>'\koolreport\datasources\ArrayDataSource',

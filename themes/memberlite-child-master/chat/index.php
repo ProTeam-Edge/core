@@ -21,6 +21,7 @@
             <div class="pte_chat_activity_title">Audio</div>
             <div id="pte_chat_no_video_message" >- No Active Audio -</div>
             <ul id="pte_audio_activity_list"></ul>
+            <div id="wsc_message_preview"></div>
           </div>
 
           <div id="pte_chat_messages_area">
@@ -29,7 +30,7 @@
               <div class="pte_typing_bar">
                 <div id="typing-indicator" class="pte_typing_area"><span></span></div>
                 <div class="pte_send_area">
-                  <button id="buttercup_easter_egg" class="pte_button_disabled" onclick="pte_send_chat(this);" title="Or, press CTRL+Enter">Send</button>
+                  <button id="buttercup_easter_egg" class="pte_button_disabled" onclick="pte_send_chat(this);" title="Or, press CTRL+Enter">SEND</button>
                 </div>
               </div>
               <textarea id="message-body-input"></textarea>
@@ -40,8 +41,9 @@
       </div>
     </div>
 
-  <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.textcomplete/1.8.5/jquery.textcomplete.min.js"></script>
+  <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.4.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery.textcomplete/1.8.5/jquery.textcomplete.min.js"></script>
+  <script type="text/javascript" src='https://releases.transloadit.com/uppy/v2.1.0/uppy.min.js'></script>
 
   <script type="text/javascript" src="./js/twilio-chat.min.js"></script>
   <script type="text/javascript" src="./js/twilio-video.min.js"></script>
@@ -64,9 +66,8 @@
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);
 </script>
-
-  <script type="text/javascript" src="./js/vendor/emojionearea.min.js"></script>
-  <script type="text/javascript" src="./js/index.js"></script>
+<script type="text/javascript" src="./js/vendor/emojionearea.min.js"></script>
+<script type="text/javascript" src="./js/index.js"></script>
 
 </body>
 </html>

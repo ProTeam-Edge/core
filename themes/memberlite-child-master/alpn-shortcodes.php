@@ -1,8 +1,18 @@
 <?php
 
+global $memberFeatures;
+
+$memberFeatures= array(
+	'fax_1' => true,
+	'fax_2' => true,
+	'template_editor_main' => false,
+	'topic_type_editor_main' => false
+
+);
+
 function db_shortcode($attr) {
 
-	global $wpdb, $wpdb_readonly; //Wordpress DB Access
+	global $wpdb, $memberFeatures, $wpdb_readonly; //Wordpress DB Access
 
     extract(shortcode_atts(array(
         'block_type' => 'block_type'
@@ -244,7 +254,7 @@ function db_shortcode($attr) {
 							<div style='clear: both;'></div>
 						</div>
 						<div style='text-align: right; width: 100%;'>
-							<img src='https://proteamedge.com/wp-content/themes/memberlite-child-master/pte_logo_extension.png'>
+							<img src='https://wiscle.com/wp-content/themes/memberlite-child-master/pte_logo_extension.png'>
 						</div>
 					</div>
 				</div>
@@ -273,6 +283,8 @@ function db_shortcode($attr) {
 
 			break;
       case 'network':
+			$urlTopicOperation = isset($_GET['topic_operation']) && $_GET['topic_operation'] ? $_GET['topic_operation'] : "";
+			$urlDestinationTopicId = isset($_GET['destination_topic_id']) && $_GET['destination_topic_id'] ? $_GET['destination_topic_id'] : "";
 
 			$businessTypes = get_custom_post_items('pte_profession', 'ASC');
 			$optionsStr = $iconStr = '';
@@ -280,7 +292,6 @@ function db_shortcode($attr) {
 				//$iconStr =
 				$optionsStr .= "<option value='{$key}'>{$value}</option>";
 			}
-
 			$html = "
 					<div id='alpn_section_network'>
 						<div class='alpn_title_bar'>
@@ -307,6 +318,9 @@ function db_shortcode($attr) {
 						$html .= "<script>
 					   pte_chrome_extension = false;
 					   alpn_user_id = {$userID};
+						 alpn_sync_id = '{$syncId}';
+						 wsc_topic_operation = '{$urlTopicOperation}';
+						 wsc_destination_topic_id = '{$urlDestinationTopicId}';
 						 alpn_sync_id = '{$syncId}';
 						 alpn_user_topic_id = {$userTopicId};
 						 alpn_user_topic_type_id = {$userTopicTypeId};
@@ -381,8 +395,29 @@ function db_shortcode($attr) {
 		// 	<div class='alpn_section_head_right'></div>
 	 // </div>
 
+	 $interactionChooser = "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
+	 // $interactionChooser .= "<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>";
+	 // $interactionChooser .= "<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>";
+	 // $interactionChooser .= "<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>";
+	 //
+	 // if($memberFeatures['fax_1']) {   //Fax Available to all levels other than Community  //TODO make this dynamic
+	 // 	$interactionChooser .= "<option value='fax' data-icon='far fa-fax'>Send as Fax</option>";
+	 // }
+
+	 $interactionChooser .= "</select>";
+
 			$html = "";
 			$html .= "<div id='alpn_section_alert'>
+					<div class='alpn_title_bar_blue'>
+							<div class='alpn_section_head_left_white'>Workflows</div>
+							<div class='alpn_section_head_right_white'>
+										&nbsp;&nbsp;--
+						  </div>
+					 </div>
+
+				 	 <div class='wsc_workflow_selector'>
+					    <div id='wsc_ww_container'>{$interactionChooser}</div><div id='wsc_ww_container_icon'><i id='alpn_vault_interaction_start' class='far fa-arrow-circle-right wsc_ww_start_icon' title='Start this Interaction' onclick='pte_handle_interaction_start(this);'></i></div>
+					 </div>
 
 					 <div id='pte_interaction_outer_container'>
 					 	<div id='pte_interaction_ux_message' class='pte_interaction_ux_message'>Interaction Recalled</div>
@@ -403,14 +438,11 @@ function db_shortcode($attr) {
 								</div>
 							</div>
 						</div>
-
-
 						<div class='pte_vault_row_50 pte_vault_right'>
 							<img id='interaction_wait_indicator' class='pte_refresh_report_loading' src='{$rootUrl}pdf/web/images/loading-icon.gif'>
 						</div>
-
-
-					</div>";
+					</div>
+					";
 			$html .= "<div id='pte_interactions_table_container'>";
 
 			$interactionFilterTypes = array(
@@ -446,13 +478,13 @@ function db_shortcode($attr) {
 				"<div id='alpn_chat_panel' class='alpn_chat_panel'>
 				<div id='pte_chat_dropzone'>Drop a file here to add it to this Topics File Vault and to send a link in Chat [Coming Soon!]</div>
 				 	<div id='alpn_chat_title' class='alpn_chat_title'>
-						<div id='alpn_chat_title_title'>Discussion&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<span id='pte_chat_topic_name'>--</span></div>
+						<div id='alpn_chat_title_title'><div id='pte_chat_topic_label'>Discussion&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;</div><div id='pte_chat_topic_name'>--</div></div>
 						<div id='alpn_chat_stats'>
 							<div id='alpn_chat_chat'>
-								Chat  &nbsp;&nbsp;<span id='pte_chat_total_unreads'>--</span>
+								<div id='wsc_chat_important'></div>Chat  &nbsp;&nbsp;<span id='pte_chat_total_unreads'>--</span>
 							</div>
 							<div id='alpn_chat_audio'>
-								<div id='alpn_chat_audio_status_area'>Audio  &nbsp;&nbsp;<span id='pte_active_audio_channels'>--</span></div>{$audioOnOffHtml}{$audioMuteUnmuteHtml}
+								<div id='alpn_chat_audio_status_area'><div id='wsc_audio_important'></div>Audio  &nbsp;&nbsp;<span id='pte_active_audio_channels'>--</span></div>{$audioOnOffHtml}{$audioMuteUnmuteHtml}
 							</div>
 						</div>
 					</div>
@@ -525,54 +557,225 @@ add_shortcode('alpn_network', 'db_shortcode');
 
 function simple_shortcode($data) {
 
+	global $wpdb;
 	$html = "";
 
-	extract(shortcode_atts(array(
-		'operation' => 'operation',
-		'option_1' => 'option_1',
-		'option_2' => 'option_2'
-	), $data));
+		extract(shortcode_atts(array(
+			'operation' => 'operation',
+			'option_1' => 'option_1',
+			'option_2' => 'option_2'
+		), $data));
 
-	switch ($operation) {
+		switch ($operation) {
 
-		case 'logged_status':
-			if (is_user_logged_in()) {
-				$html = $option_1;
-			} else {
-				$html = $option_2;
-			}
-		break;
+			case 'token_stats':
+				$html = "
+					<div id='kt-info-box_27f7c6-d3' class='wp-block-kadence-infobox wsc_community_job'>
+					<div class='kt-blocks-info-box-link-wrap kt-blocks-info-box-media-align-top kt-info-halign-left wsc_wcl_stats'>
+					<div class='kt-infobox-textcontent'>
+						<div class='wsc_stats_box'>
+							<div class='pte_vault_row_100 wsc_centered wsc_opportunity_title'>
+							💰WCL Token Stats
+							</div>
+						</div>
 
-		case 'admin_check':
+						<div class='wsc_stats_box'>
+							<div class='pte_vault_row_20'>Supply</div>
+							<div class='pte_vault_row_30 pte_vault_centered'>10,000,000</div>
+							<div class='pte_vault_row_20 no_padding'>Circulation</div>
+							<div class='pte_vault_row_30 pte_vault_centered'>3,000</div>
+						</div>
+						<div class='wsc_stats_box'>
+							<div class='pte_vault_row_20'>Locked</div>
+							<div class='pte_vault_row_30 pte_vault_centered'>2,400,000</div>
+							<div class='pte_vault_row_20'>Value</div>
+							<div class='pte_vault_row_30 pte_vault_centered'>Check Back Soon</div>
+						</div>
+						<div class='wsc_stats_box'>
+							<div class='pte_vault_row_20'></div>
+							<div class='pte_vault_row_30 pte_vault_centered'></div>
+							<div class='pte_vault_row_20'>Liquidity</div>
+							<div class='pte_vault_row_30 pte_vault_centered'>Check Back Soon</div>
+						</div>
 
-			if (is_user_logged_in()) {
-				$userInfo = wp_get_current_user();
-				$userRoles =$userInfo->roles;
-				$isAdmin = in_array('administrator', $userRoles);
-				$isContributor = in_array('contributor', $userRoles);
-				$isSubscriber = in_array('subscriber', $userRoles);
+					</div>
+					</div>
+					</div>
+				";
+			break;
 
-				$optionOneIsShortcode = (substr($option_1, 0, 1) == "*") && (substr($option_1, -1) == "*") ? true : false;
-				$optionTwoIsShortcode = (substr($option_2, 0, 1) == "*") && (substr($option_2, -1) == "*") ? true : false;
+			case 'individual_job':
+				$status = 'active';
+				$rewardDetails = array();
+				$jobId = (isset($_GET['id']) && $_GET['id']) ? $_GET['id'] : false;
 
-				if ($isAdmin) {
-					if ($optionOneIsShortcode) {
-						$html = do_shortcode("[" . substr($option_1, 1, strlen($option_1) - 2 )  . "]");
-					} else {
-						$html = $option_1;
+				if ($jobId) {
+					$job = $wpdb->get_results(
+						$wpdb->prepare("SELECT * FROM alpn_postings WHERE id = %d;", $jobId)
+					);
+
+					if (isset($job[0])) {
+						$jobData = $job[0];
+						$jobTitle = $jobData->title;
+						$jobDescription = $jobData->description;
+						$jobIcon_id = $jobData->icon_id;
+						$jobRewards = json_decode($jobData->rewards);
+						$jobAvailable = $jobData->available;
+						$jobStatus = $jobData->status;
+
+						$rewardString = "(" . implode(",", $jobRewards) . ")";
+						$rewardResults = $wpdb->get_results("SELECT * FROM alpn_rewards WHERE id IN {$rewardString};");
+						foreach ($rewardResults as $key => $value) {
+							$rewardDetails[$value->id] = $value;
+						}
+
+						$rewardHtml = '';
+
+						if (is_user_logged_in()) {
+							$formHtml = "As an existing member, please contact Angela in chat to discuss this opportunity.";
+						} else {
+							$formHtml = do_shortcode('[wpforms id="8192"]');
+						}
+
+						foreach ($jobRewards as $key) {
+							if (isset($rewardDetails[$key])) {
+								$uType = ucfirst($rewardDetails[$key]->type);
+								$rewardHtml .= "
+								<table class='wsc_reward_table'>
+									<tr class='wsc_reward_row_first'>
+										<td class='wsc_reward_col_left'>$uType</td>
+										<td class='wsc_reward_col_center'>{$rewardDetails[$key]->title}</td>
+										<td class='wsc_reward_col_right'>💰WCL&nbsp; {$rewardDetails[$key]->reward_token}</td>
+									</tr>
+									<tr class='wsc_reward_row'>
+										<td class='wsc_reward_col' colspan='3'>
+											<ol class='wsc_rewards_list'>
+												{$rewardDetails[$key]->description}
+											</ol>
+										</td>
+									</tr>
+								</table>
+								";
+							}
+						}
+						$html = "
+							<div id='kt-info-box_27f7c6-d3' class='wp-block-kadence-infobox wsc_community_job'>
+							<div class='kt-blocks-info-box-link-wrap kt-blocks-info-box-media-align-top kt-info-halign-left'>
+							<div class='kt-infobox-textcontent'>
+							<h3 class='kt-blocks-info-box-title'>{$jobTitle} ({$jobAvailable})</h3>
+							<p class='kt-blocks-info-box-text'>{$jobDescription}</p>
+							<div class='kt-blocks-info-box-learnmore-wrap'>
+								<div class='wsc_job_signup'>
+									{$formHtml}
+								</div>
+							</div>
+							<div class='wsc_opportunity_title'>Available:</div>
+							<div class='wcl_reward_container'>{$rewardHtml}</div>
+							</div>
+							</div>
+							</div>
+						";
 					}
+
+
+
+				}
+			break;
+
+			case 'job_board':
+
+			$status = 'active';
+			$rewards = array();
+			$rewardDetails = array();
+
+			$jobs = $wpdb->get_results(
+				$wpdb->prepare("SELECT * FROM alpn_postings WHERE status = %s ORDER BY display_order;", $status)
+			);
+			if (isset($jobs[0])) {
+				foreach($jobs as $key => $value) {
+					$rewards = array_merge($rewards, json_decode($value->rewards));
+				}
+				$rewards = array_unique($rewards);
+				$rewardString = "(" . implode(",",$rewards) . ")";
+				$rewardResults = $wpdb->get_results("SELECT * FROM alpn_rewards WHERE id IN {$rewardString};");
+
+				foreach ($rewardResults as $key => $value) {
+					$rewardDetails[$value->id] = $value;
+				}
+				foreach ($jobs as $key => $value) {
+					$rewardHtml = '';
+					foreach (json_decode($value->rewards) as $key2) {
+						if (isset($rewardDetails[$key2])) {
+							$uType = ucfirst($rewardDetails[$key2]->type);
+							$rewardHtml .= "
+							<table class='wsc_reward_table'>
+							  <tr class='wsc_reward_row'>
+								<td class='wsc_reward_col_left'>$uType</td>
+							    <td class='wsc_reward_col_center'>{$rewardDetails[$key2]->title}</td>
+							    <td class='wsc_reward_col_right'>💰{$rewardDetails[$key2]->reward_token}</td>
+							  </tr>
+							</table>
+							";
+						}
+					}
+
+					$html .= "
+					<div id='kt-info-box_27f7c6-d3' class='wp-block-kadence-infobox wsc_community_job'>
+					<div class='kt-blocks-info-box-link-wrap kt-blocks-info-box-media-align-top kt-info-halign-left'>
+					<div class='kt-infobox-textcontent'>
+					<h3 class='kt-blocks-info-box-title'>{$value->title} ({$value->available})</h3>
+					<p class='kt-blocks-info-box-text'>{$value->description}</p>
+					<div class='wcl_reward_container'>{$rewardHtml}</div>
+					<div class='kt-blocks-info-box-learnmore-wrap'>
+						<a class='kt-blocks-info-box-learnmore info-box-link' href='https://wiscle.com/job?id={$value->id}'>I'm Interested</a>
+					</div>
+					</div>
+					</div>
+					</div>
+					";
+				}
+
+			}
+			break;
+
+			case 'logged_status':
+				if (is_user_logged_in()) {
+					$html = $option_1;
 				} else {
-					if ($optionTwoIsShortcode) {
-						$html = do_shortcode("[" . substr($option_2, 1, strlen($option_2) - 2 )  . "]");
+					$html = $option_2;
+				}
+			break;
+
+			case 'admin_check':
+
+				if (is_user_logged_in()) {
+					$userInfo = wp_get_current_user();
+					$userRoles =$userInfo->roles;
+					$isAdmin = in_array('administrator', $userRoles);
+					$isContributor = in_array('contributor', $userRoles);
+					$isSubscriber = in_array('subscriber', $userRoles);
+
+					$optionOneIsShortcode = (substr($option_1, 0, 1) == "*") && (substr($option_1, -1) == "*") ? true : false;
+					$optionTwoIsShortcode = (substr($option_2, 0, 1) == "*") && (substr($option_2, -1) == "*") ? true : false;
+
+					if ($isAdmin) {
+						if ($optionOneIsShortcode) {
+							$html = do_shortcode("[" . substr($option_1, 1, strlen($option_1) - 2 )  . "]");
+						} else {
+							$html = $option_1;
+						}
 					} else {
-						$html = $option_2;
+						if ($optionTwoIsShortcode) {
+							$html = do_shortcode("[" . substr($option_2, 1, strlen($option_2) - 2 )  . "]");
+						} else {
+							$html = $option_2;
+						}
 					}
 				}
-			}
 
-		break;
+			break;
 
-	}
+		}
 
 	return $html;
 

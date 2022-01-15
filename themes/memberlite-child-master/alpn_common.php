@@ -8,6 +8,7 @@ use Google\Cloud\Storage\StorageClient;
 use Twilio\Rest\Client;
 use PascalDeVink\ShortUuid\ShortUuid;
 
+
 function pte_user_rights_check($resourceType, $data){
   //alpn_log('RIGHTS CHECK');
   global $wpdb;
@@ -69,6 +70,189 @@ function pte_user_rights_check($resourceType, $data){
 
   return false;
 }
+
+function delTree($dir)
+{
+    $files = array_diff(scandir($dir), array('.', '..'));
+
+    foreach ($files as $file) {
+        (is_dir("$dir/$file")) ? delTree("$dir/$file") : unlink("$dir/$file");
+    }
+
+    return rmdir($dir);
+}
+
+
+
+function wsc_send_notifications($data) {
+
+  $sendBrowserNotification = true;
+  $sendSMSNotification = true;
+  $sendEmailNotification = false;
+
+  $memberNotificationPreferences = array(
+    "chat_message_normal" => array("browser", "mobile"),
+    "chat_message_priority" => array("sms", "email", "browser", "mobile"),
+    "interaction_normal" => array("browser", "mobile"),
+    "interaction_priority" => array("sms", "email", "browser", "mobile"),
+    "audio_room_entered_normal" => array("browser", "mobile"),
+    "audio_room_entered_priority" => array("sms", "email", "browser", "mobile")
+  );
+
+  global $wpdb;
+  $accountSid = ACCOUNT_SID;
+  $authToken = AUTHTOKEN;
+  $notificationSid = NOTIFYSSID;
+  $chatService = CHATSERVICESID;
+
+
+  $notificationType = isset($data['type']) && $data['type'] ? $data['type'] : false;
+  $channelSid = isset($data['channel_sid']) && $data['channel_sid'] ? $data['channel_sid'] : false;
+  $topicId = isset($data['channel_unique_name']) && $data['channel_unique_name'] ? $data['channel_unique_name'] : false;
+  $channelFriendlyName = isset($data['channel_friendly_name']) && $data['channel_friendly_name'] ? $data['channel_friendly_name'] : false;
+  $ownerId = isset($data['owner_id']) && $data['owner_id'] ? $data['owner_id'] : false;
+  $contactId = isset($data['contact_id']) && $data['contact_id'] ? $data['contact_id'] : false;
+  $targetId = isset($data['identity']) && $data['identity'] ? $data['identity'] : false;
+  $senderId = isset($data['sender_id']) && $data['sender_id'] ? $data['sender_id'] : false;
+  $senderFirst = isset($data['sender_name']) && $data['sender_name'] ? $data['sender_name'] : 'System';
+  $notificationBody = isset($data['body']) && $data['body'] ? $data['body'] : false;
+  $previewFileUrl = isset($data['preview_file_name']) && $data['preview_file_name'] ? PTE_ROOT_URL . $data['preview_file_name'] : '';
+  $roomMembers = isset($data['members']) && $data['members'] ? $data['members'] : array();
+  $roomMemberString = $roomMembers ? implode(",", $roomMembers) : "0";
+
+  $topicIsImportant = $memberIsImportant = false;
+  $emailAddress = $mobilePhone = $dOwnerId = $dTopicName = $dOwnerFirst = $dContactId = $dContactFirst = "";
+
+  if ($senderId && $targetId && $senderId == $targetId) {
+  //  alpn_log("Do Not Notify Sender");
+    return;
+  }
+
+  //TODO combine, cache -- lots of opportunity to reduce db load
+  if ($topicId && $targetId) {
+    $targetDataAll = $wpdb->get_results(
+  		$wpdb->prepare("SELECT t.topic_content, t.notification_prefs, t.alt_id, l1.id AS topic_is_important, (SELECT l2.id FROM alpn_user_lists l2 WHERE l2.contact_id IN ({$roomMemberString}) AND l2.list_key = 'pte_important_network' AND l2.owner_id = t.owner_id LIMIT 1) AS member_is_important FROM alpn_topics t LEFT JOIN alpn_user_lists l1 ON l1.owner_id = t.owner_id AND l1.item_id = %d AND l1.list_key = 'pte_important_topic' WHERE t.owner_id = %d AND t.special = 'user' LIMIT 1", $topicId, $targetId));
+
+      if (isset($targetDataAll[0])) {
+        //  alpn_log("TARGET DATA");
+          $targetData = $targetDataAll[0];
+          $topicContent = json_decode($targetData->topic_content, true);
+          $emailAddress = $targetData->alt_id;
+          $mobilePhone = $topicContent['person_telephone'];
+          $topicIsImportant = $targetData->topic_is_important ? true : false;
+          $memberIsImportant = $targetData->member_is_important ? true : false;
+      }
+
+    	$results = $wpdb->get_results(
+    		$wpdb->prepare("SELECT t.owner_id, t.name AS topic_name, t.topic_content AS topic_content, t1.topic_content AS owner_topic_content, t1.name AS owner_topic_name, t2.owner_id AS contact_id, t2.name AS contact_topic_name, t2.topic_content AS contact_topic_content, t3.name AS sender_topic_name, t3.topic_content AS sender_topic_content FROM alpn_topics t LEFT JOIN alpn_topics t1 ON t1.owner_id = t.owner_id AND t1.special = 'user' LEFT JOIN alpn_topics t2 ON t2.id = t.connected_topic_id LEFT JOIN alpn_topics t3 ON t3.owner_id = t.owner_id AND t3.special = 'user' WHERE t.id = %d", $topicId));
+
+    if (isset($results[0])) {
+
+        $topicData = $results[0];
+        $dTopicName = $topicData->topic_name;  // If regular Topic, then this is the topic name
+        $dOwnerId = $topicData->owner_id;
+        $ownerTopicContent = json_decode($topicData->owner_topic_content, true);
+        $dOwnerFirst = $ownerTopicContent['person_givenname'];
+        $dContactId = $topicData->contact_id;
+        $contactTopicContent = json_decode($topicData->contact_topic_content, true);
+        $dContactFirst = $contactTopicContent['person_givenname'];
+
+        if ( $dOwnerId && $dContactId ) {
+          $isContact = true;
+        } else {  //regular Topic
+          $isContact = false;
+        }
+      }
+   }
+
+   $important = $topicIsImportant || $memberIsImportant ? "★ " : "";
+
+   switch ($notificationType) {
+    case 'new_chat_message':
+      $wscIcon = "567c768d-notichat3.png";
+      $notificationTitle = $isContact ? "{$important}Chat received from {$senderFirst}" : "{$important}Chat received from {$senderFirst} regarding {$dTopicName}";
+    break;
+    case 'new_av_room_participant':
+      $wscIcon = "d50ddf9e-audio6.png";
+      $notificationTitle = $isContact ? "{$important}{$senderFirst} joined Audio" : "{$important}{$senderFirst} joined Audio for {$dTopicName}";
+    break;
+    case 'new_interaction':
+      $wscIcon = "e5e34eac-notiinteraction4.png";
+      //$notificationTitle = $isContact ? "Interaction from {$senderFirst}" : "Interaction from {$senderFirst} regarding {$dTopicName}";
+      $notificationTitle = "{$important}Interaction regarding {$dTopicName}";
+    break;
+  }
+
+
+  $twilio = new Client($accountSid, $authToken);
+  $user = $twilio->chat->v2->services($chatService)
+                         ->users($targetId)
+                         ->fetch();
+
+  $targetIsOnline = $user->isOnline;
+  $targetIsNotifiable = $user->isNotifiable;
+
+  if ($sendBrowserNotification) {
+    try {
+      $notification = $twilio->notify->v1->services($notificationSid)
+      ->notifications
+      ->create([
+                    "title" => $notificationTitle,
+                    "body" => $notificationBody,
+                    "identity" => array($targetId),
+                    "sound" => "default",
+                    "data" => array("topic_id" => $topicId, "wsc_icon" => $wscIcon, "wsc_notification_type" => $notificationType)
+               ]
+      );
+    } catch(Exception $e) {
+      alpn_log("EXCEPTION TWILIO NOTIFICATION");
+      alpn_log($e);
+    }
+  }
+
+  if ($sendSMSNotification && $mobilePhone && !$targetIsOnline) {
+    try {
+
+      $notificationBody = $notificationBody ? $notificationBody : " -" ;
+
+      $smsData = array(
+        "type" => "notification",
+        "body_text" => stripslashes($notificationBody) . " ",
+        "from_name" => $senderFirst,
+        "subject_text" => stripslashes($notificationTitle),
+        "send_mobile_number" => $mobilePhone
+      );
+      pte_send_sms($smsData);
+
+    } catch(Exception $e) {
+      alpn_log("EXCEPTION SMS NOTIFICATION");
+      alpn_log($e);
+    }
+  }
+
+  if ($sendEmailNotification && $emailAddress && !$targetIsOnline) {
+
+    try {
+      $emailHeader = "Notification";
+      $mailer = WC()->mailer();
+      $template = 'vit_generic_email_template.php';
+      $content = 	wc_get_template_html( $template, array(
+          'email_heading' => $emailHeader,
+          'email'         => $mailer,
+          'email_body'    => stripslashes($notificationBody) . $previewFileHtml
+        ), PTE_ROOT_PATH . 'woocommerce/emails/', PTE_ROOT_PATH . 'woocommerce/emails/');
+      try {
+        $mailer->send( $emailAddress, stripslashes($notificationTitle), $content );
+      } catch (Exception $e) {
+          alpn_log ('Caught exception: '. $e->getMessage());
+      }
+    } catch(Exception $e) {
+      alpn_log("EXCEPTION EMAIL NOTIFICATION");
+      alpn_log($e);
+    }
+  }
+}
+
 
 function pte_encode_value ($s) {
     return htmlentities($s, ENT_COMPAT|ENT_QUOTES,'ISO-8859-1', true);
@@ -138,7 +322,6 @@ function delete_from_cloud_storage($fileKey){
     return false;
 	}
 }
-
 
 function storePdf($pdfSettings){
   alpn_log('STORING PDF');
@@ -763,9 +946,17 @@ function pte_send_sms($data){
   $body = isset($data['body_text']) ? $data['body_text'] : '';
   $link = isset($data['link_id']) ? "https://{$domainName}/viewer/?" . $data['link_id'] : '';
   $fileName = isset($data['vault_file_name']) ? $data['vault_file_name'] : '';
+  $notificationType = isset($data['type']) && $data['type'] ? $data['type'] : 'send_link';
 
-  $body = "Secure Link From {$fromName} (using proteamedge.com) - {$subject} - {$body} - $fileName - {$link}";
-  $body = substr($body, 0, 1575);
+  switch ($notificationType) {
+    case "send_link":
+      $body = "Wiscle.com: Secure link received from {$fromName}\n{$subject}\n{$body}\n$fileName -- {$link}";
+      $body = substr($body, 0, 1575);
+    break;
+    case "notification":
+      $body = "Wiscle.com: {$subject}\n{$body}";
+    break;
+  }
 
   $accountSid = ACCOUNT_SID;
   $authToken = AUTHTOKEN;
@@ -1384,7 +1575,7 @@ function pte_get_viewer($viewerSettings){
 
   $data = $_GET;
   $html = $createAccountHtml = "";
-  global $wpdb_readonly;
+  global $wpdb;
 
   if (!$linkKey) { //get first variable passed in.
     foreach ($data as $key => $value) {
@@ -1393,15 +1584,19 @@ function pte_get_viewer($viewerSettings){
     }
   }
 
+  $viewData = array(
+    'link_key' => $linkKey
+  );
+  pte_async_job(PTE_ROOT_URL . "vit_async_log_visit.php", $viewData);
+
   $linkKeyLength = strlen($linkKey);
   if ($linkKeyLength >= 20 && $linkKeyLength <= 22) {  //Valid Length.
-    $results = $wpdb_readonly->get_results(
-      $wpdb_readonly->prepare(
+    $results = $wpdb->get_results(
+      $wpdb->prepare(
         "SELECT v.id, v.file_name, v.description, v.mime_type, v.modified_date, l.* FROM alpn_links l LEFT JOIN alpn_vault v ON v.id = l.vault_id WHERE l.uid = '%s';", $linkKey)   //Case sensitive
     );
     if (isset($results[0])) {
       $linkRow = $results[0];
-      //TODO Rights Check.
 
       $linkLastUpdate = $linkRow->last_update;
       $linkMeta = json_decode($linkRow->link_meta, true);
@@ -3722,6 +3917,33 @@ function  pte_make_rights_panel_view($panelData) {
   	// 	";
 
 	return $html;
+}
+
+function getUserIP()
+{
+    // Get real visitor IP behind CloudFlare network
+    if (isset($_SERVER["HTTP_CF_CONNECTING_IP"])) {
+              $_SERVER['REMOTE_ADDR'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+              $_SERVER['HTTP_CLIENT_IP'] = $_SERVER["HTTP_CF_CONNECTING_IP"];
+    }
+    $client  = @$_SERVER['HTTP_CLIENT_IP'];
+    $forward = @$_SERVER['HTTP_X_FORWARDED_FOR'];
+    $remote  = $_SERVER['REMOTE_ADDR'];
+
+    if(filter_var($client, FILTER_VALIDATE_IP))
+    {
+        $ip = $client;
+    }
+    elseif(filter_var($forward, FILTER_VALIDATE_IP))
+    {
+        $ip = $forward;
+    }
+    else
+    {
+        $ip = $remote;
+    }
+
+    return $ip;
 }
 
 

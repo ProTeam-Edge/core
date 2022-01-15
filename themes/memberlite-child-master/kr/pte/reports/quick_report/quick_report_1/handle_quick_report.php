@@ -1,7 +1,10 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php'); //TODO WTF is the difference and can we be consistent
 require('/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/vendor/autoload.php');
+require_once('/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/typeset.sh.lib.phar');
 require_once "quick_report.php";
+
+use Ramsey\Uuid\Uuid;
 
 function makeDataSource($topicMeta, $topicContent) { //Arranges data into two columms so we can consistent with forms
 	$fieldMap = $topicMeta['field_map'];
@@ -41,12 +44,11 @@ function makeDataSource($topicMeta, $topicContent) { //Arranges data into two co
 	return $newSource;
 }
 
-function pteCreateTopicQuickReport($reportSettings){
 
+function pteCreateTopicQuickReport($reportSettings){
 	alpn_log("starting pteCreateTopicQuickReport...");
 
-	alpn_log($reportSettings);
-
+	// alpn_log($reportSettings);
 
 	try {
 			$templateDirectory = get_template_directory();
@@ -54,23 +56,25 @@ function pteCreateTopicQuickReport($reportSettings){
 			$pdf = "{$templateDirectory}-child-master/quick_report_tmp/{$pdfKey}";
 
 			$report = new quick_report($reportSettings);
-			$report->run()
-			->export('quick_report')
-			->settings(array(
-    			"phantomjs"=>"/usr/local/bin/phantomjs"
-			))
-			->pdf(array(
-			      "format"=>$reportSettings['page_size'],
-			      "orientation"=>$reportSettings['orientation'],
-			      "margin"=>array(
-			        "top"=>"0.25in",
-			        "bottom"=>"0.25in",
-			        "left"=>"0.5in",
-			        "right"=>"0.5in"
-			    )
-			))
-			->saveAs($pdf);
-		return $pdfKey;
+			ob_start();
+			$report->run()->render();
+			$sourceReportHtml = ob_get_clean();
+
+			try {
+
+				$dedicatedDirectory = './tmp/' . Uuid::uuid4();
+				mkdir($dedicatedDirectory, 0700);
+				$uriResolver = Typesetsh\UriResolver::httpAndCurrentDir($dedicatedDirectory);
+				$pdfObj = Typesetsh\createPdf($sourceReportHtml, $uriResolver);
+				$pdfObj->toFile($pdf);
+				delTree($dedicatedDirectory);
+
+			} catch(Exception $e) {
+			  alpn_log("EXCEPTION BROWSER");
+			  alpn_log($e);
+			}
+
+		 return $pdfKey;
 
 	} catch (\Exception $e) { // Global namespace
 			alpn_log('Error handling quick report...');

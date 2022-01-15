@@ -11,6 +11,317 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 fff5ee
 */
 
+/* div.fv__pdf-viewer{
+	overflow-x: hidden;
+} */
+
+
+div.uppy-DashboardTab[data-uppy-acquirer-id=GoogleDrive],
+div.uppy-DashboardTab[data-uppy-acquirer-id=Dropbox],
+div.uppy-DashboardTab[data-uppy-acquirer-id=OneDrive]
+{
+	opacity: 0.5 !important;
+	pointer-events: none;
+ 	cursor: default;
+}
+
+.wsc_ww_start_icon{
+	margin: 0 0 4px 0;
+	font-size: 24px;
+	color: #3172B6;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+#wsc_ww_container_icon {
+	width: 13%;
+	display: inline-block;
+	text-align: right;
+}
+#wsc_ww_container{
+	width: 87%;
+	margin: 0 0 4px 0;
+	display: inline-block;
+	vertical-align: middle;
+}
+
+.wsc_workflow_selector{
+	height: 30px;
+	line-height: 30px;
+	margin-bottom: 5px;
+}
+
+.wsc_toolbar_spacer {
+	display: inline-block;
+	width: 20px;
+}
+
+.wsc_toolbar_active {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.wsc_toolbar_inactive {
+	opacity: 0.60 !important;
+	pointer-events: none !important;
+}
+
+figure.wsc_product_vid_jobs{
+	max-width: 480px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+figure.wsc_product_vid_jobs video{
+	object-fit: contain !important;
+}
+
+button:focus,
+input[type=button]:focus,
+input[type=reset]:focus,
+input[type=submit]:focus,
+.btn:focus {
+	background-color: #eee;
+	box-shadow: none;
+	color: #444;
+	transform: none;}
+
+button:hover,
+input[type=button]:hover,
+input[type=reset]:hover,
+input[type=submit]:hover,
+button:active,
+input[type=button]:active,
+input[type=reset]:active,
+input[type=submit]:active,
+.btn:hover,
+.btn:active,
+a.pmpro_btn:active,
+#main div.em-search-main button.em-search-submit:hover {
+	background-color: #ccc;
+	box-shadow: none;
+	color: #444;
+	transform: none;
+	appearance: auto;
+}
+
+
+
+.wsc_community_first_line{
+	margin-top: 20px;
+}
+
+.wsc_cell_highlighted {
+	background-color: #e8e8e8 !important;
+	font-weight: bold;
+}
+
+p.kt-blocks-info-box-text{
+	margin-bottom: 10px
+}
+
+.wsc_tc_table{
+	max-width: 480px;
+	margin-top: 0;
+}
+
+table.wsc_tc_table th.wsc_tc_header_1{
+	width: 20%;
+	font-weight: bold;
+	text-align: center;
+	padding: 0 0 0 0;
+	border: 0;
+}
+table.wsc_tc_table th.wsc_tc_header_2{
+	width: 40%;
+	font-weight: bold;
+	text-align: center;
+	padding: 0 0 0 0;
+	border: 0;
+}
+table.wsc_tc_table th.wsc_tc_header_3{
+	width: 40%;
+	font-weight: bold;
+	text-align: center;
+	padding: 0 0 0 0;
+	border: 0;
+
+}
+
+table.wsc_tc_table td{
+	text-align: center;
+	padding: 0 0 0 0;
+	border: 0;
+}
+
+.wsc_reward_info{
+	margin-bottom: 20px;
+}
+
+.wsc_topics_title {
+	font-size: 18px;
+	line-height: 35px;
+	font-weight: bold;
+}
+
+.wsc_nav_icon{
+	display: inline-block !important;
+}
+
+.wsc_nft_benefits_title{
+	margin-bottom: 0;
+	text-align: center;
+	font-weight: bold;
+}
+
+.wsc_nft_table td{
+	font-size: 13px;
+	padding: 0 3px;
+}
+
+.wsc_nft_table table{
+	margin-top: 10px;
+}
+
+.wsc_community_highlight{
+	font-size: 22px;
+	line-height: 34px;
+}
+
+.wsc_centered{
+	text-align: center;
+	margin-bottom: 5px;
+}
+
+.wsc_stats_box{
+	display: flex !important;
+	flex-wrap: wrap;
+}
+
+ul.wsc_individual_jobs{
+	margin: 20px;
+}
+
+ul.wsc_individual_jobs li{
+	margin: 0 0 0 20px;
+}
+
+button.wsc_form_submit_button{
+	width: 125px !important;
+}
+
+.wsc_job_signup{
+	max-width: 480px;
+}
+
+div.wsc_job_signup label.wpforms-field-label{
+	font-size: 14px;
+}
+
+.wsc_opportunity_title{
+	font-weight: bold;
+}
+
+.wsc_job_signup{
+	margin-bottom: 40px;
+}
+
+.wsc_reward_row_first{
+	margin: 0;
+	background-color: #EBEBEB;
+}
+
+.wsc_reward_col{
+  border: 0;
+}
+
+.wsc_rewards_list{
+	margin: 0;
+	padding-left: 20px;
+}
+
+.wsc_rewards_list li {
+	margin: 0 0 3px 0;
+}
+
+.wcl_reward_container{
+	margin-top: 17px;
+	margin-bottom: 10px;
+}
+.wsc_reward_table{
+	border: 0;
+	margin: 0px 0 0 0;
+}
+
+.wsc_reward_all {
+	border: 0;
+	margin: 0;
+	padding: 0;
+}
+
+.wsc_reward_row{
+	border: 0;
+	margin: 0;
+	padding: 0;
+
+}
+.wsc_reward_col_left{
+	margin: 0;
+	padding: 3px 10px;
+	width: 20%;
+	border: 0;
+	font-weight: bold;
+}
+
+.wsc_reward_col_center{
+	margin: 0;
+	padding: 3px 10px;
+	width: 50%;
+	border: 0;
+}
+
+.wsc_reward_col_right{
+	margin: 0;
+	padding: 3px 10px;
+	width: 30%;
+	border: 0;
+
+}
+
+.wcl_nft_image{
+	margin-top: 10px;
+	margin-right: 5px;
+	display: inline-block;
+	width: 75px;
+	height: 75px;
+}
+
+.wsc_wcl_stats{
+	padding: 5px 10px !important;
+
+}
+
+.wsc_community_job{
+	font-size: 0.8em;
+	line-height: 1.35em;
+}
+
+.wsc_landing_left {
+	padding: 0 20px 20px 40px !important;
+}
+
+.wsc_landing_right {
+	padding: 0 40px 20px 20px !important;
+}
+
+
+
+div#wsc_chat_important,
+div#wsc_audio_important{
+	display: inline-block;
+	width: 20px;
+}
+
 .wsc_marketplace_pricing{
 	margin-top: 30px;
 }
@@ -85,7 +396,7 @@ div.bbp-reply-author img {
 	height: 50px;
 }
 
-button[type=submit], input[class=button] {
+/* button[type=submit], input[class=button] {
 	box-shadow: none !important;
 	background: rgb(49, 114, 182) !important;
 	color: #FFF !important;
@@ -103,15 +414,15 @@ button[type=submit], input[class=button] {
   text-align: center !important;
   text-decoration: none !important;
   text-shadow: none !important;
-}
+} */
 
-button:hover, input[type=button]:hover, input[type=reset]:hover, input[type=submit]:hover, button:focus, input[type=button]:focus, input[type=reset]:focus, input[type=submit]:focus, button:active, input[type=button]:active, input[type=reset]:active, input[type=submit]:active, .btn:hover, .btn:active, .btn:focus, a.pmpro_btn:active, #main div.em-search-main button.em-search-submit:hover
+/* button:hover, input[type=button]:hover, input[type=reset]:hover, input[type=submit]:hover, button:focus, input[type=button]:focus, input[type=reset]:focus, input[type=submit]:focus, button:active, input[type=button]:active, input[type=reset]:active, input[type=submit]:active, .btn:hover, .btn:active, .btn:focus, a.pmpro_btn:active, #main div.em-search-main button.em-search-submit:hover
 {
 	background-color: #3172B6;
 	box-shadow: 1px 2px 4px rgb(0 0 0 / 40%);
 	color: white;
 	transform: none;
-}
+} */
 
 div.uppy-Dashboard-AddFiles-title {
 	font-size: 16px !important;
@@ -840,7 +1151,6 @@ button.menu-toggle {
 }
 
 .pte_proteam_title_container{
-  margin-top: 5px;
   display: flex;
 	flex-wrap: wrap;
 }
@@ -1172,9 +1482,8 @@ div#table_reports_filter {margin: 0 0 3px !important;}
 }
 
 .pte_refresh_report_loading{
-	position: absolute;
+	position: relative;
 	right: 5px;
-	top: 10px;
 	display: none;
 }
 
@@ -2425,6 +2734,7 @@ table#table_vault td.column-draw_id{
 .pte_vault_row_20{
 	flex-grow: 1;
 	flex-basis: 20%;
+	max-width: 20%;
 }
 
 .pte_vault_row_80{
@@ -2440,6 +2750,8 @@ table#table_vault td.column-draw_id{
 .pte_vault_row_30{
 	flex-grow: 1;
 	flex-basis: 30%;
+	max-width: 30%;
+
 }
 
 .pte_vault_row_75{
@@ -3548,7 +3860,6 @@ table#table_interactions td.column-draw_id {
 	position: absolute;
 	top: 0;
 	left: 0;
-
 	font-size: 12px;
 	border: solid 1px #C8C8C8;
 	padding: 3px 6px 3px 6px;
@@ -3561,11 +3872,6 @@ table#table_interactions td.column-draw_id {
 	font-weight: bold;
 	text-align: center;
 	vertical-align: middle;
-
-	background-color: #E8E8E8;
-
-
-
 }
 
 #pte_interaction_panel_buttons_container{
@@ -4244,7 +4550,7 @@ article#post-4276 dt{
   line-height: 18px;
 }
 
-.pte_accordion:active,
+/* .pte_accordion:active,
 .pte_accordion:focus,
 .pte_accordion:focus-within,
 .pte_accordion:hover,
@@ -4254,7 +4560,7 @@ article#post-4276 dt{
     box-shadow: none;
     border-radius: 0;
 	transform: none;
-}
+} */
 
 
 .pte_accordion:after {
@@ -4489,6 +4795,14 @@ span[aria-labelledby^="select2-alpn_select2_small_"] {
     display: flex;
     flex-wrap: wrap;
     text-align: left;
+}
+
+
+#pte_chat_topic_name{
+	display: inline-block;
+}
+#pte_chat_topic_label{
+	display: inline-block;
 }
 
 #alpn_chat_title_title {
@@ -4974,7 +5288,30 @@ div.pte_toolbar_container span.select2 {
 	float: left;
 	line-height: 1.5em;
 }
-.alpn_section_head_right{float: right;}
+
+.alpn_section_head_right{
+	float: right;
+}
+
+
+.alpn_title_bar_blue {
+	height: 35px;
+	border: 0;
+}
+
+.alpn_section_head_left_white {
+	float: left;
+	font-size: 18px;
+	line-height: 35px;
+	font-weight: bold;
+}
+.alpn_section_head_right_white {
+	float: right;
+	font-size: 18px;
+	line-height: 35px;
+	padding-right: 5px;
+}
+
 
 .wpdt-c .wpDataTablesWrapper table.wpDataTable thead {
 	display: none !important;
@@ -5297,13 +5634,13 @@ div.pte_toolbar_container span.select2 {
 
 #alpn_about_field:focus,
 #alpn_about_field{
-	box-shadow: none;
-	font-size:12px;
-	height: 40px;
-	width: 100%;
-	padding: 2px 5px;
-  resize: none;
-	border-radius: 0;
+	box-shadow: none  !important;
+	font-size: 12px !important;
+	height: 40px  !important;
+	width: 100%  !important;
+	padding: 2px 5px  !important;
+  resize: none  !important;
+	border-radius: 0  !important;
 }
 
 .alpn_column_2 {
@@ -5492,6 +5829,45 @@ div.pte_toolbar_container span.select2 {
 
 @media only screen and (max-width: 767px) {
 
+	.wsc_toolbar_spacer {
+		width: 0;
+	}
+
+	#alpn_chat_chat{
+		max-width: 30%;
+		flex-basis: 30%;
+		padding-right: 5px;
+
+	}
+
+	#alpn_chat_audio{
+		max-width: 70%;
+		flex-basis: 70%;
+		padding-right: 5px;
+	}
+
+	#alpn_chat_title_title {
+		max-width: 30%;
+		flex-basis: 30%;
+	}
+
+	#alpn_chat_stats {
+		max-width: 70%;
+		flex-basis: 70%;
+	}
+
+	#pte_chat_topic_label{
+		display: none;
+	}
+
+	.wsc_landing_left {
+		padding: 0 5px 5px 5px !important;
+	}
+
+	.wsc_landing_right {
+		padding: 0 5px 5px 5px !important;
+	}
+
 	div#vit_call_to_action_outer{
 		top: 41px;
 		left: 30px;
@@ -5502,7 +5878,7 @@ div.pte_toolbar_container span.select2 {
 	table.has-fixed-layout tr td:first-child {
 	    width: 60%;
 	}
-	
+
 	a#hp_vit_cta{
 		font-size: 12px;
 		font-weight: normal;

@@ -38,7 +38,7 @@ function pte_get_registry_fax_received() {
             $requestData['to_from'] = '';
             $requestData['interaction_complete'] = true;
             $requestData['widget_type_id'] = "information";
-            $requestData['information_title'] = "|style_2b|Fax |style_1b|Received|style_1e| ({$pageCountString})|style_2e|";
+            $requestData['information_title'] = "Fax Received";
 
             $requestData['buttons'] =  array(
               "file" => true
@@ -72,6 +72,7 @@ function pte_get_registry_fax_received() {
               );
             $requestData['sync'] = true;
             $requestData['requires_user_attention'] = true;
+            $requestData['wsc_send_notification'] = true;
             $token->setValue("process_context", $requestData);
             return true;
 

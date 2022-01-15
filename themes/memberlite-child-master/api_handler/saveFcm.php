@@ -17,7 +17,7 @@ if(isset($_POST['token']) && !empty($_POST['token'])) {
     $sql = 'update '.$wpdb->prefix.'users set device_token_web = "'.$token.'" where ID = "'.$userId.'"';
     $data = $wpdb->query($sql);
     if($data)
-    $output = 'success'; 
+    $output = 'success';
     try {
         $binding = $twilio->notify->v1->services($serviceSid)
         ->bindings
@@ -27,12 +27,12 @@ if(isset($_POST['token']) && !empty($_POST['token'])) {
             'message' => 'Error creating notification: ' . $e->getMessage(),
             'error' => $e->getMessage()
         );
-       
+
         $output = json_encode($response);
     }
 }
-else 
-    $output = 'Not allwed';
+else
+    $output = 'Not allowed';
 
 echo json_encode($output);
 ?>

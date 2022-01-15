@@ -13,19 +13,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 
-//TODO Data Driven also permissions
-
-$interactionChooser = "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
-$interactionChooser .= "<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>";
-$interactionChooser .= "<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>";
-
-if($memberFeatures['fax_1']) {   //Fax Available to all levels other than Community  //TODO make this dynamic
-	$interactionChooser .= "<option value='fax' data-icon='far fa-fax'>Send as Fax</option>";
-}
-
-$interactionChooser .= "</select>";
-
-
 $siteUrl = get_site_url();
 $ppCdnBase = "https://storage.googleapis.com/pte_media_store_1/";
 
@@ -78,6 +65,8 @@ if (!isset($results[0])) {
 	$topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
 	$designViewClass = $topicBelongsToUser ? "" : "pte_ipanel_button_disabled";
 
+	$isConnectedContact = ($record->connected_id) ? true : false;
+
 	$permissionLevel = 0;
 	$ownerName = "";
 	$ownerFirstName = "";
@@ -99,6 +88,18 @@ if (!isset($results[0])) {
 			if ($connectedId) {
 			}
 	}
+
+	$proteam = $wpdb->get_results(
+		$wpdb->prepare("SELECT p.id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
+	 );
+
+	if (count($proteam)) {
+		$isLinked = true;
+	} else {
+		$isLinked = false;
+	}
+
+	$isConnected = ($isLinked || $isConnectedContact) ? 'true' : 'false';
 
 	if ($topicTypeSpecial == 'user') {
 		$context = "Personal";
@@ -124,9 +125,6 @@ if ($topicProfileHandle) {
 //				<i id='alpn_vault_download' class='far fa-cloud-download-alt pte_icon_button' title='Get Original or PDF Item' onclick='alpn_vault_control(\"download\")'></i>
 //				<i id='alpn_vault_edit_original' class='fab fa-google-drive pte_icon_button' title='Open Item in Original Cloud Service' onclick='alpn_vault_control(\"open_original\")'></i>
 
-
-
-
 $html="";
 
 $html .= "
@@ -146,13 +144,12 @@ $html .= "
 							</span>
 						</div>
 						<div class='pte_vault_row_75 pte_vault_right pte_toolbar_container'>
-							{$interactionChooser} <i id='alpn_vault_interaction_start' class='far fa-arrow-circle-right alpn_icons_toolbar pte_ipanel_button_disabled' title='Start this Interaction' onclick='pte_handle_interaction_start(this);'></i>
-							<div style='display: inline-block; width: 20px;'></div>
 							<i id='alpn_vault_print' class='far fa-print pte_icon_button pte_ipanel_button_disabled' title='Print File' onclick='alpn_vault_control(\"print\")'></i>
 							<i id='alpn_vault_download_original' class='far fa-file-download pte_icon_button pte_ipanel_button_disabled' title='Download Original File' onclick='alpn_vault_control(\"download_original\")'></i>
 							<i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button pte_ipanel_button_disabled' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
-							<div style='display: inline-block; width: 20px;'></div>
+							<div class='wsc_toolbar_spacer'></div>
 							<i id='alpn_vault_chat' class='far fa-comment-alt-lines pte_icon_button pte_ipanel_button_disabled' title='Send an link to this vault item in Chat.' onclick='alpn_vault_control(\"insert_chat_vault_item\")' ></i>
+							<div class='wsc_toolbar_spacer'></div>
 							<i id='alpn_vault_links' class='far fa-link pte_icon_button pte_ipanel_button_disabled' title='Manage xLinks for this File' onclick='alpn_vault_control(\"links\")'></i>
 						  <i id='alpn_vault_new' class='far fa-plus-circle pte_icon_button' title='Add New Vault Files' onclick='alpn_vault_control(\"add\")'></i>
 							<i id='alpn_vault_edit' class='far fa-pencil-alt pte_icon_button pte_ipanel_button_disabled' title='Edit Vault File Settings' onclick='alpn_vault_control(\"edit\")'></i>
@@ -161,7 +158,7 @@ $html .= "
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
 
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='vault' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'  data-wal='{$accessLevel}'>
+					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='vault' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'  data-wal='{$accessLevel}' data-con='{$isConnected}'>
 						<div id='pte_topic_form_title_view'>
 							<span class='fa-stack pte_stacked_icon'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
@@ -203,16 +200,7 @@ $html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"ful
 
 $html .= "
 <script>
-jQuery('#alpn_selector_interaction_selector').select2({
-	theme: 'bootstrap',
-	width: '180px',
-	allowClear: false,
-	templateSelection: iformat,
-	templateResult: iformat,
-	escapeMarkup: function(text) {
-		return text;
-	}
-});
+wsc_work_area_open = false;
 </script>
 ";
 

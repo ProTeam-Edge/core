@@ -8,7 +8,6 @@
 
 	$reportSettings = $this->params;
 
-
 	$topicContent = $reportSettings['user_content'];
 	$placeContent = $reportSettings['place_content'];
 	$organizationContent = $reportSettings['organization_content'];
@@ -20,27 +19,9 @@
 	$orgImageUrl = (isset($organizationContent['logo_url']) && $organizationContent['logo_url']) ? $organizationContent['logo_url'] : '';
 
 ?>
-
-<style>
-	.banner_text_line {
-		font-size: 24px !important;
-	}
-
-	.banner_text_bold {
-		font-weight: bold;
-	}
-
-	.banner_0_logo{
-		max-width: 300px;
-		max-height: 150px;
-	}
-
-</style>
-
-<div style='margin: 0; padding: 0; text-align: left; margin-bottom: 0.25in; max-height: 2.5in; width: 100%;'>
-
-	<div style='width: 100%;'>
-		<div style='float: left; width: 50%; padding-left: 0.1in;'>
+<div class='banner_outer'>
+	<div class='row_container'>
+		<div class='col_left'>
 			<div class='banner_text_line banner_text_bold'>
 				<?php echo $organizationContent["organization_name"]; ?>
 			</div>
@@ -69,9 +50,8 @@
 				<?php echo $organizationContent["organization_url"]; ?>
 			</div>
 		</div>
-		<div style='float: right; width: 50%; text-align: right; padding-right: 0.1in;'>
+		<div class='col_right'>
 			<?php echo "<img class='banner_0_logo' src='{$orgImageUrl}'>"; ?>
 		</div>
-		<div style='clear: both;'></div>
 	</div>
 </div>

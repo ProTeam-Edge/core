@@ -4,9 +4,9 @@
 	$topicContent = $reportSettings['topic_content'];
 
 ?>
-<div style='margin: 0; padding: 0; text-align: left; margin-bottom: 0.25in; width: 100%;'>
-	<div style='width: 100%; height: 400px;'>
-		<div style='float: left; width: 50%; padding: 10px; border: solid 1px grey; height: 100%;'>
+<div class='banner_outer'>
+	<div class='row_container'>
+		<div class='col_left'>
 			<div style='font-size: 24pt; border: 0;'>
 				<span style='font-weight: bold;'>From:</span> <?php echo $topicContent["person_givenname"] . " " . $topicContent["person_familyname"]; ?>
 			</div>
@@ -31,7 +31,7 @@
 				<?php echo $topicContent["organization_url"]; ?>
 			</div>
 		</div>
-		<div style='float: right; width: 50%; height: 100%; text-align: left;  padding: 10px; border-top: solid 1px grey; border-right: solid 1px grey; border-bottom: solid 1px grey;'>
+		<div class='col_right'>
 			<div style='font-size: 24pt;' border: 0;>
 				<span style='font-weight: bold;'>Attention:</span> <?php echo $reportSettings["network_contact_name"]; ?>
 			</div>
@@ -49,6 +49,21 @@
 			</div>
 			<div style='font-size: 18pt;'><?php echo "<span style='font-weight: bold;'>Total Pages:</span> " . $reportSettings["page_count"]; ?></div>
 		</div>
-		<div style='clear: both;'></div>
 	</div>
 </div>
+
+
+<!-- <div style='margin: 0; padding: 0; text-align: left; margin-bottom: 0.25in; width: 100%;'>
+	<div style='width: 100%; height: 400px;'>
+		<div style='float: left; width: 50%; padding: 10px; border: solid 1px grey; height: 100%;'>
+			<div style='font-size: 24pt; border: 0;'>
+				<span style='font-weight: bold;'>From:</span> <?php echo $topicContent["person_givenname"] . " " . $topicContent["person_familyname"]; ?>
+			</div>
+
+		</div>
+		<div style='float: right; width: 50%; height: 100%; text-align: left;  padding: 10px; border-top: solid 1px grey; border-right: solid 1px grey; border-bottom: solid 1px grey;'>
+
+		</div>
+		<div style='clear: both;'></div>
+	</div>
+</div> -->

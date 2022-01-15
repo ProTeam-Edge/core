@@ -18,6 +18,12 @@ use function Formapro\Values\set_object;
 use function Formapro\Values\set_value;
 use Formapro\Values\ValuesTrait;
 
+use Twilio\Rest\Client;
+
+$accountSid = ACCOUNT_SID;
+$authToken = AUTHTOKEN;
+$chatService = CHATSERVICESID;
+
 //$qVars = unserialize($argv[1]);
 $qVars = $_POST;
 $data = isset($qVars['data']) ? json_decode(stripslashes($qVars['data']), true) : array();
@@ -271,14 +277,14 @@ function pte_update_context_with_contact($contextData, $contactNetworkId, $email
 function pte_manage_interaction_proper($data) {
 
   alpn_log("Starting Manager interaction...");
-//  alpn_log($data);
+  alpn_log($data);
 
   global $wpdb;
 
   $process = "";
   $processContext = $extraContext = array();
   $token = '';
-  $firstTimeThrough = false;
+  $firstTimeThrough = $sendNotification = false;
 
   $processId = isset($data['process_id']) ? $data['process_id'] : '';
   $processData = isset($data['process_data']) ? $data['process_data'] : array();
@@ -358,6 +364,19 @@ function pte_manage_interaction_proper($data) {
     $recalled = isset($requestData['request_operation']) && $requestData['request_operation'] == 'recall_interaction' ? true : false;
     $restart = isset($requestData['restart_interaction']) && $requestData['restart_interaction'] ? true : false;
 
+    $sendNotification = isset($requestData['wsc_send_notification']) && $requestData['wsc_send_notification'] ? true : false;
+    if ($sendNotification) {
+      $notificationBody = $requestData['interaction_type_name'] . " " . $requestData['interaction_type_status'];
+      $notificationData = array(
+        "type" => "new_interaction",
+        "channel_unique_name" => $requestData['topic_id'],
+        "identity" => $ownerId,
+        "body" => $notificationBody
+      );
+      wsc_send_notifications($notificationData);
+      $requestData['wsc_send_notification'] = false;
+    }
+
     if ($recalled) {  //RECALLED -- Handled on Recipients Side
 
       alpn_log('Deleting because recalled...' . $requestData['process_id']);
@@ -365,7 +384,7 @@ function pte_manage_interaction_proper($data) {
       $whereClause = array('process_id' => $requestData['process_id']);
       $wpdb->delete( 'alpn_interactions', $whereClause);
 
-      //remove from ProTeam
+      //remove from Team
 
       $whereClause = array(
         'process_id' => $requestData['interacts_with_id']
@@ -395,11 +414,8 @@ function pte_manage_interaction_proper($data) {
         $whereClause = array('process_id' => $requestData['process_id']);
         $wpdb->delete( 'alpn_interactions', $whereClause);
 
-
       } else { //KEEP GOING
-
         pte_save_process($process, $requestData);
-
       }
 
       $sync = isset($requestData['sync']) ? $requestData['sync'] : false;
@@ -413,7 +429,6 @@ function pte_manage_interaction_proper($data) {
         );
         pte_manage_user_sync($data);
       }
-
     }
 
   } else { //TODO Handle No process

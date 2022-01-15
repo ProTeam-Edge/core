@@ -36,7 +36,8 @@ function pte_get_registry_file_received() {
             $requestData['to_from'] = 'From';
             $requestData['interaction_complete'] = true;
             $requestData['widget_type_id'] = "information";
-  //          $requestData['information_title'] = "|style_2b|File |style_1b|Received|style_1e| Email Route|style_2e|";
+
+            $requestData['information_title'] = "File Received";
 
             $requestData['buttons'] =  array(
               "file" => true
@@ -61,6 +62,7 @@ function pte_get_registry_file_received() {
 
             $requestData['sync'] = true;
             $requestData['requires_user_attention'] = true;
+            $requestData['wsc_send_notification'] = true;
             $token->setValue("process_context", $requestData);
             return true;
 

@@ -20,13 +20,6 @@ $topicSpecial = isset($qVars['topic_special']) ? $qVars['topic_special'] : 'topi
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;
 
-
-alpn_log("Updating Profile Pic");
-alpn_log($userID);
-alpn_log($handle);
-alpn_log($topicId);
-alpn_log($topicSpecial);
-
 if ($userID && $handle && $topicId) {
 	try {
 

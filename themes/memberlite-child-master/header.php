@@ -42,8 +42,13 @@
 	<meta name="x5-page-mode" content="app">
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="renderer" content="webkit">	<link rel="profile" href="http://gmpg.org/xfn/11">
+
+	<meta property="og:title" content="Wiscle Network and Community">
+	<meta property="og:description" content="Team Up with Anyone, Anywhere to Collaborate on Anything">
+	<meta property="og:image" content="https://storage.googleapis.com/pte_media_store_1/08701530-audrey2.png">
+	<meta property="og:url" content="https://www.wiscle.com">
+
 	<?php wp_head(); ?>
-	<script src="https://media.twiliocdn.com/sdk/js/chat/v3.3/twilio-chat.min.js"></script>
 
 </head>
 

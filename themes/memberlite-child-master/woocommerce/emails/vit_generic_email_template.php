@@ -21,6 +21,10 @@ echo "<style>
   h1{
     font-size: 18px !important;
   }
+  img.wsc_preview_image{
+    max-width: 200px;
+    max-height: 150px;
+  }
 </style>";
 
 do_action( 'woocommerce_email_header', $email_heading, $email );

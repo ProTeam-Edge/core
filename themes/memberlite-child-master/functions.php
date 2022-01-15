@@ -18,18 +18,10 @@ include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 ini_set('memory_limit', '512M');
 
+
+
 $logId = 'some';
 $logId = 'all';
-
-global $memberFeatures;
-
-$memberFeatures = array(
-	'fax_1' => false,
-	'fax_2' => false,
-	'template_editor_main' => false,
-	'topic_type_editor_main' => false
-
-);
 
 
 // if ( php_uname('n') == 'wp4' ) {
@@ -355,6 +347,20 @@ function custom_add_subscription_name_to_table( $subscription ) {
 }
 add_action( 'woocommerce_my_subscriptions_after_subscription_id', 'custom_add_subscription_name_to_table', 35 );
 
+
+
+function filter_woocommerce_get_price_html( $price, $instance ) {
+    // make filter magic happen here...
+
+		//alpn_log($instance);
+
+    return $price;
+};
+
+// add the filter
+add_filter( 'woocommerce_get_price_html', 'filter_woocommerce_get_price_html', 10, 2 );
+
+
 //Override and reformat bbPress notification emails to match and use wc email.
 function vit_wrap_bbpress_forum_subscription_email($content, $topicId, $forumId, $userId) {
 	$smallWiscleWhite = PTE_ROOT_URL . "dist/assets/wiscle_small_w.png";
@@ -393,18 +399,25 @@ add_filter( 'bbp_subscription_mail_message', 'vit_wrap_bbpress_subscription_emai
 
 function add_loginout_link( $items, $args ) {
 
-  if (is_user_logged_in() && $args->theme_location == 'meta') {
-		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Account</a></li>';
-		$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 1514 ) . '">Help</a></li>';
+	// alpn_log($items);
+	// alpn_log($args);
+
+  if (is_user_logged_in() && ($args->theme_location == 'meta' || !$args->theme_location)) {
+
+		$cartHtml = "";
 		if (!WC()->cart->is_empty()){
-			$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '">Cart</a></li>';
+			$cartHtml .= ' &nbsp;&nbsp;  <a class="wsc_nav_icon" href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '"><i class="fal fa-shopping-cart"></i></a>';
 		}
-    $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="'. wp_logout_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ) .'">Log Out</a></li>';
+		$items .= '<li  title="Join the Conversation" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 3306 ) . '">Conversations</a></li>';
+		$items .= '<li title="Build Wiscle, Earn Crypto" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 7260 ) . '">Gigs</a></li>';
+		$items .= '<li  title="Do More with Your Assets" class="menu-item menu-item-type-post_type menu-item-object-page"><a class="wsc_nav_icon" href="' . get_permalink( 4275 ) . '">Marketplace</a> ' . $cartHtml . '</li>';
+    $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a class="wsc_nav_icon" href="' . get_permalink( 1514 ) . '"><i title="Help Center" class="fal fa-question"></i></a> &nbsp;&nbsp;  <a class="wsc_nav_icon" href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '"><i title="Account Dashboard" class="fal fa-id-card"></i></a> &nbsp;&nbsp;  <a title="Log out" class="wsc_nav_icon" href="'. wp_logout_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ) .'"><i class="fal fa-sign-out-alt"></i></a></li>';
   }
-   elseif (!is_user_logged_in() && $args->theme_location == 'meta') {
+   elseif (!is_user_logged_in() && ($args->theme_location == 'meta' || !$args->theme_location)) {
 		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 6995 ) . '">Pricing</a></li>';
 		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 146 ) . '">Blog</a></li>';
 		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 3306 ) . '">Conversations</a></li>';
+		 $items .= '<li title="Build Wiscle, Earn Crypto" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 7260 ) . '">Gigs</a></li>';
      $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Log In &nbsp;-&nbsp; Register</a></li>';
   }
    return $items;

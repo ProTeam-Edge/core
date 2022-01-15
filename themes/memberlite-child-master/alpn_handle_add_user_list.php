@@ -11,15 +11,28 @@ $userInfo = wp_get_current_user();
 $ownerId = $userInfo->data->ID;
 $ownerNetworkId = get_user_meta( $ownerId, 'pte_user_network_id', true );
 
+$contactId = 0;
+if ($listKey == 'pte_important_network' && $itemId) {
+
+	$results = $wpdb->get_results(
+		$wpdb->prepare(
+			"SELECT connected_network_id FROM alpn_topics WHERE id = %d;", $itemId)
+	);
+	$contactId = 0;
+	if (isset($results[0])) {
+		$contactId = $results[0]->connected_network_id;
+	}
+}
 
 $listItem = array("error" => "missing data...");
 
-if ($listKey && $itemId && $ownerNetworkId) {
+if ($ownerId && $listKey && $itemId) {
 		$listItem = array(
 			'owner_id'=> $ownerId,
 			'owner_network_id' => $ownerNetworkId,
 			'list_key' => $listKey,
-			'item_id' => $itemId
+			'item_id' => $itemId,
+			'contact_id' => $contactId
 		);
 		$wpdb->insert( 'alpn_user_lists', $listItem );
 

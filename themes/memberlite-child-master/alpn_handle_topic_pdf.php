@@ -81,6 +81,8 @@ if (!isset($results[0])) {
 	$topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
 	$designViewClass = $topicBelongsToUser ? "" : "pte_ipanel_button_disabled";
 
+	$isConnectedContact = ($record->connected_id) ? true : false;
+
 	$permissionLevel = 0;
 	$ownerName = "";
 	$ownerFirstName = "";
@@ -160,6 +162,8 @@ if (!isset($results[0])) {
 		$wpdb->prepare("SELECT p.*, t.name, t.image_handle, t.profile_handle, t.dom_id FROM alpn_proteams p LEFT JOIN alpn_topics_network_profile t ON p.proteam_member_id = t.id WHERE p.topic_id = '%s' ORDER BY name ASC", $topicId)
 	 );
 	$topicHasTeamMembers = count($proteam) ? true : false;
+
+	$isConnected = ($isConnectedContact || $topicHasTeamMembers) ? 'true' : 'false';
 
 	if ($topicBelongsToUser) {
 		//Team Links
@@ -426,7 +430,7 @@ $html .= "
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
 
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='design' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-tkey='{$typeKey}' data-oid='{$topicOwnerId}' data-wal='{$accessLevel}'>
+					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='design' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-tkey='{$typeKey}' data-oid='{$topicOwnerId}' data-wal='{$accessLevel}' data-con='{$isConnected}'>
 						<div id='pte_topic_form_title_view'>
 							<span class='fa-stack pte_stacked_icon'>
 								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>

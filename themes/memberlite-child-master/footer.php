@@ -46,7 +46,7 @@
 		<?php
 			echo '<div class="row site-info">
 				<div class="medium-12 small-12 columns">
-				© 2021 Wiscle, Inc. All rights reserved.
+				© 2022 Wiscle, Inc. All rights reserved.
 				</div>
 			</div>';
 		//get_template_part( 'components/footer/site', 'info' );

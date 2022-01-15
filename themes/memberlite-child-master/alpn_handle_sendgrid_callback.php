@@ -12,7 +12,7 @@ global $wpdb;
 
 alpn_log('Received Email From SendGrid...');
 
-//alpn_log($_POST);
+alpn_log($_POST);
 
 $attachmentsCount = isset($_POST['attachments']) ? $_POST['attachments'] : 0;
 
@@ -80,9 +80,10 @@ try {
 					$fileName = $value['name'];
 					$uuid = Uuid::uuid4();
 					$suid = $uuid->toString();
-					$fname = pathinfo($fileName, PATHINFO_FILENAME);
+					$fnameSimple = pathinfo($fileName, PATHINFO_FILENAME);
+					$fname = $uuid . $fnameSimple;   //Because Uppy Metadata problems.
 					$ext = pathinfo($fileName, PATHINFO_EXTENSION);
-					$fullName = "{$fname}.{$suid}.{$ext}";
+					$fullName = "{$fname}.{$ext}";
 					$localFile = "/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/tmp/{$fullName}";
 					$result = move_uploaded_file($value['tmp_name'], $localFile);
 
@@ -95,7 +96,7 @@ try {
 							"owner_id" => $ownerId,
 							"upload_id" => $suid,
 							"name" => 'File',
-							"file_name" => "{$fname}.{$ext}",
+							"file_name" => "{$fnameSimple}.{$ext}",
 							"modified_date" =>  $now,
 							"created_date" =>  $now,
 							"topic_id" => $topicId,
@@ -108,23 +109,17 @@ try {
 						$wpdb->insert( 'alpn_vault', $rowData );
 						$vaultId = $wpdb->insert_id;
 
-
-						$transloaditTemplateId = "3b83f38410d744caa3060af90cd64bc0";
+						$transloaditTemplateId = "b51ccbe1760d410c8cf9b409228e6139";
 						if (PTE_HOST_DOMAIN_NAME == 'alct.pro') {  //dev
 							$transloaditTemplateId = "b51ccbe1760d410c8cf9b409228e6139";
 						}
 
 						$response = $transloadit->createAssembly(array(
 							'files' => array($localFile),
-							'fields' => array(
-								'pte_source' => "Email Routing",
-								'pte_uid' => $suid
-							),
 							'params' => array(
 								'template_id' => $transloaditTemplateId
 							),
 						));
-
 
 						if (isset($response->data)) {
 							$data = $response->data;
@@ -138,7 +133,7 @@ try {
 								'process_data' => array(
 										'topic_id' => $topicId,
 										'vault_id' => $vaultId,
-										'file_name' => "{$fname}.{$ext}",
+										'file_name' => "{$fnameSimple}.{$ext}",
 										'static_name' => "{$fromEmail}",
 										'message_title' => $subject,
 										'message_body' => trim($textBody)

@@ -1,5 +1,8 @@
 //TODO Make sure that server room management events are received and handled properly. Including a room dissappearing.
 
+var inMessageTextArea = false;
+var security = {};
+
 var chatIsActive = false;
 var activeChannel;
 var activeChannelMeta = {};
@@ -7,12 +10,15 @@ var activeChannelPage;
 var activeChannelUserDescriptors = {};
 var speechEvents = {};
 
-var delayBetweenBeeps = 20000; //mililseconds
-var lastBeepTime = new Date();
+var groupMessagesWithin = 10000; //milliseconds
+var previousMessageTime = new Date() - (groupMessagesWithin + 1000);  //expire it to start
+var previousMessagAuthor = 0;
 
 var activeVideoRoom = false;
 
 var currentCancelButtonId;
+
+var fileUploaders = [];
 
 var chatWindowState = 'closed';
 var muteState = 'muted';
@@ -35,6 +41,7 @@ var Chat = Twilio.Chat;
 
 var imageBase = "https://storage.googleapis.com/pte_media_store_1/";
 var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
+var siteRoot = "/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/";
 
   $(document).ready(function() {
 
@@ -91,6 +98,7 @@ var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
     				break;
     				case 'pte_chat_message':
               pte_handle_chat_start(event);
+              security = data.security;
     				break;
             case 'pte_join_audio_current_channel':
               pte_join_audio_current_channel(event);
@@ -115,9 +123,11 @@ var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
     				break;
     			}
         });
+
       } () );
 
-      logIn();
+
+      wsc_setup_chat();
       setupEmojiOneArea($("#message-body-input"));
 
       var isUpdatingConsumption = false;
@@ -154,6 +164,11 @@ var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
       });
     });
 
+
+    function wsc_setup_chat(){
+      logIn();
+    }
+
     function pte_set_chat(state){
     	if (state == 'disabled') {
         $('#pte_chat_messages_area').hide();
@@ -179,6 +194,7 @@ var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
           console.log("LEAVING...");
           speechEvents.stop();
           activeVideoRoom.disconnect();
+          activeVideoRoom = false;
         } catch (e) {
           console.log("Error disconnecting");
           console.log(e);
@@ -345,8 +361,9 @@ var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
 
       console.log('Starting Audio');
 
-      var token = userContext.token;
-      if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
+      var token = (typeof userContext.token != "undefined" && userContext.token) ? userContext.token : false;
+
+      if (token && 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
         navigator.mediaDevices.getUserMedia({
           audio: true
         }).then(function(mediaStream) {
@@ -395,6 +412,8 @@ var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
 
     function pte_handle_chat_start(event){
 
+      var startWithAudio = false;
+
       console.log('CHAT WINDOW -- Handling Chat Start/STOP');
       //TODO Handle Switching between profile and vault views - should not reload chat...
       var data = event.data.data;
@@ -405,11 +424,12 @@ var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
           console.log("Same Channel. Do Nothing");
           return;
         }
-        if (typeof activeVideoRoom != "undefined") {
+        if (activeVideoRoom) {
+          startWithAudio = true;
           pte_leave_current_audio_room();
         }
         activeChannelMeta = data;
-        joinChannel(newChannelId);
+        joinChannel(newChannelId, startWithAudio);
         pte_set_chat("enabled");
       } else {
         pte_set_chat("disabled");
@@ -422,7 +442,7 @@ var siteBase = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
     }
 
 
-function joinChannel(sid) {
+function joinChannel(sid, startWithAudio = false) {
 
   console.log('CHAT WINDOW - JOINING CHAT', sid);
 
@@ -439,6 +459,12 @@ function joinChannel(sid) {
       client.getChannelBySid(sid).then(function(channel) {
         activeChannel = channel;
         setActiveChannel(activeChannel);
+        if (startWithAudio) {
+          var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
+          activeChannelMetaSnapshot.name = "pte_start_audio_wait";
+          pte_parent_message_send(activeChannelMetaSnapshot);
+          pte_start_audio(activeChannel.sid);
+        }
       }).catch(function() {
 
       });
@@ -471,13 +497,36 @@ function pte_handle_internal_link(el) {
 
 function pte_send_chat(){
   var textAreaObj = $("#message-body-input").data("emojioneArea");
-  var body = textAreaObj.getText().trim();
+  var body = textAreaObj.getText().trim() ? textAreaObj.getText().trim() : "";
 
-  activeChannel.sendMessage(body, {'message_type': 'message'}).then(function() {
-    textAreaObj.setText("").setFocus();
-    $("#buttercup_easter_egg").addClass('pte_button_disabled');
+  var previewImage = jQuery("div#wsc_message_preview img.wsc_paste_preview_image");
+  var fileId = previewImage.data('fid') ? previewImage.data('fid') : '';
+  var isReady = (previewImage.data('wsc-ready') == 'true') ? true : false;
+  var fileName = fileId && isReady ? fileId  + ".webp" : '';
+
+  textAreaObj.setText("").setFocus();
+  $("#buttercup_easter_egg").addClass('pte_button_disabled');
+
+  activeChannel.sendMessage(body, {
+    'message_type': 'message',
+    'file_id' : fileId,
+    'file_name': fileName,
+    'title': '',
+    'description': ''
+  }).then(function(newMessageIndex) {
+
     $('#channel-messages').scrollTop($('#channel-messages ul').height());
     $('#channel-messages li.last-read').removeClass('last-read');
+
+    var imageSource = $('div#wsc_message_preview img.wsc_paste_preview_image').attr('src');
+    if (imageSource) {
+      var newMessageImageContainer = $('#channel-messages li[data-index=' + newMessageIndex + '] div.wsc_chat_preview_panel_outer');
+      var previewTitle = '';
+      var previewDescription = '';
+      var previewPanel = "<div class='wsc_chat_preview_panel_outer'><div class='wsc_preview_image_inner'><div class='wsc_preview_image_inner_left'><img onclick='wsc_open_image_window(this);' class='wsc_preview_image wsc_clickable' src='" + imageSource + "'></div><div class='wsc_preview_image_inner_right'><div class='wsc_preview_image_title'>" + previewTitle + "</div><div class='wsc_preview_image_description'>" + previewDescription + "</div></div></div></div>"
+      newMessageImageContainer.html(previewPanel);
+    }
+    wsc_close_message_preview();
   });
 }
 
@@ -502,32 +551,71 @@ function setupEmojiOneArea($el, container = ""){
   },
   events: {
     blur: function(editor, event){
+      inMessageTextArea = false;
       // console.log("BLUR");
       // selectionRange = saveSelection();
       // console.log(selectionRange);
     },
     focus: function(editor, event){
+      inMessageTextArea = true;
       // console.log("FOCUS");
       // console.log(selectionRange);
       // restoreSelection(selectionRange);
     },
-    paste: function(editor, text, html){
-      // console.log("PASTE");
-      // console.log(editor);
-      // console.log(text);
-      // console.log(html);
+    paste: function(editor, clipboardText, clipboardHTML){
+
+        navigator.permissions.query({ name: "clipboard-read" }).then((result) => {
+          if (result.state == "granted" || result.state == "prompt") {
+              navigator.clipboard.read().then((data) => {
+                // console.log("CLIPBOARD");
+                // console.log(data);
+                for (let i = 0; i < data.length; i++) {
+                  if (!data[i].types.includes("image/png")) {
+                    console.log("Clipboard contains non-image data. Unable to access it.");
+                  } else {
+                    data[i].getType("image/png").then((fileBlob) => {
+                      var fileId = pte_UUID();
+                      var fileName = fileId + ".png";
+                      var fileType = fileBlob.type;
+
+                      if (fileId && fileName && fileBlob) {
+                        var imageData = {
+                          file_name: fileName,
+                          file_id: fileId,
+                          type: fileType,
+                          blob: fileBlob,
+                          image_url: true,
+                          message: false
+                        };
+                        wsc_chat_preview_upload(imageData);
+                        var imageSource = URL.createObjectURL(fileBlob);
+                        jQuery("div#wsc_message_preview").html("<img data-fid='" + fileId + "' class='wsc_paste_preview_image' src='" + imageSource + "'><div id='wsc_message_preview_close' onclick='wsc_close_message_preview();'>✕</div>").fadeIn();
+
+                        $("#buttercup_easter_egg").removeClass('pte_button_disabled');
+                      }
+                    });
+                }
+              }
+            })
+              .catch(function(error) {
+                console.log("Invalid item on clipboard");
+              });
+          }
+        });
+
     },
-    keyup: function (event, key) {
+    keydown: function (event, key) {
+      var isCliboardPreview = jQuery("div#wsc_message_preview").html() ? true : false;
       var body = this.getText();
       var elId = $el.attr("id");
       var sendButton = $("#buttercup_easter_egg");
-        if (body && elId == "message-body-input") {
+        if ((body || isCliboardPreview) && elId == "message-body-input") {
           sendButton.removeClass('pte_button_disabled');
         } else {
           sendButton.addClass('pte_button_disabled');
         }
-        if ((key.keyCode == 10 || key.keyCode == 13) && (key.ctrlKey || event.metaKey == '⌘-')) {
-          if (body) {
+        if ((key.keyCode == 10 || key.keyCode == 13) && (key.ctrlKey || event.metaKey == '⌘-' )) {
+          if (body || isCliboardPreview) {
             var eArea = this;
             if (elId == "message-body-input") { //Add
               pte_send_chat();
@@ -546,6 +634,26 @@ function setupEmojiOneArea($el, container = ""){
 return emojioneEl;
 }
 
+function wsc_close_message_preview(){
+  jQuery("div#wsc_message_preview").fadeOut(250, function(){
+    jQuery("div#wsc_message_preview").html("");
+    var messageEditor = $("#message-body-input").data("emojioneArea");
+    var sendButton = $("#buttercup_easter_egg");
+    var body = messageEditor.getText();
+    if (body) {
+      sendButton.removeClass('pte_button_disabled');
+    } else {
+      sendButton.addClass('pte_button_disabled');
+    }
+  });
+}
+
+function wsc_send_parent_logged_out(){
+  var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
+  activeChannelMetaSnapshot.name = "pte_channel_logged_out";
+  pte_parent_message_send(activeChannelMetaSnapshot);
+}
+
 function logIn() {
 
   $.getJSON( '../chat/token.php', {
@@ -558,8 +666,8 @@ function logIn() {
     console.log(data);
 
     if (!data.identity) {
-        console.log("HANDLE CHAT LOGGED OUT - MAIN"); //exit to login
-
+        console.log("HANDLE CHAT LOGGED OUT - CHAT"); //exit to login
+        wsc_send_parent_logged_out();
     }
 
     userContext = {identity: data.identity, token: data.token};
@@ -587,93 +695,33 @@ function logIn() {
             }
           });
         });
-
-        //firebase addition
-
-        console.log("FIREBASE");
-        console.log(firebase);
-
+        //firebase addition for handling browser notifications
         if (firebase && firebase.messaging()) {
-
-          // requesting permission to use push notifications
-            firebase.messaging().requestPermission().then(() => {
-
-
-            console.log('reached permissions')
-          // getting FCM token
-            firebase.messaging().getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"}).then((fcmToken) => {
-
-              console.log("TOKEN", fcmToken);
-              console.log("userContext", userContext);
-
-            jQuery.ajax({
-            	url: "https://wiscle.com/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
-            	type: "POST",
-            	data:{token: fcmToken, userId: userContext.identity},
-            	success: function(html){
-                  console.log("SAVED FCM");
-            	     console.log(html);
-            	 }
-            	});
-
-
-              console.log('reached token 2');
-              console.log(fcmToken);
-
+          firebase.messaging().requestPermission().then(() => {
+            firebase.messaging()
+            .getToken({vapidKey:"BDypbWx3yzZhri6Kz3ooioxhSIoEmFi5yzz6r7X-tJ9wCSjRJ7TPjW9MMpoVhAD04-GY5hy1uIHNzkJ10E9-NE8"})
+            .then((fcmToken) => {
+              jQuery.ajax({
+              	url: "https://wiscle.com/wp-content/themes/memberlite-child-master/api_handler/saveFcm.php",
+              	type: "POST",
+              	data:{token: fcmToken, userId: userContext.identity},
+              	success: function(html){
+                    console.log("SAVED FCM");
+              	 }
+               });
               client.setPushRegistrationId('fcm', fcmToken);
-
             }).catch((err) => {
                 console.log("CANT GET TOKEN");
                 console.log(err);
-              // can't get token
             });
-
           }).catch((err) => {
-            console.log('firebase error');
+            console.log('firebase error 1');
             console.log(err);
-          // can't request permission or permission hasn't been granted to the web app by the user
           });
-
-          firebase.messaging().onMessage(payload => {
-            console.log("MESSAGE");
-            console.log(payload);
-          });
-
-        //   firebase.messaging().onMessage(payload => {
-        //
-        //     console.log('Message Received...');
-        //     console.log(payload);
-        //
-        //     if(typeof payload.data.author !== 'undefined' && payload.data.author!=''){
-        //
-        //       // getChatClient.then(function (chatClient) {
-        //       //
-        //       //
-        //       // 	if(payload.data.author==alpn_user_firstName) {
-        //       // 		console.log('New message from '+payload.data.author+'\n'+payload.data.twi_body);
-        //       // 	}
-        //       // 	//chatClient.handlePushNotification(payload);
-        //       //
-        //       // });
-        //
-        //   } else {
-        //
-        //     if(typeof payload.data.twi_body !== 'undefined' && payload.data.twi_body != ''){
-        //       console.log('Message from https://wiscle.com/ \n'+payload.data.twi_body);
-        //     }
-        //   }
-        //     // console.log(alpn_user_displayname);
-        //     // console.log(payload.data)
-        //   //	alert('reached')
-        //   //	syncClient.handlePushNotification(payload);
-        //
-        // });
-
         } else {
-
-          // no Firebase library imported or Firebase library wasn't correctly initialized
+          console.log('firebase error 2');
+          console.log(err);
         }
-
 
         client.getSubscribedChannels().then(function(paginator) {
           //console.log('Getting Channels..');
@@ -687,6 +735,8 @@ function logIn() {
               userChannels[uniqueId + "_"] = channel;   //Ensures one array element per topic
             }
           }
+
+
           pte_process_chat_channels();
           //setup dom processor timer
           setTimeout(function(){
@@ -719,8 +769,8 @@ function logIn() {
           });
 
           client.on('channelUpdated', function(channelUpdate) {
-            //console.log("Channel Updated Called");
-            //console.log(channelUpdate);
+            console.log("Channel Updated Called");
+            console.log(channelUpdate);
           });
 
           client.on('channelJoined', function(channel) {
@@ -764,16 +814,18 @@ function logIn() {
             console.log(channel);
           });
 
-        });  //End Get Unreads
+      //  });
 
         client.on('connectionError', function(channel) {
-          console.log("Connection Error");
+          console.log("Connection Error -- Retrying");
           console.log(channel);
 
-
-          //var channelState = channel.state;
-          //var uniqueId = (typeof channelState.uniqueName != "undefined") && channelState.uniqueName ? channelState.uniqueName : channelState.friendlyName;
-
+          pte_set_chat("disabled");
+          var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
+          activeChannelMetaSnapshot.name = "pte_channel_stop";
+          pte_parent_message_send(activeChannelMetaSnapshot);
+          clearCurrentChannel();
+          wsc_setup_chat();
 
         });
 
@@ -783,11 +835,19 @@ function logIn() {
           console.log(channelState);
 
           if (channelState == "denied") {
-            console.log("DENIED LOGIN BEFORE????");
-            logIn();
-            console.log("DENIED LOGIN AFTER????");
+            console.log("DENIED LOGIN");
+            //alert("About to try Chat Drop fix.");
+            pte_set_chat("disabled");
+            var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
+            activeChannelMetaSnapshot.name = "pte_channel_stop";
+            pte_parent_message_send(activeChannelMetaSnapshot);
+            clearCurrentChannel();
+            wsc_setup_chat();
           }
         });
+
+
+      });
 
       })
       .catch(function(err) {
@@ -1018,7 +1078,6 @@ function pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCo
   rowHtml += "</div>";
   el.append(rowHtml);
   userChannelsDom.push(el);
-  //beep();
 }
 
 function pte_handle_chat_channel(channel){
@@ -1092,10 +1151,7 @@ function pte_insert_new_object(data) {
     $('#channel-messages').scrollTop($('#channel-messages ul').height());
     $('#channel-messages li.last-read').removeClass('last-read');
   });
-
 }
-
-
 
 function updateMessages() {
   console.log("UPDATE MESSAGES -- DIS CULPRIT");
@@ -1171,31 +1227,59 @@ function createObject(message, $el) {
 
   var user = activeChannelUserDescriptors[message.author];
   var attributes = user.attributes;
-  var imageHandle = "https://storage.googleapis.com/pte_media_store_1/" + attributes.image_handle;
+
+  var imageHandle = imageBase + attributes.image_handle;
   var time = message.timestamp;
   var minutes = time.getMinutes();
-  var ampm = Math.floor(time.getHours()/12) ? 'PM' : 'AM';
+  var hours = time.getHours();
+  var displayHours = (hours % 12) ? hours % 12 : 12;
+  var ampm = Math.floor(hours / 12) ? 'PM' : 'AM';
+
+  var messageMonth = time.getMonth() + 1;
+  var messageDay = time.getDate();
+  var messageYear = time.getFullYear().toString().slice(-2);
+
+  var isTimeLapsedSinceLastMessage = ((time - previousMessageTime) > groupMessagesWithin) ? true : false;
+  var isLoggedInMember = (userContext.identity == message.author) ? true : false;
+  var isSameAuthor = (previousMessagAuthor && message.author == previousMessagAuthor) ? true : false;
+  var isPrepend = (typeof message.wsc_prepend != "undefined" && message.wsc_prepend) ? true : false;
+  var isUpdating = (typeof message.wsc_updated != "undefined" && message.wsc_updated) ? true : false;
+
+  previousMessagAuthor = message.author;
+  previousMessageTime = time;
 
   if (minutes < 10) { minutes = '0' + minutes; }
 
-  if (userContext.identity == message.author) {
-    var editableClass = ' pte_flex_item_editable';
-    var editableString = '<div class="pte_flex_edit_body"><div class="pte_chat_edit_title">Editing...</div>' + objectBody + '</div>';
-    var containerTitle = 'Select Message to Delete';
+  if (isLoggedInMember) {
+    var editButtonHtml = "<i class='far fa-pencil-alt pte_flex_item_editable wsc_chat_edit_button' title='Edit Message'></i>";
+    var editableString = '<div class="pte_flex_edit_body"></div>';
   } else {
-    var editableClass = ' pte_flex_item_not_editable';
+    var editButtonHtml = "";
     var editableString = '';
-    var containerTitle = '';
   }
 
   var html =  '<div class="pte_flex_container">';
+
+    if (isUpdating || isPrepend || !isSameAuthor || ( isSameAuthor && isTimeLapsedSinceLastMessage)) {
       html += '<div class="pte_flex_user_icon">';
-      html += '<img src="' + imageHandle + '" class="pte_topic_icon' + editableClass + '" title="' +  containerTitle + '">';
+      html += '<img src="' + imageHandle + '" class="pte_topic_icon">';
       html += '</div>';
+    } else {
+      html += '<div class="pte_flex_user_icon">';
+      html += "&nbsp;";
+      html += '</div>';
+    }
+
       html += '<div class="pte_flex_body">';
-      html += '<span class="' + editableClass + '" title="' +  containerTitle + '">' + user.friendlyName + '</span></br>';
+
+      if (isPrepend || !isSameAuthor || ( isSameAuthor && isTimeLapsedSinceLastMessage)) {
+        html += '<span style="font-size: 12px; font-weight: bold;">' + user.friendlyName + '</span></br>';
+      }
+
       html +=  objectBody;
-      html += '<span class="timestamp"  style="font-size: 10px;">' + ' ' + (time.getHours()%12) + ':' + minutes + '' + ampm + ''  + '</span>';
+
+      html += '<div class="timestamp">' + messageMonth + '/' + messageDay + '/' + messageYear +  ' ' + displayHours + ':' + minutes + '' + ampm + ''  + editButtonHtml + '</div>';
+
       html += '</div>';
       html += editableString;
       html += '<p class="last-read">New Messages</p>';
@@ -1240,55 +1324,91 @@ function createObject(message, $el) {
 
 function createStandardMessage(message, $el) {
 
-  // console.log("STANDARD MESSAGE");
-  // console.log(message);
-
   var user = activeChannelUserDescriptors[message.author];
 
   var lineIndex = $el.data('index');
   var attributes = user.attributes;
-  var imageHandle = "https://storage.googleapis.com/pte_media_store_1/" + attributes.image_handle;
+  var imageHandle = imageBase + attributes.image_handle;
 
   var time = message.timestamp;
   var minutes = time.getMinutes();
-  var ampm = Math.floor(time.getHours()/12) ? 'PM' : 'AM';
+  var hours = time.getHours();
+  var displayHours = (hours % 12) ? hours % 12 : 12;
+  var ampm = Math.floor(hours / 12) ? 'PM' : 'AM';
+
+  var messageMonth = time.getMonth() + 1;
+  var messageDay = time.getDate();
+  var messageYear = time.getFullYear().toString().slice(-2);
+
+  var isTimeLapsedSinceLastMessage = ((time - previousMessageTime) > groupMessagesWithin) ? true : false;
+  var isLoggedInMember = (userContext.identity == message.author) ? true : false;
+  var isSameAuthor = (previousMessagAuthor && message.author == previousMessagAuthor) ? true : false;
+  var isPrepend = (typeof message.wsc_prepend != "undefined" && message.wsc_prepend) ? true : false;
+
+  previousMessagAuthor = message.author;
+  previousMessageTime = time;
 
   if (minutes < 10) { minutes = '0' + minutes; }
 
-  if (userContext.identity == message.author) {
-    var editableClass = ' pte_flex_item_editable';
+  if (isLoggedInMember) {
+    var editButtonHtml = "<i class='far fa-pencil-alt pte_flex_item_editable wsc_chat_edit_button' title='Edit Message'></i>";
     var editableString = '<div class="pte_flex_edit_body"></div>';
-    var containerTitle = 'Select Message to Edit or Delete';
   } else {
-    var editableClass = ' pte_flex_item_not_editable';
+    var editButtonHtml = "";
     var editableString = '';
-    var containerTitle = '';
+  }
+
+  var messageAttributes = message.attributes;
+  var isUpdating = (typeof message.wsc_updated != "undefined" && message.wsc_updated) ? true : false;
+   //console.log("DRAWING");
+  // console.log(messageAttributes);
+
+  var messageFileId = (typeof messageAttributes.file_id != "undefined" && messageAttributes.file_id) ? messageAttributes.file_id : false;
+  var messagePreviewFileName = (typeof messageAttributes.file_name != "undefined" && messageAttributes.file_name) ? messageAttributes.file_name : false;
+  var previewTitle = (typeof messageAttributes.title != "undefined" && messageAttributes.title) ? messageAttributes.title.substr(0, 100) : '';
+  var previewDescription = (typeof messageAttributes.description != "undefined" && messageAttributes.description) ? messageAttributes.description.substr(0, 250) : '';
+
+  var previewPanel = "<div class='wsc_chat_preview_panel_outer'></div>";
+  if (messagePreviewFileName || previewTitle || previewDescription) {  //preview ready
+    var imageSource = messagePreviewFileName ? imageBase + messagePreviewFileName : imageBase + "f326a01e-no_chat_image.webp";
+    var previewPanel = "<div class='wsc_chat_preview_panel_outer'><div class='wsc_preview_image_inner'><div class='wsc_preview_image_inner_left'><img onclick='wsc_open_image_window(this);' class='wsc_preview_image wsc_clickable' src='" + imageSource + "'></div><div class='wsc_preview_image_inner_right'><div class='wsc_preview_image_title'>" + previewTitle + "</div><div class='wsc_preview_image_description'>" + previewDescription + "</div></div></div></div>"
   }
 
   var messageBody = message.body;
   if (typeof messageBody != "undefined" && messageBody) {
-    messageBody = messageBody.linkify();
+    messageBody = messageBody.linkify(message);
   } else {
     messageBody = "";
   }
 
   var html =  '<div class="pte_flex_container">';
-      html += '<div class="pte_flex_user_icon">';
-      html += '<img src="' + imageHandle + '" class="pte_topic_icon' + editableClass + '" title="' +  containerTitle + '">';
-      html += '</div>';
+      if (isUpdating || isPrepend || !isSameAuthor || ( isSameAuthor && isTimeLapsedSinceLastMessage)) {
+        html += '<div class="pte_flex_user_icon">';
+        html += '<img src="' + imageHandle + '" class="pte_topic_icon">';
+        html += '</div>';
+      } else {
+        html += '<div class="pte_flex_user_icon">';
+        html += "&nbsp;";
+        html += '</div>';
+      }
       html += '<div class="pte_flex_body">';
-      html += '<span class="' + editableClass + '" style="font-size: 12px; font-weight: bold;" title="' +  containerTitle + '">' + user.friendlyName + '</span></br>';
+      if (isPrepend || !isSameAuthor || ( isSameAuthor && isTimeLapsedSinceLastMessage)) {
+        html += '<span style="font-size: 12px; font-weight: bold;">' + user.friendlyName + '</span></br>';
+      }
       html +=  messageBody;
-      html += '&nbsp;<span class="timestamp">' + ' ' + (time.getHours()%12) + ':' + minutes + '' + ampm + ''  + '</span>';
+      html +=  previewPanel;
+      html += '<div class="timestamp">' + messageMonth + '/' + messageDay + '/' + messageYear +  ' ' + displayHours + ':' + minutes + '' + ampm + ''  + editButtonHtml + '</div>';
       html += '</div>';
       html += editableString;
       html += '<p class="last-read">New Messages</p>';
       html += '<p class="members-read"/>';
       html += '</div>';
       var initHeight = $('#channel-messages ul').height();
+
       $el.append(html);
 
       if (userContext.identity == message.author) {  //as the user, I can edit and delete my messages.
+
         $el.find('.pte_flex_item_editable').on('click', function(e) {
           var row = $el;
           var messageLine = row.find('.pte_flex_body');
@@ -1315,6 +1435,8 @@ function createStandardMessage(message, $el) {
             var relatedEmojiOneArea = thisEl.closest(".pte_flex_edit_body").find('textarea.pte_message_editor');
             if (typeof relatedEmojiOneArea[0] != "undefined") {
               var thisEditor = relatedEmojiOneArea[0].emojioneArea;
+              var messageAttributes = message.attributes;
+              message.wsc_updated = true;
               message.updateBody(thisEditor.getText().trim());
             }
           });
@@ -1337,11 +1459,13 @@ function createStandardMessage(message, $el) {
 
         var editBody = $el.find('.pte_flex_edit_body').append(textEditor).append(saveButton).append(deleteButton).append(cancelButton);
       }
+
 }
 
 function prependMessage(message) {
   var $messages = $('#channel-messages');
   var $el = $('<li/>').attr('data-index', message.index);
+  message.wsc_prepend = true;
   createMessage(message, $el);
   $('#channel-messages ul').prepend($el);
 }
@@ -1565,60 +1689,300 @@ function alpn_wait_for_ready(waitPeriod, tryFrequency, checkCondition, callback,
 	}, tryFrequency);
 }
 
-if(!String.linkify) {
-  String.prototype.linkify = function() {
+function wsc_get_new_uppy_instance(){
+ var localInstance = new Uppy.Core({
+      id: "wsc_file_uploader",
+      debug: true,
+      autoProceed: true,
+      allowMultipleUploads: false,
+      restrictions: {
+          maxFileSize: 1024 * 1024 * 5,
+          maxNumberOfFiles: 1,
+          minNumberOfFiles: 1
+      }
+    })
+    .use(Uppy.Transloadit, {
+             service: 'https://api2.transloadit.com',
+             waitForEncoding: true,
+             importFromUploadURLs: false,
+             alwaysRunAssembly: false,
+             signature: null,
+             limit: 1,
+             params: {
+                auth: { key: '0f89b090056541ff8ed17c5136cd7499' },
+                template_id: '3f8a70152574422891ac0b9358ae9c8d'
+              }
+     })
+        .on('transloadit:complete', (assembly) => {
+           console.log("TLI Chat Handle Preview Upload Complete...");
 
-      var teHtml;
-      // teamedge://
-      var pte_pattern = /\b(?:teamedge):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
-      // http://, https:// only
-      var urlPattern = /\b(?:https?):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
-      // www. sans http:// or https://
-      var pseudoUrlPattern = /(^|[^\/])(www\.[\S]+(\b|$))/gim;
+          if (typeof assembly.results != "undefined" && typeof assembly.results.resize_image != "undefined") {
+            var results = assembly.results.resize_image[0];
+            var currentMessage = (typeof localInstance.wsc_message != "undefined" && localInstance.wsc_message) ? localInstance.wsc_message : false;
+            if (currentMessage) {
+              var currentMessageAttributes = currentMessage.attributes;
+              currentMessageAttributes.file_name = results.name;
+              currentMessage.updateAttributes(currentMessageAttributes);
+            } else {
+              var resultFileId = results.basename;
+              //console.log("Looking for: ", resultFileId);
+              var previewImage = jQuery("img.wsc_paste_preview_image[data-fid='" + resultFileId + "']");
+              previewImage.data("wsc-ready", 'true');
+                var messageAttributes, fileId, fileName;
+                activeChannel.getMessages(30).then(function(page) {
+                  page.items.forEach(function(message){
+                    messageAttributes = message.attributes;
+                    fileId = (typeof messageAttributes.file_id != "undefined" && messageAttributes.file_id) ? messageAttributes.file_id : "";
+                    fileName = (typeof messageAttributes.file_name != "undefined" && messageAttributes.file_name) ? messageAttributes.file_name : "";
+                    if (!fileName && fileId && resultFileId && fileId == resultFileId) {
+                      messageAttributes.file_name = fileId + ".webp";
+                      message.updateAttributes(messageAttributes);
+                      throw("Found and UPDATED Message with File Name");
+                    }
+                  });
+                }).catch(function(e){
+                  //console.log(e);
+                });
+            }
+
+            if (results.original_name) {
+              jQuery.ajax({
+                url: siteBase + 'wsc_delete_tmp_file.php',
+                type: 'POST',
+                data: {
+                  security: security,
+                  file_name: results.original_name
+                },
+                dataType: "json",
+                success: function(json) {
+                },
+                error: function() {
+                  console.log('problem deleting temp file');
+                }
+              });
+            }
+        } else {
+          //Do nothing failed?
+          console.log("Image Upload Failed. Ignore");
+        }
+      });
+
+      return localInstance;
+}
+
+function wsc_chat_preview_upload(imageData) {
+
+  // console.log("PREVIEW UPLOAD");
+  // console.log(imageData);
+
+    var availableUploader = false;
+    var message = (typeof imageData.message != "undefined" && imageData.message) ? imageData.message : false;
+
+    try {
+      fileUploaders.forEach(function(uppyUploader){
+        if (uppyUploader.getState().allowNewUpload) {
+          availableUploader = uppyUploader = wsc_get_new_uppy_instance();
+          throw Exception;
+        } else {
+          availableUploader = wsc_get_new_uppy_instance();
+          fileUploaders.push(availableUploader);
+          throw Exception;
+        }
+      });
+    } catch (e) {
+    }
+    if (!availableUploader) {  //first time
+      availableUploader = wsc_get_new_uppy_instance();
+      fileUploaders.push(availableUploader);
+    }
+    availableUploader.wsc_message = message;
+    availableUploader.addFile({
+      name: imageData.file_name,
+      type: imageData.type,
+      data: imageData.blob,
+      isRemote: false
+    });
+}
+
+ function wsc_open_image_window(el) {
+   var $el = jQuery(el);
+   var imageSource = $el.attr("src");
+   window.open(imageSource, '_blank');
+ }
+
+function wsc_create_message_preview_url(data) {
+
+   // console.log("Creating Message Preview URL");
+   // console.log(data);
+
+  var siteUrl = (typeof data.site_url != "undefined" && data.site_url) ? data.site_url : false;
+  var topicId = (typeof data.topic_id != "undefined" && data.topic_id) ? data.topic_id : false;
+  var message = (typeof data.message != "undefined" && data.message) ? data.message : false;
+  var fileId = (typeof data.file_id != "undefined" && data.file_id) ? data.file_id : false;
+
+  if (siteUrl && topicId && message && siteUrl.substr(0,7) != 'http://') {
+
+    jQuery.ajax({
+      url: siteBase + 'wsc_handle_chat_preview_url.php',
+      type: 'POST',
+      data: {
+        security: security,   //global sent from main on chat start
+        site_url: siteUrl,
+        file_id: fileId
+      },
+      dataType: "json",
+      success: function(json) {
+        // console.log("BACK");
+        // console.log(json);
+
+        var fileName = json.file_name;
+        var imageUrl = json.image_url;
+        var previewTitle = json.title;
+        var previewDescription = json.description;
+        var messageIndex = message.index;
+
+        if (fileName && imageUrl) { //Handle with image
+          try {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function(){
+                if (this.readyState == 4 && this.status == 200){
+                  console.log("BLOBBY");
+                  console.log(this.response);
+                    if (this.response.size) {
+                      var fileType = this.response.type;
+                      var fileBlob= this.response;
+                      var acceptArray = ["image/jpeg", "image/png", "image/webp"];
+                      if (acceptArray.includes(fileType)) {
+                        if (fileId && fileName && fileBlob) {
+                          var imageData = {
+                            file_name: fileName,
+                            file_id: fileId,
+                            type: fileType,
+                            blob: fileBlob,
+                            image_url: imageUrl,
+                            message: message
+                          };
+                          var messageAttributes = message.attributes;
+                          messageAttributes.file_id = fileId;
+                          messageAttributes.file_name = fileName;
+                          messageAttributes.title = previewTitle;
+                          messageAttributes.description = previewDescription;
+                          message.updateAttributes(messageAttributes);
+                          wsc_chat_preview_upload(imageData);
+
+                          var imageSource = URL.createObjectURL(fileBlob);
+                          previewTitle = messageAttributes.title.substr(0, 100);
+                          previewDescription = messageAttributes.description.substr(0, 250);
+
+                          jQuery("div#channel-messages li[data-index='" + messageIndex + "'] div.wsc_chat_preview_panel_outer").html("<div class='wsc_preview_image_inner'><div class='wsc_preview_image_inner_left'><img  onclick='wsc_open_image_window(this);' class='wsc_preview_image wsc_clickable' src='" + imageSource + "'></div><div class='wsc_preview_image_inner_right'><div class='wsc_preview_image_title'>" + previewTitle + "</div><div class='wsc_preview_image_description'>" + previewDescription + "</div></div></div>");
+                        }
+                    }
+                }
+              }
+            }
+            var tempFile = siteBase + "tmp/" + fileName;
+            xhr.open('GET', tempFile);
+            xhr.responseType = 'blob';
+            xhr.send();
+
+          } catch (e) {
+            console.log("Error Getting Preview File");
+            console.log(e);
+          }
+        } else {
+          //No img
+          var messageAttributes = message.attributes;
+          messageAttributes.file_id = fileId;
+          messageAttributes.file_name = "";
+          messageAttributes.title = previewTitle;
+          messageAttributes.description = previewDescription;
+          message.updateAttributes(messageAttributes);
+          previewTitle = messageAttributes.title.substr(0, 100);
+          previewDescription = messageAttributes.description.substr(0, 250);
+          var imageSource = imageBase + "f326a01e-no_chat_image.webp";
+          jQuery("div#channel-messages li[data-index='" + messageIndex + "'] div.wsc_chat_preview_panel_outer").html("<div class='wsc_preview_image_inner'><div class='wsc_preview_image_inner_left'><img class='wsc_preview_image' src='" + imageSource + "'></div><div class='wsc_preview_image_inner_right'><div class='wsc_preview_image_title'>" + previewTitle + "</div><div class='wsc_preview_image_description'>" + previewDescription + "</div></div></div>");
+        }
+      },
+      error: function() {
+        console.log('problemo - save chat image');
+      //TODO
+      }
+    });
+  } else {
+    console.log("PREVIEW URL ERROR, DATA MISSING");
+    console.log(data);
+  }
+
+}
+
+if(!String.linkify) {
+
+  String.prototype.linkify = function(message) {
+
+      var messageAttributes = message.attributes;
+
+      var fileId = (typeof messageAttributes.file_id != "undefined" && messageAttributes.file_id) ? messageAttributes.file_id : false;
+      var messagePreviewFileName = (typeof messageAttributes.file_name != "undefined" && messageAttributes.file_name) ? messageAttributes.file_name : false;
+
+      // wiscle://
+      var pte_pattern = /\b(?:wiscle):\/\/[a-z0-9-+&@#\/%?=~_|!:,.;]*[a-z0-9-+&@#\/%=~_|]/gim;
+
+      var urlPattern = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
       // Email addresses
       var emailAddressPattern = /[\w.]+@[a-zA-Z_-]+?(?:\.[a-zA-Z]{2,6})+/gim;
 
       var body = this;
 
-      // for (const item of this.matchAll(pte_pattern)) {
-      //   const originalUrl = item[0];
-      //   const urlParts = new URL(originalUrl);
-      //   var urlPathname = urlParts.pathname;
-      //   var urlProtocol = urlParts.protocol;
-      //   const searchParams = new URLSearchParams(urlParts.search);
-      //   var ownerId = searchParams.get('owner_id');
-      //   var topicId = searchParams.get('topic_id');
-      //   switch(urlPathname) {
-      //     case "//vault_item":   //actually receive here. Naming confusing but full round trip.
-      //       var vaultId = searchParams.get('vault_id');
-      //       var vaultFileName = searchParams.get('vault_file_name');
-      //       vaultFileName = (typeof vaultFileName != "undefined" && vaultFileName) ? vaultFileName : "File";
-      //       teHtml = "<span class='pte_chat_internal_link' data-op='vault_item' data-tid = '" + topicId + "' data-oid = '" + ownerId + "' data-vid = '" + vaultId + "'  onclick='pte_handle_internal_link(this);'><i class='far fa-file-pdf'></i> " + vaultFileName + "</span>";
-      //       body = body.replace(originalUrl, teHtml);
-      //     break;
-      //   }
-      // }
-      return body
-          .replace(urlPattern, '<a class="pte_chat_httpx_link" target="_blank" href="$&">$&</a>')
-          .replace(pseudoUrlPattern, '$1<a class="pte_chat_httpx_link" target="_blank" href="https://$2">$2</a>')
-          .replace(emailAddressPattern, '<a class="pte_chat_mailto_link" href="mailto:$&">$&</a>');
+      body = body.replace(urlPattern, (match) => {
+        match = match.trim();
+        if (match.includes("www.")) {
+            var sPos = match.indexOf("www.");
+            match = match.substr(0, sPos) + match.substr(sPos + 4);
+        }
+        if (match.substr(0, 7) == "http://") {
+          match = "https://" + match.substr(7);
+        }
+        if (match.substr(0, 8) != "https://") {
+          match = "https://" + match;
+        }
+        if (!fileId && (userContext.identity == message.author)) {
+          fileId = pte_UUID();
+          messageAttributes.file_id = fileId;  //update right away to avoid regenerating elsewhere?
+          message.updateAttributes(messageAttributes);
+          var previewData = {
+            site_url: match,
+            message: message,
+            topic_id: activeChannel.uniqueName,
+            file_id: fileId
+          };
+          wsc_create_message_preview_url(previewData);
+        }
+        return '<a class="pte_chat_httpx_link" target="_blank" href="' + match + '">' + match + '</a>';
+      });
+
+      body = body.replace(emailAddressPattern, (match) => {
+        match = match.trim();
+        return '<a class="pte_chat_mailto_link" target="_blank" href="mailto:' + match + '">' + match + '</a>';
+      });
+
+      return body;
   };
 }
 
-function beep() {
-  var dateNow = new Date();
-  var seconds = Math.abs(lastBeepTime - dateNow);
-  console.log("BEEP SECONDS");
-  console.log(seconds);
-  if (seconds >= delayBetweenBeeps) {
-    var audio = new Audio(siteBase + 'chat/beep.mp3');
-    try {
-      audio.play();
-      lastBeepTime = dateNow;
-    } catch (e) {
-      console.log("Cannot Beep Until User Interacts with Page...");
-    }
-  }
+function pte_UUID() { // Public Domain/MIT
+    var d = new Date().getTime();//Timestamp
+    var d2 = (performance && performance.now && (performance.now()*1000)) || 0;//Time in microseconds since page-load or 0 if unsupported
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+        var r = Math.random() * 16;//random number between 0 and 16
+        if(d > 0){//Use timestamp until depleted
+            r = (d + r)%16 | 0;
+            d = Math.floor(d/16);
+        } else {//Use microseconds since page-load if supported
+            r = (d2 + r)%16 | 0;
+            d2 = Math.floor(d2/16);
+        }
+        return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
 }
 
 

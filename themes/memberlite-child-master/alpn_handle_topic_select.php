@@ -6,8 +6,6 @@ include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 //  "numbers" => array("number" => "8315882464"),
 
-global $memberFeatures;
-
 // global $wp_filter;
 // pp( $wp_filter["wp_mail"] );
 
@@ -128,6 +126,7 @@ $designViewClass = $topicBelongsToUser ? "" : "pte_ipanel_button_disabled";
 
 $infoColor = ($topicData->connected_id || !$topicBelongsToUser) ? '#700000' : '#444';
 $infoTitle = ($topicData->connected_id || !$topicBelongsToUser)  ? 'Info Comes from Contact' : 'Info Comes from Your Topic';
+$isConnectedContact = ($topicData->connected_id) ? true : false;
 
 $linkId = 0;
 $topicTabs[] = array(   //Info Page. All Topics Have Them
@@ -312,35 +311,30 @@ if ($topicEmailRoute || $topicFaxRoute) {
 $friendlyLogoNameHtml = isset($friendlyLogoName) && $friendlyLogoName ? $friendlyLogoName : "Image/Logo";
 
 $imageTitle = ($showLogoAccordion == 'block' || $showIconAccordian == 'block') ? "<div class='pte_accordion_section_title'>Media</div>" : "";
-$interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>Priorities</div>" : "";
+$interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>★ Priorities and Notifications</div>" : "";
 $inboundRoutingTitle = ($showEmailAccordian == 'block' || $showFaxAccordian == 'block') ? "<div class='pte_accordion_section_title'>Inbound Routing</div>" : "";
 $importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte_accordion_section_title'>Contacts</div>" : "";
 $settingsAccordion = "
-	{$imageTitle}
-	<button id='pte_topic_photo_accordion' class='pte_accordion'  style='display: {$showIconAccordian};' title='Change Personal Topic Icon'>{$profilePicTitle}</button>
-	<div id='pte_topic_icon_container' data-height='325px' style='display: {$showIconAccordian};'>
-    <div id='pte_profile_image_selector'></div>
-		<div id='pte_profile_image_crop'></div>
-	</div>
-	<button id='pte_topic_logo_accordion' class='pte_accordion' style='display: {$showLogoAccordion};' title='Change {$friendlyLogoNameHtml}'>{$friendlyLogoNameHtml}</button>
-  <div id='pte_topic_logo_container' class='pte_extra_margin_after' data-height='325px' style='display: {$showLogoAccordion}; '>
-    <div id='pte_profile_logo_selector'></div>
-    <div id='pte_profile_logo_crop'></div>
-	</div>
 	{$interActionImportanceTitle}
 	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showImportanceAccordions};' title='Adjust Contact Importance'>VIP Contacts</button>
 	<div class='pte_panel' style='display: {$showImportanceAccordions};' data-height='175px'>
 		<div class='pte_important_topic_container'>
 			<div class='pte_important_list_dropdown_container'><div class='pte_important_list_dropdown_inner'>{$networkOptions}</div></div>
 			<ul id='pte_important_network' class='pte_important_topic_scrolling_list'>{$importantNetworkItems}</ul>
-	</div>
+	  </div>
 	</div>
 	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showImportanceAccordions};' title='Adjust Topic Importance'>VIP Topics</button>
-	<div class='pte_panel pte_extra_margin_after' style='display: {$showImportanceAccordions};' data-height='175px'>
+	<div class='pte_panel' style='display: {$showImportanceAccordions};' data-height='175px'>
 		<div class='pte_important_topic_container'>
 			<div class='pte_important_list_dropdown_container'><div class='pte_important_list_dropdown_inner'>{$topicOptions}</div></div>
 			<ul id='pte_important_topic' class='pte_important_topic_scrolling_list'>{$importantTopicItems}</ul>
+	  </div>
 	</div>
+  <button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showImportanceAccordions};' title='Notification Settings'>Notification Rules</button>
+	<div class='pte_panel pte_extra_margin_after' style='display: {$showImportanceAccordions};' data-height='175px'>
+		<div class='pte_important_topic_container'>
+      Notification Rules
+	  </div>
 	</div>
 	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: none;' title='Adjust Importance Values'>Type</button>
 	<div class='pte_panel pte_extra_margin_after' style='display: none;' data-height='175px'>
@@ -352,9 +346,20 @@ $settingsAccordion = "
 		{$emailUx}
 	</div>
 	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showFaxAccordian};' title='Manage Fax Routes'>Fax</button>
-	<div class='pte_panel s' style='display: {$showFaxAccordian};' data-height='175px'>
+	<div class='pte_panel pte_extra_margin_after' style='display: {$showFaxAccordian};' data-height='175px'>
 		{$faxUx}
 	</div>
+  {$imageTitle}
+  <button id='pte_topic_photo_accordion' class='pte_accordion'  style='display: {$showIconAccordian};' title='Change Personal Topic Icon'>{$profilePicTitle}</button>
+  <div id='pte_topic_icon_container' data-height='325px' style='display: {$showIconAccordian};'>
+    <div id='pte_profile_image_selector'></div>
+    <div id='pte_profile_image_crop'></div>
+  </div>
+  <button id='pte_topic_logo_accordion' class='pte_accordion' style='display: {$showLogoAccordion};' title='Change {$friendlyLogoNameHtml}'>{$friendlyLogoNameHtml}</button>
+  <div id='pte_topic_logo_container' class='pte_extra_margin_after' data-height='325px' style='display: {$showLogoAccordion}; '>
+    <div id='pte_profile_logo_selector'></div>
+    <div id='pte_profile_logo_crop'></div>
+  </div>
 	{$importContactsTitle}
 	<button id='pte_topic_address_book_accordion' class='pte_accordion' style='display: {$showAddressBookAccordion};' title='Important External Contacts'>Import</button>
 	<div class='pte_panel'  data-height='500px' style='display: {$showAddressBookAccordion};'>
@@ -401,19 +406,11 @@ $proteam = $wpdb->get_results(  //get proteam -- pre-connected by alpn_topics_ne
 
 $proTeamMembers = "";
 $pteAddTopicTeamMember = "";
-$interactionChooser = '';
-if ($topicBelongsToUser && $proteamContainer == 'block') {
-  // $pteAddTopicTeamMember = "<i id='pte_proteam_add' class='far fa-plus-circle pte_proteam_add_icon' onclick='pte_start_topic_team_invitation({$topicId});' title='Send a Team Invitation Interaction'></i>";
-  $interactionChooser .= "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
-  $interactionChooser .= "<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>";
-  $interactionChooser .= "</select>";
-  $interactionChooser .= " <i id='alpn_vault_interaction_start' class='far fa-arrow-circle-right alpn_icons_toolbar' title='Start this Interaction' onclick='pte_start_topic_team_invitation({$topicId});'></i>";
-
-}
 $topicHasTeamMembers = count($proteam) ? true : false;
 $proTeamTitle = ($proteamContainer == 'block') ? "<div class='pte_proteam_title_container'><div class='pte_proteam_title_left'>Team</div><div class='pte_proteam_title_right'></div></div>" : "";
 
 if (count($proteam)) {
+$isLinked = true;
 $displayNoMembers = "none";
 foreach ($proteam as $key => $value) {    //for everyone on the team
 	if ($topicBelongsToUser) {
@@ -427,7 +424,10 @@ foreach ($proteam as $key => $value) {    //for everyone on the team
 } else {
   $displayNoMembers = "block";
   $proTeamMembers = "";
+  $isLinked = false;
 }
+
+$isConnected = ($isLinked || $isConnectedContact) ? 'true' : 'false';
 
 //TODO Prefill with correct token data
 //TODO use this in interactions for templating tied to IAs
@@ -618,18 +618,27 @@ $html .= "
 					</span>
 				</div>
 				<div class='pte_vault_row_75 pte_vault_right pte_toolbar_container'>
-          {$interactionChooser}
-          <div style='display: inline-block; width: 20px;'></div>
-					<i class='far fa-pencil-alt pte_icon_button {$pteEditDeleteClass}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>
     ";
 
     //Handle joined topic
-//$topicBelongsToUser
-      if ($userID = $topicOwnerId) {
+    //$topicBelongsToUser
+
+
+      if ($userID == $topicOwnerId) {
         $pteEditDeleteClass = 'pte_ipanel_button_disabled';
       }
-      $html .= "<i id='delete_topic_button' class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>";
 
+      $pteEditDisabled = "";
+      if ($isConnectedContact || !$topicBelongsToUser){
+        $pteEditDisabled = 'pte_ipanel_button_disabled';
+      }
+
+      if (!$topicBelongsToUser) {
+
+      }
+
+      $html .= "<i style='margin-right: 3px;' class='far fa-pencil-alt pte_icon_button {$pteEditDisabled}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>";
+      $html .= "<i id='delete_topic_button' class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>";
 
 
     $html .= "</div>
@@ -652,7 +661,7 @@ $html .= "
 					</div>
 			";
 $html .= "
-						<div id='pte_selected_topic_meta' class='pte_vault_row' data-mode='info' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId}' data-tia='{$topicImageHandle}' data-wal='{$accessLevel}'>
+						<div id='pte_selected_topic_meta' class='pte_vault_row' data-mode='info' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId}' data-tia='{$topicImageHandle}' data-wal='{$accessLevel}' data-con='{$isConnected}'>
 							<div id='pte_topic_form_edit_view_left' class='pte_vault_row_padding_right'>
 								{$tabs}
 							</div>
@@ -679,20 +688,6 @@ $html .= "
             //   div#tabcontent_0 .pte_topic_table_label {color: {$infoColor};}
             // </style>
 
-            $html .= "
-            <script>
-            jQuery('#alpn_selector_interaction_selector').select2({
-            	theme: 'bootstrap',
-            	width: '180px',
-            	allowClear: false,
-            	templateSelection: iformat,
-            	templateResult: iformat,
-            	escapeMarkup: function(text) {
-            		return text;
-            	}
-            });
-            </script>
-            ";
 echo $html;
 
 ?>

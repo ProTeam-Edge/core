@@ -10,6 +10,7 @@ if (isset($_POST['transloadit'])){
 	$tli = json_decode(stripslashes($_POST['transloadit']), true);
 
 	alpn_log("TLI CALLBACK");
+	alpn_log($tli);
 
 	$status = $tli['ok'];
 	$uploads = $tli['uploads'];
@@ -21,9 +22,9 @@ if (isset($_POST['transloadit'])){
 	$convertedDocTypes = isset($results['converted_doc_types']) ? wsc_org_result_by_id($results['converted_doc_types']) : false;
 	$convertedImageTypes = isset($results['converted_image_types']) ? wsc_org_result_by_id($results['converted_image_types']) : false;
 
-	 //alpn_log($original);
-	 // alpn_log($zippedUnsupportedTypes1);
-	 // alpn_log($zippedUnsupportedTypes2);
+	//  alpn_log($original);
+	//  alpn_log($zippedUnsupportedTypes1);
+	//  alpn_log($zippedUnsupportedTypes2);
 	// alpn_log($convertedDocTypes);
 	// alpn_log($convertedImageTypes);
 
@@ -36,7 +37,7 @@ if (isset($_POST['transloadit'])){
 		$filename = substr($olfilename, 36);
 		// alpn_log($uuid);
 		// alpn_log($filename);
-		alpn_log($value);
+		//alpn_log($value);
 
 		switch ($status) {
 			case 'ASSEMBLY_CANCELED':

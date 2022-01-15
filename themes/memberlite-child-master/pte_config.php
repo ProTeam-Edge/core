@@ -14,7 +14,6 @@ define('PTE_IMAGES_ROOT_URL', 'https://storage.googleapis.com/pte_media_store_1/
 define('PTE_DATE_FORMAT_STRING', 'MMM D, YYYY, h:mma');   //javascript formatting.
 define('PTE_DATE_FORMAT_STRING_PHP', 'M j, Y, g:i a');   //php formatting.
 
-
 //database
 
 define('DB_HOST_RW', 'vit-all.mdb0001643.db.skysql.net:5001');

@@ -1,9 +1,11 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php'); //TODO WTF is the difference and can we be consistent
 require('/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/vendor/autoload.php');
+require_once('/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/typeset.sh.lib.phar');
 require_once "zip2pdf.php";
 
 use Google\Cloud\Storage\StorageClient;
+use Ramsey\Uuid\Uuid;
 
 function getHtml($tree){
 
@@ -30,7 +32,7 @@ function getHtml($tree){
 							<div class='pte_pdf_directory_title'>
 								<table>
 									<tr>
-										<td class='pte_pdf_directory_image_cell'><img src='https://proteamedge.com/wp-content/themes/memberlite-child-master/folder.jpeg'></td>
+										<td class='pte_pdf_directory_image_cell'><img src='https://wiscle.com/wp-content/themes/memberlite-child-master/folder.jpeg'></td>
 										<td class='pte_pdf_directory_text_cell'>{$key}</td>
 									</tr>
 								</table>
@@ -106,116 +108,43 @@ function createAndStorePdf($reportSettings){
 			}
 			zip_close($zip);
 			$newArray = explodeTree($urls);
-			$html .= "
-				<!doctype html>
-				<html lang='en'>
-				  <head>
-					<meta charset='utf-8'>
-					<meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
-						<style>
-						/* latin-ext */
-						@font-face {
-						  font-family: 'Lato';
-						  font-style: normal;
-						  font-weight: 400;
-						  src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v16/S6uyw4BMUTPHjxAwXiWtFCfQ7A.woff2) format('woff2');
-						  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-						}
-						/* latin */
-						@font-face {
-						  font-family: 'Lato';
-						  font-style: normal;
-						  font-weight: 400;
-						  src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v16/S6uyw4BMUTPHjx4wXiWtFCc.woff2) format('woff2');
-						  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-						}
-						/* latin-ext */
-						@font-face {
-						  font-family: 'Lato';
-						  font-style: normal;
-						  font-weight: 700;
-						  src: local('Lato Bold'), local('Lato-Bold'), url(https://fonts.gstatic.com/s/lato/v16/S6u9w4BMUTPHh6UVSwaPGQ3q5d0N7w.woff2) format('woff2');
-						  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-						}
-						/* latin */
-						@font-face {
-						  font-family: 'Lato';
-						  font-style: normal;
-						  font-weight: 700;
-						  src: local('Lato Bold'), local('Lato-Bold'), url(https://fonts.gstatic.com/s/lato/v16/S6u9w4BMUTPHh6UVSwiPGQ3q5d0.woff2) format('woff2');
-						  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-						}
 
-						.pte_pdf_directory_container{
-							margin-left: 40px;
-							margin-top: 10px;
-						}
-
-						.pte_pdf_directory_image_cell{
-							width: 35px;
-						}
-
-						.pte_pdf_directory_text_cell{
-							font-weight: bold;
-						}
-
-
-						.pte_pdf_file{
-							margin-left: 42px;
-						}
-
-						body{
-							color: #444;
-							font-size: 14pt;
-							font-family: 'Lato', sans-serif;
-							font-weight: 400;
-						}
-					</style>
-					<title>ProTeam Edge - PDF</title>
-				  </head>
-				  <body>";
-			$html .= getHtml($newArray);
-			$html .= "
-				</body>
-			</html>
-			";
-
-			$reportSettings['html_content'] = $html;
+			$reportSettings['html_content'] = getHtml($newArray);
 			$pdf = "{$templateDirectory}-child-master/tmp/{$pdfKey}";
 			$report = new zip2pdf($reportSettings);
 
-			$report->run()
-			->export('zip2pdf')
-			->settings(array(
-					"phantomjs"=>"/usr/local/bin/phantomjs"
-			))
-			->pdf(array(
-			      "format"=>$reportSettings['page_size'],
-			      "orientation"=>$reportSettings['orientation'],
-			      "margin"=>array(
-			        "top"=>"0.25in",
-			        "bottom"=>"0.25in",
-			        "left"=>"0.5in",
-			        "right"=>"0.5in"
-			    )
-			))
-			->saveAs($pdf);
+			ob_start();
+			$report->run()->render();
+			$sourceReportHtml = ob_get_clean();
 
-			$fileContent = file_get_contents($pdf);
-			$options = ['gs' => ['Content-Type' => "application/pdf"]];
-			$context = stream_context_create($options);
-			file_put_contents("gs://pte_file_store1/{$pdfKey}", $fileContent, 0, $context);
-			$pdfSize = filesize($pdf);
-			unlink ($pdf);
+			try {
+
+				$dedicatedDirectory = './tmp/' . Uuid::uuid4();
+				mkdir($dedicatedDirectory, 0700);
+				$uriResolver = \Typesetsh\UriResolver::httpAndCurrentDir($dedicatedDirectory);
+				$pdfObj = Typesetsh\createPdf($sourceReportHtml, $uriResolver);
+				$pdfObj->toFile($pdf);
+				delTree($dedicatedDirectory);
+
+				$fileContent = file_get_contents($pdf);
+				$options = ['gs' => ['Content-Type' => "application/pdf"]];
+				$context = stream_context_create($options);
+				file_put_contents("gs://pte_file_store1/{$pdfKey}", $fileContent, 0, $context);
+				$pdfSize = filesize($pdf);
+				unlink ($pdf);
+				return $pdfSize;
+
+			} catch(Exception $e) {
+
+				alpn_log("EXCEPTION BROWSER");
+				alpn_log($e);
+
+			}
 		}
-		unlink ($file);
 
-		return $pdfSize;
-
-	} catch (\Exception $e) { // Global namespace
-			$pte_response = array("topic" => "pte_get_cloud_file_google_exception", "message" => "Problem accessing Google Cloud Storage.", "data" => $e);
-			alpn_log($pte_response);
-			exit;
+	} catch(Exception $e) {
+		alpn_log("EXCEPTION GOOGLE CLOUD FILES");
+		alpn_log($e);
 	}
 }
 

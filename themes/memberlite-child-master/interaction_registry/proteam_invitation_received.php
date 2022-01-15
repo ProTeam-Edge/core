@@ -26,7 +26,7 @@ function pte_get_registry_proteam_invitation_received() {
 
           $requestData = $token->getValue("process_context");
 
-          $requestData['interaction_type_name'] = "Team Invite";
+          $requestData['interaction_type_name'] = "Team Invitation";
           $requestData['interaction_template_name'] = $requestData["template_name"];
           $requestData['interaction_type_status'] = "Received";
           $requestData['interaction_to_from_string'] = "From";
@@ -181,6 +181,7 @@ function pte_get_registry_proteam_invitation_received() {
 
           $requestData['sync'] = true;
           $requestData['requires_user_attention'] = true;
+          $requestData['wsc_send_notification'] = true;
           $token->setValue("process_context", $requestData);
           throw new WaitExecutionException();  //proper way to stop the process and wait
       },
