@@ -87,7 +87,7 @@ function delTree($dir)
 function wsc_send_notifications($data) {
 
   $sendBrowserNotification = true;
-  $sendSMSNotification = true;
+  $sendSMSNotification = false;
   $sendEmailNotification = false;
 
   $memberNotificationPreferences = array(
@@ -115,7 +115,7 @@ function wsc_send_notifications($data) {
   $targetId = isset($data['identity']) && $data['identity'] ? $data['identity'] : false;
   $senderId = isset($data['sender_id']) && $data['sender_id'] ? $data['sender_id'] : false;
   $senderFirst = isset($data['sender_name']) && $data['sender_name'] ? $data['sender_name'] : 'System';
-  $notificationBody = isset($data['body']) && $data['body'] ? $data['body'] : false;
+  $notificationBody = isset($data['body']) && $data['body'] ? stripslashes($data['body']) : false;
   $previewFileUrl = isset($data['preview_file_name']) && $data['preview_file_name'] ? PTE_ROOT_URL . $data['preview_file_name'] : '';
   $roomMembers = isset($data['members']) && $data['members'] ? $data['members'] : array();
   $roomMemberString = $roomMembers ? implode(",", $roomMembers) : "0";
@@ -149,7 +149,7 @@ function wsc_send_notifications($data) {
     if (isset($results[0])) {
 
         $topicData = $results[0];
-        $dTopicName = $topicData->topic_name;  // If regular Topic, then this is the topic name
+        $dTopicName = stripslashes($topicData->topic_name);  // If regular Topic, then this is the topic name
         $dOwnerId = $topicData->owner_id;
         $ownerTopicContent = json_decode($topicData->owner_topic_content, true);
         $dOwnerFirst = $ownerTopicContent['person_givenname'];
@@ -849,7 +849,10 @@ function pte_send_mail ($data = array()) {
   }
 
   try {
+    global $senderName;  //hacky fix
+    $senderName = $fromName;
     $mailer->send( $toEmail, $emailSubject, $content, $header );
+    $senderName = "Wiscle";
   } catch (Exception $e) {
       alpn_log ('Caught exception: '. $e->getMessage());
   }
@@ -2735,7 +2738,6 @@ function pte_manage_user_sync($data){   ///Must be a user and have a wpid
   }
 
   switch ($syncType) {
-
     case "update_all_sync_ids":
 
       $results = $wpdb->get_results("SELECT id, owner_id, sync_id, name FROM alpn_topics where special = 'user'");
@@ -2820,6 +2822,7 @@ function pte_manage_user_sync($data){   ///Must be a user and have a wpid
             'code' => $e->getCode(),
             'error' => $e
         );
+
         try {
 
           alpn_log("Trying to add...");
@@ -2849,6 +2852,34 @@ function pte_manage_user_sync($data){   ///Must be a user and have a wpid
 
 }
 
+function wcl_notify_contact_of_request($data){
+
+  global $wpdb;
+
+  alpn_log('wcl_notify_contact_of_request...');
+  alpn_log($data);
+
+  $contactId = isset($data['contact_id']) ? $data['contact_id'] : false ;
+
+  if ($contactId) {
+    $connectedStatus = "wants_to_connect";
+    $connections = $wpdb->get_results(
+      $wpdb->prepare("SELECT id FROM alpn_member_connections WHERE owner_id = %d AND connected_status COLLATE utf8mb4_general_ci = %s", $contactId, $connectedStatus)
+    );
+    $hasConnectionRequests = isset($connections[0]) ? "has_connects" : 'no_connects';
+
+    $syncdata = array(
+      "sync_type" => "add_update_section",
+      "sync_section" => $hasConnectionRequests,
+      "sync_user_id" => $contactId,
+      "sync_payload" => array()
+    );
+    pte_manage_user_sync($syncdata);
+    alpn_log('Sent wcl_notify_contact_of_request...');
+
+  }
+}
+
 function pte_manage_user_connection($data){
   //If I add you to my network and you add me to your network than we're connected... We then show connected demographics....
   //TODO Handle exceptions, etc.
@@ -2857,12 +2888,17 @@ function pte_manage_user_connection($data){
 
   global $wpdb;
 
+  $notifyData = $data;
+
   $contactEmail = $data['contact_email'];
   $contactTopicId = $data['contact_topic_id'];
   $contactInfo = get_user_by('email', $contactEmail);
 
   if (isset($contactInfo->ID)) {
     $contactId = $contactInfo->ID;
+    $data['contact_id'] = $contactId;
+    $notifyData['contact_id'] = $contactId;
+
     $contactNetworkId = get_user_meta( $contactId, 'pte_user_network_id', true ); //Contact Topic ID
     $userId = isset($data['owner_wp_id']) ? $data['owner_wp_id'] : '';
     alpn_log($userId);
@@ -2954,6 +2990,9 @@ function pte_manage_user_connection($data){
 
     }
   }
+
+  wcl_notify_contact_of_request($notifyData);
+
 }
 
 //2118 - CHa7947532b4f04fcc8d1745854be2131c

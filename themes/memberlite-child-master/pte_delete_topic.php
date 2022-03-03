@@ -98,9 +98,10 @@ if ($topicId) {
 			alpn_log($wpdb->last_query);
 			alpn_log($wpdb->last_error);
 
-
-
 		}
+
+		$notifyData = array('contact_id' => $userId);
+		wcl_notify_contact_of_request($notifyData);
 	}
 
 	if ($topicSpecial == 'topic') {
@@ -113,7 +114,14 @@ if ($topicId) {
 			pte_manage_cc_groups("delete_channel_by_channel_id", $deleteChannelData);
 		}
 	}
+
+	//ProTeams for this Topic
+	$whereclause = array('topic_id' => $topicId);
+	$wpdb->delete( "alpn_proteams", $whereclause );
+
 	//Delete the Topic
+
+
 	$whereclause = array('owner_id' => $userId, "id" => $topicId);
 	$wpdb->delete( "alpn_topics", $whereclause );
 

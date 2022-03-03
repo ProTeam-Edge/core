@@ -1,13 +1,13 @@
 <?php
 
-global $memberFeatures;
+global $memberFeatures, $senderName;
+$senderName = "Wiscle";
 
 $memberFeatures= array(
 	'fax_1' => true,
 	'fax_2' => true,
 	'template_editor_main' => false,
 	'topic_type_editor_main' => false
-
 );
 
 function db_shortcode($attr) {
@@ -18,8 +18,7 @@ function db_shortcode($attr) {
         'block_type' => 'block_type'
     ), $attr));
 
-    $html = $domID = $userTopicId = $userImageHandle = $syncId = $userTopicId = $userTopicTypeId = $contactTopicTypeId = $userDisplayName = $standardColorCount = "";
-
+  $html = $domID = $userTopicId = $userImageHandle = $syncId = $userTopicId = $userTopicTypeId = $contactTopicTypeId = $userDisplayName = $standardColorCount = "";
 
 	$templateDirectory = get_template_directory_uri();
 
@@ -28,6 +27,10 @@ function db_shortcode($attr) {
 		$userID = $userInfo->data->ID;
 		$userEmail = $userInfo->user_email;
 		$ownerNetworkId = get_user_meta( $userID, 'pte_user_network_id', true ); //Owners Topic ID
+		$isNewMember = get_user_meta( $userID, 'wsc_new_member', true );
+		if ($isNewMember) {
+			update_user_meta( $userID, "wsc_new_member", false);
+		}
 		$specialType = 'user';
 		$results = $wpdb->get_results(
 			$wpdb->prepare("SELECT JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_givenname')) AS owner_givenname, JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_familyname')) AS owner_familyname, t.dom_id, t.id, t.image_handle, t.name, t.sync_id, t.topic_type_id AS user_topic_type_id, tt.id AS contact_topic_type_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.owner_id = %d AND tt.special = 'contact' WHERE t.owner_id = %d AND t.special = 'user';", $userID, $userID)
@@ -137,7 +140,7 @@ function db_shortcode($attr) {
 			 }
 
 			 $viewerSettings = array(
-				 'sidebar_state' => 'open'
+				 'sidebar_state' => 'closed'
 			 );
 
 				$html .= pte_get_viewer($viewerSettings);
@@ -283,62 +286,70 @@ function db_shortcode($attr) {
 
 			break;
       case 'network':
-			$urlTopicOperation = isset($_GET['topic_operation']) && $_GET['topic_operation'] ? $_GET['topic_operation'] : "";
-			$urlDestinationTopicId = isset($_GET['destination_topic_id']) && $_GET['destination_topic_id'] ? $_GET['destination_topic_id'] : "";
+				$urlTopicOperation = isset($_GET['topic_operation']) && $_GET['topic_operation'] ? $_GET['topic_operation'] : "";
+				$urlDestinationTopicId = isset($_GET['destination_topic_id']) && $_GET['destination_topic_id'] ? $_GET['destination_topic_id'] : "";
 
-			$businessTypes = get_custom_post_items('pte_profession', 'ASC');
-			$optionsStr = $iconStr = '';
-			foreach ($businessTypes as $key => $value){
-				//$iconStr =
-				$optionsStr .= "<option value='{$key}'>{$value}</option>";
-			}
-			$html = "
-					<div id='alpn_section_network'>
-						<div class='alpn_title_bar'>
-							<div class='alpn_section_head_left'>Contacts</div>
-							<div class='alpn_section_head_right'>
-								<i class='far fa-user-circle alpn_icons' title='Manage Connections' onclick='alpn_mission_control(\"manage_connections\", \"\", alpn_contact_topic_type_id);'></i>
-								<i class='far fa-plus-circle alpn_icons' title='Add/Import Contacts' onclick='alpn_mission_control(\"add_topic\", \"\", alpn_contact_topic_type_id);'></i>
+				$connectedStatus = "wants_to_connect";
+				$connections = $wpdb->get_results(
+					$wpdb->prepare("SELECT id FROM alpn_member_connections WHERE owner_id = %d AND connected_status COLLATE utf8mb4_general_ci = %s", $userID, $connectedStatus)
+				);
+				$hasConnectionRequests = isset($connections[0]) ? true : false;
+				$manageConnectionsButtonClass = $hasConnectionRequests ? "wcl_connections_button_highlighted" : "";
+				$manageConnectionsButtonTitle = $hasConnectionRequests ? "You have connection requests waiting" : "Manage Connections";
+
+				$businessTypes = get_custom_post_items('pte_profession', 'ASC');
+				$optionsStr = $iconStr = '';
+				foreach ($businessTypes as $key => $value){
+					//$iconStr =
+					$optionsStr .= "<option value='{$key}'>{$value}</option>";
+				}
+				$html = "
+						<div id='alpn_section_network'>
+							<div class='alpn_title_bar'>
+								<div class='alpn_section_head_left'>Contacts</div>
+								<div class='alpn_section_head_right'>
+									<i id='wcl_manage_connections_icon' class='far fa-user-circle alpn_icons {$manageConnectionsButtonClass}' title='{$manageConnectionsButtonTitle}' onclick='alpn_mission_control(\"manage_connections\", \"\", alpn_contact_topic_type_id);'></i>
+									<i class='far fa-plus-circle alpn_icons' title='Add/Import Contacts' onclick='alpn_mission_control(\"add_topic\", \"\", alpn_contact_topic_type_id);'></i>
+								</div>
 							</div>
-						</div>
-						<div id='alpn_selector_container_left' class='alpn_selector_container_left pte_hidden_for_now'>
-							<select id='alpn_selector_network' class='alpn_selector'><option></option>{$optionsStr}</select>
-						</div>
-			";
-			$html .= do_shortcode("[wpdatatable id=2]");
+							<div id='alpn_selector_container_left' class='alpn_selector_container_left pte_hidden_for_now'>
+								<select id='alpn_selector_network' class='alpn_selector'><option></option>{$optionsStr}</select>
+							</div>
+				";
+				$html .= do_shortcode("[wpdatatable id=2]");
 
-			$html = str_replace('table_1', 'table_network', $html);
-			$html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
-			$html = str_replace('"iDisplayLength":5,', '"iDisplayLength":5,', $html);
+				$html = str_replace('table_1', 'table_network', $html);
+				$html = str_replace('"sPaginationType":"full_numbers",', '"sPaginationType":"full",', $html);
+				$html = str_replace('"iDisplayLength":5,', '"iDisplayLength":5,', $html);
 
-			$html .= "</div>";
+				$html .= "</div>";
 
-			if ($userID) {  // one time
+				if ($userID) {  // one time
 
-						$html .= "<script>
-					   pte_chrome_extension = false;
-					   alpn_user_id = {$userID};
-						 alpn_sync_id = '{$syncId}';
-						 wsc_topic_operation = '{$urlTopicOperation}';
-						 wsc_destination_topic_id = '{$urlDestinationTopicId}';
-						 alpn_sync_id = '{$syncId}';
-						 alpn_user_topic_id = {$userTopicId};
-						 alpn_user_topic_type_id = {$userTopicTypeId};
- 						 alpn_contact_topic_type_id = {$contactTopicTypeId};
-						 alpn_user_displayname = '{$userDisplayName}';
-						 alpn_user_firstName = '{$firstName}';
-						 alpn_user_email = '{$userEmail}';
-						 alpn_avatar_baseurl = '{$avatarUrl}';
-						 alpn_avatar_handle = '{$userImageHandle}';
-						 alpn_avatar_url = '{$fullAvatarUrl}';
-						 alpn_templatedir = '{$templateDirectory}-child-master/';
-						 pte_standard_color_count = $standardColorCount;
-						 </script>";
-			} else {
-				$html .= "<script>alpn_user_id = 0;</script>";
-			}
+							$html .= "<script>
+						   pte_chrome_extension = false;
+						   alpn_user_id = {$userID};
+							 alpn_sync_id = '{$syncId}';
+							 wsc_topic_operation = '{$urlTopicOperation}';
+							 wsc_destination_topic_id = '{$urlDestinationTopicId}';
+							 alpn_sync_id = '{$syncId}';
+							 alpn_user_topic_id = {$userTopicId};
+							 alpn_user_topic_type_id = {$userTopicTypeId};
+	 						 alpn_contact_topic_type_id = {$contactTopicTypeId};
+							 alpn_user_displayname = '{$userDisplayName}';
+							 alpn_user_firstName = '{$firstName}';
+							 alpn_user_email = '{$userEmail}';
+							 alpn_avatar_baseurl = '{$avatarUrl}';
+							 alpn_avatar_handle = '{$userImageHandle}';
+							 alpn_avatar_url = '{$fullAvatarUrl}';
+							 alpn_templatedir = '{$templateDirectory}-child-master/';
+							 pte_standard_color_count = $standardColorCount;
+							 </script>";
+				} else {
+					$html .= "<script>alpn_user_id = 0;</script>";
+				}
 
-        break;
+    break;
 		case 'topic':
 
 			$selectHtml = "";
@@ -512,11 +523,9 @@ function db_shortcode($attr) {
 			if ($isSubscriber) {
 					$hideMissionControl = "
 					<script>
-						jQuery('article#post-859 div.entry-content').attr('style', 'opacity: 0.6; pointer-events: none;');
+						jQuery('article#post-859 div.entry-content').html(\"<div class='pte_membership_message'>Please contact Angela or Patrick to access Mission Control.</div>\");
 					</script>
-					";
-			}
-
+					";			}
 
 			if ($fullAvatarUrl) {
 				$profileImage = "<img id='user_profile_image' src='{$fullAvatarUrl}' style='height: 32px; width: 32px; border-radius: 50%;'>";
@@ -524,12 +533,10 @@ function db_shortcode($attr) {
 				$profileImage = "<i class='far fa-address-card alpn_icon_left' style='font-size: 20px;  line-height: 34px;' title='About Me'></i>";
 			}
 
-			$newMember = (false) ? 'yes' : 'no';
-
 			$html .= "
 			<div class='alpn_user_outer' onclick='alpn_mission_control(\"select_by_mode\", \"{$domId}\");'>
 				<div id='alpn_me_field'>
-					<div id='alpn_field_{$domId}' class='alpn_user_container' data-uid='{$domId}' data-topic-id='{$userTopicId}' data-nm='{$newMember}'>
+					<div id='alpn_field_{$domId}' class='alpn_user_container' data-uid='{$domId}' data-topic-id='{$userTopicId}' data-nm='{$isNewMember}'>
 						Personal
 					</div>
 					<div id='alpn_me_icon' style='float: right; max-height: 34px;'>
@@ -567,6 +574,50 @@ function simple_shortcode($data) {
 		), $data));
 
 		switch ($operation) {
+
+			case 'one_click_register':
+
+				$email = $_GET['id'];
+
+				$pattern = '/^(?!(?:(?:\\x22?\\x5C[\\x00-\\x7E]\\x22?)|(?:\\x22?[^\\x5C\\x22]\\x22?)){255,})(?!(?:(?:\\x22?\\x5C[\\x00-\\x7E]\\x22?)|(?:\\x22?[^\\x5C\\x22]\\x22?)){65,}@)(?:(?:[\\x21\\x23-\\x27\\x2A\\x2B\\x2D\\x2F-\\x39\\x3D\\x3F\\x5E-\\x7E]+)|(?:\\x22(?:[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F\\x21\\x23-\\x5B\\x5D-\\x7F]|(?:\\x5C[\\x00-\\x7F]))*\\x22))(?:\\.(?:(?:[\\x21\\x23-\\x27\\x2A\\x2B\\x2D\\x2F-\\x39\\x3D\\x3F\\x5E-\\x7E]+)|(?:\\x22(?:[\\x01-\\x08\\x0B\\x0C\\x0E-\\x1F\\x21\\x23-\\x5B\\x5D-\\x7F]|(?:\\x5C[\\x00-\\x7F]))*\\x22)))*@(?:(?:(?!.*[^.]{64,})(?:(?:(?:xn--)?[a-z0-9]+(?:-+[a-z0-9]+)*\\.){1,126}){1,}(?:(?:[a-z][a-z0-9]*)|(?:(?:xn--)[a-z0-9]+))(?:-+[a-z0-9]+)*)|(?:\\[(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){7})|(?:(?!(?:.*[a-f0-9][:\\]]){7,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,5})?)))|(?:(?:IPv6:(?:(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){5}:)|(?:(?!(?:.*[a-f0-9]:){5,})(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3})?::(?:[a-f0-9]{1,4}(?::[a-f0-9]{1,4}){0,3}:)?)))?(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))(?:\\.(?:(?:25[0-5])|(?:2[0-4][0-9])|(?:1[0-9]{2})|(?:[1-9]?[0-9]))){3}))\\]))$/iD';
+
+				if (preg_match($pattern, $email) === 1) {
+					$userInfo = get_user_by( 'email', $email );
+
+					if (!isset($userInfo->data->ID)) {
+
+						$regData = $wpdb->get_results(
+							$wpdb->prepare("SELECT id, last_name, first_name FROM alpn_approved_registrations WHERE email = %s", $email)
+						 );
+						if (isset($regData[0])) {
+
+							 $registrationFirstName = $regData[0]->first_name;
+							 $registrationLastName = $regData[0]->last_name;
+							 $userName = pte_get_short_id();
+							 $args = array(
+								 "first_name" => $registrationFirstName,
+								 "last_name" => $registrationLastName,
+								 "role" => "contributor"
+							 );
+							 $result = wc_create_new_customer( $email, $userName, "", $args );
+
+							 $user = get_user_by( 'email', $email );
+							 $user->remove_role( 'subscriber' );
+							 $user->add_role( 'contributor' );
+
+							 $displayMessage = "Please check your email inbox/spam for your password:&nbsp; {$email}";
+						 } else {
+							 $displayMessage = "This email address was not found in our pregistrations. Please contact Angela or Patrick.";
+						 }
+						} else {
+							$displayMessage = "Member Already Exists.";
+						}
+					} else {
+						$displayMessage = "Invalid Email Format.";
+					}
+
+				$html = "<div class='pte_membership_message'>{$displayMessage}</div>";
+			break;
 
 			case 'token_stats':
 				$html = "
@@ -676,8 +727,6 @@ function simple_shortcode($data) {
 							</div>
 						";
 					}
-
-
 
 				}
 			break;

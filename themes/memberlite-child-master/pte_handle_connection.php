@@ -72,6 +72,9 @@ if (isset($contactData[0])) {
 		break;
 
 	}
+	$notifyData = array('contact_id' => $userId);
+	wcl_notify_contact_of_request($notifyData);
+
 }
 
 pte_json_out($topicData);

@@ -18,20 +18,15 @@ include_once('pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 ini_set('memory_limit', '512M');
 
-
-
 $logId = 'some';
 $logId = 'all';
-
 
 // if ( php_uname('n') == 'wp4' ) {
 //     define('DISABLE_WP_CRON', true);
 // }
 
-
 // verify added nonce before submission for wpforms
 use PascalDeVink\ShortUuid\ShortUuid;
-
 
 function wpf_dev_process_before( $entry, $form_data ) {
 
@@ -285,7 +280,6 @@ function bbp_enable_visual_editor( $args = array() ) {
 add_filter( 'bbp_after_get_the_content_parse_args', 'bbp_enable_visual_editor' );
 
 
-add_filter('show_admin_bar', '__return_false'); //Remove top bar
 
 function vit_translate__strings( $translated, $untranslated, $domain ) {
 
@@ -409,7 +403,7 @@ function add_loginout_link( $items, $args ) {
 			$cartHtml .= ' &nbsp;&nbsp;  <a class="wsc_nav_icon" href="' . get_permalink( wc_get_page_id( 'cart' ) ) . '"><i class="fal fa-shopping-cart"></i></a>';
 		}
 		$items .= '<li  title="Join the Conversation" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 3306 ) . '">Conversations</a></li>';
-		$items .= '<li title="Build Wiscle, Earn Crypto" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 7260 ) . '">Gigs</a></li>';
+		$items .= '<li title="Build Wiscle, Earn Crypto" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 7260 ) . '">Community</a></li>';
 		$items .= '<li  title="Do More with Your Assets" class="menu-item menu-item-type-post_type menu-item-object-page"><a class="wsc_nav_icon" href="' . get_permalink( 4275 ) . '">Marketplace</a> ' . $cartHtml . '</li>';
     $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a class="wsc_nav_icon" href="' . get_permalink( 1514 ) . '"><i title="Help Center" class="fal fa-question"></i></a> &nbsp;&nbsp;  <a class="wsc_nav_icon" href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '"><i title="Account Dashboard" class="fal fa-id-card"></i></a> &nbsp;&nbsp;  <a title="Log out" class="wsc_nav_icon" href="'. wp_logout_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ) .'"><i class="fal fa-sign-out-alt"></i></a></li>';
   }
@@ -417,8 +411,9 @@ function add_loginout_link( $items, $args ) {
 		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 6995 ) . '">Pricing</a></li>';
 		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 146 ) . '">Blog</a></li>';
 		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 3306 ) . '">Conversations</a></li>';
-		 $items .= '<li title="Build Wiscle, Earn Crypto" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 7260 ) . '">Gigs</a></li>';
-     $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Log In &nbsp;-&nbsp; Register</a></li>';
+		 $items .= '<li title="Build Wiscle, Earn Crypto" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 7260 ) . '">Community</a></li>';
+		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a class="wsc_nav_icon" href="' . get_permalink( 1514 ) . '"><i title="Help Center" class="fal fa-question"></i></a></li>';
+	   $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '">Log In &nbsp;-&nbsp; Register</a></li>';
   }
    return $items;
 }
@@ -439,8 +434,6 @@ function vit_register ($user_id, $userData) {   //Runs on New User. Sets up defa
 	 alpn_log("Creating New User Info...");
 	// alpn_log($user_id);
 	 //alpn_log($userData);
-
-	 update_user_meta( $user_id, 'wcr_approve_user_status', 'pending'); //TODO remove after controlled launch
 
 	global $wpdb;
 	$shortUuid = new ShortUuid();
@@ -556,6 +549,53 @@ function vit_breadcrumbs($trail, $crumbs, $r) {
 add_filter( 'bbp_get_breadcrumb', 'vit_breadcrumbs', 10, 3 );
 
 
+function add_name_woo_account_registration() {
+    ?>
+    <p class="form-row form-row-first">
+    <label for="first_name"><?php _e( 'First name', 'woocommerce' ); ?> <span class="required">*</span></label>
+    <input type="text" class="input-text" name="first_name" id="first_name" value="<?php if ( ! empty( $_POST['first_name'] ) ) esc_attr_e( $_POST['first_name'] ); ?>" />
+    </p>
+    <p class="form-row form-row-last">
+    <label for="last_name"><?php _e( 'Last name', 'woocommerce' ); ?> <span class="required">*</span></label>
+    <input type="text" class="input-text" name="last_name" id="last_name" value="<?php if ( ! empty( $_POST['last_name'] ) ) esc_attr_e( $_POST['last_name'] ); ?>" />
+    </p>
+    <div class="clear"></div>
+    <?php
+}
+add_action( 'woocommerce_register_form_start', 'add_name_woo_account_registration' );
+
+function validate_register_fields( $errors, $username, $email ) {
+    if ( isset( $_POST['first_name'] ) && empty( $_POST['first_name'] ) ) {
+        $errors->add( 'first_name_error', __( 'First name is required.', 'woocommerce' ) );
+    }
+    if ( isset( $_POST['last_name'] ) && empty( $_POST['last_name'] ) ) {
+        $errors->add( 'last_name_error', __( 'Last name is required.', 'woocommerce' ) );
+    }
+    return $errors;
+}
+add_filter( 'woocommerce_registration_errors', 'validate_register_fields', 10, 3 );
+
+
+add_filter( 'wp_mail_from_name', 'custom_wp_mail_from_name', 1000, 3 );
+function custom_wp_mail_from_name( $original_email_from ) {
+		global $senderName;
+    return $original_email_from;  //Weird doing the other thing
+}
+
+
+// function save_name_fields( $customer_id ) {
+//     if ( isset( $_POST['billing_first_name'] ) ) {
+//         update_user_meta( $customer_id, 'billing_first_name', sanitize_text_field( $_POST['billing_first_name'] ) );
+//         update_user_meta( $customer_id, 'first_name', sanitize_text_field($_POST['billing_first_name']) );
+//     }
+//     if ( isset( $_POST['billing_last_name'] ) ) {
+//         update_user_meta( $customer_id, 'billing_last_name', sanitize_text_field( $_POST['billing_last_name'] ) );
+//         update_user_meta( $customer_id, 'last_name', sanitize_text_field($_POST['billing_last_name']) );
+//     }
+// }
+// add_action( 'woocommerce_created_customer', 'save_name_fields' );
+
+
 function vit_wc_customer_data( $data ) {
 	$shortUuid = new ShortUuid();
 	$data['user_login'] = $shortUuid->uuid4();
@@ -563,6 +603,7 @@ function vit_wc_customer_data( $data ) {
 	if (isset($_POST['first_name'])) {
 		$data['first_name'] = $_POST['first_name'];
 		$data['display_name'] = $_POST['first_name'];
+		$data['user_nicename'] = $_POST['first_name'];
 	}
 	if (isset($_POST['last_name'])) {
 		$data['last_name'] = $_POST['last_name'];
@@ -571,6 +612,10 @@ function vit_wc_customer_data( $data ) {
 	return $data;
 }
 add_filter( 'woocommerce_new_customer_data', 'vit_wc_customer_data', 10, 1 );
+
+
+add_filter('show_admin_bar', '__return_false'); //Remove top bar
+add_filter( 'woocommerce_registration_auth_new_customer', '__return_false' );
 
 
 function vit_profile_update( $user_id ) {
@@ -598,7 +643,6 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	global $wpdb;
 
 	alpn_log('cleanup_pte_user_on_delete_start - ' . $user_id);
-
 	//channels unlimited, no cost. No need to delete unless privacy issue.
 	//CC Groups delete user
 
@@ -633,6 +677,10 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	$whereclause = array('wp_id' => $user_id);
 	$wpdb->delete( "alpn_proteams", $whereclause );
 
+	//ProTeam Owner
+	$whereclause = array('owner_id' => $user_id);
+	$wpdb->delete( "alpn_proteams", $whereclause );
+
 	$whereclause = array('id' => $user_id);
 	$wpdb->delete( "alpn_user_metadata", $whereclause );
 
@@ -662,6 +710,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 
   global $wpdb;
   $returnDetails = array();
+	$newMember = false;
 
   alpn_log("alpn_handle_topic_add_edit");
   //alpn_log($fields);
@@ -679,9 +728,8 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 
 	if (isset($entry['new_owner']) && $entry['new_owner']) {
 		alpn_log('New Owner');
-
+		update_user_meta( $entry['new_owner'], "wsc_new_member", true);
 		$userInfo = get_user_by('id', $entry['new_owner']);
-
 	} else if (isset($entry['owner_id']) && $entry['owner_id']) {
 		alpn_log('New Topic Passing in owner_id');
 		$userInfo = get_user_by('id', $entry['owner_id']);
@@ -840,6 +888,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 						    'first_name' => $mappedFields['person_givenname'],
 								'last_name' => $mappedFields['person_familyname'],
 								'display_name' => $mappedFields['person_givenname'],
+								'user_nicename' => $mappedFields['person_givenname'],
 						    'nickname' => $mappedFields['person_givenname'],
 						]);
 						update_user_meta( $userId, "pte_user_icon",  $data['image_handle']);
@@ -935,6 +984,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 						    'first_name' => $mappedFields['person_givenname'],
 								'last_name' => $mappedFields['person_familyname'],
 								'display_name' => $mappedFields['person_givenname'],
+								'user_nicename' => $mappedFields['person_givenname'],
 						    'nickname' => $mappedFields['person_givenname'],
 						]);
 						update_user_meta( $userId, "pte_user_icon",  $topicData['image_handle']);

@@ -15,6 +15,39 @@ fff5ee
 	overflow-x: hidden;
 } */
 
+form.woocommerce-form-register{
+	opacity: 0.60 !important;
+	pointer-events: none !important;
+}
+
+.wcl_connections_button_highlighted{
+	color: green !important;
+}
+
+
+div.wsc_quest_paragraph{
+	margin: 0 0 10px 0;
+}
+
+div.wsc_quest_paragraph_bottom{
+	margin: 10px 0 0 0;
+}
+
+div.wsc_builder_warning{
+
+	font-size: 12px;
+	line-height: 16px;
+	padding: 5px;
+	border: solid 1px;
+	background-color: #F6FFCB;
+	border: 1px solid #B2CB65;
+
+}
+
+
+button.uppy-StatusBar-actionBtn--done{
+	display: none;
+}
 
 div.uppy-DashboardTab[data-uppy-acquirer-id=GoogleDrive],
 div.uppy-DashboardTab[data-uppy-acquirer-id=Dropbox],

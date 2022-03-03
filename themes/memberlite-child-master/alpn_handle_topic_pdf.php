@@ -447,6 +447,7 @@ $html .= "
 $html .= "
 					<div id='alpn_vault_main_container'>
 						<div id='alpn_outer_vault' class='pte_outer_vault_small'>
+							<div class='wsc_builder_warning'>Please provide feedback on a MVP Quick reports that is useful to you. Use case: as a team collaborator, I want to take a snapshot of my Topic data to share. Partially implemented.</div>
 							{$dataSections}
 							{$topicSections}
 							{$otherSettings}

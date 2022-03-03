@@ -56,6 +56,8 @@ pte_timezone_offset = pte_local_date.getTimezoneOffset();
 
 wsc_work_area_open = false;
 
+syncClient = {};
+
 pte_chrome_extension = (typeof pte_chrome_extension != "undefined" && pte_chrome_extension) ? pte_chrome_extension : false;
 pte_topic_manager_loaded = (typeof pte_topic_manager_loaded != "undefined" && pte_topic_manager_loaded) ? pte_topic_manager_loaded : false;
 pte_template_editor_loaded = (typeof pte_template_editor_loaded != "undefined" && pte_template_editor_loaded) ? pte_template_editor_loaded : false;
@@ -2431,7 +2433,8 @@ function alpn_resizeChat() { //Centered on the window
 
 function pte_send_sync(activeChannelMeta){
 	var notificationMember = activeChannelMeta.notifications_member_sync_id;
-	if (typeof syncClient == "object") {
+
+	if (syncClient) {
 			//console.log("Syncing to ", notificationMember);
 				syncClient.map(notificationMember).then(function(map){
 					map.update('pte_video_room_event_notifications', activeChannelMeta)
@@ -2459,7 +2462,8 @@ function pte_handle_mute_audio(){
 
 function pte_handle_sync(data, item = false){
 
-	  console.log("Handling Sync");
+		console.log("Handling Sync");
+	  console.log(data);
 
 	if (item) { //Migrate to this. I think. How it is supposed to work.
 
@@ -2488,6 +2492,19 @@ function pte_handle_sync(data, item = false){
 //	console.log(syncPayload);
 
 	switch(syncSection) {
+
+		case 'has_connects':
+
+			jQuery("i#wcl_manage_connections_icon").addClass("wcl_connections_button_highlighted").attr("title", "You have connection requests waiting");
+
+		break;
+
+		case 'no_connects':
+
+			jQuery("i#wcl_manage_connections_icon").removeClass("wcl_connections_button_highlighted").attr("title", "Manage Connections");
+
+		break;
+
 		case 'proteam_card_update':
 
 		console.log("Handling ProTeam Card Update...");
@@ -2784,9 +2801,9 @@ function initializeTwilio() {
 					window.location.href = "./my-account";
 			}
 
-			 // if (typeof syncClient != "object") {
-				syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
-			//}
+			  if (jQuery.isEmptyObject(syncClient)) {
+					syncClient = new Twilio.Sync.Client(data.token, { logLevel: 'info' });
+				}
 
 			console.log('syncClient');
 			console.log(syncClient);
@@ -2802,6 +2819,9 @@ function initializeTwilio() {
 					var data = descriptor.data;
 					pte_handle_sync(data, item);
 				});
+			})
+			.catch(function(error) {
+					console.log('SYNC CLIENT MAP ERROR', error);
 			});
 
 			syncClient.on('tokenAboutToExpire', function() {
@@ -2819,13 +2839,31 @@ function initializeTwilio() {
 				});
 			});
 
+			syncClient.on('connectionError', function(channel) {
+				console.log("Connection Error -- Retrying SYNC MAIN");
+				console.log(channel);
+				syncClient.map(alpn_sync_id).then(function (map) {
+					map.close();
+					syncClient = {};
+					initializeTwilio();
+					console.log("Handling DENIED by clearing client and initializing SYNC CLIENT");
+				}).catch(function(error) {
+						console.log('SYNC CLIENT MAP STATE CHANGED ERROR MAIN', error);
+				});
+			});
+
 			syncClient.on('connectionStateChanged', function(channelState) {
 				console.log("SYNC CLIENT -- CONNECTION STATE CHANGED -- ", channelState);
 				if (channelState == "denied") {
 					console.log("SYNC CLIENT DENIED LOGIN");
-					syncClient = null;
-					initializeTwilio();
-					console.log("Handling DENIED by clearing client and initializing");
+					syncClient.map(alpn_sync_id).then(function (map) {
+						map.close();
+						syncClient = {};
+						initializeTwilio();
+						console.log("Handling DENIED by clearing client and initializing");
+					}).catch(function(error) {
+							console.log('SYNC CLIENT MAP STATE CHANGED ERROR', error);
+					});
 				}
 			});
 	});
@@ -3673,7 +3711,12 @@ var localInstance = pte_uppy_vault_instances[pte_uppy_instance_id] = new Uppy.Co
 				target: Uppy.Dashboard,
 			  companionUrl: Uppy.Transloadit.COMPANION,
 			  companionAllowedHosts: Uppy.Transloadit.COMPANION_PATTERN
-			})
+			}).on('cancel-all', (item1, item2) => {
+				console.log("TODO Implement Cancel");
+				console.log(item1);
+				console.log(item2);
+
+		});
 		}
 
 }
@@ -4585,7 +4628,7 @@ function pte_setup_pdf_viewer(viewerSettings) {
 
 				var pdfui = window.pdfui = new PDFUI({
 						viewerOptions: {
-								defaultScale: 'fitHeight',
+								defaultScale: 'fitWidth',
 								libPath: alpn_templatedir + 'foxitpdf/lib/',
 								jr: {
 										readyWorker: readyWorker,
@@ -5200,10 +5243,10 @@ function alpn_vault_control(operation, originator = 'user') {
 		jQuery('#alpn_name_field_label').attr('style', 'pointer-events: auto; opacity: 1.0;');
 
 		wsc_reset_ww_list();
-		wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
 		wsc_add_ww("<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>");
 		wsc_add_ww("<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>");
 		wsc_add_ww("<option value='fax' data-icon='far fa-fax'>Send as Fax</option>");
+		wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
 
 		break;
 
@@ -6459,11 +6502,6 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 					var mapData = pte_make_map_data('replace_me');
 					pte_manage_history(mapData);
 					//TODO update icon with new image_handle data if needed.
-					var theUserEl = jQuery("div#alpn_field_" + uniqueRecId);
-					if (theUserEl.data('nm') == 'yes') { //Put them in edit mode for their topic. Tell em something
-						pte_show_message('green', 'ok', 'Welcome to ProTeam Edge. Please complete and save your personal profile. Keeping it updated because your connections will see it. Otherwise, it is private.');
-						theUserEl.data('nm', 'no');
-					}
 
 				},
 				error: function() {
@@ -6503,9 +6541,13 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 			var pteSelectedType = alpn_select_type(uniqueRecId);
 			if (pteSelectedType == 'user') {
 				var newUser = jQuery("div#alpn_field_" + uniqueRecId);
-				if (newUser.data('nm') == 'yes') { //Put them in edit mode for their topic. Tell em something
+				if (newUser.data('nm') == true) { //Put them in edit mode for their topic. Tell em something
 					alpn_mission_control('edit_topic', uniqueRecId);
 					alpn_handle_select(uniqueRecId);
+					newUser.data('nm', false);
+					setTimeout(function(){
+						pte_show_message('green', 'ok', 'Welcome to Wiscle. Please complete your personal profile. Keep it updated so your connections will always have the latest.');
+					}, 750);
 					return;
 				}
 			}

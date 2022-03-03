@@ -173,9 +173,9 @@ var siteRoot = "/var/www/html/proteamedge/public/wp-content/themes/memberlite-ch
     	if (state == 'disabled') {
         $('#pte_chat_messages_area').hide();
         chatIsActive = 'disabled';
-        if ($("#message-body-input").data("emojioneArea")){
-          $("#message-body-input").data("emojioneArea").setText("");
-        }
+        // if ($("#message-body-input").data("emojioneArea")){
+        //   //$("#message-body-input").data("emojioneArea").setText("");
+        // }
     	} else {
         $('#pte_chat_messages_area').show();
         chatIsActive = 'enabled';
@@ -724,18 +724,18 @@ function logIn() {
         }
 
         client.getSubscribedChannels().then(function(paginator) {
-          //console.log('Getting Channels..');
+          console.log('Getting Channels..');
           //console.log(paginator);
           var channel, channelState, uniqueId, sid;
           for (i = 0; i < paginator.items.length; i++) {
             channel = paginator.items[i];
             channelState = channel.state;
             uniqueId = channelState.uniqueName;
+
             if (uniqueId == parseInt(uniqueId)) {
               userChannels[uniqueId + "_"] = channel;   //Ensures one array element per topic
             }
           }
-
 
           pte_process_chat_channels();
           //setup dom processor timer
@@ -769,36 +769,56 @@ function logIn() {
           });
 
           client.on('channelUpdated', function(channelUpdate) {
-            console.log("Channel Updated Called");
-            console.log(channelUpdate);
+            // console.log("Channel Updated Called");
+            // console.log(channelUpdate);
           });
 
           client.on('channelJoined', function(channel) {
             console.log('Channel Joined Called');
-            console.log(channel);
+            // console.log(channel);
 
             var channelFriendlyName = channel.friendlyName;
-            if (isJson(channelFriendlyName)) {
-              var contactData = JSON.parse(channelFriendlyName);
-              if (userContext.identity == contactData.owner_id) {
-                var showIdentity = contactData.contact_id;
-              } else {
-                var showIdentity = contactData.owner_id;
-              }
-              client.getUserDescriptor(showIdentity).then(function(userDescriptor){
+            var channelState = channel.state;
 
-                var userAttributes = userDescriptor.attributes;
-                var channelFriendlyName = userAttributes.full_name;
-                var channelImageHandle = userAttributes.image_handle;
-                //console.log(" Contact for ", channelFriendlyName);
-                pte_add_edit_chat_panel(channel.uniqueName, channelFriendlyName, 2, channelImageHandle, contactData.owner_id);
-              });
+            // console.log("Channel State");
+            // console.log(channelState);
+
+            var lastConsumedMessageIndex = channelState.lastConsumedMessageIndex;
+            var lastMessage = channelState.lastMessage;
+            var lastMessageIndex = lastMessage.index;
+
+            console.log(lastMessage);
+            console.log(lastConsumedMessageIndex);
+
+            if (lastConsumedMessageIndex < lastMessage) {
+              console.log("ADDED BECAUSE UNREADS");
+
+              if (isJson(channelFriendlyName)) {
+                var contactData = JSON.parse(channelFriendlyName);
+                if (userContext.identity == contactData.owner_id) {
+                  var showIdentity = contactData.contact_id;
+                } else {
+                  var showIdentity = contactData.owner_id;
+                }
+                client.getUserDescriptor(showIdentity).then(function(userDescriptor){
+
+                  var userAttributes = userDescriptor.attributes;
+                  var channelFriendlyName = userAttributes.full_name;
+                  var channelImageHandle = userAttributes.image_handle;
+                  //console.log(" Contact for ", channelFriendlyName);
+                  pte_add_edit_chat_panel(channel.uniqueName, channelFriendlyName, 2, channelImageHandle, contactData.owner_id);
+                });
+              } else {
+                //console.log(" Topic for ", channelFriendlyName);
+                channel.getAttributes().then(function(attributes){
+                  pte_add_edit_chat_panel(channel.uniqueName, channel.friendlyName, 2, attributes.image_handle, attributes.topic_owner_id);
+                });
+              }
             } else {
-              //console.log(" Topic for ", channelFriendlyName);
-              channel.getAttributes().then(function(attributes){
-                pte_add_edit_chat_panel(channel.uniqueName, channel.friendlyName, 2, attributes.image_handle, attributes.topic_owner_id);
-              });
+              console.log("DID NOT ADD THIS BECAUSE CURRENT");
             }
+
+
           });
 
           client.on('channelLeft', function(channel) {
@@ -820,10 +840,10 @@ function logIn() {
           console.log("Connection Error -- Retrying");
           console.log(channel);
 
+          // var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
+          // activeChannelMetaSnapshot.name = "pte_channel_stop";
+          // pte_parent_message_send(activeChannelMetaSnapshot);
           pte_set_chat("disabled");
-          var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
-          activeChannelMetaSnapshot.name = "pte_channel_stop";
-          pte_parent_message_send(activeChannelMetaSnapshot);
           clearCurrentChannel();
           wsc_setup_chat();
 
@@ -838,9 +858,6 @@ function logIn() {
             console.log("DENIED LOGIN");
             //alert("About to try Chat Drop fix.");
             pte_set_chat("disabled");
-            var activeChannelMetaSnapshot = jQuery.extend(true, [], activeChannelMeta);  //Snapshot of array
-            activeChannelMetaSnapshot.name = "pte_channel_stop";
-            pte_parent_message_send(activeChannelMetaSnapshot);
             clearCurrentChannel();
             wsc_setup_chat();
           }
@@ -1084,7 +1101,6 @@ function pte_handle_chat_channel(channel){
 
   // console.log("Handling Channel");
   // console.log(channel);
-
   var channelState = channel.state;
   var channelUniqueId = channel.uniqueName;
   var channelFriendlyName = channel.friendlyName;
@@ -1097,29 +1113,52 @@ function pte_handle_chat_channel(channel){
     } else {
       var showIdentity = contactData.owner_id;
     }
-    channel.getUnconsumedMessagesCount().then(function(messageCount){
+    channel.getUnconsumedMessagesCount()
+    .then(function(messageCount){
       if (messageCount > 0) {   //Unreads
         client.getUserDescriptor(showIdentity).then(function(userDescriptor){
+          console.log("ADDING DUE TO UNREADS");
+          console.log(showIdentity);
+          console.log(userDescriptor);
           var userAttributes = userDescriptor.attributes;
           var channelFriendlyName = userAttributes.full_name;
           var channelImageHandle = userAttributes.image_handle;
+
           pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCount, channelImageHandle, contactData.owner_id);
+        })
+        .catch(function(err){
+          console.log("Handling exception for getUserDescriptor");
+          pte_set_chat("disabled");
+          clearCurrentChannel();
+          wsc_setup_chat();
         });
       }
+    }).catch(function(err){
+      console.log("Handling exception for getUnconsumedMessagesCount 1");
+      pte_set_chat("disabled");
+      clearCurrentChannel();
+      wsc_setup_chat();
     });
 
   } else {
       channel.getUnconsumedMessagesCount().then(function(messageCount){
         if (messageCount > 0) {   //Unreads
           channel.getAttributes().then(function(attributes){
+            console.log("HERE");
+            console.log(channel);
             pte_add_edit_chat_panel(channelUniqueId, channelFriendlyName, messageCount, attributes.image_handle);
           });
         }
+      }).catch(function(err){
+        console.log("Handling exception for getUnconsumedMessagesCount 2");
+        pte_set_chat("disabled");
+        clearCurrentChannel();
+        wsc_setup_chat();
       });
   }
 } else {
-  console.log("ERROR? No Topic ID");
-}
+    console.log("ERROR? No Topic ID");
+  }
 }
 
 function pte_process_chat_channels(){
@@ -1572,7 +1611,7 @@ function setActiveChannel(channel) {
           jQuery("li.pte_chat_list_item[data-cid='" + activeChannel.uniqueName + "']").remove();
         });
       }
-      $("#message-body-input").data("emojioneArea").setText('').setFocus();
+      $("#message-body-input").data("emojioneArea").setFocus();
 
       return channel.getMembers();
 
