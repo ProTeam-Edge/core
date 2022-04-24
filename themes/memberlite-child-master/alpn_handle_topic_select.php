@@ -1,20 +1,23 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
+use Ramsey\Uuid\Uuid;
+use Parse\ParseObject;
+use Parse\ParseQuery;
+use Parse\ParseUser;
+use Parse\ParseException;
+use Parse\ParseClient;
+
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
-//  "numbers" => array("number" => "8315882464"),
-
-// global $wp_filter;
-// pp( $wp_filter["wp_mail"] );
+//wsc_create_new_parse_user();
 
 $replaceStrings = array();
-$html = $faxUx = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
+$html = $faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
 $domainName = PTE_HOST_DOMAIN_NAME;
 
-//pte_send_mail( );
 
 if(!is_user_logged_in()) {
    echo '<script>window.location.href = "./my-account";</script>';
@@ -26,6 +29,9 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 
+//wsc_create_new_parse_user();
+
+
 $recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 //$recordId = "9ccaa051-40e4-11eb-bb24-d60131c04105";
 
@@ -36,9 +42,6 @@ $userID = $userInfo->data->ID;
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
 //pp($userInfo);
-
-
-
 $rightsCheckData = array(
   "topic_dom_id" => $recordId
 );
@@ -108,6 +111,7 @@ $proteamContainer = 'block';
 $proTeamTitle = "Team Members";
 $profilePicTitle = "Icon";
 $showMessageAccordion = "none";
+$showWallet = "none";
 $showAddressBookAccordion = "none";
 $showImportanceAccordions = "none";
 $showFaxAccordian = "none";
@@ -263,6 +267,7 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 	if ($topicSpecial == 'user') {
 		$context = "Personal";
 		$proteamViewSelector = "none";
+    $showWallet = "block";
 		$proteamContainer = 'none';
 		$proTeamTitle = "";
 		$profilePicTitle = "Icon";
@@ -288,6 +293,7 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 
 		$faxUx = pte_get_fax_ux();
 		$emailUx = pte_get_email_ux();
+    $walletAddressManagerUX = wsc_get_wallet_addresses_ux();
 	}
 }
 
@@ -313,6 +319,7 @@ $friendlyLogoNameHtml = isset($friendlyLogoName) && $friendlyLogoName ? $friendl
 $imageTitle = ($showLogoAccordion == 'block' || $showIconAccordian == 'block') ? "<div class='pte_accordion_section_title'>Media</div>" : "";
 $interActionImportanceTitle = ($showImportanceAccordions == 'block') ? "<div class='pte_accordion_section_title'>★ Priorities and Notifications</div>" : "";
 $inboundRoutingTitle = ($showEmailAccordian == 'block' || $showFaxAccordian == 'block') ? "<div class='pte_accordion_section_title'>Inbound Routing</div>" : "";
+$identityTitle = ($showWallet == 'block') ? "<div class='pte_accordion_section_title'>Identity</div>" : "";
 $importContactsTitle = ($showAddressBookAccordion == 'block') ? "<div class='pte_accordion_section_title'>Contacts</div>" : "";
 $settingsAccordion = "
 	{$interActionImportanceTitle}
@@ -340,15 +347,7 @@ $settingsAccordion = "
 	<div class='pte_panel pte_extra_margin_after' style='display: none;' data-height='175px'>
 		{$interactionTypeSliders}
 	</div>
-	{$inboundRoutingTitle}
-	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showEmailAccordian};' title='Manage Email Routes'>Email</button>
-	<div class='pte_panel' style='display: {$showEmailAccordian};' data-height='203px'>
-		{$emailUx}
-	</div>
-	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showFaxAccordian};' title='Manage Fax Routes'>Fax</button>
-	<div class='pte_panel pte_extra_margin_after' style='display: {$showFaxAccordian};' data-height='175px'>
-		{$faxUx}
-	</div>
+
   {$imageTitle}
   <button id='pte_topic_photo_accordion' class='pte_accordion'  style='display: {$showIconAccordian};' title='Change Personal Topic Icon'>{$profilePicTitle}</button>
   <div id='pte_topic_icon_container' data-height='325px' style='display: {$showIconAccordian};'>
@@ -360,6 +359,20 @@ $settingsAccordion = "
     <div id='pte_profile_logo_selector'></div>
     <div id='pte_profile_logo_crop'></div>
   </div>
+  {$identityTitle}
+  <button id='pte_topic_wallet_accordion' class='pte_accordion' style='display: {$showWallet};' title='Manage web3 Accounts'>web3 Accounts</button>
+    <div id='pte_topic_logo_container' class='pte_extra_margin_after' data-height='325px' style='display: {$showWallet};'>
+    <div id='pte_profile_logo_selector'>{$walletAddressManagerUX}</div>
+  </div>
+	{$inboundRoutingTitle}
+	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showEmailAccordian};' title='Manage Email Routes'>Email</button>
+	<div class='pte_panel' style='display: {$showEmailAccordian};' data-height='203px'>
+		{$emailUx}
+	</div>
+	<button id='pte_topic_message_accordion' class='pte_accordion' style='display: {$showFaxAccordian};' title='Manage Fax Routes'>Fax</button>
+	<div class='pte_panel pte_extra_margin_after' style='display: {$showFaxAccordian};' data-height='175px'>
+		{$faxUx}
+	</div>
 	{$importContactsTitle}
 	<button id='pte_topic_address_book_accordion' class='pte_accordion' style='display: {$showAddressBookAccordion};' title='Important External Contacts'>Import</button>
 	<div class='pte_panel'  data-height='500px' style='display: {$showAddressBookAccordion};'>
@@ -600,66 +613,63 @@ foreach ($topicTabs as $key => $value) {
 }
 $tabs = "<div id='pte_tab_wrapper' class='pte_tab_wrapper'><i id='pte_tab_bar_left_arrow' onmousedown='pte_scroll_tab(\"left\");' class='far fa-caret-left pte_tab_bar_left_arrow pte_ipanel_button_disabled'></i><div id='pte_tab' class='pte_tab' onscroll='pte_handle_tab_bar_scroll();'>{$tabButtons}</div><i id='pte_tab_bar_right_arrow' onmousedown='pte_scroll_tab(\"right\");' class='far fa-caret-right pte_tab_bar_right_arrow pte_ipanel_button_disabled'></i></div>{$tabPanels}";
 //Buttons
-
-$html .= "
-			<div class='outer_button_line'>
-				<div class='pte_vault_row_25'>
-					<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Data View' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-						<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
-					</span>
-					<span class='fa-stack pte_icon_button_nav {$designViewClass}' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-						<i class='fas fa-drafting-compass fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
-					</span>
-					<span class='fa-stack pte_icon_button_nav' title='Vault View' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-						<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-						<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
-					</span>
-				</div>
-				<div class='pte_vault_row_75 pte_vault_right pte_toolbar_container'>
-    ";
-
-    //Handle joined topic
-    //$topicBelongsToUser
-
-
-      if ($userID == $topicOwnerId) {
-        $pteEditDeleteClass = 'pte_ipanel_button_disabled';
-      }
-
-      $pteEditDisabled = "";
-      if ($isConnectedContact || !$topicBelongsToUser){
-        $pteEditDisabled = 'pte_ipanel_button_disabled';
-      }
-
-      if (!$topicBelongsToUser) {
-
-      }
-
-      $html .= "<i style='margin-right: 3px;' class='far fa-pencil-alt pte_icon_button {$pteEditDisabled}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>";
-      $html .= "<i id='delete_topic_button' class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>";
-
-
-    $html .= "</div>
-				<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
-			</div>
-	  ";
 //Title
 $html .= "
 					<div class='alpn_container_title_2'>
 						<div id='pte_topic_form_title_view'>
-							<span class='fa-stack pte_stacked_icon'>
-								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-								<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
-							</span>
-							<span id='pte_topic_name'>{$topicName}</span>
+            <span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Data View' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+              <i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
+              <i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
+            </span>
+            <span class='fa-stack pte_icon_button_nav' title='Vault View' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+              <i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
+              <i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
+            </span>
+            <span class='fa-stack pte_icon_button_nav' title='NFT View' data-operation='to_nft' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+              <i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
+              <i class='fas fa-cube fa-stack-1x' style='font-size: 16px;'></i>
+            </span>
+							<span id='pte_topic_name'>{$context}{$ownerFirstName}</span>
 						</div>
 						<div id='pte_topic_form_title_view' class='pte_vault_right'>
-							{$ownerFirstName}{$context} <div class='pte_title_topic_icon_container'>{$topicImage}</div>
+							{$topicName} <div class='pte_title_topic_icon_container'>{$topicImage}</div>
 						</div>
 					</div>
 			";
+
+
+      $html .= "
+      			<div class='outer_button_line'>
+      				<div class='pte_vault_row_100 pte_vault_right pte_toolbar_container'>
+          ";
+
+          //Handle joined topic
+          //$topicBelongsToUser
+
+
+            if ($userID == $topicOwnerId) {
+              $pteEditDeleteClass = 'pte_ipanel_button_disabled';
+            }
+
+            $pteEditDisabled = "";
+            if ($isConnectedContact || !$topicBelongsToUser){
+              $pteEditDisabled = 'pte_ipanel_button_disabled';
+            }
+
+            if (!$topicBelongsToUser) {
+
+            }
+
+            $html .= "<i style='margin-right: 3px;' class='far fa-pencil-alt pte_icon_button {$pteEditDisabled}' title='Edit Topic' onclick='alpn_mission_control(\"edit_topic\", \"{$topicDomId}\")' ></i>";
+            $html .= "<i id='delete_topic_button' class='far fa-trash-alt pte_icon_button {$pteEditDeleteClass}' title='Delete Topic' onclick='alpn_mission_control(\"delete_topic\", \"{$topicDomId}\")' ></i>";
+
+
+          $html .= "</div>
+      				<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
+      			</div>
+      	  ";
+
+
 $html .= "
 						<div id='pte_selected_topic_meta' class='pte_vault_row' data-mode='info' data-tid='{$topicId}' data-tdid='{$topicDomId}' data-ttid='{$topicTypeId}' data-special='{$topicSpecial}' data-oid='{$topicOwnerId}' data-tia='{$topicImageHandle}' data-wal='{$accessLevel}' data-con='{$isConnected}'>
 							<div id='pte_topic_form_edit_view_left' class='pte_vault_row_padding_right'>

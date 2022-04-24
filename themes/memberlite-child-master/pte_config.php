@@ -14,6 +14,10 @@ define('PTE_IMAGES_ROOT_URL', 'https://storage.googleapis.com/pte_media_store_1/
 define('PTE_DATE_FORMAT_STRING', 'MMM D, YYYY, h:mma');   //javascript formatting.
 define('PTE_DATE_FORMAT_STRING_PHP', 'M j, Y, g:i a');   //php formatting.
 
+//GoogleDrive
+
+define('GOOGLE_STORAGE_KEY', '/var/www/html/proteamedge/private/proteam-edge-cf8495258f58.json');
+
 //database
 
 define('DB_HOST_RW', 'vit-all.mdb0001643.db.skysql.net:5001');
@@ -55,6 +59,12 @@ define('CALLURL', "https://{$domainName}/wp-content/themes/memberlite-child-mast
 define('FAX_DOCUMO_API_KEY', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxYzA3MDUxMS04NDcxLTQ5ZDItOWVmYS0yOTdmMWNjY2QwMDQiLCJpYXQiOjE1OTYwNjExNzR9.LjQuTk6iEL0oh6989vKNNoJZQLXfxT3O5EQA69IMzEU');
 define('FAX_DOCUMO_ACCOUNT_ID', '7f2e187d-252d-4ada-8611-35933ac2923d');
 
+//moralis
+
+define('MORALIS_APPID', 'z40qQMDZOc7HYcIZEgSDyXRWyTgiUp5Ino0I6yww');
+define('MORALIS_MK', 'JwJXP1eaPNNyRmNVWIvioqWgJeLF9ZDyC8Ei0JUW');
+define('MORALIS_SERVER_URL', 'https://h2yoot4zcjng.usemoralis.com:2053');
+define('MORALIS_API_KEY', 'va4yCbZSKEwurHgMOKvszRzWW1NUGEOalGvHsyxxCI2mNkA3t4jSo8dHpDPdoADR');
 
 
 ?>

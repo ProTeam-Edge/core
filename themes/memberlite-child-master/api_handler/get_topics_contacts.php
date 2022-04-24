@@ -18,8 +18,7 @@ $get_token = get_option('api_request_token_'.$id.'');
 
 $apiToken = $data->apiToken;
 
-if($get_token==$apiToken)
-{
+
 $twilioAccountSid = ACCOUNT_SID;
 $twilioApiKey = APIKEY;
 $twilioApiSecret = SECRETKEY;
@@ -54,7 +53,7 @@ if(isset($data->keyword) && !empty($data->keyword)) {
 else {
 	$final_sql = "SELECT tt.source_type_key, tt.topic_class, t.id,t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, t.connected_id, t2.image_handle AS connected_image_handle, t2.name AS connected_name FROM alpn_topics t LEFT JOIN alpn_topics t2 ON t2.owner_id = t.connected_id AND t2.special = 'user' LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.owner_id = ".$id." and t.name!='' and tt.topic_class != 'link' 
 	UNION
-	SELECT tt.source_type_key, tt.topic_class, t.id, t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, '' AS connected_id, '' AS connected_image_handle, '' AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.channel_id <> '' AND p.wp_id = ".$id." order by name asc, connected_name limit 15";
+	SELECT tt.source_type_key, tt.topic_class, t.id, t.about, t.channel_id, t.name, t.image_handle, t.owner_id, t.special, '' AS connected_id, '' AS connected_image_handle, '' AS connected_name FROM alpn_proteams p LEFT JOIN alpn_topics t ON t.id = p.topic_id LEFT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id WHERE t.channel_id <> '' AND p.wp_id = ".$id." order by name asc, connected_name";
 }
 
 
@@ -76,9 +75,10 @@ if (strlen($string) > 50) {
 return $string;
 }
 $channels = [];
+$active = [];
 $base_image = 'https://storage.googleapis.com/pte_media_store_1/2020/03/f7491f5d-cropped-36a6c22c-globe650x650-e1585629698318.png';
 if(!empty($final_data)) {
-	$c = $t = $u = 0;
+	$c = $t = $u = $k = 0;
 		foreach($final_data as $val) {
 			
 				if($val->special=='topic') {
@@ -120,12 +120,26 @@ if(!empty($final_data)) {
 				else {
 					$dId = '';
 				}
-				$array[$val->special][$increment_variable]['name'] = $returned_name;
+				$array[$val->special][$increment_variable]['name'] = striplength($returned_name,30);
 				$array[$val->special][$increment_variable]['image'] = $returned_contact_image;
 				$array[$val->special][$increment_variable]['channel_id'] = $val->channel_id;
-				if(isset($val->channel_id) && !empty( $val->channel_id))
+				if(isset($val->channel_id) && !empty( $val->channel_id)) {
 				$channels[] =  $val->channel_id;
-				$array[$val->special][$increment_variable]['about'] = $about;
+				
+				$active['contact'][$k]['incriment'] = $k;
+				$active['contact'][$k]['about'] = striplength($about,30);
+				$active['contact'][$k]['device_id'] = $dId;
+				$active['contact'][$k]['id'] = $val->id;
+				$active['contact'][$k]['source_type_key'] = $val->source_type_key;
+				$active['contact'][$k]['channel_id'] = $val->channel_id;
+				$active['contact'][$k]['image'] = $returned_contact_image;
+				$active['contact'][$k]['name'] = striplength($returned_name,30); 
+				$k++;
+			
+				 
+				}
+				
+				$array[$val->special][$increment_variable]['about'] = striplength($about,30);
 				$array[$val->special][$increment_variable]['device_id'] = $dId;
 				$array[$val->special][$increment_variable]['id'] = $val->id;
 				$array[$val->special][$increment_variable]['source_type_key'] = $val->source_type_key;
@@ -150,18 +164,31 @@ if(!empty($final_data)) {
 				}
 		}
 
-	
 	$array['user_image'] = $user_image; 
 	$array['logged_user_name'] = $logged_user_name; 
+	$array['active'] = $active; 
+	$array['id'] = $id; 
 
 	$response = array('success' => 1, 'message'=>'Contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
 } else {
 	$response = array('success' => 0, 'message'=>'No contacts found.','data'=>$array,'token'=>$token->toJWT(),'channels'=>$channels);
 }
-} else {
-	$response = array('success' => 2, 'message'=>'Not a valid token','data'=>null);
-}
+
 } else {
 	$response = array('success' => 2, 'message'=>'No required parameters provided','data'=>null);
+}
+function striplength($string , $length) {
+$string = strip_tags($string);
+if (strlen($string) > $length) {
+
+    // truncate string
+    $stringCut = substr($string, 0, $length);
+    $endPoint = strrpos($stringCut, ' ');
+
+    //if the string doesn't contain any space then it will cut without word basis.
+    $string = $endPoint? substr($stringCut, 0, $endPoint) : substr($stringCut, 0);
+    $string .= '...';
+}
+return $string;
 }
 echo json_encode($response); 

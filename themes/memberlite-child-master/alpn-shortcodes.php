@@ -1,5 +1,11 @@
 <?php
 
+use Parse\ParseObject;
+use Parse\ParseQuery;
+use Parse\ParseUser;
+use Parse\ParseException;
+use Parse\ParseClient;
+
 global $memberFeatures, $senderName;
 $senderName = "Wiscle";
 
@@ -18,7 +24,7 @@ function db_shortcode($attr) {
         'block_type' => 'block_type'
     ), $attr));
 
-  $html = $domID = $userTopicId = $userImageHandle = $syncId = $userTopicId = $userTopicTypeId = $contactTopicTypeId = $userDisplayName = $standardColorCount = "";
+  $html = $domID = $parseUserName = $parsePassword = $userTopicId = $userImageHandle = $syncId = $userTopicId = $userTopicTypeId = $contactTopicTypeId = $userDisplayName = $standardColorCount = "";
 
 	$templateDirectory = get_template_directory_uri();
 
@@ -36,7 +42,6 @@ function db_shortcode($attr) {
 			$wpdb->prepare("SELECT JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_givenname')) AS owner_givenname, JSON_UNQUOTE(JSON_EXTRACT(t.topic_content, '$.person_familyname')) AS owner_familyname, t.dom_id, t.id, t.image_handle, t.name, t.sync_id, t.topic_type_id AS user_topic_type_id, tt.id AS contact_topic_type_id FROM alpn_topics t LEFT JOIN alpn_topic_types tt ON tt.owner_id = %d AND tt.special = 'contact' WHERE t.owner_id = %d AND t.special = 'user';", $userID, $userID)
 		);
 		if (isset($results[0])) {
-
 			$userTopicId = $results[0]->id;
 			$userTopicTypeId = $results[0]->user_topic_type_id;
 			$contactTopicTypeId = $results[0]->contact_topic_type_id;
@@ -131,6 +136,23 @@ function db_shortcode($attr) {
 					</script>
 					";
 				}
+
+			break;
+
+			case 'gallery':
+			 if (!$userID) {
+				 $html = "<style>#site-navigation{display: none;}</style>";
+			 }
+
+			 $gallerySettings = array(
+			 );
+			 $html .= "
+				 <script>
+				 alpn_templatedir = '{$templateDirectory}-child-master/';
+				 </script>
+			 ";		
+				$html .= wsc_get_gallery($gallerySettings);
+
 
 			break;
 
@@ -286,6 +308,8 @@ function db_shortcode($attr) {
 
 			break;
       case 'network':
+				$parseSessionToken = get_user_meta( $userID, 'wsc_parse_session_token', true );
+
 				$urlTopicOperation = isset($_GET['topic_operation']) && $_GET['topic_operation'] ? $_GET['topic_operation'] : "";
 				$urlDestinationTopicId = isset($_GET['destination_topic_id']) && $_GET['destination_topic_id'] ? $_GET['destination_topic_id'] : "";
 
@@ -299,6 +323,7 @@ function db_shortcode($attr) {
 
 				$businessTypes = get_custom_post_items('pte_profession', 'ASC');
 				$optionsStr = $iconStr = '';
+
 				foreach ($businessTypes as $key => $value){
 					//$iconStr =
 					$optionsStr .= "<option value='{$key}'>{$value}</option>";
@@ -325,7 +350,6 @@ function db_shortcode($attr) {
 				$html .= "</div>";
 
 				if ($userID) {  // one time
-
 							$html .= "<script>
 						   pte_chrome_extension = false;
 						   alpn_user_id = {$userID};
@@ -343,7 +367,8 @@ function db_shortcode($attr) {
 							 alpn_avatar_handle = '{$userImageHandle}';
 							 alpn_avatar_url = '{$fullAvatarUrl}';
 							 alpn_templatedir = '{$templateDirectory}-child-master/';
-							 pte_standard_color_count = $standardColorCount;
+							 pte_standard_color_count = {$standardColorCount};
+							 const wsc_parse_session_token = '{$parseSessionToken}';
 							 </script>";
 				} else {
 					$html .= "<script>alpn_user_id = 0;</script>";
@@ -380,7 +405,7 @@ function db_shortcode($attr) {
 				Topics
 			</div>
 			<div class='alpn_section_head_right'>
-				<span style='display: inline-block;'><select id='alpn_selector_topic_type' class='alpn_selector_topic_type'>{$selectHtml}</select></span>
+				<span style='display: inline-block;'><select id='alpn_selector_topic_type' class='alpn_selector'>{$selectHtml}</select></span>
 				<span style='display: inline-block;'><i class='far fa-plus-circle alpn_icons' title='Add Topic' onclick='alpn_mission_control(\"add_topic\");'></i></span>
 			</div>
 			</div>
@@ -406,7 +431,7 @@ function db_shortcode($attr) {
 		// 	<div class='alpn_section_head_right'></div>
 	 // </div>
 
-	 $interactionChooser = "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector'>";
+	 $interactionChooser = "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector alpn_selector'>";
 	 // $interactionChooser .= "<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>";
 	 // $interactionChooser .= "<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>";
 	 // $interactionChooser .= "<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>";

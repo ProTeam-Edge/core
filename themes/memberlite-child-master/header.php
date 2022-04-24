@@ -6,6 +6,48 @@
  *
  * @package Memberlite
  */
+
+$nameWithType = "Wiscle Collaboration Network";
+$description = "Team Up with Anyone, Anywhere to Collaborate on Anything";
+$imageUrl = "https://storage.googleapis.com/pte_media_store_1/08701530-audrey2.png";
+$linkUrl = "https://wiscle.com";
+
+$wscMeta = "";
+//fb
+$wscMeta .= '<meta name="og:title" content=' . $nameWithType . '><meta name="og:description" content=' . $description . '><meta name="og:image" content="' . $imageUrl . '"><meta name="og:url" content="' . $linkUrl . '">';
+//twitter
+$wscMeta .= '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@wiscleco"><meta name="twitter:title" content=' . $nameWithType . '><meta name="twitter:description" content=' . $description . '><meta name="twitter:image" content="' . $imageUrl . '">';
+
+if (get_the_ID() == 9063) {
+	$wscMeta = "";
+	$memberId = isset($_GET['member_id']) && $_GET['member_id'] ? $_GET['member_id'] : false;
+	$slideId = isset($_GET['slide_id']) && $_GET['slide_id'] ? $_GET['slide_id'] : false;
+	if ($memberId && $slideId) {
+		$nftResults = $wpdb->get_results(
+			$wpdb->prepare("SELECT * FROM alpn_nft_meta WHERE id = %d", $slideId)
+		 );
+		 if (isset($nftResults[0])) {
+			 $meta = json_decode($nftResults[0]->meta, true);
+
+			 $description = stripslashes(filter_var($meta['description'], FILTER_SANITIZE_FULL_SPECIAL_CHARS));
+			 $description = str_replace("\n", "&nbsp;", $description);
+			 $description = str_replace("\r", "&nbsp;", $description);
+			 $description = json_encode($description);
+
+			 $actual_link = "https://$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]";
+
+			 $name = filter_var($meta['name'], FILTER_SANITIZE_FULL_SPECIAL_CHARS);
+			 $mediaType = getFileMetaFromMimeType($nftResults[0]->media_mime_type)['type'];
+			 $nameWithType = json_encode("{$name} | {$mediaType}");
+			 if ($nftResults[0]->thumb_share_file_key) {
+				 $imageUrl = PTE_IMAGES_ROOT_URL . $nftResults[0]->thumb_share_file_key;
+			 } //else uses default above
+			 $wscMeta .= '<meta name="og:title" content=' . $nameWithType . '><meta name="og:description" content=' . $description . '><meta name="og:image" content="' . $imageUrl . '"><meta name="og:url" content="' . $actual_link . '">';
+			 $wscMeta .= '<meta name="twitter:card" content="summary_large_image"><meta name="twitter:site" content="@wiscleco"><meta name="twitter:title" content=' . $nameWithType . '><meta name="twitter:description" content=' . $description . '><meta name="twitter:image" content="' . $imageUrl . '">';
+		}
+	}
+}
+
 ?><!DOCTYPE html>
 
 <html <?php language_attributes(); ?>>
@@ -43,11 +85,7 @@
 	<meta name="msapplication-tap-highlight" content="no">
 	<meta name="renderer" content="webkit">	<link rel="profile" href="http://gmpg.org/xfn/11">
 
-	<meta property="og:title" content="Wiscle Network and Community">
-	<meta property="og:description" content="Team Up with Anyone, Anywhere to Collaborate on Anything">
-	<meta property="og:image" content="https://storage.googleapis.com/pte_media_store_1/08701530-audrey2.png">
-	<meta property="og:url" content="https://www.wiscle.com">
-
+	<?php echo $wscMeta ?>
 	<?php wp_head(); ?>
 
 </head>

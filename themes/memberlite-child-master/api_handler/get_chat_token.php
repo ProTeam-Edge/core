@@ -22,7 +22,7 @@ $FCMCREDENTIALSID = FCMCREDENTIALSID;
 $PUSHCREDENTIALSIDDEV = PUSHCREDENTIALSIDDEV;
 
 	$get_token = get_option('api_request_token_'.$data->username.'');
-	if($get_token==$apiToken) {
+	/* if($get_token==$apiToken) { */
 	$username = $data->username;
 	$identity =$username;
 	$token = new AccessToken(
@@ -45,9 +45,9 @@ $PUSHCREDENTIALSIDDEV = PUSHCREDENTIALSIDDEV;
 	$token->addGrant($grant);
 	// render token to string
 	echo $token->toJWT();
-	} else {
+	/* } else {
 		echo 'Not a valid token';
-	}
+	} */
 } else {
 	echo 'No required parameters found';
 }

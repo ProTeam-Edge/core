@@ -15,6 +15,357 @@ fff5ee
 	overflow-x: hidden;
 } */
 
+a.wsc_message_bar_link {
+	color: rgb(0, 132, 238);
+}
+
+button#wsc_import_button{
+	height: 28px;
+	line-height: 28px;
+	padding: 0;
+}
+
+.wsc_owner_tools_off {
+	opacity: 0.60;
+	pointer-events: none;
+}
+
+.wsc_owner_tools_hidden {
+	display: none !important;
+}
+
+article#post-9063 span.wsc_nft_toolbar_help_text,
+article#post-9063 select#alpn_select2_categories,
+article#post-9063 select#alpn_select2_categories + span.select2-container,
+article#post-9063 i#wsc_scan_wallet,
+article#post-9063 i#wsc_copy_gallery_link,
+article#post-9063 input#wsc_nft_add_wallet_address {
+	display: none;
+}
+
+
+i.wsc_nft_scan {
+	margin: 0 10px 0 0;
+	padding: 0;
+	font-size: 22px;
+	line-height: 40px;
+	color: #3172B6;
+	cursor: pointer;
+	vertical-align: middle;
+}
+
+
+div.wsc_nft_gallery_cell_padding{
+	padding-left: 9px;
+}
+
+div.wsc_nft_gallery_row_padding{
+	padding-top: 5px;
+}
+
+div.wsc_gallery_vertical_seperator{
+
+	padding-right: 10px;
+	border-right: 1px solid grey;
+}
+
+button.wsc_nft_dash_button{
+	margin: 0;
+}
+
+span.wsc_dash_label{
+	vertical-align: middle;
+	margin: 0 10px 0 30px;
+	display: inline-block;
+	color: rgb(0, 132, 238);
+}
+
+div.wsc_gallery_single_nft_owner_panel{
+	font-size: 12px;
+	line-height: 16px;
+	display: block;
+	float: right;
+	color: white;
+	margin: 8px 20px 0 0;
+	white-space: nowrap;
+}
+
+
+div.outer_button_line span.select2-container {
+	margin-right: 5px;
+}
+
+
+div.wsc_nft_gallery_flex_row{
+	display: flex;
+	flex-wrap: wrap;
+}
+
+div.wsc_gallery_single_nft_owner_panel span.select2-selection--single {
+	background-color: white;
+	color: black;
+	height: 28.2px;
+	line-height: 28.2px;
+}
+
+
+div.wsc_gallery_single_nft_owner_panel span.select2-selection__arrow {
+	height: 26.2px;
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	width: 20px;
+}
+
+div.wsc_gallery_single_nft_owner_panel span.select2-selection__arrow b {
+	border-color: #888 transparent transparent transparent;
+	border-style: solid;
+	border-width: 5px 4px 0 4px;
+	height: 0;
+	left: 50%;
+	margin-left: -4px;
+	margin-top: -2px;
+	position: absolute;
+	top: 50%;
+	width: 0;
+}
+
+
+div.wsc_gallery_single_nft_owner_panel span.select2-container--open span.select2-selection__arrow b {
+	border-color: transparent transparent #888 transparent !important;
+	border-width: 0 4px 5px 4px !important;
+}
+
+ul.lg-dropdown{
+	position: fixed !important;
+	right: 100px !important;
+}
+
+div.wsc_gallery_nft_name{
+	overflow-x: hidden;
+	overflow-y: hidden;
+	text-overflow: ellipsis;
+	font-size: 20px;
+	line-height: 28px;
+	text-align:center;
+}
+
+
+div.wsc_gallery_nft_description{
+	font-size: 14px;
+	line-height: 20px;
+	width: 100%;
+	white-space: normal;
+	text-align: left;
+	margin-top: 20px;
+	padding: 0 30px;
+	max-height: 300px;
+	overflow-y: auto;
+	overflow-x: hidden;
+	text-overflow: ellipsis;
+}
+
+table.wsc_nft_gallery_attributes {
+	width: 80%;
+	padding: 30px;
+	margin: 0;
+}
+
+tr.wsc_nft_gallery_attributes_row {
+
+
+}
+
+td.wsc_nft_gallery_attributes_cell_left {
+	background: #100c08 !important;
+	color: white;
+	font-size: 12px;
+	line-height: 18px;
+	padding: 5px;
+	overflow-x: hidden;
+}
+
+td.wsc_nft_gallery_attributes_cell_right {
+	background: #100c08 !important;
+	color: white;
+	font-size: 12px;
+	line-height: 18px;
+	padding: 5px;
+	overflow-x: hidden;
+
+}
+
+div.wsc_gallery_single_nft_owner_panel li.select2-search--inline {
+	padding-top: 4px !important;
+}
+
+div.wsc_gallery_single_nft_owner_panel ul.select2-selection__rendered {
+	height: 23px;
+}
+
+div.wsc_gallery_single_nft_owner_panel li.select2-selection__choice{
+	color: black;
+	border-radius: 0 !important;
+	maring: 0;
+}
+
+div.wsc_gallery_single_nft_owner_panel span.select2-selection--multiple {
+	border-radius: 0;
+	min-height: inherit;
+}
+
+
+div.lg-video-cont {
+	max-width: 50% !important;
+
+}
+picture.lg-img-wrap{
+	position: relative !important;
+	display: inline-block !important;
+	max-width: 50% !important;
+}
+
+
+
+
+
+div.wsc_gallery_single_nft_container{
+	overflow-y: auto;
+	height: 100%;
+	width: 100%;
+}
+
+div.lg-sub-html {
+	position: relative !important;
+	display: inline-block !important;
+	color: white;
+	font-size: 36px;
+	vertical-align: top;
+	width: 40%;
+	padding: 0;
+	margin: 10px 0 0 0;
+	height: CALC(100% - 50px);
+	background-color: #100c08;
+	text-align: left;
+}
+
+
+button.lg-icon i {
+	font-size: 22px;
+	vertical-align: text-bottom;
+}
+
+a.lg-icon,
+button.lg-icon {
+	color: rgb(0, 132, 238) !important;
+}
+
+img.wsc_nft_gallery_thumb {
+	width: 175px;
+	margin: 0 5px;
+}
+
+#nft-gallery-container {
+	width: 100%;
+	height: 100%;
+}
+
+select.alpn_selector + span.select2-container--open span.select2-selection__arrow b {
+	border-color: transparent transparent #888 transparent !important;
+	border-width: 0 4px 5px 4px !important;
+}
+
+[data-select2-id^="alpn_select2_small"] + span.select2-container--open span.select2-selection__arrow b {
+	border-color: transparent transparent #888 transparent !important;
+	border-width: 0 4px 5px 4px !important;
+}
+
+select.alpn_selector + span.select2-container span.select2-selection__arrow,
+[data-select2-id^="alpn_select2_small"] + span.select2-container span.select2-selection__arrow{
+	height: 20px;
+	position: absolute;
+	top: 1px;
+	right: 1px;
+	width: 20px;
+}
+
+select.alpn_selector + span.select2-container span.select2-selection__arrow b,
+[data-select2-id^="alpn_select2_small"] + span.select2-container span.select2-selection__arrow b {
+		border-color: #888 transparent transparent transparent;
+    border-style: solid;
+    border-width: 5px 4px 0 4px;
+    height: 0;
+    left: 50%;
+    margin-left: -4px;
+    margin-top: -2px;
+    position: absolute;
+    top: 50%;
+    width: 0;
+}
+
+[data-select2-id^="alpn_select2_small"] + span.select2-container span.select2-selection__rendered {
+	font-size: 12px !important;
+	line-height: 20px !important;
+}
+
+select.alpn_selector + span.select2-container span.select2-selection__rendered{
+	font-size: 12px;
+	line-height: 22px;
+}
+
+[data-select2-id^="alpn_select2_small"] + span.select2-container [role="combobox"] {
+	height: 20px;
+	background-color: white;
+}
+
+select.alpn_selector + span.select2-container [role="combobox"] {
+	height: 24px;
+	background-color: white;
+
+}
+
+.select2-selection {
+	border: 1px solid rgb(204, 204, 204) !important;
+	box-shadow: none !important;
+	webkit-box-shadow: none !important;
+}
+
+li.select2-results__option {
+	margin-bottom: 0 !important;
+}
+
+span.select2-results{
+	font-size: 12px !important;
+	line-height: 13px !important;
+}
+
+input.select2-search__field{
+	font-size: 12px !important;
+	line-height: 20px !important;
+	padding: 0 4px !important;
+	margin: 0 !important;
+	vertical-align: middle !important;
+}
+
+#outer-gallery-container{
+	display: flex;
+	flex-wrap: wrap;
+}
+
+/* #nft-gallery-info{
+	flex-grow: 1;
+  flex-basis: 25%;
+  max-width: 25%;
+	background-color: rgb(238, 238, 238);
+} */
+
+
+
+
+div.walletconnect-modal__mobile__toggle{
+	display: none !important;
+}
+
 form.woocommerce-form-register{
 	opacity: 0.60 !important;
 	pointer-events: none !important;
@@ -78,11 +429,7 @@ div.uppy-DashboardTab[data-uppy-acquirer-id=OneDrive]
 	vertical-align: middle;
 }
 
-.wsc_workflow_selector{
-	height: 30px;
-	line-height: 30px;
-	margin-bottom: 5px;
-}
+
 
 .wsc_toolbar_spacer {
 	display: inline-block;
@@ -1893,7 +2240,7 @@ ul#pte_topic_type_properties_list li {
 	flex-basis: 50%;
 	flex-grow: 1;
 	white-space: nowrap;
-  overflow-x: hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
@@ -2079,6 +2426,11 @@ input.wpforms-field-large {
 	height: 30px !important;
 }
 
+span#pte_topic_name{
+	display: inline-block;
+	vertical-align: middle;
+}
+
 .alpn_container_title_2 {
 	font-weight: bold;
 	font-size: 24px;
@@ -2086,6 +2438,8 @@ input.wpforms-field-large {
 	height: 40px;
 	display: flex;
 	flex-wrap: wrap;
+	margin-bottom: 15px;
+	align-content: center;
 }
 
 .pte_expire_now{
@@ -2282,7 +2636,7 @@ input.wpforms-field-large {
 	margin-top: -10px;
 	margin-right: -10px;
 	background-color: #F0F0F0;
-	margin-bottom: 5px;
+	margin-bottom: 10px;
 	line-height: 40px;
 	min-height: 40px;
 	display: flex;
@@ -3116,7 +3470,7 @@ table#table_vault td.column-draw_id{
 #pte_interaction_owner_outer{
 	height: 32px;
 	display: inline-block;
-	margin-right: 40px;
+	margin-left: 40px;
 	border: solid 1px	#700000;
 	min-width: 200px;
 	vertical-align: top;
@@ -3212,11 +3566,6 @@ button[aria-label="Crop portrait (9:16)"]
 #pte_topic_connection_type {
 	margin-top: 20px;
 
-}
-
-.select2-selection__rendered {
-	font-size: 12px;
-	line-height: 16px;
 }
 
 #pte_on_off_outer{
@@ -4727,27 +5076,6 @@ div#pte_topic_icon_container{
 	text-align: center;
 }
 
-.select2-selection {
-	border: 1px solid rgb(204, 204, 204) !important;
-	box-shadow: none !important;
-	webkit-box-shadow: none !important;
-}
-.select2-dropdown {
-	border: 1px solid rgb(204, 204, 204) !important;
-}
-
-
-li[id^="select2-alpn_select2_small_"] {
-	font-size: 12px !important;
-}
-
-span[aria-labelledby^="select2-alpn_select2_small_"] {
-	font-size: 12px !important;
-	line-height: 15px !important;
-	height: 18px !important;
-	padding: 0px 30px 0px 5px !important;
-}
-
 
 #table_1_wrapper  {position: static !important; margin-bottom: 20px !important;}
 #table_3_wrapper {position: static !important; margin-bottom: 20px !important;}
@@ -5624,10 +5952,6 @@ div.pte_toolbar_container span.select2 {
 	overflow-y: auto;
 }
 
-
-
-
-
 .alpn_vault_work_inner {
 	padding: 10px 15px;
 	overflow: hidden;
@@ -5716,8 +6040,8 @@ div.pte_toolbar_container span.select2 {
 
 .alpn_edit_container {
 	display: none;
-	background-color: #F8F8F8;
-	padding: 10px 10px 10px 10px;
+	background-color: white;
+	padding: 0px 10px 10px 10px;
 	min-height: 860px;
 }
 
@@ -5861,6 +6185,10 @@ div.pte_toolbar_container span.select2 {
 }
 
 @media only screen and (max-width: 767px) {
+
+	div.walletconnect-modal__mobile__toggle{
+		display: flex !important;
+	}
 
 	.wsc_toolbar_spacer {
 		width: 0;

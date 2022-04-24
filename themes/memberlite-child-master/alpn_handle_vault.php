@@ -125,25 +125,30 @@ if ($topicProfileHandle) {
 //				<i id='alpn_vault_download' class='far fa-cloud-download-alt pte_icon_button' title='Get Original or PDF Item' onclick='alpn_vault_control(\"download\")'></i>
 //				<i id='alpn_vault_edit_original' class='fab fa-google-drive pte_icon_button' title='Open Item in Original Cloud Service' onclick='alpn_vault_control(\"open_original\")'></i>
 
-$html="";
+$html="<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='vault' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'  data-wal='{$accessLevel}' data-con='{$isConnected}'>
+			<div id='pte_topic_form_title_view'>
+			<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Data View' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+				<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
+				<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
+			</span>
+			<span class='fa-stack pte_icon_button_nav' title='Vault View' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+				<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
+				<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
+			</span>
+			<span class='fa-stack pte_icon_button_nav' title='NFT View' data-operation='to_nft' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+				<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
+				<i class='fas fa-cube fa-stack-1x' style='font-size: 16px;'></i>
+			</span>
+				<span id='pte_topic_name'>{$contextAll}{$ownerFirstName}</span>
+			</div>
+			<div id='pte_topic_form_title_view' class='pte_vault_right'>
+				{$record->name} <div class='pte_title_topic_icon_container'>{$topicImage}</div>
+			</div>
+		</div>";
 
 $html .= "
 					<div class='outer_button_line'>
-						<div class='pte_vault_row_25'>
-							<span class='fa-stack pte_icon_button_nav' title='Data View' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-								<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
-							</span>
-							<span class='fa-stack pte_icon_button_nav {$designViewClass}' title='Design View' data-operation='to_report' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-								<i class='fas fa-drafting-compass fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
-							</span>
-							<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Vault View' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
-								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-								<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
-							</span>
-						</div>
-						<div class='pte_vault_row_75 pte_vault_right pte_toolbar_container'>
+						<div class='pte_vault_row_100 pte_vault_right pte_toolbar_container'>
 							<i id='alpn_vault_print' class='far fa-print pte_icon_button pte_ipanel_button_disabled' title='Print File' onclick='alpn_vault_control(\"print\")'></i>
 							<i id='alpn_vault_download_original' class='far fa-file-download pte_icon_button pte_ipanel_button_disabled' title='Download Original File' onclick='alpn_vault_control(\"download_original\")'></i>
 							<i id='alpn_vault_download_pdf' class='far fa-file-pdf pte_icon_button pte_ipanel_button_disabled' title='Download PDF File' onclick='alpn_vault_control(\"download_pdf\")'></i>
@@ -157,19 +162,6 @@ $html .= "
 						</div>
 						<div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
 	  			</div>
-
-					<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='vault' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'  data-wal='{$accessLevel}' data-con='{$isConnected}'>
-						<div id='pte_topic_form_title_view'>
-							<span class='fa-stack pte_stacked_icon'>
-								<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
-								<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
-							</span>
-							<span id='pte_topic_name'>{$record->name}</span>
-						</div>
-						<div id='pte_topic_form_title_view' class='pte_vault_right'>
-							{$ownerFirstName}{$contextAll} <div class='pte_title_topic_icon_container'>{$topicImage}</div>
-						</div>
-					</div>
 ";
 
 $html .= "

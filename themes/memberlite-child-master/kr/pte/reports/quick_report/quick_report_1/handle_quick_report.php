@@ -6,6 +6,7 @@ require_once "quick_report.php";
 
 use Ramsey\Uuid\Uuid;
 
+
 function makeDataSource($topicMeta, $topicContent) { //Arranges data into two columms so we can consistent with forms
 	$fieldMap = $topicMeta['field_map'];
 	$newSource = $newRow = array();

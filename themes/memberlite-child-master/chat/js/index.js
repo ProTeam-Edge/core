@@ -2024,7 +2024,6 @@ function pte_UUID() { // Public Domain/MIT
     });
 }
 
-
 window.addEventListener('beforeunload', function(event){
   //console.log ("BEFORE UNLOAD");
   pte_leave_current_audio_room();

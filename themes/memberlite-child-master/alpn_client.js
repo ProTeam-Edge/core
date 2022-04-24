@@ -1321,6 +1321,10 @@ function pte_handle_interaction_link(mapData){
 				alpn_mission_control("pdf_topic", alpn_oldSelectedId);
 				alpn_mode = 'report';
 			break;
+			case 'to_nft':
+				alpn_mission_control("nft_topic", alpn_oldSelectedId);
+				alpn_mode = 'nft';
+			break;
 			case 'to_topic_info_by_id':
 				alpn_mission_control("select_topic", topicDomId);
 				if (mapData.topic_special != "user") {
@@ -2870,27 +2874,819 @@ function initializeTwilio() {
 
 }
 
+function handleMoralisError(err) {
+
+	console.log("Moralis Error");
+	console.log(err);
+
+  switch (err.code) {
+    case Moralis.Error.INVALID_SESSION_TOKEN:
+      Moralis.User.logOut();
+      // If web browser, render a log in screen
+      // If Express.js, redirect the user to the log in route
+      break;
+
+    // Other Moralis API errors that you want to explicitly handle
+  }
+}
+
+function wsc_cleanup_nft_image_url(url) {
+	if (url.startsWith("ipfs://ipfs/")) {
+		const newUrl = "https://ipfs.moralis.io:2053/ipfs/" + url.split("ipfs://ipfs/").slice(-1)[0];
+    return newUrl;
+  }
+	if (url.startsWith("ipfs://")) {
+		const newUrl = "https://ipfs.moralis.io:2053/ipfs/" + url.split("ipfs://").slice(-1)[0];
+    return newUrl;
+  }
+	return url;
+}
+
+function wsc_cleanup_nft_metadata_url(url) {
+	if (url.startsWith("https://ipfs.io/ipfs/https://ipfs.io/ipfs/")) {
+		return "https://ipfs.moralis.io:2053/ipfs/" + url.split("https://ipfs.io/ipfs/https://ipfs.io/ipfs/").slice(-1)[0];
+  }
+
+	return url;
+}
+
+async function wsc_force_metadata_update(address, token_id, chain = 'eth'){
+	const options = { address: address, token_id: token_id, chain: chain };
+	Moralis.Web3API.token.reSyncMetadata(options);
+}
+
+async function moralisAttachWalletConnect() {
+
+	console.log("WALLET CONNECT START");
+		await Moralis.deactivateWeb3().then(async function(){
+			await Moralis.enableWeb3({
+						signingMessage: 'Please Connect to Wiscle',
+						provider: "walletconnect",
+						chainId: 137
+					}).then(function(web3Provider){
+						const ethAddress = (typeof web3Provider.provider.accounts[0] != "undefined") ? web3Provider.provider.accounts[0] : false;
+						console.log(ethAddress);
+
+						const security = specialObj.security;
+						jQuery.ajax({
+							url: alpn_templatedir + 'wsc_handle_wallet_login.php',
+							type: 'POST',
+							data: {
+								new_address: ethAddress,
+								security: security
+							},
+							dataType: "json",
+							success: async function(json) {
+
+								console.log("WALLET LOGIN");
+								// console.log(json);
+
+								let user = Moralis.User.current();
+								if (user) {
+									const userAttributes = (typeof user.attributes != "undefined") ? user.attributes : false;
+									const userAccounts = (typeof userAttributes.accounts != "undefined" && userAttributes.accounts) ? userAttributes.accounts : [];
+									if (!userAccounts.includes(ethAddress)) {
+										await Moralis.link(ethAddress, { signingMessage: "Please Sign to attach this web3 account" }).catch(function(e){
+											console.log("LINK EXCEPTION");
+											console.log(e);
+										});
+										Moralis.deactivateWeb3();
+										console.log("ACCOUNT NOW LINKED");
+										if (json.first_time) {  //First time user has seen this account.
+											const processedMessage = !json.account_processed ? "We're processing these NFTs which can take some time." : "";
+											var newOption = new Option(ethAddress, ethAddress, false, false);
+											jQuery('select#alpn_select2_wallets_new').append(newOption).trigger('change');
+											pte_show_message('green', 'ok', "Your web3 account is now attached. " + processedMessage + "&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
+										} else {
+											pte_show_message('green', 'ok', "Your web3 account is already attached.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
+										}
+									} else {
+										pte_show_message('green', 'ok', "Your web3 account is already attached.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
+										Moralis.deactivateWeb3();								}
+								} else {//ERROR?
+									console.log("NO USER");
+									Moralis.deactivateWeb3();
+								}
+							},
+							error: function() {
+								console.log('problemo - walletlogin');
+								Moralis.deactivateWeb3();
+							//TODO
+							}
+						});
+
+					}).catch(function(e){
+						console.log("Doing this");
+						Moralis.deactivateWeb3();
+
+					});
+		});
+
+}
+
+
+function wsc_old_authenticate(){
+
+		// let user = await Moralis.authenticate({
+		// 		signingMessage: 'Connect with Wiscle',
+		// 		provider: "walletconnect",
+		// 		chainId: 137,
+		// 		mobileLinks: [
+	  //     "metamask",
+	  //     "rainbow"
+	  //   ]
+		// })
+		// .then(async function (user) {
+		//
+		// })
+		// .catch(function (error) {
+		// 	handleMoralisError(error);
+		// });
+
+
+
+
+}
+
+
+async function moralisLogOut() {
+	await Moralis.User.logOut();
+	console.log('logged out');
+}
+
+
+
+async function moralisUpload(){
+  const fileInput = document.getElementById("file");
+  const data = fileInput.files[0];
+  const imageFile = new Moralis.File(data.name, data);
+  const imageURI = imageFile.ipfs();
+  const metadata = {
+    "name":document.getElementById("name").value,
+    "description":document.getElementById("description").value,
+    "image":imageURI
+  }
+  const metadataFile = new Moralis.File("metadata.json", {base64 : btoa(JSON.stringify(metadata))});
+  await metadataFile.saveIPFS();
+  const metadataURI = metadataFile.ipfs();
+  const txt = await mintToken(metadataURI).then(function(_txt){
+
+		console.log("RECEIVED MINT NOTIFICATION");
+		console.log(_txt);
+
+	});
+}
+
+async function moralisMintToken(_uri){
+  const encodedFunction = web3.eth.abi.encodeFunctionCall({
+    name: "mintToken",
+    type: "function",
+    inputs: [{
+      type: 'string',
+      name: 'tokenURI'
+      }]
+  }, [_uri]);
+
+  const transactionParameters = {
+    to: nft_contract_address,
+    from: ethereum.selectedAddress,
+    data: encodedFunction
+  };
+  const txt = await ethereum.request({
+    method: 'eth_sendTransaction',
+    params: [transactionParameters]
+  });
+  return txt
+}
+
+function wsc_setup_wallet_selector() {
+
+		console.log("Moralis");
+		user = Moralis.User.current();
+		console.log(user);
+
+		if (user) {
+
+			var wallets = jQuery('#alpn_select2_wallets');
+			var newOption, ethAddress;
+
+			const userAttributes = (typeof user.attributes != "undefined") ? user.attributes : false;
+			const userAccounts = (typeof userAttributes.accounts != "undefined" && userAttributes.accounts) ? userAttributes.accounts : [];
+
+			console.log(userAttributes);
+			console.log(userAccounts);
+
+			newOption = new Option('None', 'None', false, false);
+			wallets.append(newOption).trigger('change');
+
+			for (const ethaddressIndex in userAccounts) {
+
+				ethAddress = userAccounts[ethaddressIndex];
+
+				wallets.append(newOption).trigger('change');
+
+
+			// 	Moralis.Web3API.resolve.resolveAddress ({ address: ethAddress })
+			// 	.then (function(ensDomain) {
+			//
+			// 		ethAddress = ensDomain.name + " | " + ethAddress;
+			//
+			// 		console.log(ethAddress);
+			// 		console.log(ensDomain);
+			//
+			// 		newOption = new Option(ethAddress, ethAddress, false, false);
+			// 		wallets.append(newOption).trigger('change');
+			//
+			// }).catch (function(e){
+			// 	console.log('EXCEPTION');
+			// 	console.log(e);
+			// 	newOption = new Option(ethAddress, ethAddress, false, false);
+			// 	wallets.append(newOption).trigger('change');
+			//
+			// });
+
+		}
+	}
+}
+
+function capitalizeFirstLetter(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+function wsc_add_set(setName, nftId) {
+
+	console.log('wsc_add_set');
+	// console.log(setName);
+	// console.log(nftId);
+	const security = specialObj.security;
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'wsc_add_set.php',
+		type: 'POST',
+		data: {
+			"security": security,
+			"set_name": setName,
+			"nft_id": nftId
+		},
+		dataType: "json",
+		success: function(json) {
+				console.log(json);
+		},
+		error: function(json) {
+			console.log("Failed adding set");
+			//TODO handle
+		}
+	});
+}
+
+function wsc_remove_set(setName, nftId) {
+
+	console.log('wsc_remove_set');
+	// console.log(setName);
+	// console.log(nftId);
+	const security = specialObj.security;
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'wsc_remove_set.php',
+		type: 'POST',
+		data: {
+			"security": security,
+			"set_name": setName,
+			"nft_id": nftId
+		},
+		dataType: "json",
+		success: function(json) {
+				console.log(json);
+		},
+		error: function(json) {
+			//console.log("Failed removing set");
+			//TODO handle
+		}
+	});
+
+}
+
+function wsc_change_category(categoryId, nftId) {
+
+	console.log('wsc_change_category');
+	// console.log(categoryId);
+	// console.log(nftId);
+
+	const security = specialObj.security;
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'wsc_change_nft_category.php',
+		type: 'POST',
+		data: {
+			"security": security,
+			"category_id": categoryId,
+			"nft_id": nftId
+		},
+		dataType: "json",
+		success: function(json) {
+			//	console.log(json);
+		},
+		error: function(json) {
+			console.log("Failed Changing Category");
+			//TODO handle
+		}
+	});
+
+}
+
+function wsc_copy_gallery_link() {
+	pte_topic_link_copy_string("Sharable Gallery Link", wsc_get_gallery_link());
+}
+
+function wsc_get_gallery_link() {
+
+	var galleryLink = '';
+
+	if (typeof alpn_user_id != 'undefined' && alpn_user_id) {
+
+		const inMissionControl = jQuery("div#pte_selected_topic_meta").data('topic-id');
+
+		galleryLink += "https://wiscle.com/gallery?member_id=" + alpn_user_id;
+
+		const nftWallets = jQuery('#alpn_select2_wallets_new');
+		const nftWalletData = nftWallets.select2('data');
+		if (typeof nftWalletData != 'undefined' && typeof nftWalletData[0] != 'undefined' && nftWalletData[0].id && nftWalletData[0].id != 'wsc_all_accounts') {
+			galleryLink += "&account_id=" + nftWalletData[0].id;
+		}
+		const nftChains = jQuery('#alpn_select2_chains');
+		const nftChainsData = nftChains.select2('data');
+		if (typeof nftChainsData != 'undefined' && typeof nftChainsData[0] != 'undefined' && nftChainsData[0].id && nftChainsData[0].id != 'wsc_all_chains') {
+			 galleryLink += "&chain_id=" + nftChainsData[0].id;
+		}
+		const nftContracts = jQuery('#alpn_select2_contracts');
+		const nftContractsData = nftContracts.select2('data');
+		var contractId = '';
+		if (typeof nftContractsData != 'undefined' && typeof nftContractsData[0] != 'undefined'  && nftContractsData[0].id && nftContractsData[0].id != 'wsc_all_contracts') {
+			galleryLink += "&contract_id=" + nftContractsData[0].id;
+		}
+		const nftTypes = jQuery('#alpn_select2_types');
+		const nftTypesData = nftTypes.select2('data');
+		if (typeof nftTypesData != 'undefined' && typeof nftTypesData[0] != 'undefined' && nftTypesData[0].id && nftTypesData[0].id != 'wsc_all_types') {
+			 galleryLink += "&type_id=" + nftTypesData[0].id;
+		}
+		const nftTags = jQuery('#alpn_select2_tags');
+		const nftTagsData = nftTags.select2('data');
+		if (typeof nftTagsData != 'undefined' && typeof nftTagsData[0] != 'undefined' && nftTagsData[0].id && nftTagsData[0].id != 'wsc_all_tags' ) {
+			 galleryLink += "&set_id=" + nftTagsData[0].id;
+		}
+		const nftQueryInput = jQuery('#wsc_nft_query_input');
+		if (typeof nftQueryInput != 'undefined' && nftQueryInput.val()) {
+			galleryLink += "&nft_query=" + encodeURIComponent(nftQueryInput.val());
+		}
+		if (inMissionControl) {
+			const nfts = jQuery("div#nft-gallery-container a");
+			const first_nft_id = jQuery(nfts[0]).data("nft-id");
+			if (first_nft_id) {
+				galleryLink += "&slide_id=" + first_nft_id;
+			}
+		}
+
+	}
+	return galleryLink;
+}
+
+function wsc_scan_account_to_attach() {
+	moralisAttachWalletConnect();
+}
+
+function wsc_handle_wallet_pasted (e) {
+	console.log("Handling Paste Wallet");
+
+	var pastedData = e.originalEvent.clipboardData.getData('Text');
+
+	if (pastedData) {
+			let pattern = /^0x[a-fA-F0-9]{40}$/;
+			let result = pattern.test(pastedData);
+
+			if (result) {
+
+				jQuery('input#wsc_nft_add_wallet_address').addClass("wsc_owner_tools_off");
+
+				const security = specialObj.security;
+				const ethAddress = pastedData;
+
+				jQuery.ajax({
+					url: alpn_templatedir + 'wsc_handle_pk_add.php',
+					type: 'POST',
+					data: {
+						new_address: ethAddress,
+						security: security
+					},
+					dataType: "json",
+					success: function(json) {
+						console.log("PK ADD");
+						// console.log(json);
+						if (json.first_time) {  //First time user has seen this account.
+							const processedMessage = !json.account_processed ? "We're processing these NFTs which can take some time." : "";
+							var newOption = new Option(ethAddress, ethAddress, false, false);
+							jQuery('select#alpn_select2_wallets_new').append(newOption).trigger('change');
+							pte_show_message('green', 'ok', "This web3 account is now attached. " + processedMessage + "&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
+						} else {
+							pte_show_message('green', 'ok', "This web3 account is already attached.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
+						}
+						jQuery('input#wsc_nft_add_wallet_address').removeClass("wsc_owner_tools_off").val("");
+					},
+					error: function() {
+						console.log('problemo - PK ADD');
+					//TODO
+					}
+				});
+			} else { //Not a valid address.
+				pte_show_message('yellow_question', 'ok', "Please paste a valid web3 public key");
+			}
+		}
+}
+
+function wsc_change_nfts(accountAddress = ""){
+
+	console.log("CHANGING NFTS");
+
+	var inMissionControl = jQuery("div#pte_selected_topic_meta").data('topic-id');
+	const accountsInPlay = jQuery("select#alpn_select2_wallets_new option");
+	var accountsInPlayList = [];
+	accountsInPlay.each(function(key, item){
+		accountsInPlayList[key] = item.value;
+	});
+
+	if (accountsInPlayList.length == 1 || accountAddress) {  //setup
+
+		if (inMissionControl) {
+
+			console.log("FIRST TIME MISSION CONTROL");
+
+			var ownerId = alpn_user_id ? alpn_user_id : 0;
+
+			if (accountAddress) {
+				var accountId = accountAddress;
+				accountsInPlayList = ["wsc_all_accounts"];
+			}
+
+		} else {
+			let searchParams = new URLSearchParams(window.location.search);
+			var slideId = searchParams.has('slide_id') ? searchParams.get('slide_id') : '';  //owner
+			var memberId = searchParams.has('member_id') ? searchParams.get('member_id') : '';  //owner
+			var accountId = searchParams.has('account_id') ? searchParams.get('account_id') : '';
+			var contractId = searchParams.has('contract_id') ? searchParams.get('chain_id') : '';
+			var chainId = searchParams.has('chain_id') ? searchParams.get('contract_id') : '';
+			var typeId = searchParams.has('type_id') ? searchParams.get('type_id') : '';
+			var setId = searchParams.has('set_id') ? searchParams.get('set_id') : '';
+			var categoryId = searchParams.has('category_id') ? searchParams.get('category_id') : '';
+			var nftQuery = searchParams.has('nft_query') ? searchParams.get('nft_query') : '';
+		}
+
+	} else {  //setup complete -- just do the thing
+
+		let searchParams = new URLSearchParams(window.location.search);
+		var memberId = searchParams.has('member_id') ? searchParams.get('member_id') : alpn_user_id;  //owner
+
+		const nftWallets = jQuery('#alpn_select2_wallets_new');
+		const nftWalletData = nftWallets.select2('data');
+		var accountId = '';
+		if ((typeof nftWalletData != 'undefined' && typeof nftWalletData[0] != 'undefined')) {
+			 var accountId = nftWalletData[0].id;
+		}
+		const nftChains = jQuery('#alpn_select2_chains');
+		const nftChainsData = nftChains.select2('data');
+		var chainId = '';
+		if (typeof nftChainsData != 'undefined' && typeof nftChainsData[0] != 'undefined') {
+			 var chainId = nftChainsData[0].id;
+		}
+		const nftContracts = jQuery('#alpn_select2_contracts');
+		const nftContractsData = nftContracts.select2('data');
+		var contractId = '';
+		if (typeof nftContractsData != 'undefined' && typeof nftContractsData[0] != 'undefined') {
+			 var contractId = nftContractsData[0].id;
+		}
+		const nftTypes = jQuery('#alpn_select2_types');
+		const nftTypesData = nftTypes.select2('data');
+		var typeId = '';
+		if (typeof nftTypesData != 'undefined' && typeof nftTypesData[0] != 'undefined') {
+			 var typeId = nftTypesData[0].id;
+		}
+		const nftTags = jQuery('#alpn_select2_tags');
+		const nftTagsData = nftTags.select2('data');
+		var setId = '';
+		if (typeof nftTagsData != 'undefined' && typeof nftTagsData[0] != 'undefined') {
+			 var setId = nftTagsData[0].id;
+		}
+		const nftCategories = jQuery('#alpn_select2_categories');
+		const nftCategoriesData = nftCategories.select2('data');
+		var categoryId = '';
+		if (typeof nftCategoriesData != 'undefined' && typeof nftCategoriesData[0] != 'undefined') {
+			 var categoryId = nftCategoriesData[0].id;
+		}
+		const nftQueryInput = jQuery('#wsc_nft_query_input');
+		var nftQuery = '';
+		if (typeof nftQueryInput != 'undefined') {
+			var nftQuery = nftQueryInput.val();
+		}
+	}
+
+	// console.log(memberId);
+	// console.log(contractId);
+	// console.log(accountId);
+	// console.log(chainId);
+	// console.log(typeId);
+	// console.log(setId);
+	// console.log(categoryId);
+	// console.log(nftQuery);
+	// console.log(accountsInPlayList);
+
+	const security = specialObj.security;
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'wsc_get_nfts.php',
+		type: 'POST',
+		data: {
+			member_id: memberId,
+			slide_id: slideId,
+			account_id: accountId,
+			contract_id: contractId,
+			chain_id: chainId,
+			type_id: typeId,
+			set_id: setId,
+			category_id: categoryId,
+			nft_query: nftQuery,
+			in_mission_control: inMissionControl,
+			accounts_in_play: JSON.stringify(accountsInPlayList),
+			security: security
+		},
+		dataType: "JSON",
+		success: function(json) {
+
+			const html = json.html;
+
+			jQuery('div#outer-gallery-container').html("<div id='nft-gallery-container' class='nft-gallery-container'>" + html + "</div>");
+
+			if (inMissionControl) {
+
+				var newOption, metaAddress;
+				if (json.account_list) {
+					jQuery('select#alpn_select2_wallets_new').empty().trigger('change');
+					newOption = new Option('All web3 Accounts', 'wsc_all_accounts', false, false);
+					jQuery('select#alpn_select2_wallets_new').append(newOption).trigger('change');
+
+					const web3_account_list = json.account_list;
+					web3_account_list.forEach(function(item){
+						metaAddress = item.friendly_name ? item.friendly_name + ' | ' + item.address : item.address;
+						newOption = new Option(metaAddress, item.address, false, item.selected);
+						jQuery('select#alpn_select2_wallets_new').append(newOption).trigger('change');
+					});
+				}
+				if (json.tag_list) {
+					jQuery('select#alpn_select2_tags').empty().trigger('change');
+					newOption = new Option('All Sets', 'wsc_all_tags', false, false);
+					jQuery('select#alpn_select2_tags').append(newOption).trigger('change');
+
+					const web3_tag_list = json.tag_list;
+					web3_tag_list.forEach(function(item){
+						newOption = new Option(item.tag, item.tag, false, item.selected);
+						jQuery('select#alpn_select2_tags').append(newOption).trigger('change');
+					});
+				}
+				if (json.contract_list) {
+					jQuery('select#alpn_select2_contracts').empty().trigger('change');
+					newOption = new Option('All Contracts', 'wsc_all_contracts', false, false);
+					jQuery('select#alpn_select2_contracts').append(newOption).trigger('change');
+
+					const web3_contract_list = json.contract_list;
+					web3_contract_list.forEach(function(item){
+						newOption = new Option(item.contract_name, item.contract_address, false, item.selected);
+						jQuery('select#alpn_select2_contracts').append(newOption).trigger('change');
+					});
+				}
+
+			} else { //Gallery
+			 		var newOption, metaAddress;
+					if (json.account_list) {
+						jQuery('select#alpn_select2_wallets_new').empty().trigger('change');
+						newOption = new Option('All web3 Accounts', 'wsc_all_accounts', false, false);
+						jQuery('select#alpn_select2_wallets_new').append(newOption).trigger('change');
+						const web3_account_list = json.account_list;
+						web3_account_list.forEach(function(item){
+							metaAddress = item.friendly_name ? item.friendly_name + ' | ' + item.address : item.address;
+							newOption = new Option(metaAddress, item.address, false, item.selected);
+							jQuery('select#alpn_select2_wallets_new').append(newOption).trigger('change');
+						});
+					}
+					if (json.tag_list) {
+						jQuery('select#alpn_select2_tags').empty().trigger('change');
+						newOption = new Option('All Sets', 'wsc_all_tags', false, false);
+						jQuery('select#alpn_select2_tags').append(newOption).trigger('change');
+
+						const web3_tag_list = json.tag_list;
+						web3_tag_list.forEach(function(item){
+				 			newOption = new Option(item.tag, item.tag, false, item.selected);
+				 			jQuery('select#alpn_select2_tags').append(newOption).trigger('change');
+				 		});
+					}
+					if (json.contract_list) {
+						jQuery('select#alpn_select2_contracts').empty().trigger('change');
+						newOption = new Option('All Contracts', 'wsc_all_contracts', false, false);
+						jQuery('select#alpn_select2_contracts').append(newOption).trigger('change');
+
+						const web3_contract_list = json.contract_list;
+						web3_contract_list.forEach(function(item){
+							newOption = new Option(item.contract_name, item.contract_address, false, item.selected);
+							jQuery('select#alpn_select2_contracts').append(newOption).trigger('change');
+						});
+					}
+			 		if (typeId) {
+			 			jQuery('select#alpn_select2_types').val(typeId);
+			 			jQuery('select#alpn_select2_types').trigger('change');
+			 		}
+			 		if (chainId) {
+			 			jQuery('select#alpn_select2_chains').val(chainId);
+			 			jQuery('select#alpn_select2_chains').trigger('change');
+			 		}
+			 		if (nftQuery) {
+			 			jQuery('input#wsc_nft_query_input').val(nftQuery);
+			 		}
+			}
+
+			var lgContainer = jQuery('div#nft-gallery-container');
+			var newOption;
+			lgContainer.on('lgAfterSlide ', function(event){
+					var inMissionControl = jQuery("div#pte_selected_topic_meta").data('topic-id');
+
+					var setSource = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-set");
+					var allSets = setSource.split(",");
+					var tagEditor = jQuery('div.wsc_gallery_single_nft_owner_panel select.wsc_multi_select_tags');
+					tagEditor.empty().trigger('change');
+					if (setSource) {
+						allSets.forEach(function(setName){
+							newOption = new Option(setName, setName, false, true);
+							tagEditor.append(newOption).trigger('change');
+						});
+					}
+
+				if (inMissionControl) {
+					jQuery("div.wsc_gallery_single_nft_owner_panel").removeClass('wsc_owner_tools_hidden');
+					const nftRelation = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-rel");
+					if (nftRelation == 'owner') {
+						var categoryId = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-cat");
+						var categorySelector = jQuery('div.wsc_gallery_single_nft_owner_panel select.alpn_select2_small_nft_category');
+						categorySelector.val(categoryId).trigger("change");
+						jQuery("span#wsc_actual_owner_tools").removeClass('wsc_owner_tools_off');
+					} else {
+						jQuery("span#wsc_actual_owner_tools").addClass('wsc_owner_tools_off');
+					}
+				}
+			}).on('lgBeforeClose', function(event){
+				var inMissionControl = jQuery("div#pte_selected_topic_meta").data('topic-id');
+				if (inMissionControl) {wsc_change_nfts();}
+			});
+
+		 var lgLocal = lightGallery(lgContainer[0], {
+			licenseKey: 'CEB048AB-D1BB4AC8-81A9978B-E01816A1',
+			plugins: [lgZoom, lgThumbnail, lgVideo, lgShare],
+			appendSubHtmlTo: '.lg-item',
+			actualSize: false,
+			enableDrag: false,
+			autoplayFirstVideo: false,
+			gotoNextSlideOnVideoEnd: false
+		});
+
+		if (slideId && !inMissionControl) {  //goto item by finding it and getting its index
+			const findItem = jQuery("div#nft-gallery-container a[data-nft-id='" + slideId + "']").index();
+			if (findItem >= 0) {
+				lgLocal.openGallery(findItem);
+			}
+		}
+
+//<span class='wsc_dash_label'>Transfer To:</span><select class='alpn_select2_small_nft_destination_wallet'><option></option><option>Pat Wallet 1</option><option>Pat Wallet 2</option><option>Contact 1 Wallet</option><option>Contact 2 Wallet</option></select> \
+
+		var ownerToolBar = "<div class='wsc_gallery_single_nft_owner_panel wsc_owner_tools_hidden'>";
+				ownerToolBar += "<span id='wsc_actual_owner_tools' class='wsc_owner_tools_off'><span class='wsc_dash_label'>Category:</span><select class='alpn_select2_small_nft_category'><option value='visible'>Visible</option><option value='staging'>Staging</option><option value='archived'>Archived</option><option value='error'>Error</option><option value='spam'>SPAM</option></select></span>";
+				ownerToolBar += "<span class='wsc_dash_label'>Sets:</span><select class='wsc_multi_select_tags form-control' multiple='multiple'></select>";
+				//ownerToolBar += "<button id='wsc_import_button' title='' type='button' aria-label='Hide' class='lg-icon'><i class='far fa-file-import'></i></button>";
+				ownerToolBar += "</div>";
+
+  	const copyButton =
+ 	  jQuery('.lg-toolbar').append(ownerToolBar);
+
+		jQuery('select.alpn_select2_small_nft_category:not(.select2-hidden-accessible)').select2({
+			width: '75px',
+			theme: 'bootstrap',
+			allowClear: false,
+			minimumResultsForSearch: -1
+		});
+		jQuery('select.alpn_select2_small_nft_category.select2-hidden-accessible').on('select2:select', function (e) {
+			console.log("CHANGE CATEGORY...");
+			var data = e.params.data
+			wsc_change_category(data.id, jQuery("div.lg-current div.wsc_gallery_single_nft_container").data('wsc-nft'));
+			jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-cat", data.id);
+		});
+
+		jQuery('select.wsc_multi_select_tags:not(.select2-hidden-accessible)').select2( {
+			width: '300px',
+			tags: true,
+			tokenSeparators: [',', ' ']
+		});
+		jQuery('select.wsc_multi_select_tags.select2-hidden-accessible').on('select2:select', function (e) {
+			console.log("ADD SET...");
+			var data = e.params.data
+			wsc_add_set(data.id, jQuery("div.lg-current div.wsc_gallery_single_nft_container").data('wsc-nft'));
+			var newOptions = jQuery('select.wsc_multi_select_tags.select2-hidden-accessible + span.select2-container ul').find("li");
+			var newVals = [];
+			var newKey = 0;
+			newOptions.each(function(key, item){
+				if (item.title) {
+					newVals[newKey] = item.title;
+					newKey++;
+				}
+			});
+			var newValString = newVals.join(',');
+			console.log(newValString);
+			jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-set", newValString);
+		});
+		jQuery('select.wsc_multi_select_tags.select2-hidden-accessible').on('select2:unselect', function (e) {
+			var data = e.params.data
+			wsc_remove_set(data.id, jQuery("div.lg-current div.wsc_gallery_single_nft_container").data('wsc-nft'));
+			var newOptions = jQuery('select.wsc_multi_select_tags.select2-hidden-accessible + span.select2-container ul').find("li");
+			var newVals = [];
+			var newKey = 0;
+			newOptions.each(function(key, item){
+				if (item.title) {
+					newVals[newKey] = item.title;
+					newKey++;
+				}
+			});
+			var newValString = newVals.join(',');
+			jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-set", newValString);
+		});
+
+
+
+
+//					var categoryId = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-cat");
+
+		// jQuery('select.alpn_select2_small_nft_destination_wallet:not(.select2-hidden-accessible)').select2({
+		// 	width: '150px',
+		// 	theme: 'bootstrap',
+		// 	placeholder: 'Select Recipient'
+		// });
+
+	},
+	error: function() {
+		console.log('problemo - get NFTs');
+	//TODO
+	}
+	});
+
+
+}
+
+async function testWalletConnect(account = '0xa93CFDdB2D48Df5e7492a82ecc57a554d17F0c0C') {
+
+
+}
+
 
 function pte_setup_window_onload() {
 
 
-		// // Active
-		// window.addEventListener('focus', function(){
-		// 	console.log("WINDOW RECEIVED FOCUS");
-		// 	var title = jQuery('title').text();
-		// 	var favicon = jQuery('link[rel=icon]').attr('href');
-		// 	// console.log(title);
-		// 	// console.log(favicon);
-		// });
-		//
-		// // Inactive
-		// window.addEventListener('blur', function(){
-		// 	console.log("WINDOW LOST FOCUS");
-		// 	var title = jQuery('title').text();
-		// 	var favicon = jQuery('link[rel=icon]').attr('href');
-		// 	// console.log(title);
-		// 	// console.log(favicon);
-		// });
+	//Init Moralis and reconnect user if session already exists
+	const serverUrl = 'https://h2yoot4zcjng.usemoralis.com:2053/server';
+	const appId = 'z40qQMDZOc7HYcIZEgSDyXRWyTgiUp5Ino0I6yww';
+	Moralis.start({ serverUrl, appId });
+
+	if (typeof wsc_parse_session_token != "undefined" && wsc_parse_session_token) {
+		Moralis.User.become(wsc_parse_session_token).then(function (user) {
+
+			const userName = user.get("username");
+			console.log('User set to - ', userName);
+
+		}, function (error) {
+			console.log("Setting Parse User Failed");
+			console.log(error);
+		});
+	} else {
+		console.log("No Parse Token Available");
+	}
+
+	Moralis.onChainChanged( async (chain) => {
+		console.log ("Moralis Chain Changed");
+		console.log (chain);
+	});
+
+
+	Moralis.onDisconnect( async (account) => {
+		console.log ("Moralis Disconnected...");
+	  console.log(account);
+	});
+
+	Moralis.onAccountChanged( async (ethAddress) => {
+		console.log ("Web3 OnAccountChanged...");
+		console.log (ethAddress);
+
+	});
+
 
 
 	// jQuery( document ).on( 'wake', function(){
@@ -2905,11 +3701,13 @@ function pte_setup_window_onload() {
 	//
 	// });
 
+
 	if ((typeof alpn_user_id != "undefined") && (alpn_user_id > 0)) {	//Must be logged in
 
 				if (pte_external == false) {   //Initialize Mission Control
 
 					//Setup Sync
+
 					initializeTwilio();
 
 					if (jQuery('#alpn_section_alert .wpdt-c :input')[2]) {
@@ -3854,12 +4652,12 @@ function pte_create_new_vault_url() {
 				console.log("Failed creating new vault url...");
 				//TODO handle
 			}
-		})
+		});
 }
 
 function wis_init_alpn_selector_sharing(){
 
-	jQuery("select#alpn_selector_sharing").select2({
+	jQuery("select#alpn_selector_small_sharing").select2({
 		theme: "bootstrap",
 		width: '100%',
 		allowClear: false,
@@ -3907,7 +4705,7 @@ function wis_get_permissionHtml() {
 				if (alpn_user_id == vaultItemOwnerId || isAdding) {
 					permissionsHtml = " \
 						<span class='pte_vault_bold'>File Access Level</span> \
-						<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
+						<select id='alpn_selector_small_sharing' class='alpn_selector_small_sharing'> \
 							<option value='10'>Shared</option> \
 							<option value='40'>Private</option> \
 						</select><script>wis_init_alpn_selector_sharing();</script>";
@@ -3919,7 +4717,7 @@ function wis_get_permissionHtml() {
 			if (alpn_user_id == topicOwnerId) {
 				permissionsHtml = " \
 							<span class='pte_vault_bold'>File Access Level</span> \
-							<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
+							<select id='alpn_selector_small_sharing' class='alpn_selector_small_sharing'> \
 								<option value='10'>Shared</option> \
 								<option value='20'>Restricted</option> \
 								<option value='40'>Private</option> \
@@ -3929,13 +4727,13 @@ function wis_get_permissionHtml() {
 					if (userLevel == "10") {
 						permissionsHtml = " \
 									<span class='pte_vault_bold'>File Access Level</span> \
-									<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
+									<select id='alpn_selector_small_sharing' class='alpn_selector_small_sharing'> \
 										<option value='10'>Shared</option> \
 									</select><script>wis_init_alpn_selector_sharing();</script>";
 					} else {
 						permissionsHtml = " \
 									<span class='pte_vault_bold'>File Access Level</span> \
-									<select id='alpn_selector_sharing' class='alpn_selector_sharing'> \
+									<select id='alpn_selector_small_sharing' class='alpn_selector_small_sharing'> \
 										<option value='10'>Shared</option> \
 										<option value='20'>Restricted</option> \
 									</select><script>wis_init_alpn_selector_sharing();</script>";
@@ -4190,7 +4988,7 @@ function alpn_prepare_search_field(domSelect) {
 	jQuery(domSelect + ' label').empty();
 	jQuery(domSelect + ' label').append(inputField);
 	jQuery(domSelect + ' label').append("<span style='position: absolute; top: 6px; left: 76px; cursor: pointer; font-size: 14px;'><i class='far fa-times-circle' style='color: #3172B6;' title='Clear Search and Filter'></i></span>");
-	jQuery(domSelect + ' input').attr("placeholder", "Search...").attr("style", "border-style: solid; border-width: 1px; border-radius: 0 20px 0 0 !important; border-color: #ccc; height: 24px; width: 100px; font-weight: normal; background-color: white;");
+	jQuery(domSelect + ' input').attr("placeholder", "Search...").attr("style", "font-size: 12px; border-style: solid; border-width: 1px; border-radius: 0 20px 0 0 !important; border-color: #ccc; height: 24px; width: 100px; font-weight: normal; background-color: white;");
 	jQuery(domSelect + ' label:before').attr("content:'x';display: none; width: 14px; height: 14px; position: absolute; top:5px; left:75px; opacity: .5; z-index: 1000;");
 
 	jQuery(domSelect + '  span').click(
@@ -6438,6 +7236,75 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
       	}
   	})
 		break;
+
+		case 'nft_topic':
+
+			jQuery('#alpn_vault_interaction_start').css("pointer-events", "none").css("cursor", "progress");
+			var security = specialObj.security;
+			console.log('NFT TOPIC...');
+			jQuery.ajax({
+				url: alpn_templatedir + 'wsc_handle_nft.php',
+				type: 'POST',
+				data: {
+					uniqueRecId: uniqueRecId,
+					security: security,
+					return_details: JSON.stringify(returnDetails)
+				},
+				dataType: "html",
+				success: function(html) {
+
+					pte_clear_message();
+					alpn_mode = 'nft';
+					alpn_handle_select(uniqueRecId);
+					pte_start_chat("unique_record_id", uniqueRecId);
+					jQuery('#alpn_edit_container').html(html).fadeIn();
+
+
+					wsc_setup_wallet_selector();
+
+
+						// var viewerSettings = {
+					// 			'sidebar_state': 'closed'
+					// 	}
+					//
+					// alpn_oldVaultSelectedId = '';
+					//
+					// wsc_reset_ww_list();
+					// wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
+					//
+					// pte_setup_pdf_viewer(viewerSettings);
+					// if (!pte_back_button) {
+					// 	var metaObj = jQuery('#pte_selected_topic_meta');
+					// 	var topicDomId = metaObj.data('tdid');
+					// 	var topicId = metaObj.data('tid');
+					// 	var topicTypeId = metaObj.data('ttid');
+					// 	var topicTypeSpecial = metaObj.data('special');
+					// 	var mapData = pte_make_map_data(topicDomId, topicId, topicTypeId, tabId, topicTypeSpecial, 0, "to_topic_designer_by_id");
+					// 	pte_manage_history(mapData);
+					// }
+					// pte_back_button = false;
+					// pte_handle_report_settings('refresh');
+					// pte_manage_report_table_select();
+					// var nameFieldHtml = "<input type='text' id='pte_report_name_field' placeholder='Template Name...'></input>";
+					// var alpn_report_table_settings = JSON.parse(jQuery('#pte_saved_reports :input')[2].value);
+					// wdtRenderDataTable(jQuery('#table_reports'), alpn_report_table_settings);
+					// alpn_prepare_search_field('#table_reports_filter');
+					// jQuery(nameFieldHtml).insertBefore('#table_reports_filter');
+					// wpDataTables.table_reports.fnSettings().oLanguage.sZeroRecords = 'No Saved Reports';
+					// wpDataTables.table_reports.fnSettings().oLanguage.sEmptyTable = 'No Saved Reports';
+					// wpDataTables.table_reports.addOnDrawCallback( function(){
+					// 	alpn_handle_reports_table();
+					// });
+
+
+
+				},
+				error: function() {
+		//TODO
+				}
+		})
+		break;
+
 		case 'add_topic':
 		var security = specialObj.security;
 			var topicTypeId = jQuery('#alpn_selector_topic_type').val();
@@ -6527,6 +7394,10 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 
 				case 'report':
 					alpn_mission_control('pdf_topic', uniqueRecId);
+				break;
+
+				case 'nft':
+					alpn_mission_control('nft_topic', uniqueRecId);
 				break;
 			}
 		break;

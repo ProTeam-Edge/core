@@ -1,4 +1,17 @@
 <?php
+
+use Parse\ParseObject;
+use Parse\ParseQuery;
+use Parse\ParseUser;
+use Parse\ParseException;
+use Parse\ParseClient;
+
+$mediaIcons = array(
+	"audio" => "📻",
+	"video" => "📺",
+	"image" => "🖼️",
+);
+
 /**
  * Memberlite - Child Theme functions and definitions
  *
@@ -131,7 +144,7 @@ function alpn_select2_enqueue_styles() {
     wp_enqueue_style( 'alpn_uppy', 'https://releases.transloadit.com/uppy/v2.1.0/uppy.min.css' );
     wp_enqueue_style( 'pte_doka', get_template_directory_uri() . '-child-master/doka_86/pintura/pintura.css');
     wp_enqueue_style( 'alpn_select2', get_template_directory_uri() . '-child-master/dist/css/select2.min.css' );
-		wp_enqueue_style( 'alpn_select2_bootstrap', get_template_directory_uri() . '-child-master/dist/css/select2-bootstrap.css' );
+		wp_enqueue_style( 'wsc_lightgallery', get_template_directory_uri() . '-child-master/dist/assets/lighthouse/css/lightgallery-bundle.css' );
 }
 add_action( 'wp_enqueue_scripts', 'alpn_select2_enqueue_styles' );
 
@@ -265,6 +278,57 @@ function alpn_load_script(){
       		array( 'pte_pdf_preloader_core' )
           );
           wp_enqueue_script( 'pte_ui_extension' );
+
+					wp_register_script(
+	          'walletconnect',
+						get_template_directory_uri() . '/../memberlite-child-master/dist/js/web3-provider.min.js',
+	      		array( 'jquery' )
+	          );
+	          wp_enqueue_script( 'walletconnect' );
+
+						wp_register_script(
+		          'moralis_sdk',
+		      		'https://unpkg.com/moralis/dist/moralis.js',
+		      		array( 'jquery' )
+		          );
+		          wp_enqueue_script( 'moralis_sdk' );
+
+							wp_register_script(
+			          'lighthouse_gallery',
+								get_template_directory_uri() . '/../memberlite-child-master/dist/assets/lighthouse/lightgallery.min.js',
+			      		array( 'jquery' )
+			          );
+			          wp_enqueue_script( 'lighthouse_gallery' );
+
+
+								wp_register_script(
+				          'lighthouse_gallery_zoom',
+									get_template_directory_uri() . '/../memberlite-child-master/dist/assets/lighthouse/plugins/zoom/lg-zoom.min.js',
+				      		array( 'lighthouse_gallery' )
+				          );
+				          wp_enqueue_script( 'lighthouse_gallery_zoom' );
+
+							wp_register_script(
+			          'lighthouse_gallery_thumbnail',
+								get_template_directory_uri() . '/../memberlite-child-master/dist/assets/lighthouse/plugins/thumbnail/lg-thumbnail.min.js',
+			      		array( 'lighthouse_gallery' )
+			          );
+			          wp_enqueue_script( 'lighthouse_gallery_thumbnail' );
+
+								wp_register_script(
+									'lighthouse_gallery_video',
+									get_template_directory_uri() . '/../memberlite-child-master/dist/assets/lighthouse/plugins/video/lg-video.min.js',
+									array( 'lighthouse_gallery' )
+									);
+									wp_enqueue_script( 'lighthouse_gallery_video' );
+
+								wp_register_script(
+									'lighthouse_gallery_share',
+									get_template_directory_uri() . '/../memberlite-child-master/dist/assets/lighthouse/plugins/share/lg-share.min.js',
+									array( 'lighthouse_gallery' )
+									);
+									wp_enqueue_script( 'lighthouse_gallery_share' );
+
     }
 
 }
@@ -279,7 +343,7 @@ function bbp_enable_visual_editor( $args = array() ) {
 }
 add_filter( 'bbp_after_get_the_content_parse_args', 'bbp_enable_visual_editor' );
 
-
+remove_action( 'wp_head', 'rel_canonical' );
 
 function vit_translate__strings( $translated, $untranslated, $domain ) {
 
@@ -612,8 +676,6 @@ function vit_wc_customer_data( $data ) {
 	return $data;
 }
 add_filter( 'woocommerce_new_customer_data', 'vit_wc_customer_data', 10, 1 );
-
-
 add_filter('show_admin_bar', '__return_false'); //Remove top bar
 add_filter( 'woocommerce_registration_auth_new_customer', '__return_false' );
 
@@ -628,6 +690,53 @@ function vit_profile_update( $user_id ) {
 add_action( 'profile_update', 'vit_profile_update', 10, 1 );
 
 
+function wsc_parse_login($user_login, $user) {
+//	use wp to get global data? Or get it from db?
+	global $wpdb;
+	$userId = $user->data->ID;
+	$results = $wpdb->get_results(
+		$wpdb->prepare("SELECT parse_user_name, parse_password FROM alpn_topics WHERE owner_id = %d AND special = 'user'", $userId)
+	 );
+
+	 if (isset($results[0]) && $results[0]->parse_user_name && $results[0]->parse_password) {
+		 try {
+			 $parseClient = new ParseClient;
+			 $parseClient->initialize( MORALIS_APPID, null, MORALIS_MK );
+			 $parseClient->setServerURL(MORALIS_SERVER_URL, 'server');
+
+		   $user = ParseUser::logIn($results[0]->parse_user_name, $results[0]->parse_password);
+			 $sessionToken = $user->getSessionToken();
+
+			 update_user_meta( $userId, "wsc_parse_session_token",  $sessionToken);
+
+			 alpn_log("PARSE USER LOGGER IN - " . $sessionToken);
+
+		 } catch (ParseException $error) {
+		   // The login failed. Check error to see why.
+			 update_user_meta( $userId, "wsc_parse_session_token",  "");
+			 alpn_log("PARSE USER LOGIN FAILED");
+			 alpn_log($error);
+		 }
+	 }
+}
+add_action('wp_login', 'wsc_parse_login', 10, 2);
+
+function wsc_parse_logout($userId) {
+	 try {
+		 $parseClient = new ParseClient;
+		 $parseClient->initialize( MORALIS_APPID, null, MORALIS_MK );
+		 $parseClient->setServerURL(MORALIS_SERVER_URL, 'server');
+	   ParseUser::logOut();
+		 update_user_meta( $userId, "wsc_parse_session_token",  "");
+
+	 } catch (ParseException $error) {
+		 alpn_log("PARSE USER LOGOUT EXCEPTION");
+		 alpn_log($error);
+	 }
+}
+add_action('wp_logout', 'wsc_parse_logout', 10, 1);
+
+
 //add_action('profile_update', 'sync_alpn_user_info_on_register');
 function test_plugin_setup_menu(){
 }
@@ -639,6 +748,8 @@ function cleanup_pte_user_on_delete( $user_id ) {
 	//cloud files
 	//images
   //WP Forms definitions in Posts
+
+	//DELETE PARSE USER USING USERNAME AND PWD AND THEIR APIS
 
 	global $wpdb;
 
@@ -779,6 +890,7 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
 				if (isset($entry['new_owner'])) {
 					$topicName = pte_make_string($nameSource, $fields, $alpnNormalizeMap);
 					$topicAbout = $userEmail;
+
 				} else if ($fields) {
 					$topicName = pte_make_string($nameSource, $fields, $alpnNormalizeMap);
 					$topicAbout = pte_make_string($aboutSource, $fields, $alpnNormalizeMap);
@@ -963,6 +1075,10 @@ function alpn_handle_topic_add_edit ($fields, $entry, $form_data, $entry_id ) { 
           }
 
           if ($topicTypeSpecial == 'user') { //Add user but don't create CHAT channels or CHAT members -- JIT
+
+
+
+
 
 						$data = array(
               "sync_type" => "return_create_sync_id",

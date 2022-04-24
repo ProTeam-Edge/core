@@ -7,6 +7,949 @@ require 'vendor/autoload.php';
 use Google\Cloud\Storage\StorageClient;
 use Twilio\Rest\Client;
 use PascalDeVink\ShortUuid\ShortUuid;
+use Parse\ParseObject;
+use Parse\ParseQuery;
+use Parse\ParseUser;
+use Parse\ParseException;
+use Parse\ParseClient;
+use Ramsey\Uuid\Uuid;
+use enshrined\svgSanitize\Sanitizer;
+
+
+function wsc_linkify_string($string) {
+  return  preg_replace('/(https?):\/\/([A-Za-z0-9\._\-\/\?=&;%,]+)/i', "<a href='$1://$2' target='_blank'>$1://$2</a>", $string);
+}
+
+function wsc_resolve_ens($address) {
+  $headers = array();
+  $moralisApiKey = MORALIS_API_KEY;
+  $fullUrl = "https://deep-index.moralis.io/api/v2/resolve/{$address}/reverse";
+  $headers[] = "Accept: application/json";
+  $headers[] = "X-API-Key: {$moralisApiKey}";
+  $options = array(
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_URL => $fullUrl,
+      CURLOPT_HTTPHEADER => $headers
+  );
+   $ch = curl_init();
+   curl_setopt_array($ch, $options);
+   $response = curl_exec($ch);
+   curl_close($ch);
+   return $response;
+}
+
+function wsc_process_thumb($thumbData){
+
+  alpn_log("PROCESS THUMB");
+
+$filepath = $oldFilePath = PTE_ROOT_PATH . "tmp/" . $thumbData['original_file_key'];
+
+$sourceFileKey = $thumbData['file_key'];
+$sourceMimeType = $thumbData['mime_type'];
+
+if (isset($thumbData['status']) && $thumbData['status'] == 'ok') {
+
+  $fileType = getFileMetaFromMimeType($thumbData['mime_type'])['type'];
+
+  if ($fileType == 'video') {
+
+    $newThumb = PTE_ROOT_PATH . "tmp/" . $thumbData['original_file_key'] . ".jpeg";
+
+    try {
+          $ffmpeg = FFMpeg\FFMpeg::create();
+          $video = $ffmpeg->open($filepath);
+          $video
+              ->frame(FFMpeg\Coordinate\TimeCode::fromSeconds(4))
+              ->addFilter(new FFMpeg\Filters\Frame\CustomFrameFilter('scale=800:-1'))
+              ->save($newThumb, true);
+          $filepath = $newThumb;
+          $thumbData['mime_type'] = mime_content_type($filepath);
+    } catch (Exception $e) {
+      alpn_log($e);
+    }
+  }
+
+  if ($thumbData['mime_type'] == "image/png" || $thumbData['mime_type'] == "image/jpeg" || $thumbData['mime_type'] == "image/gif" || $thumbData['mime_type'] == "image/webp") {
+
+    $fileNameWithExtension = "thumb_" . $thumbData['original_file_key'] . ".webp";
+    $thumbpath = PTE_ROOT_PATH . "tmp/". $fileNameWithExtension;
+    imageToWebp($filepath, $thumbpath, 200);
+    $thumbFileSize = @filesize($thumbpath);
+
+    $fileNameWithExtensionLarge = "large_" . $thumbData['original_file_key'] . ".webp";
+    $thumbpathLarge = PTE_ROOT_PATH . "tmp/". $fileNameWithExtensionLarge;
+    imageToWebp($filepath, $thumbpathLarge, 800);
+    $thumbLargeFileSize = @filesize($thumbpathLarge);
+
+    $fileNameWithExtensionShare = "share_" . $thumbData['original_file_key'] . ".jpeg";
+    $thumbpathShare = PTE_ROOT_PATH . "tmp/". $fileNameWithExtensionShare;
+    imageToJpeg($filepath, $thumbpathShare, 480);
+    $thumbShareFileSize = @filesize($thumbpathShare);
+
+
+    if ($thumbFileSize && $thumbLargeFileSize && $thumbShareFileSize) {
+
+        try {
+          $storage = new StorageClient([
+              'keyFilePath' => GOOGLE_STORAGE_KEY
+          ]);
+
+          $bucketName = 'pte_media_store_1';
+          $bucket = $storage->bucket($bucketName);
+
+          $object = $bucket->upload(
+              fopen($thumbpath, 'r'),
+              ['name' => $fileNameWithExtension]
+          );
+
+          $object = $bucket->upload(
+              fopen($thumbpathLarge, 'r'),
+              ['name' => $fileNameWithExtensionLarge]
+          );
+
+          $object = $bucket->upload(
+              fopen($thumbpathShare, 'r'),
+              ['name' => $fileNameWithExtensionShare]
+          );
+
+          $thumbData['file_key'] = $fileNameWithExtension;
+          $thumbData['large_file_key'] = $fileNameWithExtensionLarge;    //Storing so easier to change on case by case basis
+          $thumbData['share_file_key'] = $fileNameWithExtensionShare;    //Storing so easier to change on case by case basis
+          $thumbData['mime_type'] = "image/webp";
+
+          unlink($thumbpath);
+          unlink($thumbpathLarge);
+          unlink($thumbpathShare);
+
+        } catch (Exception $e) {
+          alpn_log("FAILED EXCEPTION");
+          alpn_log($e);
+          alpn_log($thumbData);
+          $thumbData['file_key'] = "";
+          $thumbData['large_file_key'] = "";
+          $thumbData['share_file_key'] = "";
+          $thumbData['mime_type'] = "";
+        }
+
+      } else {  //failed creating viable thumbs
+        $fileType = getFileMetaFromMimeType($thumbData['mime_type'])['type'];
+
+        if ($fileType == 'image') {
+          $thumbData['file_key'] = $thumbData['large_file_key'] = $thumbData['share_file_key'] = $sourceFileKey;
+          $thumbData['mime_type'] = $sourceMimeType;
+        } else {
+          $thumbData['file_key'] = "";
+          $thumbData['large_file_key'] = "";
+          $thumbData['share_file_key'] = "";
+          $thumbData['mime_type'] = "";
+        }
+      }
+  } else if ($thumbData['mime_type'] == "image/svg") {
+    alpn_log("THUMB COULD NOT FIND RASTER IMAGE BUT FOUND SVG");
+    $fileNameWithExtension = $thumbData['original_file_key'] . ".svg";
+    $thumbData['file_key'] = $fileNameWithExtension;
+    $thumbData['large_file_key'] = $fileNameWithExtension;
+    $thumbData['share_file_key'] = $fileNameWithExtension;
+    $thumbData['mime_type'] = "image/svg";
+  } else {
+    $thumbData['file_key'] = "";
+    $thumbData['large_file_key'] = "";
+    $thumbData['share_file_key'] = "";
+    $thumbData['mime_type'] = "";
+  }
+}
+
+
+unlink($filepath);
+
+if ($filepath != $oldFilePath) {
+  unlink($oldFilePath);
+}
+
+
+return $thumbData;
+
+}
+
+function wsc_create_vid_from_images($imageArray) {
+
+  $newVideoFileName = pte_get_short_id() . ".mp4";
+  $videoFilePath = PTE_ROOT_PATH . 'tmp/' . $newVideoFileName;
+  $loopCommandsStr = $blendStr = $commandStr = "";
+  for ($key = 0; $key < count($imageArray); $key++) {
+
+
+    //get it.
+    //make it 800x800
+    //save temp file
+
+
+    $imageItem = $imageArray[$key];
+    $filePath = PTE_ROOT_PATH . 'tmp/' . $imageItem;
+    $loopCommandsStr .= '-loop 1 -t 1.0 -i "' . $filePath . '" ';
+
+    if ($key < count($imageArray) - 1) {
+      $nextKey = $key + 1;
+      $blendStr .= "[{$nextKey}:v][{$key}:v]blend=all_expr='A*(if(gte(T,0.5),1,T/0.5))+B*(1-(if(gte(T,0.5),1,T/0.5)))'[b{$nextKey}v]; ";
+      $commandStr .= "[{$key}:v][b{$nextKey}v]";
+    }
+  }
+  $imageCount = count($imageArray);
+  $commandStr .= "[" . ($imageCount - 1) . ":v]";
+  $segmentCount = $imageCount * 2 - 1;
+
+  $execStr = 'ffmpeg -framerate 20 ';
+  $execStr .= $loopCommandsStr;
+  $execStr .= '-c:v libx264 ';
+  $execStr .= '-filter_complex "';
+  $execStr .= $blendStr;
+  $execStr .= $commandStr . 'concat=n=' . $segmentCount . ':v=1:a=0,format=yuv420p[v]" -map "[v]" "' . $videoFilePath . '"';
+
+  $results = shell_exec($execStr);
+
+  pp($results);
+
+  // $output = shell_exec("php -v");
+  //
+  // pp($output);
+
+
+  return $newVideoFileName;
+
+}
+
+function imageToJpeg($srcFile, $thumbFile, $maxSize = 100) {
+    list($width_orig, $height_orig, $type) = getimagesize($srcFile);
+    $ratio_orig = $width_orig / $height_orig;
+    $width  = $maxSize;
+    $height = $maxSize;
+    if ($ratio_orig < 1) {
+        $width = $height * $ratio_orig;
+    }
+    else {
+        $height = $width / $ratio_orig;
+    }
+    switch ($type)
+    {
+        case IMAGETYPE_GIF:
+            $image = imagecreatefromgif($srcFile);
+            break;
+        case IMAGETYPE_JPEG:
+            $image = imagecreatefromjpeg($srcFile);
+            break;
+        case IMAGETYPE_PNG:
+            $image = imagecreatefrompng($srcFile);
+            break;
+        case IMAGETYPE_WEBP:
+            $image = imagecreatefromwebp($srcFile);
+            break;
+        default:
+            return false;
+    }
+    $newImage = imagecreatetruecolor($width, $height);
+    imagecopyresampled($newImage, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+    imagejpeg($newImage, $thumbFile, 95);
+    imagedestroy($newImage);
+    return true;
+}
+
+
+
+function imageToWebp($srcFile, $thumbFile, $maxSize = 100) {
+
+    list($width_orig, $height_orig, $type) = getimagesize($srcFile);
+    $ratio_orig = $width_orig / $height_orig;
+    $width  = $maxSize;
+    $height = $maxSize;
+    if ($ratio_orig < 1) {
+        $width = $height * $ratio_orig;
+    }
+    else {
+        $height = $width / $ratio_orig;
+    }
+    switch ($type)
+    {
+        case IMAGETYPE_GIF:
+            $image = imagecreatefromgif($srcFile);
+            break;
+        case IMAGETYPE_JPEG:
+            $image = imagecreatefromjpeg($srcFile);
+            break;
+        case IMAGETYPE_PNG:
+            $image = imagecreatefrompng($srcFile);
+            break;
+        case IMAGETYPE_WEBP:
+            $image = imagecreatefromwebp($srcFile);
+            break;
+        default:
+            return false;
+    }
+    $newImage = imagecreatetruecolor($width, $height);
+    imagecopyresampled($newImage, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
+    imagewebp($newImage, $thumbFile, 99);
+    imagedestroy($newImage);
+
+    return true;
+}
+
+
+function getFileMetaFromMimeType($mimeType) {
+  $extension = $type = "";
+  switch ($mimeType) {
+    case 'image/png':
+      $extension = "png";
+      $type = "image";
+    break;
+    case 'image/webp':
+      $extension = "webp";
+      $type = "image";
+    break;
+    case 'image/jpeg':
+      $extension = "jpeg";
+      $type = "image";
+    break;
+    case 'image/gif':
+      $extension = "gif";
+      $type = "image";
+    break;
+    case 'audio/x-wav':
+      $extension = "wav";
+      $type = "audio";
+    break;
+    case 'audio/mp3':
+      $extension = "mp3";
+      $type = "audio";
+    break;
+    case 'video/mp4':
+      $extension = "mp4";
+      $type = "video";
+    break;
+    case 'audio/x-aiff':
+      $extension = "aif";
+      $type = "unsupported";
+    break;
+    case 'video/x-m4v':
+      $extension = "m4v";
+      $type = "unsupported";
+    break;
+    case 'video/quicktime':
+      $extension = "mov";
+      $type = "unsupported";
+    break;
+    case 'video/webm':
+      $extension = "webm";
+      $type = "video";
+    break;
+    case 'audio/ogg':
+      $extension = "ogg";
+      $type = "audio";
+    break;
+    case 'audio/mpeg':
+      $extension = "mpeg";
+      $type = "audio";
+    break;
+    case 'image/svg':
+      $extension = "svg";
+      $type = "image";
+    break;
+  }
+
+  return array("extension" => $extension, "type" => $type);
+}
+
+
+function wsc_get_nft_view_toolbar(){
+
+  	$nftToolbar = "
+  	<select id='alpn_select2_wallets_new' class='alpn_selector'><option value='wsc_all_accounts'>All web3 Accounts</option></select>
+  	<select id='alpn_select2_chains' class='alpn_selector'><option value='wsc_all_chains'>All Chains</option><option value='eth'>Ethereum</option><option value='matic'>Polygon</option></select>
+    <select id='alpn_select2_contracts' class='alpn_selector'><option value='wsc_all_contracts'>All Contracts</option></select>
+  	<select id='alpn_select2_tags' class='alpn_selector'><option value='wsc_all_tags'>All Sets</option></select>
+    <select id='alpn_select2_types' class='alpn_selector'><option value='wsc_all_types'>All Types</option><option value='image'>Image</option><option value='music'>Music</option><option value='video'>Video</option></select>
+  	<select id='alpn_select2_categories' class='alpn_selector'><option value='visible'>Visible</option><option value='staging'>Staging</option><option value='archived'>Archived</option><option value='error'>Error</option><option value='spam'>SPAM</option></select>
+  	<input id='wsc_nft_query_input' title='Search name, description and attributes for text' placeholder='Filter by text' style='font-size: 12px !important; color: black; padding: 0 0 0 10px !important; line-height: 20px; border-style: solid; border-width: 1px; border-radius: 0 0 0 0 !important; border-color: #ccc; height: 24px; width: 125px; font-weight: normal; background-color: white;'>
+    <i id='wsc_copy_gallery_link' style='margin-left: 5px;' class='far fa-link wsc_nft_scan' title='Copy Link to this Gallery' onclick='wsc_copy_gallery_link();'></i>
+  	<br>
+    <span style='font-size: 14px; margin-right: 5px;' class='wsc_nft_toolbar_help_text'>Attach your account:</span>
+  	<i id='wsc_scan_wallet' class='far fa-qrcode wsc_nft_scan' title='Attach your account with owner rights by scanning a QR code with your mobile wallet' onclick='wsc_scan_account_to_attach();'></i>
+    <span style='font-size: 14px; margin-right: 5px; margin-left: 10px;' class='wsc_nft_toolbar_help_text'>Attach any account:</span>
+    <input id='wsc_nft_add_wallet_address' title='Attach any account with visitor rights by pasting its public key' placeholder='Paste any web3 public key' style='font-size: 12px !important; color: black; padding: 0 0 0 10px !important; line-height: 20px; border-style: solid; border-width: 1px; border-radius: 0 0 0 0 !important; border-color: #ccc; height: 24px; width: 175px; font-weight: normal; background-color: white;'>
+  	<script>
+    alpn_wait_for_ready(10000, 250,
+      function(){
+        if (typeof jQuery('#wsc_nft_query_input').donetyping != 'undefined') {
+            return true;
+        }
+        return false;
+      },
+      function(){
+        jQuery('#wsc_nft_query_input').donetyping(function(){
+          wsc_change_nfts();
+        });
+      },
+      function(){ //Handle Error
+        console.log('Failed to find donetyping');
+      });
+      jQuery('#alpn_select2_wallets_new').select2({
+				theme: 'bootstrap',
+				width: '175px',
+				allowClear: false
+			});
+			jQuery('#alpn_select2_wallets_new').on('select2:select', function (e) {
+					wsc_change_nfts();
+			});
+			jQuery('#alpn_select2_contracts').select2({
+				theme: 'bootstrap',
+				width: '175px',
+				allowClear: false
+			});
+			jQuery('#alpn_select2_contracts').on('select2:select', function (e) {
+					wsc_change_nfts();
+			});
+			jQuery('#alpn_select2_chains').select2({
+				theme: 'bootstrap',
+				width: '85px',
+				allowClear: false,
+				minimumResultsForSearch: -1
+			});
+			jQuery('#alpn_select2_chains').on('select2:select', function (e) {
+				wsc_change_nfts();
+			});
+			jQuery('#alpn_select2_categories').select2({
+				theme: 'bootstrap',
+				width: '80px',
+				allowClear: false,
+				minimumResultsForSearch: -1
+			});
+			jQuery('#alpn_select2_categories').on('select2:select', function (e) {
+				wsc_change_nfts();
+			});
+			jQuery('#alpn_select2_types').select2({
+				theme: 'bootstrap',
+				width: '80px',
+				minimumResultsForSearch: -1
+			});
+			jQuery('#alpn_select2_types').on('select2:select', function (e) {
+				wsc_change_nfts();
+			});
+			jQuery('#alpn_select2_tags').select2({
+				theme: 'bootstrap',
+				width: '125px',
+				allowClear: false,
+			});
+			jQuery('#alpn_select2_tags').on('select2:select', function (e) {
+				wsc_change_nfts();
+			});
+      jQuery('input#wsc_nft_add_wallet_address').on('paste', function(e){
+          wsc_handle_wallet_pasted(e);
+      });
+
+  	</script>
+  	";
+
+  return $nftToolbar;
+}
+
+
+function wsc_store_nft_file($fileSettings, $unlinkSource = true){
+
+
+  $error = false;
+  $fileKey = $fileSettings["file_key"];
+  $mimeType = $fileSettings["mime_type"];
+
+  $localFile =  PTE_ROOT_PATH . "tmp/" . $fileKey;
+
+  $typeLookup = getFileMetaFromMimeType($mimeType);
+
+  if ($typeLookup['type'] && $typeLookup['type'] != "unsupported") {
+
+    if ($mimeType == "image/svg") {  //Sanitize file
+      $sanitizer = new Sanitizer();
+      $svgFile = @file_get_contents($localFile);
+      $cleanSVG = $sanitizer->sanitize($svgFile);
+      if ($cleanSVG) {
+        @file_put_contents($localFile, $cleanSVG);
+      } else {
+        $error = "invalid_svg";
+      }
+    }
+
+    if (!$error) {
+
+      $fileNameWithExtension = $fileKey . "." . getFileMetaFromMimeType($mimeType)['extension'];
+    	try {
+    		$storage = new StorageClient([
+    	    	'keyFilePath' => GOOGLE_STORAGE_KEY
+    		]);
+
+        $bucketName = 'pte_media_store_1';
+        $bucket = $storage->bucket($bucketName);
+        $object = $bucket->upload(
+            fopen($localFile, 'r'),
+            ['name' => $fileNameWithExtension]
+        );
+
+        if ($unlinkSource) {
+          unlink($localFile);
+        }
+
+        $fileMeta = getFileMetaFromMimeType($mimeType);
+        $fileInfo = array(
+          'status' => 'ok',
+          'original_file_key' => $fileKey,
+          'file_key' => $fileNameWithExtension,   //careful double used with thumb
+          'mime_type' => $mimeType,
+          'media_type' => $fileMeta['type']
+        );
+
+        return $fileInfo;
+
+    	} catch (\Exception $e) {
+
+        if ($unlinkSource) {
+          //alpn_log("Trying to unlink TWO -- " . $localFile);
+          unlink($localFile);
+        }
+
+        $fileInfo = array(
+          'status' => 'error',
+          'details' => $e
+        );
+    			return $fileInfo;
+    	}
+    } else { //error
+      unlink($localFile);
+      $fileInfo = array(
+        'status' => 'error',
+        'details' => $error,
+        'original_file_key' => $fileKey,
+        'file_key' => "",
+        'mime_type' => "",
+        'media_type' => "unsupported"
+      );
+      return $fileInfo;
+    }
+  } else {
+
+    if ($unlinkSource) {
+      unlink($localFile);
+    }
+
+    $fileInfo = array(
+      'status' => 'error',
+      'details' => 'empty file or html',
+      'original_file_key' => $fileKey,
+      'file_key' => "",
+      'mime_type' => "",
+      'media_type' => "unsupported"
+    );
+      return $fileInfo;
+  }
+}
+
+function wsc_get_single_nft_metadata ($nftAddress, $tokenId, $chain='eth'){
+
+  $headers = array();
+  $moralisApiKey = MORALIS_API_KEY;
+  $fullUrl = "https://deep-index.moralis.io/api/v2/nft/{$nftAddress}/{$tokenId}?chain={$chain}";
+  $headers[] = "Accept: application/json";
+  $headers[] = "X-API-Key: {$moralisApiKey}";
+  $options = array(
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_URL => $fullUrl,
+      CURLOPT_HTTPHEADER => $headers
+  );
+   $ch = curl_init();
+   curl_setopt_array($ch, $options);
+   $response = curl_exec($ch);
+   curl_close($ch);
+   return $response;
+}
+
+function wsc_get_nft_metadata ($nftAddress, $chain='eth'){
+
+  $headers = array();
+  $moralisApiKey = MORALIS_API_KEY;
+  $fullUrl = "https://deep-index.moralis.io/api/v2/{$nftAddress}/metadata?chain={$chain}";
+  $headers[] = "Accept: application/json";
+  $headers[] = "X-API-Key: {$moralisApiKey}";
+  $options = array(
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_URL => $fullUrl,
+      CURLOPT_HTTPHEADER => $headers
+  );
+   $ch = curl_init();
+   curl_setopt_array($ch, $options);
+   $response = curl_exec($ch);
+   curl_close($ch);
+   return $response;
+}
+
+function wsc_update_nft_metadata($nftContractAddress, $tokenId) {
+
+  $headers = array();
+  $moralisApiKey = MORALIS_API_KEY;
+  $fullUrl = "https://deep-index.moralis.io/api/v2/nft/{$nftContractAddress}/{$tokenId}?chain={$chain}&format=decimal";
+  $headers[] = "Accept: application/json";
+  $headers[] = "X-API-Key: {$moralisApiKey}";
+  $options = array(
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_URL => $fullUrl,
+      CURLOPT_HTTPHEADER => $headers
+  );
+   $ch = curl_init();
+   curl_setopt_array($ch, $options);
+   $response = curl_exec($ch);
+   curl_close($ch);
+   return $response;
+
+}
+
+function wsc_cleanup_nft_uri($uri) {
+
+  $useIpfs = "https://ipfs.io/ipfs/";
+  //$useIpfs = "https://ipfs.moralis.io:2053/ipfs/";
+
+  $uri = stripslashes($uri);
+
+  $source = "https://ipfs.fleek.co/ipfs/";
+  $sourceLen = strlen($source);
+  if (substr($uri, 0, $sourceLen) == $source) {
+    return $useIpfs . substr($uri, $sourceLen);
+  }
+  $source = "https://gateway.pinata.cloud/ipfs/";
+  $sourceLen = strlen($source);
+  if (substr($uri, 0, $sourceLen) == $source) {
+    return $useIpfs . substr($uri, $sourceLen);
+  }
+  $source = "https://gateway.moralisipfs.com/ipfs/https://ipfs.io/ipfs/";
+  $sourceLen = strlen($source);
+  if (substr($uri, 0, $sourceLen) == $source) {
+    return $useIpfs . substr($uri, $sourceLen);
+  }
+  $source = "https://gateway.moralisipfs.com/ipfs/";
+  $sourceLen = strlen($source);
+  if (substr($uri, 0, $sourceLen) == $source) {
+    return $useIpfs . substr($uri, $sourceLen);
+  }
+  $source = "http://";
+  $sourceLen = strlen($source);
+  if (substr($uri, 0, $sourceLen) == $source) {
+    return "https://" . substr($uri, $sourceLen);
+  }
+  $source = "ipfs://ipfs/";
+  $sourceLen = strlen($source);
+  if (substr($uri, 0, $sourceLen) == $source) {
+    return $useIpfs . substr($uri, $sourceLen);
+  }
+  $source = "ipfs://";
+  $sourceLen = strlen($source);
+  if (substr($uri, 0, $sourceLen) == $source) {
+    return $useIpfs . substr($uri, $sourceLen);
+  }
+  return $uri;
+}
+
+function wsc_get_best_nft_image_url($data) {
+//TODO Make this way better
+  if (isset($data['properties']) && isset($data['properties']['image']) && $data['properties']['image']) {
+    return $data['properties']['image'];
+  }
+  if (isset($data['image_url']) && $data['image_url']) {
+    return $data['image_url'];
+  }
+}
+
+
+function wsc_get_file($source, $destination) {
+
+    $template = "data:application/json;base64,";
+    $templateLen = strlen($template);
+    if (substr($source, 0, $templateLen) == $template) {
+      file_put_contents($destination, base64_decode(substr($source, $templateLen)));
+      return true;
+    }
+    $template = "data:image/svg+xml;utf8,";
+    $templateLen = strlen($template);
+    if (substr($source, 0, $templateLen) == $template) {
+      file_put_contents($destination, substr($source, $templateLen));
+      return true;
+    }
+    $template = "data:application/json;utf8,";
+    $templateLen = strlen($template);
+    if (substr($source, 0, $templateLen) == $template) {
+      file_put_contents($destination, substr($source, $templateLen));
+      return true;
+    }
+
+    try {
+      $file = fopen($destination, "w");
+      $headers = array();
+      $options = array(
+          CURLOPT_FILE => $file,
+          CURLOPT_TIMEOUT => 100,
+          CURLOPT_CONNECTTIMEOUT => 20,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_URL => $source,
+          CURLOPT_HTTPHEADER => $headers
+      );
+       $ch = curl_init();
+       curl_setopt_array($ch, $options);
+       curl_exec($ch);
+       curl_close($ch);
+       fclose($file);
+      if (!filesize($destination)) {
+        @file_put_contents($destination, @file_get_contents($source));
+      }
+    } catch (Exception $error) {
+     alpn_log("GET FILE EXCEPTION");
+     alpn_log($error);
+    }
+   return true;
+}
+
+
+function wsc_get_all_member_nfts($walletAddress) {
+
+  try {
+    $allNftsAllChains = array();
+
+    $chains = array("eth", "matic");
+
+    foreach ($chains as $chain) {
+
+      $nftResults = json_decode(wsc_get_nft_page($walletAddress, 0, 500, '', $chain), true);
+
+      alpn_log("CHAIN -- " . $chain . " -- " . $nftResults['total']);
+
+      if (isset($nftResults['total'])) {
+
+        $nftTotal = intval($nftResults['total']);
+        $nftPageSize = intval($nftResults['page_size']);
+
+        $nftPage = intval($nftResults['page']);
+        $allNfts = $nftResults['result'];
+
+        while ((($nftPage + 1) * $nftPageSize) <= $nftTotal) {
+
+          alpn_log($nftPage . " -- " . $nftPageSize . " -- " . ($nftPage + 1) * $nftPageSize . " -- " . $nftTotal);
+
+          $nftResults = json_decode(wsc_get_nft_page($walletAddress, 0, 0, $nftResults['cursor'], $chain), true);
+          $allNfts = array_merge($allNfts, $nftResults['result']);
+          $nftPage = intval($nftResults['page']);
+        }
+
+        for ($i = 0; $i < count($allNfts); $i++) {
+          $allNfts[$i]['chain_id'] = $chain;
+        }
+
+        $allNftsAllChains = array_merge($allNftsAllChains, $allNfts);
+      }
+    }
+
+  } catch (Exception $error) {
+   alpn_log("FAILED GETTING ALL NFTS");
+   alpn_log($error);
+  }
+
+return $allNftsAllChains;
+}
+
+function wsc_get_nft_page ($walletAddress, $offset = 0, $limit = 500, $cursor = '', $chain = 'eth', $retryCounter = 1){
+  alpn_log("GET NFT PAGE");
+
+
+  $file = fopen($destination, "w");
+  $headers = array();
+
+  try {
+    $headers = array();
+    $moralisApiKey = MORALIS_API_KEY;
+    if ($cursor) {
+      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?&cursor={$cursor}";
+    } else {
+      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?limit={$limit}&offset={$offset}&chain={$chain}&format=decimal";
+    }
+    $headers[] = "Accept: application/json";
+    $headers[] = "X-API-Key: {$moralisApiKey}";
+    $options = array(
+        CURLOPT_FILE => $file,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_URL => $fullUrl,
+        CURLOPT_HTTPHEADER => $headers
+    );
+     $ch = curl_init();
+     curl_setopt_array($ch, $options);
+     curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+       function($curl, $header) use (&$headers)
+       {
+         $len = strlen($header);
+         $header = explode(':', $header, 2);
+         if (count($header) < 2) // ignore invalid headers
+           return $len;
+         $headers[strtolower(trim($header[0]))][] = trim($header[1]);
+         return $len;
+       }
+     );
+     $response = curl_exec($ch);
+     $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+     curl_close($ch);
+
+     alpn_log("RESPONSE CODE -- " . $httpCode);
+
+     // 'x-rate-limit-remaining-ttl': '60',
+     // 'x-rate-limit-remaining-ip-ttl': '60',
+     // 'x-rate-limit-used': '5',
+     // 'x-rate-limit-ip-used': '5',
+     // 'x-rate-limit-limit': '3500',
+     // 'x-rate-limit-throttle-remaining-ttl': '1',
+     // 'x-rate-limit-throttle-remaining-ip-ttl': '1',
+     // 'x-rate-limit-throttle-used': '60',
+     // 'x-rate-limit-throttle-ip-used': '60',
+     // 'x-rate-limit-throttle-limit': '88',
+     // 'x-request-weight': '5',
+
+     return $response;
+  } catch (Exception $error) {
+      alpn_log("Getting Page Error");
+      alpn_log($walletAddress);
+      alpn_log($error);
+      if ($retryCounter >= 1 && $retryCounter <= 3) {
+       $retryCounter++;
+       alpn_log("DELAY AND RETRY | " . $retryCounter);
+       sleep(5);
+       wsc_get_nft_page ($walletAddress, $offset, $limit, $cursor, $chain, $retryCounter);
+   } else {
+       alpn_log("COMPLETE FAIL");
+       return false;
+   }
+  }
+
+}
+
+function wsc_log_current_user_into_parse() {
+
+  global $wpdb;
+  $sessionToken = "";
+
+  $userInfo = wp_get_current_user();
+  $userID = $userInfo->data->ID;
+
+  $results = $wpdb->get_results(
+		$wpdb->prepare("SELECT parse_user_name, parse_password from alpn_topics WHERE owner_id = %d AND special = 'user'", $userID)
+	 );
+
+   if (isset($results[0]) && $results[0]->parse_user_name && $results[0]->parse_password) {
+
+     try { //log in
+      $parseClient = new ParseClient;
+      $parseClient->initialize( MORALIS_APPID, null, MORALIS_MK );
+      $parseClient->setServerURL(MORALIS_SERVER_URL, 'server');
+
+      $user = ParseUser::logIn($results[0]->parse_user_name, $results[0]->parse_password);
+      $sessionToken = $user->getSessionToken();
+
+      alpn_log("PARSE USER LOGGED IN - " . $sessionToken);
+
+     } catch (ParseException $error) {
+      // The login failed. Check error to see why.
+      alpn_log("PARSE USER LOGIN FAILED");
+      alpn_log($error);
+     }
+
+   }
+  return $sessionToken;
+
+}
+
+function wsc_create_new_parse_user() {
+
+  alpn_log("CREATING PARSE USER");
+
+  global $wpdb;
+
+  $userInfo = wp_get_current_user();
+  $userId = $userInfo->data->ID;
+
+  if ($userId) {
+
+    try {
+
+      $newParseUserName = Uuid::uuid4()->toString();
+      $newParsePassword = Uuid::uuid4()->toString();
+
+      alpn_log($newParseUserName);
+      alpn_log($newParsePassword);
+
+      $parseClient = new ParseClient;
+      $parseClient->initialize( MORALIS_APPID, null, MORALIS_MK );
+      $parseClient->setServerURL(MORALIS_SERVER_URL,'server');
+
+      $user = new ParseUser;
+      $user->set("username", $newParseUserName);
+      $user->set("password", $newParsePassword);
+
+      try {
+        $user->signUp();
+        $topicData['parse_user_name'] = $newParseUserName;
+        $topicData['parse_password'] = $newParsePassword;
+        $whereClause['owner_id'] = $userId;
+        $whereClause['special'] = 'user';
+        $wpdb->update( 'alpn_topics', $topicData, $whereClause );
+      } catch (ParseException $ex) {
+        // Show the error message somewhere and let the user try again.
+        alpn_log ("Error: " . $ex->getCode() . " " . $ex->getMessage());
+      }
+
+    } catch (ParseException $e) {
+    // catch throwables when the connection is not a success
+      alpn_log("Error Creating Parse User");
+      alpn_log($e);
+    }
+  }
+
+
+
+
+}
+
+
+function wsc_query_parse_single($mclass, $mquery) {
+
+  try {
+  	$parseClient = new ParseClient;
+  	$parseClient->initialize( MORALIS_APPID, null, MORALIS_MK );
+  	$parseClient->setServerURL(MORALIS_SERVER_URL,'server');
+  	$query = new ParseQuery($mclass);
+  	$query->equalTo("objectId", $mquery);
+  	$query->limit(1);
+  	$results = $query->find(true);
+
+  	pp($results);
+
+  	if (isset($results[0])) {
+  		$result = $results[0];
+  		$moralisSessionToken = $result->get('sessionToken');
+  	} else {
+  		$moralisSessionToken = "";
+  	}
+
+  } catch (ParseException $e) {
+  // catch throwables when the connection is not a success
+  	pp($e);
+  }
+
+}
+
+
+
 
 
 function pte_user_rights_check($resourceType, $data){
@@ -1571,6 +2514,29 @@ function pte_get_template_editor($editorSettings) {
 return $html;
 }
 
+function wsc_get_gallery($gallerySettings) {
+
+  $nftToolbar = wsc_get_nft_view_toolbar();
+
+  $html .= "
+  <div class='outer_button_line' style='min-height: 42px; text-align: center; margin: 0 0 10px 0;'>
+    <div class='pte_vault_row_100'>
+      {$nftToolbar}
+    </div>
+    <div id='alpn_message_area' class='alpn_message_area' onclick='pte_clear_message();'></div>
+  </div>
+  <div id='outer-gallery-container' style='padding: 0 20px 0 20px; text-align: center;'>
+    <div id='nft-gallery-container' class='nft-gallery-container'>
+    </div>
+  </div>
+  <script>
+    wsc_change_nfts();
+  </script>
+  ";
+
+  return $html;
+}
+
 function pte_get_viewer($viewerSettings){
 
   $sidebarState = isset($viewerSettings['sidebar_state']) ? $viewerSettings['sidebar_state'] : 'closed';
@@ -1871,11 +2837,6 @@ function pte_async_job_old_1 ($url, $params) {
 
 function pte_async_job ($url, $params) {
 
-  alpn_log("ABOUT TO ASYNC NEW");
-  alpn_log($url);
-  alpn_log($params);
-
-
     foreach ($params as $key => &$val) {
       if (is_array($val)) $val = implode(',', $val);
         $post_params[] = $key.'='.urlencode($val);
@@ -2090,6 +3051,22 @@ function get_routing_email_addresses() {
   }
 }
   return $emailAddresses;
+}
+
+function wsc_get_wallet_addresses_ux() {
+
+  $html = "
+    <button id='moralis-login-button'>Attach a Wallet</button><br><br>
+
+    <script>
+
+    jQuery('#moralis-login-button').on( 'click', moralisAttachWalletConnect );
+
+    </script>
+  ";
+
+
+  return $html;
 }
 
 function pte_get_email_ux() {
