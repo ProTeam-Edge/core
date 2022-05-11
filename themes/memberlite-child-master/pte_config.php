@@ -9,7 +9,12 @@ define('PTE_HOST_DOMAIN_NAME', $domainName);
 define('PTE_ROOT_URL', "https://{$domainName}/wp-content/themes/memberlite-child-master/");
 define('PTE_BASE_URL', "https://{$domainName}/");
 define('PTE_ROOT_PATH', '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/');
+define('PTE_ROOT_DIST', '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/dist/');
+define('PTE_ROOT_DIST_FONTS', '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/dist/assets/fonts/');
 define('PTE_IMAGES_ROOT_URL', 'https://storage.googleapis.com/pte_media_store_1/');
+
+define('WSC_PREVIEWS_PATH', '/var/www/html/proteamedge/public/wp-content/themes/memberlite-child-master/wsc_preview/');
+define('WSC_PREVIEWS_URL', "https://{$domainName}/wp-content/themes/memberlite-child-master/wsc_preview/");
 
 define('PTE_DATE_FORMAT_STRING', 'MMM D, YYYY, h:mma');   //javascript formatting.
 define('PTE_DATE_FORMAT_STRING_PHP', 'M j, Y, g:i a');   //php formatting.
@@ -65,6 +70,17 @@ define('MORALIS_APPID', 'z40qQMDZOc7HYcIZEgSDyXRWyTgiUp5Ino0I6yww');
 define('MORALIS_MK', 'JwJXP1eaPNNyRmNVWIvioqWgJeLF9ZDyC8Ei0JUW');
 define('MORALIS_SERVER_URL', 'https://h2yoot4zcjng.usemoralis.com:2053');
 define('MORALIS_API_KEY', 'va4yCbZSKEwurHgMOKvszRzWW1NUGEOalGvHsyxxCI2mNkA3t4jSo8dHpDPdoADR');
+
+
+//TWITTER
+
+define('TWITTER_CONSUMER_KEY', 'dI0TPoyC70xVZEpC0UJwJehfa');
+define('TWITTER_CONSUMER_SECRET', 'xr4Rs0JJr5LRKtNp5RThrwJsK4m4gWuneVsMMpoE2fjkO7ckYR');
+define('TWITTER_BEARER_TOKEN', 'AAAAAAAAAAAAAAAAAAAAAIw3QgEAAAAAaV7jwWq68aGfcIzCQ8vNmUcEm1A%3D0EM4EHij7KlFe372yhDj29QPeD9stePZA6nnRoWz7znML0vZwk');
+define('TWITTER_ACCESS_TOKEN', '56469651-1qKL1X48zGUtU1sxCOj9r6403qNdGDCmFO54heNSU');
+define('TWITTER_ACCESS_TOKEN_SECRET', 'ibOs7dTpJXA6s3LtlSYhUJcmO0WuZXlYG6AY2ExoiH2Hb');
+define('TWITTER_OAUTH_CALLBACK', "https://{$domainName}/wp-content/themes/memberlite-child-master/wsc_twitter_oauth_handler.php");
+
 
 
 ?>

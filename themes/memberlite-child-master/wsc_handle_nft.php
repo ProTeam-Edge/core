@@ -26,6 +26,7 @@ $userID = $userInfo->data->ID;
 //update_user_meta( $userID, "pte_user_network_id",  11);
 $userMeta = get_user_meta( $userID, 'pte_user_network_id', true );
 
+// wsc_track_accounts("0xEB889d3FFD7170cD1E25A3B2cB0D522b8EAA5CB7");
 
 // pp($userID);
 // pp($userMeta);
@@ -76,7 +77,6 @@ if (!isset($results[0])) {
 	$topicOwnerId = $record->owner_id;
 	$context = $topicName;
 	$accessLevel = $record->access_level;
-
 
 	$topicBelongsToUser = ($userID == $topicOwnerId) ? true : false;
 
@@ -156,7 +156,8 @@ $html .= "
 					</div>
 				</div>
 				<script>
-					wsc_change_nfts();
+					var nft_state = {$record->nft_view_state};
+					wsc_change_nfts('', nft_state);
 				</script>
 ";
 

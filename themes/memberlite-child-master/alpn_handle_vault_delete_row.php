@@ -14,7 +14,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 $qVars = $_POST;
-$vaultId = isset($qVars['vault_id']) ? pte_digits($qVars['vault_id']) : false;
+$vaultId = isset($qVars['vault_id']) ? $qVars['vault_id'] : false;
 
 $userInfo = wp_get_current_user();
 $userID = $userInfo->data->ID;

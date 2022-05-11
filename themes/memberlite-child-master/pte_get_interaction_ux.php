@@ -3,6 +3,8 @@ require 'vendor/autoload.php';
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
 use Bueltge\Marksimple\Marksimple;
+use Abraham\TwitterOAuth\TwitterOAuth;
+
 
 
 if(!is_user_logged_in() ) {
@@ -94,6 +96,9 @@ function pte_make_interaction_editor_ux($uxMeta) {
 		case 'proteam_invitation_received':
 			$html .= pte_make_invitation_received_panel($uxMeta);
 		break;
+    case 'twitter_actions':
+      $html .= pte_make_twitter_actions_panel($uxMeta);
+    break;
 		case 'fax_send':
 		case 'topic_team_invite':
 		case 'email_send':
@@ -678,6 +683,163 @@ function pte_make_info_panel($uxMeta){
 	$html .= "</div>";
 
 	$html .= "</div>"; //end info panel
+
+return $html;
+}
+
+function pte_make_twitter_actions_panel ($uxMeta) {
+
+	global $wpdb;
+
+  $connectToTwitter = "";
+
+  $initialAction = isset($uxMeta['twitter_action']) ? $uxMeta['twitter_action'] : "tweet";
+  $textContent = isset($uxMeta['twitter_text_data']) ? $uxMeta['twitter_text_data'] : "";
+
+
+	$userInfo = wp_get_current_user();
+	$ownerId = $userInfo->data->ID;
+
+	$processId = 	isset($uxMeta['process_id']) ? $uxMeta['process_id'] : "";
+
+  $actionsArray = array(
+    "tweet" => "Tweet up to 4 NFTs",
+    "pfp" => "Set Profile Picture to an NFT",
+    "3x1" => "Set Profile Banner to 3 NFTs",
+    "6x2" => "Set Profile Banner to 12 NFTs",
+    "9x3" => "Set Profile Banner to 27 NFTs",
+    "12x4" => "Set Profile Banner to 48 NFTs",
+    "15x5" => "Set Profile Banner to 75 NFTs",
+    "2xwords" => "Set Profile Banner to 2 NFTs and Caption",
+    "8xwords" => "Set Profile Banner to 8 NFTs and Caption",
+    "18xwords" => "Set Profile Banner to 18 NFTs and Caption",
+    "32xwords" => "Set Profile Banner to 32 NFTs and Caption"
+  );
+  $hasWordsArray = array("tweet", "2xwords", "8xwords", "18xwords", "32xwords");
+  $hasWordsClass= in_array($initialAction, $hasWordsArray) ? "" : "wsc_owner_tools_off";
+
+	$html = "";
+
+  if ($processId && $ownerId) {
+
+  	$setData = $wpdb->get_results(
+  		$wpdb->prepare("SELECT DISTINCT set_name FROM alpn_nft_sets WHERE owner_id = %d ORDER BY set_name", $ownerId)
+  	);
+
+    if (isset($setData[0])) {
+
+          $initialSet = isset($uxMeta['twitter_set_name']) ? $uxMeta['twitter_set_name'] : $setData[0]->set_name;
+
+          $twitterActionsSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_twitter_actions'>";
+          foreach ($actionsArray as  $key => $value) {
+            $selectedItem = ($key == $initialAction) ? " SELECTED " : "";
+        		$twitterActionsSelect .= "<option value='{$key}' $selectedItem>{$value}</option>";
+        	}
+          $twitterActionsSelect .= "</select></div>";
+
+        	$setSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_nft_sets'>";
+        	foreach ($setData as  $setItem) {
+            $selectedItem = ($setItem->set_name == $initialSet) ? " SELECTED " : "";
+        		$setSelect .= "<option value='{$setItem->set_name}' $selectedItem>{$setItem->set_name}</option>";
+        	}
+        	$setSelect .= "</select></div>";
+
+          $previewHtml = wsc_get_twitter_preview_art($initialSet, $initialAction, $processId, $textContent);
+
+          $userMeta = $wpdb->get_results(
+            $wpdb->prepare("SELECT twitter from alpn_user_metadata WHERE id = %d ", $ownerId)
+        	);
+          $accessTokenData = json_decode($userMeta[0]->twitter, true);
+          $accessToken = isset($accessTokenData['oauth_token']) ? $accessTokenData['oauth_token'] : false;
+
+          if ($accessToken && $accessTokenData['user_id']) {
+            $twitterName = $accessTokenData['screen_name'];
+            $connectToTwitter = "<div class='wsc_twitter_connection'>
+                                    Status: Connected as @<a class='wsc_external_links' href='https://twitter.com/{$twitterName}' target='_blank'>{$twitterName}</a> -- <a class='wsc_external_links'>Disconnect</a>
+                                </div>";
+          } else {
+            $connection = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+            $request_token = $connection->oauth('oauth/request_token', array('oauth_callback' => TWITTER_OAUTH_CALLBACK));
+
+            if (isset($request_token['oauth_token'])) {
+              $userMeta = array('twitter' => json_encode($request_token));
+              $whereClause = array('id' => $ownerId);
+              $wpdb->update( 'alpn_user_metadata', $userMeta, $whereClause );
+
+              $url = $connection->url('oauth/authorize', array('oauth_token' => $request_token['oauth_token']));
+              $connectToTwitter = "<div class='wsc_twitter_connection'>
+                                    Status: Disconnected -- <a class='wsc_external_links' onclick='window.open(`{$url}`, `_blank`, `top=100,left=500,width=640,height=480`)'>Connect to Twitter</a>
+                                  </div>";
+            }
+          }
+
+        	$html .= "<div id='wsc_twitter_panel'>
+                      <div class='wsc_section_title_ww'>Run Workflow</div>
+                      {$twitterActionsSelect}
+                      <div class='wsc_section_title_ww wsc_ww_line_separator'>Using Set</div>
+                      {$setSelect}
+                      <div id='wsc_twitter_preview_area' class='wsc_twitter_preview_area {$hasWordsClass}'>
+                        <div class='wsc_section_title_ww wsc_ww_line_separator'>Add Words</div>
+                        <textarea id='wsc_twitter_note' class='wsc_textarea_standard'>{$textContent}</textarea>
+                      </div>
+                      <div class='wsc_section_title_ww wsc_ww_line_separator'>Preview</div>
+                      <div id='wsc_twitter_preview_container'>{$previewHtml}</div>
+                      <div class='wsc_section_title_ww wsc_ww_line_separator'>Connect to Twitter</div>
+                      {$connectToTwitter}
+                      <div class='wsc_section_title_ww wsc_ww_line_separator'>Send</div>
+        						</div>
+                		<script>
+                        function wsc_handle_twitter_action_changes(){
+                          console.log('doing it');
+                          var twitterAction = jQuery('#alpn_select2_small_twitter_actions');
+                        	var twitterActionData = twitterAction.select2('data');
+                        	if (typeof twitterActionData != 'undefined' && typeof twitterActionData[0] != 'undefined') {
+                        		var twitterActionSlug = twitterActionData[0].id;
+                        	} else {
+                            var twitterActionSlug = false;
+                          }
+                          var nftSet = jQuery('#alpn_select2_small_nft_sets');
+                          var nftSetData = nftSet.select2('data');
+                          if (typeof nftSetData != 'undefined' && typeof nftSetData[0] != 'undefined') {
+                            var nftSetSlug = nftSetData[0].id;
+                          } else {
+                            var nftSetSlug = false;
+                          }
+                          var textData = jQuery('textarea#wsc_twitter_note').val();
+                          wsc_update_preview(twitterActionSlug, nftSetSlug, textData);
+                        }
+                				jQuery('select#alpn_select2_small_twitter_actions').select2( {
+                					theme: 'bootstrap',
+                					width: '100%',
+                					allowClear: false,
+                					minimumResultsForSearch: -1
+                				});
+                				jQuery('#alpn_select2_small_twitter_actions').on('select2:select', function (e) {
+                          wsc_handle_twitter_action_changes();
+                				});
+                        jQuery('select#alpn_select2_small_nft_sets').select2( {
+                          theme: 'bootstrap',
+                          width: '100%',
+                          allowClear: false
+                        });
+                        jQuery('#alpn_select2_small_nft_sets').on('select2:select', function (e) {
+                          wsc_handle_twitter_action_changes();
+                        });
+                        jQuery('textarea#wsc_twitter_note').donetyping(function(){
+                            wsc_handle_twitter_action_changes();
+                        });
+                      </script>
+        		";
+
+
+    }
+
+
+
+
+  } else {
+    alpn_log("Error Twitter");
+  }
 
 return $html;
 }

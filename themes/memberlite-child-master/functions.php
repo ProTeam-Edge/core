@@ -472,7 +472,7 @@ function add_loginout_link( $items, $args ) {
     $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a class="wsc_nav_icon" href="' . get_permalink( 1514 ) . '"><i title="Help Center" class="fal fa-question"></i></a> &nbsp;&nbsp;  <a class="wsc_nav_icon" href="' . get_permalink( wc_get_page_id( 'myaccount' ) ) . '"><i title="Account Dashboard" class="fal fa-id-card"></i></a> &nbsp;&nbsp;  <a title="Log out" class="wsc_nav_icon" href="'. wp_logout_url( get_permalink( wc_get_page_id( 'myaccount' ) ) ) .'"><i class="fal fa-sign-out-alt"></i></a></li>';
   }
    elseif (!is_user_logged_in() && ($args->theme_location == 'meta' || !$args->theme_location)) {
-		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 6995 ) . '">Pricing</a></li>';
+		 //$items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 6995 ) . '">Pricing</a></li>';
 		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 146 ) . '">Blog</a></li>';
 		 $items .= '<li class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 3306 ) . '">Conversations</a></li>';
 		 $items .= '<li title="Build Wiscle, Earn Crypto" class="menu-item menu-item-type-post_type menu-item-object-page"><a href="' . get_permalink( 7260 ) . '">Community</a></li>';

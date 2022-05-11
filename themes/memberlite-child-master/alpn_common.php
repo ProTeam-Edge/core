@@ -12,8 +12,12 @@ use Parse\ParseQuery;
 use Parse\ParseUser;
 use Parse\ParseException;
 use Parse\ParseClient;
+use Parse\ParseCloud;
 use Ramsey\Uuid\Uuid;
 use enshrined\svgSanitize\Sanitizer;
+use sybio\GifFrameExtractor\GitFrameExtractor;
+use GDText\Box;
+use GDText\Color;
 
 
 function wsc_linkify_string($string) {
@@ -40,8 +44,6 @@ function wsc_resolve_ens($address) {
 }
 
 function wsc_process_thumb($thumbData){
-
-  alpn_log("PROCESS THUMB");
 
 $filepath = $oldFilePath = PTE_ROOT_PATH . "tmp/" . $thumbData['original_file_key'];
 
@@ -219,6 +221,286 @@ function wsc_create_vid_from_images($imageArray) {
 
 }
 
+function wsc_create_pfp_from_set($previewId, $setId) {
+  global $wpdb;
+
+  $userInfo = wp_get_current_user();
+  $userId = $userInfo->data->ID;
+
+  $nfts = $wpdb->get_results(
+    $wpdb->prepare("SELECT n.* from alpn_nft_meta n LEFT JOIN alpn_nft_sets s ON s.nft_id = n.id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY s.id LIMIT 1", $userId, $setId)
+   );
+
+   if (isset($nfts[0]) && $nfts[0]->thumb_mime_type == "image/webp") {
+     try {
+
+       $destinationFile = WSC_PREVIEWS_PATH . $previewId;
+       $nftUrl = PTE_IMAGES_ROOT_URL . $nfts[0]->thumb_file_key;
+       file_put_contents($destinationFile, file_get_contents($nftUrl));
+       return true;
+
+     } catch (Exception $e) {
+       alpn_log("FAILED CREATING PFP FROM SET");
+     }
+   }
+
+   return false;
+
+}
+
+function wsc_prepare_tweet_elements($fileId, $setName, $action, $words) {
+  global $wpdb;
+
+  $userInfo = wp_get_current_user();
+  $userId = $userInfo->data->ID;
+
+  $nfts = $wpdb->get_results(
+    $wpdb->prepare("SELECT n.* from alpn_nft_meta n LEFT JOIN alpn_nft_sets s ON s.nft_id = n.id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY s.id", $userId, $setName)
+   );
+
+   if (isset($nfts[0])) {
+
+     try {
+       $imageCounter = 0;
+       foreach ($nfts as $key => $nft) {
+         if ($nft->thumb_mime_type == "image/webp") {
+           $previewId = $fileId . "_{$imageCounter}.webp";
+           $destinationFile = WSC_PREVIEWS_PATH . $previewId;
+           $nftUrl = PTE_IMAGES_ROOT_URL . $nft->thumb_large_file_key;
+           file_put_contents($destinationFile, file_get_contents($nftUrl));
+           if ($imageCounter > 3) {break;}
+           $imageCounter++;
+         }
+       }
+       return $imageCounter;
+     } catch (Exception $e) {
+       alpn_log("FAILED PREPARING TWEET ELEMENTS");
+     }
+
+   }
+   return false;
+}
+
+function wsc_get_twitter_preview_art($setName, $action, $uniqueId, $words = "") {
+
+  global $wpdb;
+
+  $html = "";
+  $useWordsClass = "wsc_owner_tools_on";
+
+  switch ($action)
+  {
+      case "tweet":
+
+      $picCount = wsc_prepare_tweet_elements($uniqueId, $setName, $action, $words);
+      if ($picCount) {
+        $imageOneUrl = WSC_PREVIEWS_URL . "{$uniqueId}_0.webp?" . time();
+        $imageTwoUrl = WSC_PREVIEWS_URL . "{$uniqueId}_1.webp?" . time();
+        $imageThreeUrl = WSC_PREVIEWS_URL . "{$uniqueId}_2.webp?" . time();
+        $imageFourUrl = WSC_PREVIEWS_URL  . "{$uniqueId}_3.webp?" . time();
+
+        switch ($picCount) {
+            case 1:
+              $html = "<div class='wsc_nft_ww_row'>
+                         <div class='wsc_nft_ww_flex_container'>
+                          <a href ='{$imageOneUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageOneUrl}'></a>
+                         </div>
+                       </div>
+                      ";
+            break;
+            case 2:
+              $html = "<div class='wsc_nft_ww_row'>
+                         <div class='wsc_nft_ww_flex_container_50'>
+                          <a href ='{$imageOneUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageOneUrl}'></a>
+                         </div>
+                         <div class='wsc_nft_ww_flex_container_50'>
+                          <a href ='{$imageTwoUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageTwoUrl}'></a>
+                         </div>
+                       </div>
+                      ";
+            break;
+            case 3:
+              $html = "<div class='wsc_nft_ww_row'>
+                         <div class='wsc_nft_ww_flex_container_50'>
+                          <a href ='{$imageOneUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageOneUrl}'></a>
+                         </div>
+                         <div class='wsc_nft_ww_flex_container_50'>
+                          <a href ='{$imageTwoUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageTwoUrl}'></a>
+                         </div>
+                       </div>
+                       <div class='wsc_nft_ww_row'>
+                        <div class='wsc_nft_ww_flex_container_50'>
+                         <a href ='{$imageThreeUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageThreeUrl}'></a>
+                        </div>
+                        <div class='wsc_nft_ww_flex_container_50'>
+                        </div>
+                       </div>
+                      ";
+            break;
+            case 4:
+              $html = "<div class='wsc_nft_ww_row'>
+                         <div class='wsc_nft_ww_flex_container_50'>
+                          <a href ='{$imageOneUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageOneUrl}'></a>
+                         </div>
+                         <div class='wsc_nft_ww_flex_container_50'>
+                          <a href ='{$imageTwoUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageTwoUrl}'></a>
+                         </div>
+                       </div>
+                       <div class='wsc_nft_ww_row'>
+                        <div class='wsc_nft_ww_flex_container_50'>
+                         <a href ='{$imageThreeUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageThreeUrl}'></a>
+                        </div>
+                        <div class='wsc_nft_ww_flex_container_50'>
+                         <a href ='{$imageFourUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageFourUrl}'></a>
+                        </div>
+                       </div>
+                      ";
+            break;
+        }
+      }
+      break;
+      case "pfp":
+      $useWordsClass = 'wsc_owner_tools_off';
+        $fileId = $uniqueId . ".webp";
+        if (wsc_create_pfp_from_set($fileId, $setName)) {
+          $imageUrl = WSC_PREVIEWS_URL . $fileId . "?" . time();
+          $html = "<div class='wsc_nft_ww_row'>
+                     <div class='wsc_nft_ww_flex_container_max'>
+                      <a href ='{$imageUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageUrl}'></a>
+                     </div>
+                   </div>
+                  ";
+        }
+      break;
+
+      case "3x1":
+      case "6x2":
+      case "9x3":
+      case "12x4":
+      case "15x5":
+        $useWordsClass = 'wsc_owner_tools_off';
+      case "2xwords":
+      case "8xwords":
+      case "18xwords":
+      case "32xwords":
+        $fileId = $uniqueId . ".webp";
+        if (wsc_set_to_banner($fileId, $setName, $action, $words)) {
+          $imageUrl = WSC_PREVIEWS_URL . $fileId . "?" . time();
+          $html = "<div class='wsc_nft_ww_row'>
+                     <div class='wsc_nft_ww_flex_container'>
+                      <a href ='{$imageUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageUrl}'></a>
+                     </div>
+                   </div>
+                  ";
+        }
+      break;
+    }
+
+    $html .= "
+      <script>
+        var wsc_twitter_words_class = '{$useWordsClass}';
+      </script>
+    ";
+
+    return $html;
+}
+
+function wsc_set_to_banner($previewId, $setId, $bannerType, $words = "") {
+
+  global $wpdb;
+
+  $bannerWidth = 1500;
+  $bannerWidthNFTs = 1500;
+  $bannerHeight = 500;
+  $bannerType = explode("x", $bannerType);
+  $across = $bannerType[0];
+  $down = $bannerType[1];
+
+  if ($down == "words") {    // 1, 6, 24
+    $bannerWidthNFTs = 1000;
+    switch ($across)
+    {
+        case 8:
+            $down = 2;
+            $across = 4;
+        break;
+        case 18:
+            $down = 3;
+            $across = 6;
+        break;
+        case 32:
+            $down = 4;
+            $across = 8;
+        break;
+        default:
+            $down = 1;
+            $across = 2;
+    }
+  }
+
+  $individualSize =  $bannerWidthNFTs / $across;
+  $blankPlaceHolder = PTE_IMAGES_ROOT_URL . "500x500_empty.webp";
+
+  $userInfo = wp_get_current_user();
+  $userId = $userInfo->data->ID;
+
+  $nfts = $wpdb->get_results(
+    $wpdb->prepare("SELECT n.* from alpn_nft_meta n LEFT JOIN alpn_nft_sets s ON s.nft_id = n.id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY s.id", $userId, $setId)
+   );
+
+   $destinationFile = WSC_PREVIEWS_PATH . $previewId;
+   $nftCounter = 0;
+   if (isset($nfts[0])) {
+     $newImage = imagecreatetruecolor($bannerWidth, $bannerHeight);
+     $backgroundColor = imagecolorallocate($newImage, 255, 255, 255);
+     imagefill($newImage, 0, 0, $backgroundColor);
+     for ($y = 0; $y < $down; $y++) {
+       for ($x = 0; $x < $across; $x++) {
+          $srcFile = (isset($nfts[$nftCounter])) ?  PTE_IMAGES_ROOT_URL . $nfts[$nftCounter]->thumb_large_file_key : $blankPlaceHolder;
+          $nftCounter++;
+          list($width_orig, $height_orig, $type) = getimagesize($srcFile);
+          switch ($type)
+          {
+              case IMAGETYPE_GIF:
+                  $image = imagecreatefromgif($srcFile);
+                  break;
+              case IMAGETYPE_JPEG:
+                  $image = imagecreatefromjpeg($srcFile);
+                  break;
+              case IMAGETYPE_PNG:
+                  $image = imagecreatefrompng($srcFile);
+                  break;
+              case IMAGETYPE_WEBP:
+                  $image = imagecreatefromwebp($srcFile);
+                  break;
+              default:
+                  list($width_orig, $height_orig, $type) = getimagesize($blankPlaceHolder);
+                  $image = imagecreatefromwebp($blankPlaceHolder);
+          }
+          $destinationX = $x * $individualSize;
+          $destinationY = $y * $individualSize;
+          imagecopyresampled($newImage, $image, $destinationX, $destinationY, 0, 0, $individualSize + 1, $individualSize + 1, $width_orig, $width_orig);
+          imagedestroy($image);
+       }
+     }
+      if ($words) {
+        $box = new Box($newImage);
+        $box->setFontFace(PTE_ROOT_DIST_FONTS . 'OpenSans-Semibold.ttf');
+        $box->setFontColor(new Color(0, 0, 0));
+        $box->setFontSize(32);
+        $box->setLineHeight(1.25);
+        $box->setBox(1050, 0, 400, 500);
+        $box->setTextAlign('left', 'bottom');
+        $box->draw($words);
+      }
+      imagewebp($newImage, $destinationFile, 95);
+      imagedestroy($newImage);
+      return true;
+   }
+
+  return false;
+}
+
 function imageToJpeg($srcFile, $thumbFile, $maxSize = 100) {
     list($width_orig, $height_orig, $type) = getimagesize($srcFile);
     $ratio_orig = $width_orig / $height_orig;
@@ -233,7 +515,19 @@ function imageToJpeg($srcFile, $thumbFile, $maxSize = 100) {
     switch ($type)
     {
         case IMAGETYPE_GIF:
-            $image = imagecreatefromgif($srcFile);
+            $gfe = new GifFrameExtractor\GifFrameExtractor();
+            if ($gfe->isAnimatedGif($srcFile)) {
+              $gfe->extract($srcFile);
+              $frames = $gfe->getFrames();
+              $frame = array_slice($frames, 0, 1);
+              $image = $frame['image'];
+            } else {
+              alpn_log("NON ANIMATED?");
+              $gfe->extract($srcFile);
+              $frames = $gfe->getFrames();
+              alpn_log($frames);
+              $image = imagecreatefromgif($srcFile);
+            }
             break;
         case IMAGETYPE_JPEG:
             $image = imagecreatefromjpeg($srcFile);
@@ -271,7 +565,15 @@ function imageToWebp($srcFile, $thumbFile, $maxSize = 100) {
     switch ($type)
     {
         case IMAGETYPE_GIF:
-            $image = imagecreatefromgif($srcFile);
+            $gfe = new GifFrameExtractor\GifFrameExtractor();
+            if ($gfe->isAnimatedGif($srcFile)) {
+              $gfe->extract($srcFile);
+              $frames = $gfe->getFrames();
+              $frame = array_slice($frames, 0, 1);
+              $image = $frame['image'];
+            } else {
+              $image = imagecreatefromgif($srcFile);
+            }
             break;
         case IMAGETYPE_JPEG:
             $image = imagecreatefromjpeg($srcFile);
@@ -287,7 +589,7 @@ function imageToWebp($srcFile, $thumbFile, $maxSize = 100) {
     }
     $newImage = imagecreatetruecolor($width, $height);
     imagecopyresampled($newImage, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
-    imagewebp($newImage, $thumbFile, 99);
+    imagewebp($newImage, $thumbFile, 95);
     imagedestroy($newImage);
 
     return true;
@@ -353,28 +655,61 @@ function getFileMetaFromMimeType($mimeType) {
       $extension = "svg";
       $type = "image";
     break;
+    case 'application/octet-stream':
+      $extension = "oct";
+      $type = "unsupported";
+    break;
   }
 
   return array("extension" => $extension, "type" => $type);
 }
 
+function wsc_track_accounts($walletAddress) {
+
+  pp("Track Account -- " . $walletAddress);
+
+  try { //track non authenticated addresses. Srill need to know transfers.
+    $parseClient = new ParseClient;
+    $parseClient->initialize( MORALIS_APPID, null, MORALIS_MK );
+    $parseClient->setServerURL(MORALIS_SERVER_URL, 'server');
+    $results = ParseCloud::run("watchEthAddress", array(
+      "address" => $walletAddress,
+      "sync_historical" => true
+    ), array("useMasterKey" => true));
+    pp($results);
+    $results = ParseCloud::run("watchPolygonAddress", array(
+      "address" => $walletAddress,
+      "sync_historical" => true
+    ), array("useMasterKey" => true));
+    pp($results);
+    pp("DONE");
+ } catch (ParseException $error) {
+  pp("PARSE TRACK ACCOUNTS FAILED");
+  pp($error);
+ }
+}
+
 
 function wsc_get_nft_view_toolbar(){
 
+    $waitIndicator = PTE_ROOT_URL . "pdf/web/images/loading-icon.gif";
+
   	$nftToolbar = "
   	<select id='alpn_select2_wallets_new' class='alpn_selector'><option value='wsc_all_accounts'>All web3 Accounts</option></select>
-  	<select id='alpn_select2_chains' class='alpn_selector'><option value='wsc_all_chains'>All Chains</option><option value='eth'>Ethereum</option><option value='matic'>Polygon</option></select>
+  	<select id='alpn_select2_chains' class='alpn_selector'><option value='wsc_all_chains'>All Chains</option><option value='eth'>Ethereum</option><option value='polygon'>Polygon</option></select>
     <select id='alpn_select2_contracts' class='alpn_selector'><option value='wsc_all_contracts'>All Contracts</option></select>
   	<select id='alpn_select2_tags' class='alpn_selector'><option value='wsc_all_tags'>All Sets</option></select>
     <select id='alpn_select2_types' class='alpn_selector'><option value='wsc_all_types'>All Types</option><option value='image'>Image</option><option value='music'>Music</option><option value='video'>Video</option></select>
   	<select id='alpn_select2_categories' class='alpn_selector'><option value='visible'>Visible</option><option value='staging'>Staging</option><option value='archived'>Archived</option><option value='error'>Error</option><option value='spam'>SPAM</option></select>
-  	<input id='wsc_nft_query_input' title='Search name, description and attributes for text' placeholder='Filter by text' style='font-size: 12px !important; color: black; padding: 0 0 0 10px !important; line-height: 20px; border-style: solid; border-width: 1px; border-radius: 0 0 0 0 !important; border-color: #ccc; height: 24px; width: 125px; font-weight: normal; background-color: white;'>
-    <i id='wsc_copy_gallery_link' style='margin-left: 5px;' class='far fa-link wsc_nft_scan' title='Copy Link to this Gallery' onclick='wsc_copy_gallery_link();'></i>
-  	<br>
+  	<input id='wsc_nft_query_input' title='Search name, description and attributes for text' placeholder='Filter by text' style='font-size: 12px !important; color: black; padding: 0 0 0 10px !important; line-height: 20px; border-style: solid; border-width: 1px; border-radius: 0 0 0 0 !important; border-color: #ccc; height: 24px; width: 100px; font-weight: normal; background-color: white;'>
+    <i id='wsc_clear_filters' style='margin-left: 5px;' class='far fa-times-circle wsc_nft_scan' title='Clear Filters' onclick='wsc_clear_gallery();'></i>
+    <div class='wsc_toolbar_wait_container'><img id='wsc_nft_loading_wait' class='wsc_nft_loading_wait' src='{$waitIndicator}'></div>
+    <br>
     <span style='font-size: 14px; margin-right: 5px;' class='wsc_nft_toolbar_help_text'>Attach your account:</span>
   	<i id='wsc_scan_wallet' class='far fa-qrcode wsc_nft_scan' title='Attach your account with owner rights by scanning a QR code with your mobile wallet' onclick='wsc_scan_account_to_attach();'></i>
     <span style='font-size: 14px; margin-right: 5px; margin-left: 10px;' class='wsc_nft_toolbar_help_text'>Attach any account:</span>
     <input id='wsc_nft_add_wallet_address' title='Attach any account with visitor rights by pasting its public key' placeholder='Paste any web3 public key' style='font-size: 12px !important; color: black; padding: 0 0 0 10px !important; line-height: 20px; border-style: solid; border-width: 1px; border-radius: 0 0 0 0 !important; border-color: #ccc; height: 24px; width: 175px; font-weight: normal; background-color: white;'>
+    <i id='wsc_copy_gallery_link' style='margin-left: 5px;' class='far fa-link wsc_nft_scan' title='Copy Link to this Gallery' onclick='wsc_copy_gallery_link();'></i>
   	<script>
     alpn_wait_for_ready(10000, 250,
       function(){
@@ -393,7 +728,7 @@ function wsc_get_nft_view_toolbar(){
       });
       jQuery('#alpn_select2_wallets_new').select2({
 				theme: 'bootstrap',
-				width: '175px',
+				width: '165px',
 				allowClear: false
 			});
 			jQuery('#alpn_select2_wallets_new').on('select2:select', function (e) {
@@ -401,7 +736,7 @@ function wsc_get_nft_view_toolbar(){
 			});
 			jQuery('#alpn_select2_contracts').select2({
 				theme: 'bootstrap',
-				width: '175px',
+				width: '165px',
 				allowClear: false
 			});
 			jQuery('#alpn_select2_contracts').on('select2:select', function (e) {
@@ -435,7 +770,7 @@ function wsc_get_nft_view_toolbar(){
 			});
 			jQuery('#alpn_select2_tags').select2({
 				theme: 'bootstrap',
-				width: '125px',
+				width: '115px',
 				allowClear: false,
 			});
 			jQuery('#alpn_select2_tags').on('select2:select', function (e) {
@@ -454,7 +789,6 @@ function wsc_get_nft_view_toolbar(){
 
 function wsc_store_nft_file($fileSettings, $unlinkSource = true){
 
-
   $error = false;
   $fileKey = $fileSettings["file_key"];
   $mimeType = $fileSettings["mime_type"];
@@ -465,7 +799,8 @@ function wsc_store_nft_file($fileSettings, $unlinkSource = true){
 
   if ($typeLookup['type'] && $typeLookup['type'] != "unsupported") {
 
-    if ($mimeType == "image/svg") {  //Sanitize file
+    // if ($mimeType == "image/svg") {  //Sanitize file
+    if (false) {  // Turned off santizer. It was altering ENS svg badly
       $sanitizer = new Sanitizer();
       $svgFile = @file_get_contents($localFile);
       $cleanSVG = $sanitizer->sanitize($svgFile);
@@ -569,7 +904,7 @@ function wsc_get_single_nft_metadata ($nftAddress, $tokenId, $chain='eth'){
    return $response;
 }
 
-function wsc_get_nft_metadata ($nftAddress, $chain='eth'){
+function wsc_get_nft_metadata ($nftAddress, $chain='eth'){  //for contract
 
   $headers = array();
   $moralisApiKey = MORALIS_API_KEY;
@@ -612,8 +947,8 @@ function wsc_update_nft_metadata($nftContractAddress, $tokenId) {
 
 function wsc_cleanup_nft_uri($uri) {
 
-  $useIpfs = "https://ipfs.io/ipfs/";
-  //$useIpfs = "https://ipfs.moralis.io:2053/ipfs/";
+  //$useIpfs = "https://ipfs.io/ipfs/";
+  $useIpfs = "https://ipfs.moralis.io:2053/ipfs/";
 
   $uri = stripslashes($uri);
 
@@ -622,21 +957,21 @@ function wsc_cleanup_nft_uri($uri) {
   if (substr($uri, 0, $sourceLen) == $source) {
     return $useIpfs . substr($uri, $sourceLen);
   }
-  $source = "https://gateway.pinata.cloud/ipfs/";
-  $sourceLen = strlen($source);
-  if (substr($uri, 0, $sourceLen) == $source) {
-    return $useIpfs . substr($uri, $sourceLen);
-  }
+  // $source = "https://gateway.pinata.cloud/ipfs/";
+  // $sourceLen = strlen($source);
+  // if (substr($uri, 0, $sourceLen) == $source) {
+  //   return $useIpfs . substr($uri, $sourceLen);
+  // }
   $source = "https://gateway.moralisipfs.com/ipfs/https://ipfs.io/ipfs/";
   $sourceLen = strlen($source);
   if (substr($uri, 0, $sourceLen) == $source) {
     return $useIpfs . substr($uri, $sourceLen);
   }
-  $source = "https://gateway.moralisipfs.com/ipfs/";
-  $sourceLen = strlen($source);
-  if (substr($uri, 0, $sourceLen) == $source) {
-    return $useIpfs . substr($uri, $sourceLen);
-  }
+  // $source = "https://gateway.moralisipfs.com/ipfs/";
+  // $sourceLen = strlen($source);
+  // if (substr($uri, 0, $sourceLen) == $source) {
+  //   return $useIpfs . substr($uri, $sourceLen);
+  // }
   $source = "http://";
   $sourceLen = strlen($source);
   if (substr($uri, 0, $sourceLen) == $source) {
@@ -665,28 +1000,97 @@ function wsc_get_best_nft_image_url($data) {
   }
 }
 
+function wsc_call_process_single_nft($data) {
+    try {
+      $headers = array();
+      $options = array(
+          CURLOPT_TIMEOUT => 100,
+          CURLOPT_CONNECTTIMEOUT => 20,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_FOLLOWLOCATION => true,
+          CURLOPT_URL => $source,
+          CURLOPT_HTTPHEADER => $headers
+      );
+       $ch = curl_init();
+       curl_setopt_array($ch, $options);
+       curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+         function($curl, $header) use (&$headers)
+         {
+           $len = strlen($header);
+           $header = explode(':', $header, 2);
+           if (count($header) < 2) // ignore invalid headers
+             return $len;
+           $headers[strtolower(trim($header[0]))][] = trim($header[1]);
+           return $len;
+         }
+       );
+       curl_exec($ch);
+       $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+       curl_close($ch);
+       fclose($file);
+       if ($httpCode != "200") {
+         alpn_log("ERROR GETTING FILE");
+         alpn_log($httpCode);
+         alpn_log($source);
+         alpn_log(file_get_contents($destination));
+       }
+      if (!filesize($destination)) {
+        @file_put_contents($destination, @file_get_contents($source));
+      }
+    } catch (Exception $error) {
+     alpn_log("GET FILE EXCEPTION");
+     alpn_log($error);
+    }
+   return true;
+}
+
 
 function wsc_get_file($source, $destination) {
+    $fallback = false;
+    $openSeaMetaDataFailed = false;
 
-    $template = "data:application/json;base64,";
+    $template = "data:image/gif;base64,";
     $templateLen = strlen($template);
     if (substr($source, 0, $templateLen) == $template) {
       file_put_contents($destination, base64_decode(substr($source, $templateLen)));
-      return true;
-    }
-    $template = "data:image/svg+xml;utf8,";
-    $templateLen = strlen($template);
-    if (substr($source, 0, $templateLen) == $template) {
-      file_put_contents($destination, substr($source, $templateLen));
-      return true;
+      return array("http_code" => "embedded", "fall_back" => $fallback, "opensea_meta" => $openSeaMetaDataFailed);
     }
     $template = "data:application/json;utf8,";
     $templateLen = strlen($template);
     if (substr($source, 0, $templateLen) == $template) {
       file_put_contents($destination, substr($source, $templateLen));
-      return true;
+      return array("http_code" => "embedded", "fall_back" => $fallback, "opensea_meta" => $openSeaMetaDataFailed);
     }
-
+    $template = "data:application/json;base64,";
+    $templateLen = strlen($template);
+    if (substr($source, 0, $templateLen) == $template) {
+      file_put_contents($destination, base64_decode(substr($source, $templateLen)));
+      return array("http_code" => "embedded", "fall_back" => $fallback, "opensea_meta" => $openSeaMetaDataFailed);
+    }
+    $template = "data:image/svg+xml;base64,";
+    $templateLen = strlen($template);
+    if (substr($source, 0, $templateLen) == $template) {
+      $fileContent = trim(base64_decode(substr($source, $templateLen)));
+      $template2 = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
+      $template2Len = strlen($template2);
+      if (substr($fileContent, 0, $template2Len) == $template2) {
+        $fileContent = substr($fileContent, $template2Len);
+      }
+      file_put_contents($destination, $fileContent);
+      return array("http_code" => "embedded", "fall_back" => $fallback, "opensea_meta" => $openSeaMetaDataFailed);
+    }
+    $template = "data:image/svg+xml;utf8,";
+    $templateLen = strlen($template);
+    if (substr($source, 0, $templateLen) == $template) {
+      $fileContent = trim(substr($source, $templateLen));
+      $template2 = '<?xml version="1.0" encoding="UTF-8" standalone="no"?>';
+      $template2Len = strlen($template2);
+      if (substr($fileContent, 0, $template2Len) == $template2) {
+        $fileContent = substr($fileContent, $template2Len);
+      }
+      file_put_contents($destination, $fileContent);
+      return array("http_code" => "embedded", "fall_back" => $fallback, "opensea_meta" => $openSeaMetaDataFailed);
+    }
     try {
       $file = fopen($destination, "w");
       $headers = array();
@@ -701,90 +1105,138 @@ function wsc_get_file($source, $destination) {
       );
        $ch = curl_init();
        curl_setopt_array($ch, $options);
+       curl_setopt($ch, CURLOPT_HEADERFUNCTION,
+         function($curl, $header) use (&$headers)
+         {
+           $len = strlen($header);
+           $header = explode(':', $header, 2);
+           if (count($header) < 2) // ignore invalid headers
+             return $len;
+           $headers[strtolower(trim($header[0]))][] = trim($header[1]);
+           return $len;
+         }
+       );
        curl_exec($ch);
+       $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
        curl_close($ch);
        fclose($file);
-      if (!filesize($destination)) {
-        @file_put_contents($destination, @file_get_contents($source));
-      }
+       if ($httpCode >= 300) {
+         alpn_log("ERROR GETTING FILE - " . $httpCode);
+         // alpn_log($httpCode);
+         // alpn_log($headers);
+         if ($httpCode == 404 && substr($source, 0, strlen("https://api.opensea.io/api/v1/metadata")) == "https://api.opensea.io/api/v1/metadata") {
+           // alpn_log("OS META FAILED");
+           $openSeaMetaDataFailed = true;
+         } else {
+           alpn_log($source);
+           alpn_log(file_get_contents($destination));
+         }
+         return array("http_code" => $httpCode, "fall_back" => $fallback, "opensea_meta" => $openSeaMetaDataFailed);
+       }
+       if (!filesize($destination)) {
+         alpn_log("FALLING BACK TO FILE GET CONTENTS");
+         alpn_log($source);
+         alpn_log($httpCode);
+         $fallback = true;
+         @file_put_contents($destination, @file_get_contents($source));
+       }
     } catch (Exception $error) {
      alpn_log("GET FILE EXCEPTION");
      alpn_log($error);
     }
-   return true;
+   return array("http_code" => $httpCode, "fall_back" => $fallback, "opensea_meta" => $openSeaMetaDataFailed);
 }
 
+//TODO BIG BUG. On Gary Vee who has 16000+ on Polygon
+//Moralis restarts after hitting page 17 Keeps sending a valid cursor.
+//Forcing stop after 8000
 
 function wsc_get_all_member_nfts($walletAddress) {
 
-  try {
-    $allNftsAllChains = array();
+  $breakAfter = 60000;
+  $chains = array("eth", "polygon");
 
-    $chains = array("eth", "matic");
+  try {
 
     foreach ($chains as $chain) {
 
-      $nftResults = json_decode(wsc_get_nft_page($walletAddress, 0, 500, '', $chain), true);
+      $nftResults = wsc_get_nft_page($walletAddress, 0, 500, '', $chain);
 
       alpn_log("CHAIN -- " . $chain . " -- " . $nftResults['total']);
 
-      if (isset($nftResults['total'])) {
+      if (isset($nftResults['cursor']) && $nftResults['cursor']) {
 
         $nftTotal = intval($nftResults['total']);
         $nftPageSize = intval($nftResults['page_size']);
-
         $nftPage = intval($nftResults['page']);
-        $allNfts = $nftResults['result'];
+        $cursor = $nftResults['cursor'];
 
-        while ((($nftPage + 1) * $nftPageSize) <= $nftTotal) {
-
-          alpn_log($nftPage . " -- " . $nftPageSize . " -- " . ($nftPage + 1) * $nftPageSize . " -- " . $nftTotal);
-
-          $nftResults = json_decode(wsc_get_nft_page($walletAddress, 0, 0, $nftResults['cursor'], $chain), true);
-          $allNfts = array_merge($allNfts, $nftResults['result']);
+        while ( $cursor && ($nftPage * $nftPageSize <= $breakAfter) && ($nftPage * $nftPageSize <= $nftTotal ) ) {
+          alpn_log($nftPage . " -- " . $nftPageSize . " -- " . $nftPage * $nftPageSize . " -- " . $nftTotal);
+          $nftResults = wsc_get_nft_page($walletAddress, 0, 0, $cursor, $chain);
+          $cursor = $nftResults['cursor'];
           $nftPage = intval($nftResults['page']);
         }
-
-        for ($i = 0; $i < count($allNfts); $i++) {
-          $allNfts[$i]['chain_id'] = $chain;
-        }
-
-        $allNftsAllChains = array_merge($allNftsAllChains, $allNfts);
       }
     }
-
   } catch (Exception $error) {
    alpn_log("FAILED GETTING ALL NFTS");
    alpn_log($error);
   }
 
-return $allNftsAllChains;
+return $nftTotal;
 }
 
-function wsc_get_nft_page ($walletAddress, $offset = 0, $limit = 500, $cursor = '', $chain = 'eth', $retryCounter = 1){
-  alpn_log("GET NFT PAGE");
 
+function wsc_handle_insert_multiple_nfts($nftPlaceholders, $values) {
 
-  $file = fopen($destination, "w");
-  $headers = array();
+  global $wpdb;
+
+  $query           = "INSERT IGNORE INTO alpn_nft_meta (`owner_address`, `contract_address`, `token_id`, `chain_id`, `state`, `process_after`, `moralis_meta`) VALUES ";
+  $query           .= implode( ', ', $nftPlaceholders);
+  $sql             = $wpdb->prepare( "$query ", $values );
+
+  try {
+
+      if ( $wpdb->query( $sql ) ) {
+        alpn_log("Inserting Multiple Success");
+        return true;
+      } else {
+        alpn_log("Inserting Multiple FAIL");
+        alpn_log($wpdb->last_query);
+        alpn_log($wpdb->last_error);
+        return false;
+      }
+
+  } catch (Exception $error) {
+      alpn_log("Inserting Multiple Error");
+      alpn_log($values);
+      alpn_log($error);
+  }
+
+}
+
+function wsc_get_nft_page ($walletAddress, $offset = 0, $limit = 500, $cursor = '', $chain = 'eth'){
+
+  $chainSlug = ($chain == "polygon") ? "matic" : $chain;
 
   try {
     $headers = array();
     $moralisApiKey = MORALIS_API_KEY;
     if ($cursor) {
-      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?&cursor={$cursor}";
+      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?&cursor={$cursor}&chain={$chainSlug}";
     } else {
-      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?limit={$limit}&offset={$offset}&chain={$chain}&format=decimal";
+      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?limit={$limit}&offset={$offset}&chain={$chainSlug}&format=decimal";
     }
     $headers[] = "Accept: application/json";
     $headers[] = "X-API-Key: {$moralisApiKey}";
     $options = array(
-        CURLOPT_FILE => $file,
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_URL => $fullUrl,
         CURLOPT_HTTPHEADER => $headers
     );
+
      $ch = curl_init();
      curl_setopt_array($ch, $options);
      curl_setopt($ch, CURLOPT_HEADERFUNCTION,
@@ -801,38 +1253,41 @@ function wsc_get_nft_page ($walletAddress, $offset = 0, $limit = 500, $cursor = 
      $response = curl_exec($ch);
      $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
      curl_close($ch);
+     // alpn_log("NFT PAGING HTTP CODE -- " . $httpCode);
 
-     alpn_log("RESPONSE CODE -- " . $httpCode);
+     $nftResults = json_decode($response, true);
+     $allNfts = $nftResults['result'];
 
-     // 'x-rate-limit-remaining-ttl': '60',
-     // 'x-rate-limit-remaining-ip-ttl': '60',
-     // 'x-rate-limit-used': '5',
-     // 'x-rate-limit-ip-used': '5',
-     // 'x-rate-limit-limit': '3500',
-     // 'x-rate-limit-throttle-remaining-ttl': '1',
-     // 'x-rate-limit-throttle-remaining-ip-ttl': '1',
-     // 'x-rate-limit-throttle-used': '60',
-     // 'x-rate-limit-throttle-ip-used': '60',
-     // 'x-rate-limit-throttle-limit': '88',
-     // 'x-request-weight': '5',
+     $nfts = array(); $nftPlaceholders = array();
+     for ($i = 0; $i < count($allNfts); $i++) {
+       $nowGm = gmdate ("Y-m-d H:i:s", time());
+       array_push( $nfts, $allNfts[$i]['owner_of'], $allNfts[$i]['token_address'], $allNfts[$i]['token_id'], $chain, "processing", $nowGm, json_encode($allNfts[$i]));
+       $nftPlaceholders[] = "( %s, %s, %s, %s, %s, %s, %s)";
+       if (($i % 100) == 0) { //write
+         wsc_handle_insert_multiple_nfts($nftPlaceholders, $nfts);
+         $nfts = array(); $nftPlaceholders = array();
+       }
+     }
+     if (count($nfts)) {  //balance
+       wsc_handle_insert_multiple_nfts($nftPlaceholders, $nfts);
+     }
 
-     return $response;
+     $newResponse = array(
+       "total" => $nftResults["total"],
+       "page_size" => $nftResults["page_size"],
+       "page" => $nftResults["page"],
+       "cursor" => $nftResults["cursor"],
+       "response_code" => $httpCode
+     );
+     return $newResponse;
+
   } catch (Exception $error) {
       alpn_log("Getting Page Error");
       alpn_log($walletAddress);
       alpn_log($error);
-      if ($retryCounter >= 1 && $retryCounter <= 3) {
-       $retryCounter++;
-       alpn_log("DELAY AND RETRY | " . $retryCounter);
-       sleep(5);
-       wsc_get_nft_page ($walletAddress, $offset, $limit, $cursor, $chain, $retryCounter);
-   } else {
-       alpn_log("COMPLETE FAIL");
-       return false;
-   }
   }
-
 }
+
 
 function wsc_log_current_user_into_parse() {
 
@@ -1251,17 +1706,17 @@ function pte_add_to_proteam($data) {
 
 function delete_from_cloud_storage($fileKey){
   alpn_log("Deleting Vault Item in Cloud Storage.");
+  alpn_log($fileKey);
 	try {
 		$storage = new StorageClient([
-	    	'keyFilePath' => '/var/www/html/proteamedge/private/proteam-edge-cf8495258f58.json'
+	    	'keyFilePath' => GOOGLE_STORAGE_KEY
 		]);
     $bucket = $storage->bucket('pte_file_store1');
-      $object = $bucket->object($fileKey);
-      $object->delete();
+    $object = $bucket->object($fileKey);
+    $object->delete();
     return true;
 	} catch (\Exception $e) { // Global namespace
     alpn_log('Failed to Delete from Cloud Storage');
-    alpn_log($e);
     return false;
 	}
 }
@@ -2789,6 +3244,40 @@ function pte_get_page_number($data) { //uses row_number from database and per_pa
   return -1;
 }
 
+function pte_sync_curl_nft($endPoint, $postRequest) {
+
+  //$domainName = "10.138.0.60";
+
+  $host= gethostname();
+  $ip_server = gethostbyname($host);
+  $domainName = $ip_server;
+
+  $baseUrl = "http://{$domainName}/wp-content/themes/memberlite-child-master/";
+  $fullUrl = "{$baseUrl}{$endPoint}.php";
+  $headers[] = "Accept: application/json";
+  $options = array(
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_ENCODING => "",
+      CURLOPT_MAXREDIRS => 10,
+      CURLOPT_TIMEOUT => 100,
+      CURLOPT_FOLLOWLOCATION => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_POST => true,
+      CURLOPT_CUSTOMREQUEST => "POST",
+      CURLOPT_POSTFIELDS => $postRequest,
+      CURLOPT_URL => $fullUrl,
+      CURLOPT_HTTPHEADER => $headers
+  );
+   $ch = curl_init();
+   curl_setopt_array($ch, $options);
+   $response = curl_exec($ch);
+   curl_close($ch);
+   return $response;
+}
+
+
+
+
 
 function pte_sync_curl($endPoint, $postRequest) {
   $domainName = PTE_HOST_DOMAIN_NAME;
@@ -2799,7 +3288,7 @@ function pte_sync_curl($endPoint, $postRequest) {
       CURLOPT_RETURNTRANSFER => true,
       CURLOPT_ENCODING => "",
       CURLOPT_MAXREDIRS => 10,
-      CURLOPT_TIMEOUT => 0,
+      CURLOPT_TIMEOUT => 100,
       CURLOPT_FOLLOWLOCATION => true,
       CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
       CURLOPT_POST => true,
@@ -3542,8 +4031,8 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
   $userID = $userInfo->data->ID;
   $userNetworkId = get_user_meta( $userID, 'pte_user_network_id', true );
 
-  alpn_log('pte_get_topic_list');
-  alpn_log($topicTypeId);
+  // alpn_log('pte_get_topic_list');
+  // alpn_log($topicTypeId);
 
   if ($userID && $listType) {
     switch ($listType) {
@@ -3552,10 +4041,10 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
         $wpdb_readonly->prepare(
           "SELECT connected_topic_id as id, name FROM alpn_topics_linked_view WHERE owner_topic_id = %d AND subject_token = %s AND owner_id = %d ORDER BY name ASC", $topicTypeId, $typeKey, $userID)
       );
-      alpn_log('pte_get_topic_list - RESULTS');
-      alpn_log($wpdb_readonly->last_query);
-      alpn_log($wpdb_readonly->last_error);
-      alpn_log($results);
+      // alpn_log('pte_get_topic_list - RESULTS');
+      // alpn_log($wpdb_readonly->last_query);
+      // alpn_log($wpdb_readonly->last_error);
+      // alpn_log($results);
 
       $id = $uniqueId ? $uniqueId : 'pte_by_type_key';
       break;
@@ -3578,7 +4067,7 @@ function pte_get_topic_list($listType, $topicTypeId = 0, $uniqueId = '', $typeKe
           $wpdb_readonly->prepare(
             "SELECT t.id, t.name FROM alpn_topics t RIGHT JOIN alpn_topic_types tt ON tt.id = t.topic_type_id AND tt.topic_class = 'topic' AND tt.special = 'topic' WHERE t.owner_id = '%s' ORDER BY name ASC;", $userID)
         );
-        alpn_log($results);
+        // alpn_log($results);
         $id = 'pte_important_topic_list';
         break;
         case "single_schema_type":

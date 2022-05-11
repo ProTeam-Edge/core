@@ -27,7 +27,7 @@ $firstTime = true;
 $accountProcessed = false;
 
 $accountResult = $wpdb->get_results(
-	$wpdb->prepare("SELECT id from alpn_wallet_relationships WHERE account_address = %s", $newWeb3Address)
+	$wpdb->prepare("SELECT id from alpn_wallet_meta WHERE account_address = %s", $newWeb3Address)
  );
 
  if (isset($accountResult[0])) {

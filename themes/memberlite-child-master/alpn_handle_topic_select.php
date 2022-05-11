@@ -8,10 +8,10 @@ use Parse\ParseUser;
 use Parse\ParseException;
 use Parse\ParseClient;
 
+
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
-//wsc_create_new_parse_user();
 
 $replaceStrings = array();
 $html = $faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
