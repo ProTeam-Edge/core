@@ -13,6 +13,8 @@ use Parse\ParseClient;
 //TODO store HTML in MySql using htmlspecialchars()
 
 
+// wsc_nft_deep_update("0x0632adcab8f12edd3b06f99dc6078fe1fedd32b0", "3133");
+
 $replaceStrings = array();
 $html = $faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;

@@ -16,21 +16,22 @@ register_shutdown_function(function(){
  // alpn_log("Handle SINGLE NFT Processing");
 
  $qVars = $_POST;
-
  $value = json_decode(stripslashes($qVars['moralis_meta']), true);
-
  $tokenAddress = $qVars['contract_address'];
  $tokenId = $qVars['token_id'];
  $chainId = $qVars['chain_id'];
 
  if (!$value && $tokenAddress) {
-	 	//No moralis metadata, let's get it
 		 $valueRaw = wsc_get_single_nft_metadata($tokenAddress, $tokenId, $chainId);
 		 $value = json_decode($valueRaw, true);
-		 alpn_log("NO METADATA HANDLER");
-		 alpn_log($qVars);
-		 alpn_log($valueRaw);
-		 alpn_log($value);
+		 if (isset($value['token_address'])) {
+			 alpn_log("METADATA HANDLER UPDATING NFT");
+			 $moralisMeta = array("moralis_meta" => $valueRaw);
+			 $whereClause = array('contract_address' => $tokenAddress, "token_id" => $tokenId, "chain_id" => $chainId);
+			 $wpdb->update( 'alpn_nft_meta', $moralisMeta, $whereClause );
+		 } else {
+			 alpn_log("METADATA HANDLER UNABLE TO UPDATE -- NO TOKEN ADDRESS");
+		 }
  }
 
  $value['chain_id'] = $chainId;
@@ -39,7 +40,6 @@ if (!$value) {
 	exit;
 }
 
-//update metadata from moralis if missing. Or forced??
 // alpn_log($value);
 
 $nftMeta = json_decode($value['metadata'], true);

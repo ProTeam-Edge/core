@@ -22,7 +22,7 @@ $qVars = $_POST;
 $twitterActionSlug = isset($qVars['twitter_action_slug']) ? $qVars['twitter_action_slug'] : false;
 $nftSetSlug = isset($qVars['nft_set_slug']) ? $qVars['nft_set_slug'] : false;
 $uniqueId = isset($qVars['unique_id']) ? $qVars['unique_id'] : false;
-$textData = isset($qVars['text_data']) ? $qVars['text_data'] : "";
+$textData = isset($qVars['text_data']) ? stripslashes($qVars['text_data']) : "";
 
 if ($userId && $twitterActionSlug && $nftSetSlug && $uniqueId) {
 	$hasWordsArray = array("tweet", "2xwords", "8xwords", "18xwords", "32xwords");  //move somewhere and stop repeating

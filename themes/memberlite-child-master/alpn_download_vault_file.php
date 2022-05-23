@@ -1,6 +1,6 @@
 <?php
 
-include('/var/www/html/proteamedge/public/wp-blog-header.php');
+include('/var/www/html/proteamedge/public/wp-load.php');
 
 require 'vendor/autoload.php';
 use Google\Cloud\Storage\StorageClient;

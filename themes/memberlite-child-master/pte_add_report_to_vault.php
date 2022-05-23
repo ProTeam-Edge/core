@@ -63,7 +63,8 @@ if ($topicId) {
 			"pdf_key" => '',
 			"file_key" => $fileKey,
 			"ready_date" => $now,
-			"size_bytes" => $sizeBytes
+			"size_bytes" => $sizeBytes,
+			"original_ext" => "pdf"
 		);
 		$wpdb->insert( 'alpn_vault', $rowData );      //TODO make into a single insert...Optimization
 }

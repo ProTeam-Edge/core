@@ -15,6 +15,25 @@ fff5ee
 	overflow-x: hidden;
 } */
 
+ul#select2-alpn_select2_tags-results,
+ul#select2-alpn_select2_wallets_new-results,
+ul#select2-alpn_select2_contracts-results {
+	max-height: 300px;
+	overflow-y: auto;
+}
+
+div#wsc_owner_tools_message{
+	padding: 30px 0;
+	font-size: 20px;
+}
+
+
+button#wsc_refresh_metadata_button{
+	vertical-align: middle;
+	height: 26px !important;
+	line-height: 26px !important;
+	padding: 0 !important;
+}
 
 img.wsc_ww_image_preview_single{
 	max-height: 125px !important
@@ -184,7 +203,7 @@ button#wsc_import_button{
 
 .wsc_owner_tools_on {
 	opacity: 1;
-	pointer-events:auto;
+	pointer-events: auto;
 }
 
 .wsc_owner_tools_hidden {
@@ -4593,6 +4612,8 @@ table#table_interactions td.column-draw_id {
 	line-height: 15px;
 }
 
+#wsc_ww_send_button,
+#wsc_ww_send_button:hover,
 #pte_message_panel_recall,
 #pte_message_panel_recall:hover,
 #pte_message_panel_update,

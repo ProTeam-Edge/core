@@ -7,7 +7,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    die;
 }
 
-  $limitOption = 500;
   $walletItems = $allTags = array();
 
   $chains = array(
@@ -19,7 +18,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 	$userId = $userInfo->data->ID;
 
 	$qVars = $_POST;
-
 	$ownerId = (isset($qVars['member_id']) && $qVars['member_id']) ? $qVars['member_id'] : $userId;
 
 	$inMissionControl = $qVars['in_mission_control'];  //double as topic ID
@@ -28,81 +26,12 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 
 	if ((!$inMissionControl && $qVars['member_id']) || ($inMissionControl && $userId)) {
 
-    $walletId = $qVars['account_id'];
-    $contractId = $qVars['contract_id'];
-		$slideId = $qVars['slide_id'];
-		$chainId = $qVars['chain_id'];
-		$typeId = $qVars['type_id'];
-		$tagId = $qVars['set_id'];  //Nomenclature change. set_id is public facing now.
-		$categoryId = $qVars['category_id'];
-		$nftQuery = $qVars['nft_query'];
+    $queryArray = wsc_get_nft_query($qVars);
 
-		$whereWallet = "";
-		if ($walletId) {
-			if ($walletId == 'wsc_all_accounts') {
-				if (!$inMissionControl && $toolbarCount > 1) {
-					unset($accountsInPlaylist[0]);
-					$accountList = "'" . implode("','", $accountsInPlaylist) . "'";
-					$whereWallet = "AND owner_address IN ({$accountList}) ";
-				} else {
-					$whereWallet = "";
-				}
-			} else {
-				$whereWallet = "AND owner_address = '{$walletId}' ";
-			}
-		}
-
-    if (!$contractId || $contractId == 'wsc_all_contracts') {
-      $whereContract = "";
-    } else {
-      $whereContract = "AND contract_address = '{$contractId}' ";
-    }
-
-		if (!$chainId || $chainId == 'wsc_all_chains') {
-			$whereChain = "";
-		} else {
-			$whereChain = "AND chain_id = '{$chainId}' ";
-		}
-
-		if (!$typeId || $typeId == 'wsc_all_types') {
-			$whereType = "";
-		} else if ($typeId == 'image'){
-			$whereType = "AND media_mime_type IN ('image/png', 'image/webp', 'image/jpeg', 'image/gif', 'image/svg') ";
-		} else if ($typeId == 'music'){
-			$whereType = "AND media_mime_type IN ('audio/x-wav', 'audio/mp3', 'audio/ogg', 'audio/mpeg') ";
-		} else if ($typeId == 'video'){
-			$whereType = "AND media_mime_type IN ('video/mp4', 'video/webm') ";
-		}
-
-		if (!$tagId || $tagId == 'wsc_all_tags') {
-			$whereTag = "";
-		} else if ($tagId) {
-			$whereTag = "AND id IN (SELECT nft_id FROM alpn_nft_sets WHERE owner_id = {$ownerId} AND set_name = '{$tagId}') ";
-    }
-
-		if ($nftQuery) {
-			$whereQuery = "AND (JSON_SEARCH(meta, 'one', '%%" .  $nftQuery . "%%') IS NOT NULL) ";  //%% for wbdb
-		} else {
-			$whereQuery = "";
-		}
-
-		if ($inMissionControl && $categoryId) {
-			$whereCategory = "AND category_id = '" . $categoryId . "' ";
-		} else {
-			$whereCategory = "AND category_id = 'visible' ";
-		}
-
-    $whereNoFails = "AND state = 'ready' ";
-
-    $rowLimit = "LIMIT {$limitOption} ";
-    $ordering = "ORDER BY contract_address, token_id ";
-
-    //$listOrdering = "ORDER BY friendly_name ";
-    $listOrdering = "ORDER BY CASE WHEN friendly_name != '' THEN friendly_name ELSE CASE WHEN ens_address != '' THEN ens_address ELSE account_address END END ";
-
-    $fullQueryLimit = $whereWallet . $whereContract . $whereChain . $whereType . $whereTag . $whereQuery . $whereCategory . $whereNoFails . $ordering . $rowLimit;
-    $fullQueryLimitListOrder = $whereWallet . $whereContract . $whereChain . $whereType . $whereTag . $whereQuery . $whereCategory . $whereNoFails . $listOrdering . $rowLimit;
-		$fullQueryNoLimit = $whereWallet . $whereContract . $whereChain . $whereType . $whereTag . $whereQuery . $whereCategory . $whereNoFails;
+    $fullQueryLimit = $queryArray["full_query_limit"];
+    $fullQueryLimitListOrder = $queryArray["full_query_limit_list_order"];
+    $fullQueryNoLimit = $queryArray["full_query_no_limit"];
+    $fullQueryNoLimitAllContracts = $queryArray["full_query_no_limit_all_contracts"];
 
 		$nftResults = $wpdb->get_results(
 			$wpdb->prepare("SELECT id, meta, contract_address, token_id, chain_id, account_address, friendly_name, ens_address, relation, category_id, thumb_mime_type, media_mime_type, media_file_key, thumb_file_key, thumb_large_file_key, JSON_UNQUOTE(JSON_EXTRACT(moralis_meta, '$.name')) AS contract_name, JSON_UNQUOTE(JSON_EXTRACT(moralis_meta, '$.symbol')) AS contract_symbol FROM alpn_nft_owner_view WHERE owner_id = %d {$fullQueryLimit}", $ownerId)
@@ -331,8 +260,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 
 			 if ($inMissionControl) {
 
-         //get saved settings. Set defaults.
-
 				 $walletData = $wpdb->get_results(
 					 $wpdb->prepare("SELECT w.*, r.relation FROM alpn_wallet_relationships r LEFT JOIN alpn_wallet_meta w ON w.account_address = r.account_address WHERE r.owner_id = %d ORDER BY CASE WHEN w.friendly_name != '' THEN w.friendly_name ELSE CASE WHEN w.ens_address != '' THEN w.ens_address ELSE w.account_address END END ", $userId)
 					);
@@ -340,9 +267,10 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 				 $walletItems = array();
 				 if (isset($walletData[0])) {
 					 foreach($walletData as $walletItem) {
-						 $walletItems[] = array("address" => $walletItem->account_address, "ens_address" => $walletItem->ens_address, "friendly_name" => $walletItem->friendly_name, "selected" => ($walletItem->account_address == $walletId) ? true : false);
+						 $walletItems[] = array("address" => $walletItem->account_address, "ens_address" => $walletItem->ens_address, "friendly_name" => $walletItem->friendly_name, "selected" => (strtolower($walletItem->account_address) == strtolower($walletId)) ? true : false);
 					 }
 				}
+
 				 $TagData = $wpdb->get_results(
 					 $wpdb->prepare("SELECT DISTINCT set_name from alpn_nft_sets WHERE owner_id = %d ORDER BY set_name", $userId)
 					);
@@ -353,17 +281,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 					 }
 				 }
 
-         $contractData = $wpdb->get_results(
-					 $wpdb->prepare("SELECT DISTINCT contract_address, JSON_UNQUOTE(JSON_EXTRACT(moralis_meta, '$.name')) AS contract_name from alpn_nft_meta WHERE id IN (SELECT id FROM alpn_nft_owner_view WHERE owner_id = %d {$fullQueryNoLimit}) ORDER BY contract_name", $userId)
-					);
-				 $allContracts = array();
-				 if (isset($contractData[0])) {
-					 foreach($contractData as $contractItem) {
-             if ($contractItem->contract_name && $contractItem->contract_name != 'null') {
-               $allContracts[] = array("contract_address" => $contractItem->contract_address, "contract_name" => $contractItem->contract_name, "selected" => ($contractItem->contract_address == $contractId) ? true : false);
-             }
-					 }
-				 }
          //save state// TODO only if user, not topic visitor.
          $filterElements = array(
            'account_id' => $walletId,
@@ -387,9 +304,10 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 					$walletItems = array();
  				 if (isset($uniqueAccounts[0])) {
 	 					 foreach($uniqueAccounts as $walletItem) {
-							 $walletItems[] = array("address" => $walletItem->owner_address, "ens_address" => $walletItem->ens_address, "friendly_name" => $walletItem->friendly_name, "selected" => ($walletItem->owner_address == $walletId) ? true : false);
+							 $walletItems[] = array("address" => $walletItem->owner_address, "ens_address" => $walletItem->ens_address, "friendly_name" => $walletItem->friendly_name, "selected" => (strtolower($walletItem->owner_address) == strtolower($walletId)) ? true : false);
 	 					 }
 	 				}
+
 					$TagDataInUse = $wpdb->get_results(
  					 $wpdb->prepare("SELECT DISTINCT set_name from alpn_nft_sets WHERE owner_id = %d AND nft_id IN (SELECT id FROM alpn_nft_owner_view WHERE owner_id = %d {$fullQueryNoLimit})", $ownerId, $ownerId)
  					);
@@ -399,18 +317,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
               $allTags[] = array("tag" => $tagItem->set_name, "selected" => ($tagItem->set_name == $tagId) ? true : false);
             }
           }
-          $contractData = $wpdb->get_results(
- 					 $wpdb->prepare("SELECT DISTINCT contract_address, JSON_UNQUOTE(JSON_EXTRACT(moralis_meta, '$.name')) AS contract_name from alpn_nft_meta WHERE id IN (SELECT id FROM alpn_nft_owner_view WHERE owner_id = %d {$fullQueryNoLimit}) ORDER BY contract_name", $userId)
- 					);
-          $allContracts = array();
 
- 				 if (isset($contractData[0])) {
- 					 foreach($contractData as $contractItem) {
-             if ($contractItem->contract_name && $contractItem->contract_name != 'null') {
-               $allContracts[] = array("contract_address" => $contractItem->contract_address, "contract_name" => $contractItem->contract_name, "selected" => ($contractItem->contract_address == $contractId) ? true : false);
-             }
- 					 }
- 				 }
 			 }  //end in gallery
 
 	} else {
@@ -418,9 +325,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 		$galleryHtml = "Invalid URL";
 	}
 
-
-
-
-pte_json_out(array("html" => $galleryHtml, "account_list" => $walletItems, "tag_list" => $allTags, "contract_list" => $allContracts));
+pte_json_out(array("html" => $galleryHtml, "account_list" => $walletItems, "tag_list" => $allTags));
 
 ?>

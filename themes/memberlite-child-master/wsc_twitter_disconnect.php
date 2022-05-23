@@ -1,52 +1,45 @@
 <?php
 
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
+
 use Abraham\TwitterOAuth\TwitterOAuth;
 
-if(!is_user_logged_in() ) {
+if (!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
 }
-if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+if (!check_ajax_referer('alpn_script', 'security', FALSE)) {
    echo 'Not a valid request.';
    die;
 }
-alpn_log("SENDING TO TWITTER");
+alpn_log("DISCONNECTING FROM TWITTER");
 
 $userInfo = wp_get_current_user();
-$userId = $userInfo->data->ID;
+$ownerId = $userInfo->data->ID;
 
-if ($userId ) {
+$connectToTwitter = "error";
 
-	$results = $wpdb->get_results(
-		$wpdb->prepare("SELECT twitter from alpn_user_metadata WHERE id = %d ", $userId)
-	 );
+if ($ownerId) {
 
-	 if (isset($results[0])) {
+	$connection = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
+	$request_token = $connection->oauth('oauth/request_token', array('oauth_callback' => TWITTER_OAUTH_CALLBACK));
 
-		 $accessTokenData = json_decode($results[0]->twitter, true);
-		 $accessToken = $accessTokenData['oauth_token'];
-		 $accessTokenSecret = $accessTokenData['oauth_token_secret'];
+	if (isset($request_token['oauth_token'])) {
 
-		 $connection = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET, $accessToken, $accessTokenSecret);
+		$userMeta = array('twitter' => json_encode($request_token));
+		$whereClause = array('id' => $ownerId);
+		$wpdb->update( 'alpn_user_metadata', $userMeta, $whereClause );
 
-		 $tempFileName = "123_456.jpeg";
+		$url = $connection->url('oauth/authorize', array('oauth_token' => $request_token['oauth_token']));
+		$connectToTwitter = "Status: Disconnected -- <a class='wsc_external_links' onclick='window.open(`{$url}`, `_blank`, `top=100,left=500,width=640,height=480`)'>Connect to Twitter</a>";
 
-		 $twitterImagePath =  PTE_ROOT_PATH . "tmp/" . $tempFileName;
-
-		 // $bannerData = base64_encode(file_get_contents($twitterImagePath));
-		 // $updateProfileResult = $connection->post("account/update_profile_banner", ["banner" => $bannerData]);
-
-		 $imageData = base64_encode(file_get_contents($twitterImagePath));
-		 $updateProfileResult = $connection->post("account/update_profile_image", ["image" => $imageData]);
-
-
-	 }
+	} else {
+		$settingsData = array("twitter" => NULL);
+		$whereClause = array("id" => $ownerId);
+		$wpdb->update( 'alpn_user_metadata', $settingsData, $whereClause );
+	}
 
 }
-
-$qVars = $_POST;
-
-pte_json_out(array("qvars" => $qVars, "results" => $updateProfileResult));
+pte_json_out(array("connection_string" => $connectToTwitter));
 
 ?>

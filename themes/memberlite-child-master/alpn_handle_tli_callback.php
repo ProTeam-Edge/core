@@ -10,7 +10,7 @@ if (isset($_POST['transloadit'])){
 	$tli = json_decode(stripslashes($_POST['transloadit']), true);
 
 	alpn_log("TLI CALLBACK");
-	alpn_log($tli);
+	// alpn_log($tli);
 
 	$status = $tli['ok'];
 	$uploads = $tli['uploads'];

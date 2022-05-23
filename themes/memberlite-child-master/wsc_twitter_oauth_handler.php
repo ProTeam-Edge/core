@@ -20,6 +20,13 @@ $results = $wpdb->get_results(
 		$wpdb->update( 'alpn_user_metadata', $settingsData, $whereClause );
 		$message = "Hi @{$twitterScreenName}, you're all set!<br><br>Please close this browser window to complete your Wiscle Workflow.";
 		$html = "<div style='border: 1px solid #D3D3D3; margin: 0 0 5px 0; padding: 100px 50px; background-color: rgb(250, 250, 250); min-height: 150px; text-align: center; font-family: Trebuchet, Arial, sans-serif; font-size: 24px;'>{$message}</div>";
+		$data = array(
+			"sync_type" => 'add_update_section',
+			"sync_section" => 'twitter_oauth_success',
+			"sync_user_id" => $ownerId,
+			"sync_payload" => array("disconnection_string" => "Status: Connected as @<a class='wsc_external_links' href='https://twitter.com/{$twitterScreenName}' target='_blank'>{$twitterScreenName}</a> -- <a class='wsc_external_links' onclick='wsc_twitter_disconnect();'>Disconnect</a>")
+		);
+		pte_manage_user_sync($data);
 	}
 }
 }

@@ -127,11 +127,11 @@ if ($topicProfileHandle) {
 
 $html="<div id='pte_selected_topic_meta' class='alpn_container_title_2' data-mode='vault' data-topic-id='{$topicId}' data-tid='{$topicId}' data-ttid='{$topicTypeId}' data-special='{$topicTypeSpecial}' data-tdid='{$topicDomId}' data-oid='{$topicOwnerId}' data-pl='{$permissionLevel}'  data-wal='{$accessLevel}' data-con='{$isConnected}'>
 			<div id='pte_topic_form_title_view'>
-			<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Data View' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+			<span class='fa-stack pte_icon_button_nav' title='Data View' data-operation='to_info' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 				<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 				<i class='fas fa-info fa-stack-1x' style='font-size: 16px;'></i>
 			</span>
-			<span class='fa-stack pte_icon_button_nav' title='Vault View' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
+			<span class='fa-stack pte_icon_button_nav pte_icon_report_selected' title='Vault View' data-operation='to_vault' onclick='event.stopPropagation(); pte_handle_interaction_link_object(this);'>
 				<i class='far fa-circle fa-stack-1x' style='font-size: 30px;'></i>
 				<i class='fas fa-lock-alt fa-stack-1x' style='font-size: 16px; top: -1px;'></i>
 			</span>

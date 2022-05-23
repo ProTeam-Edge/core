@@ -1,7 +1,7 @@
 <?php
 include('/var/www/html/proteamedge/public/wp-blog-header.php');
 
-$processAfter = '+ 24 hours';   //checking with Moralis on how long to wait
+$processAfter = '+ 5 minutes';   //checking with Moralis on how long to wait
 
 alpn_log("MORALIS CALLBACK");
 $post = file_get_contents('php://input');
