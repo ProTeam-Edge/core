@@ -99,7 +99,11 @@ function pte_save_process(Process $process, $uxMeta) {
         'json' => $processValues,
         'modified_date' => $now
       );
-      $wpdb->replace( 'alpn_interactions', $processData );
+      $results = $wpdb->replace( 'alpn_interactions', $processData );
+
+      // alpn_log($processData);
+      // alpn_log($results);
+
   } else {
 
   }
@@ -276,8 +280,8 @@ function pte_update_context_with_contact($contextData, $contactNetworkId, $email
 
 function pte_manage_interaction_proper($data) {
 
-  alpn_log("Starting Manager interaction...");
-  alpn_log($data);
+  // alpn_log("Starting Manager interaction...");
+  // alpn_log($data);
 
   global $wpdb;
 
@@ -294,9 +298,9 @@ function pte_manage_interaction_proper($data) {
   $ownerNetworkId = isset($data['owner_network_id']) ? $data['owner_network_id'] : 0;
   $ownerId = isset($data['owner_id']) ? $data['owner_id'] : 0;
 
-  $processData['process_type_id'] = $processTypeId;
-  $processData['owner_network_id'] = $ownerNetworkId;
-  $processData['owner_id'] = $ownerId;
+  if ($processTypeId) {$processData['process_type_id'] = $processTypeId;}
+  if ($ownerNetworkId) {$processData['owner_network_id'] = $ownerNetworkId;}
+  if ($ownerId) {$processData['owner_id'] = $ownerId;}
 
   if ($processId) {
     $processArray = pte_get_process_all($processId);
@@ -313,6 +317,7 @@ function pte_manage_interaction_proper($data) {
   if ($hasExtraContent) {
     $extraContext = $processData;
   }
+
   $processContext = $processContext ? $processContext : array_merge(pte_get_process_context($processData), $extraContext);
 
   if ($process) {

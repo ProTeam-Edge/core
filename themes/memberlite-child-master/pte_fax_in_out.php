@@ -137,7 +137,7 @@ if (isset($data['direction'])) {
               'documo_processing_status_name' => $documoProcessingStatusName
             )
         );
-        pte_manage_interaction($data);  //start new interaction (empty processId)
+        pte_manage_interaction($data);
       }
 
 

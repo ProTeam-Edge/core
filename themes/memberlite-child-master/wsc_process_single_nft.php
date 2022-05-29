@@ -66,7 +66,8 @@ if ($value['token_uri'] || $nftMetaImage) {
 		if ($fileMimeType == "application/json" || $fileMimeType == "text/plain" || $fileMimeType == "text/html" || $fileMimeType == "text/xml") {   //probably a better way to fail
 		 $newFile = file_get_contents($tempFileName);
 		 $meta = json_decode($newFile, true);
-		 $pdfUrl = isset($meta['pdf_url']) && $meta['pdf_url'] ? wsc_cleanup_nft_uri($meta['pdf_url']) : "";
+		 $documentUrl = isset($meta['document_url']) && $meta['document_url'] ? wsc_cleanup_nft_uri($meta['document_url']) : "";
+		 $archiveUrl = isset($meta['archive_url']) && $meta['archive_url'] ? wsc_cleanup_nft_uri($meta['archive_url']) : "";
 		 $animationUrl = isset($meta['animation_url']) && $meta['animation_url'] ? wsc_cleanup_nft_uri($meta['animation_url']) : "";
 		 $musicUrl = isset($meta['music_url']) && $meta['music_url'] ? wsc_cleanup_nft_uri($meta['music_url']) : "";
 		 $imageUrl = isset($meta['image']) && $meta['image'] ? wsc_cleanup_nft_uri($meta['image']) : false;
@@ -79,7 +80,7 @@ if ($value['token_uri'] || $nftMetaImage) {
 		 $attributes = isset($meta['attributes']) ? $meta['attributes'] : [];
 
 		 if (trim($animationUrl) || trim($musicUrl) || trim($imageUrl) || trim($pdfUrl)) {
-			 $newNft = array("opensea_meta" => $openSeaMetaDataFailed, "image_url" => $imageUrl, "full_url" => $fullUrl, "file_key" => $tempFileId, "mime_type" => '', "name" => $name, "description" => $description, "attributes" => $attributes, "pdf_url" => $pdfUrl, "music_url" => $musicUrl, "animation_url" => $animationUrl, "value" => $value, "source" => "metadata_file");
+			 $newNft = array("opensea_meta" => $openSeaMetaDataFailed, "image_url" => $imageUrl, "full_url" => $fullUrl, "file_key" => $tempFileId, "mime_type" => '', "name" => $name, "description" => $description, "attributes" => $attributes, "pdf_url" => $pdfUrl, "document_url" => $documentUrl, "archive_url" => $archiveUrl, "music_url" => $musicUrl, "animation_url" => $animationUrl, "value" => $value, "source" => "metadata_file");
 		 } else {
 			 $newNft = array("error" => "no_media_urls_found", "temp_file" => '', "mime_type" => "", "name" => "", "description" => "", "attributes" => [], "music_url" => '', "animation_url" => '', "pdf_url" => '', "image_url" => '', "token_uri" => $fullUrl, "source" => "metadata_file");
 		 }

@@ -12,8 +12,13 @@ use Parse\ParseClient;
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
-
 // wsc_nft_deep_update("0x0632adcab8f12edd3b06f99dc6078fe1fedd32b0", "3133");
+
+// wsc_create_nft_certificate(array(
+//   "name" => "Hello, World",
+//   "description" => "Hello, Description\nYo Dawg",
+//   "media_url" => "https://wiscle.com"
+// ));
 
 $replaceStrings = array();
 $html = $faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";

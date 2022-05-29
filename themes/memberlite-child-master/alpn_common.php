@@ -18,8 +18,9 @@ use enshrined\svgSanitize\Sanitizer;
 use sybio\GifFrameExtractor\GitFrameExtractor;
 use GDText\Box;
 use GDText\Color;
-
-
+use chillerlan\QRCode\{QRCode, QROptions};
+use chillerlan\QRCode\Data\QRMatrix;
+use Throwable;
 
 function wsc_start_nft_media_processing($data) {
   alpn_log("STARTING MEDIA PROCESSING");
@@ -561,6 +562,134 @@ function wsc_get_twitter_preview_art($setName, $action, $uniqueId, $words = "") 
     return $html;
 }
 
+function wsc_create_nft_certificate($certificateName, $data) {
+
+  // alpn_log("Creating CERTIFICATE");
+  // alpn_log($data);
+
+  $name = (isset($data['name']) && $data['name']) ? stripslashes($data['name']) : "NFT Name";
+  $description = (isset($data['description']) && $data['description']) ? stripslashes($data['description']) : "NFT Description";
+  $attributes = (isset($data['attributes']) && $data['attributes']) ? $data['attributes'] : array();
+  $processId = (isset($data['wscProcessId']) && $data['wscProcessId']) ? $data['wscProcessId'] : false;
+  $mediaType = (isset($data['wsc_media_type']) && $data['wsc_media_type']) ? $data['wsc_media_type'] : false;
+
+  if (isset($data['image_url']) && $data['image_url']) {
+    $mediaUrl = $data['image_url'];
+  } else if (isset($data['archive_url']) && $data['archive_url']) {
+    $mediaUrl = $data['archive_url'];
+  } else if (isset($data['document_url']) && $data['document_url']) {
+    $mediaUrl = $data['document_url'];
+  } else if (isset($data['music_url']) && $data['music_url']) {
+    $mediaUrl = $data['music_url'];
+  } else if (isset($data['animation_url']) && $data['animation_url']) {
+    $mediaUrl = $data['animation_url'];
+  }
+
+  $certificateUrl = PTE_IMAGES_ROOT_URL . "{$certificateName}.png";
+  $localFile = PTE_ROOT_PATH . "tmp/" . "{$certificateName}.png";
+  $destinationFileQR = PTE_ROOT_PATH . "tmp/qr_{$processId}.png";
+
+  if (!file_exists($localFile)) {
+    file_put_contents($localFile, file_get_contents($certificateUrl));
+  }
+  $image = imagecreatefrompng($localFile);
+
+  $titleBox = array(
+    'font_face' => 'OpenSans-ExtraBold.ttf',
+    'font_color' => new Color(0, 0, 0),
+    'font_size' => 64,
+    'line_height' => 1.25,
+    'horizontal_align' => 'left',
+    'vertical_align' => 'center',
+    'x' => 33,
+    'y' => 44,
+    'width' => 578,
+    'height' => 96
+  );
+  $image = wsc_addtext_to_nft_certificate($image, $titleBox, "NFT Contract");
+
+  $titleBox = array(
+    'font_face' => 'OpenSans-ExtraBold.ttf',
+    'font_color' => new Color(1, 59, 143),
+    'font_size' => 48,
+    'line_height' => 1.25,
+    'horizontal_align' => 'center',
+    'vertical_align' => 'center',
+    'x' => 20,
+    'y' => 300,
+    'width' => 1060,
+    'height' => 64
+  );
+  $image = wsc_addtext_to_nft_certificate($image, $titleBox, $name);
+
+  $titleBox = array(
+    'font_face' => 'OpenSans-Semibold.ttf',
+    'font_color' => new Color(255, 255, 255),
+    'font_size' => 28,
+    'line_height' => 1.25,
+    'horizontal_align' => 'center',
+    'vertical_align' => 'center',
+    'x' => 33,
+    'y' => 194,
+    'width' => 350,
+    'height' => 45
+  );
+  $image = wsc_addtext_to_nft_certificate($image, $titleBox, $mediaType);
+
+  $titleBox = array(
+    'font_face' => 'Lato-Regular.ttf',
+    'font_color' => new Color(0, 0, 0),
+    'font_size' => 24,
+    'line_height' => 1.40,
+    'horizontal_align' => 'left',
+    'vertical_align' => 'top',
+    'x' => 70,
+    'y' => 375,
+    'width' => 940,
+    'height' => 275
+  );
+  $image = wsc_addtext_to_nft_certificate($image, $titleBox, $description);
+
+  $options = new QROptions([
+	'version'             => 7,
+	'outputType'          => QRCode::OUTPUT_IMAGE_PNG,
+	'scale'               => 10,
+	'imageBase64'         => false,
+	'imageTransparent'    => false,
+	'drawCircularModules' => true,
+	'circleRadius'        => 0.4
+]);
+
+$QRCode = new QRCode($options);
+$certificateImage = $QRCode->render($mediaUrl);
+file_put_contents($destinationFileQR, $certificateImage);
+$certificateImageRes = imagecreatefrompng($destinationFileQR);
+unlink($destinationFileQR);
+imagecopyresampled($image, $certificateImageRes, 558, 150, 0, 0, 140, 140, imagesx($certificateImageRes), imagesy($certificateImageRes));
+ob_start();
+imagepng($image);
+$contents = ob_get_contents();
+ob_end_clean();
+imagedestroy($image);
+imagedestroy($certificateImageRes);
+return base64_encode($contents);
+}
+
+function wsc_addtext_to_nft_certificate($certificateImage, $textBox, $words){
+
+  $box = new Box($certificateImage);
+  $box->setFontFace(PTE_ROOT_DIST_FONTS . $textBox['font_face']);
+  $box->setFontColor($textBox['font_color']);
+  $box->setFontSize($textBox['font_size']);
+  $box->setLineHeight($textBox['line_height']);
+  $box->setBox($textBox['x'], $textBox['y'], $textBox['width'], $textBox['height']);
+  $box->setTextAlign($textBox['horizontal_align'], $textBox['vertical_align']);
+  $box->draw($words);
+
+  return $certificateImage;
+
+}
+
 function wsc_set_to_banner($previewId, $setId, $bannerType, $words = "") {
 
   global $wpdb;
@@ -749,6 +878,17 @@ function imageToWebp($srcFile, $thumbFile, $maxSize = 100) {
     imagedestroy($newImage);
 
     return true;
+}
+
+function wsc_get_url_meta($url) {
+
+  $supportedFilesArchive = array("zip");
+  $supportedFilesDocument = array("pdf");
+  $supportedFilesImage = array("jpg", "png", "gif", "webp", "svg");
+  $supportedFilesMusic = array("mpeg", "wav", "mp3");
+  $supportedFilesVideo = array("mp4", "webm");
+  $supportedFiles = array_merge($supportedFilesArchive, $supportedFilesDocument, $supportedFilesImage, $supportedFilesMusic, $supportedFilesVideo);
+
 }
 
 

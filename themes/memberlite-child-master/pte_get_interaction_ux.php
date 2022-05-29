@@ -186,6 +186,14 @@ function pte_make_button_line($lineType, $uxMeta) {
 
 	$html = "";
 	switch ($lineType) {
+		case 'nft_send':
+			$html .= "
+					<div style='float: right; width: 100%; text-align: right; font-size: 20px; color: rgb(0, 116, 187); margin: 10px 0 0 0;'>
+						<button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_handle_send_nft();' style='margin-right: 0; width: 65px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Send</button>
+					</div>
+					<div style='clear: both;'></div>
+			";
+		break;
     case 'twitter_send':
       $html .= "
           <div style='float: right; width: 100%; text-align: right; font-size: 20px; color: rgb(0, 116, 187); margin: 10px 0 0 0;'>
@@ -702,24 +710,24 @@ function pte_make_mint_nft_panel ($uxMeta) {
 
 	global $wpdb;
 
-  $connectToTwitter = "";
+	$sendLine = pte_make_button_line('nft_send', $uxMeta);
+	$processId = $uxMeta['process_id'];
 
-  $initialAction = isset($uxMeta['twitter_action']) ? $uxMeta['twitter_action'] : "tweet";
-  $textContent = isset($uxMeta['twitter_text_data']) ? $uxMeta['twitter_text_data'] : "";
+	return "<div>Mint NFT</div>
+					<div>{$sendLine}</div>
+					<script>
 
-	return "<div>Hello, World</div>
-
-				<script>
-
-				var nft_contract_address = '0x5cC14359f4D14C71E47e798754B1E3c5d0800960';
-
-				// const web3Provider = await Moralis.enableWeb3();
-				// window.ethereum.enable();
-
-				// const web3 = new Web3(window.polygon);
-
-
-				</script>
+					function wsc_get_mint_nft_values(){
+						var nftName = `A Really Nice NFT`;
+						var nftDescription = `I'm a creator and I made this.`;
+						return {
+							'nft_name': nftName,
+							'nft_description': nftDescription,
+							'process_id': '{$processId}',
+							'nft_attributes': {}
+						};
+					}
+					</script>
 	";
 
 	$userInfo = wp_get_current_user();
@@ -797,7 +805,6 @@ function pte_make_mint_nft_panel ($uxMeta) {
                                   </div>";
             }
           }
-
 
           $sendLine = pte_make_button_line('twitter_send', $uxMeta);
 

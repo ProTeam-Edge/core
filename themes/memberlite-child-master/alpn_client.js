@@ -2496,6 +2496,12 @@ function pte_handle_sync(data, item = false){
 
 	switch(syncSection) {
 
+		case 'nft_start_mint':
+			console.log("Handling START MINT!!!");
+			console.log(syncPayload);
+			wsc_start_minting(syncPayload.nft_token_uri, syncPayload.nft_contract_address, syncPayload.nft_token_id, syncPayload.nft_recipient_id);
+		break;
+
 		case 'has_connects':
 
 			jQuery("i#wcl_manage_connections_icon").addClass("wcl_connections_button_highlighted").attr("title", "You have connection requests waiting");
@@ -3059,27 +3065,197 @@ async function moralisLogOut() {
 // 	});
 // }
 
-async function moralisMintToken(_uri){
-  const encodedFunction = web3.eth.abi.encodeFunctionCall({
-    name: "mintToken",
-    type: "function",
-    inputs: [{
-      type: 'string',
-      name: 'tokenURI'
-      }]
-  }, [_uri]);
 
-  const transactionParameters = {
-    to: nft_contract_address,
-    from: ethereum.selectedAddress,
-    data: encodedFunction
-  };
-  const txt = await ethereum.request({
-    method: 'eth_sendTransaction',
-    params: [transactionParameters]
-  });
-  return txt;
+
+function wsc_handle_send_nft () {   //TODO Package with Interactions.
+
+		var context = wsc_get_mint_nft_values();
+
+		console.log("SENDING NFT");
+
+		console.log(context);
+		//
+		// if (context.twitter_logged_state != "connected") {
+		// 	pte_show_message('yellow_question', 'ok', "Please connect to Twitter to continue");
+		// 	return;
+		// }
+		//
+		// if (!context.twitter_set_slug) {
+		// 	pte_show_message('yellow_question', 'ok', "Please create a Set in NFT View");
+		// 	return;
+		// }
+
+		var security = specialObj.security;
+
+		jQuery.ajax({
+			url: alpn_templatedir + 'wsc_finalize_nft_send.php',
+			type: 'POST',
+			data: {
+				"security": security,
+				"nft_name": context.nft_name,
+				"nft_description": context.nft_description,
+				"process_id": context.process_id,
+				"nft_attributes": JSON.stringify(context.nft_attributes)
+			},
+			dataType: "json",
+			success: function(json) {
+				console.log("NFT Ready to Send...");
+				console.log(json);
+			},
+			error: function(json) {
+				console.log("Failed Sending NFT");
+				//TODO handle
+			}
+		});
 }
+
+async function wsc_start_minting(uri, nftContractAddress, nftTokenId, nftRecipientId = false) {
+	if (Moralis.ensureWeb3IsInstalled()) {
+				console.log("ALREADY CONNECTED - Minting!");
+				await moralisMintToken(uri, nftContractAddress, nftTokenId, nftRecipientId);
+				Moralis.deactivateWeb3();
+	} else {
+		Moralis.enableWeb3({
+				signingMessage: 'Please Connect to Wiscle',
+				provider: "walletconnect",
+				chainId: 137,
+				anyNetwork: true
+			}).then(async function(newProvider){
+				console.log("NEWLY CONNECTED - Minting!");
+				window.web3 = newProvider;
+				var mintResult = await moralisMintToken(uri, nftContractAddress, nftTokenId, nftRecipientId);
+				console.log(mintResult);
+				Moralis.deactivateWeb3();
+			});
+	}
+}
+
+async function moralisMintToken(uri, nftContractAddress, nftTokenId, nftRecipientId = false){
+
+	console.log("NFT STUFF");
+	const ethers = Moralis.web3Library;
+
+	 const contractABI = [
+			{
+				"inputs": [],
+				"stateMutability": "nonpayable",
+				"type": "constructor"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "address",
+						"name": "account",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256",
+						"name": "id",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "amount",
+						"type": "uint256"
+					},
+					{
+						"internalType": "bytes",
+						"name": "data",
+						"type": "bytes"
+					}
+				],
+				"name": "mint",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+	      "anonymous": false,
+	      "inputs": [
+	        {
+	          "indexed": true,
+	          "internalType": "address",
+	          "name": "operator",
+	          "type": "address"
+	        },
+	        {
+	          "indexed": true,
+	          "internalType": "address",
+	          "name": "from",
+	          "type": "address"
+	        },
+	        {
+	          "indexed": true,
+	          "internalType": "address",
+	          "name": "to",
+	          "type": "address"
+	        },
+	        {
+	          "indexed": false,
+	          "internalType": "uint256",
+	          "name": "id",
+	          "type": "uint256"
+	        },
+	        {
+	          "indexed": false,
+	          "internalType": "uint256",
+	          "name": "value",
+	          "type": "uint256"
+	        }
+	      ],
+	      "name": "TransferSingle",
+	      "type": "event"
+	    },
+			{
+				"inputs": [
+					{
+						"internalType": "string",
+						"name": "newuri",
+						"type": "string"
+					}
+				],
+				"name": "setURI",
+				"outputs": [],
+				"stateMutability": "nonpayable",
+				"type": "function"
+			},
+			{
+				"inputs": [
+					{
+						"internalType": "uint256",
+						"name": "",
+						"type": "uint256"
+					}
+				],
+				"name": "uri",
+				"outputs": [
+					{
+						"internalType": "string",
+						"name": "",
+						"type": "string"
+					}
+				],
+				"stateMutability": "view",
+				"type": "function"
+			}
+		];
+
+	 const currentUser = Moralis.User.current();
+ 	 const ethAddress = currentUser.get("ethAddress");
+	 nftRecipientId = nftRecipientId ? nftRecipientId : ethAddress;
+
+ 	 let signer = window.web3.getSigner(ethAddress);
+	 const wiscleContract = await new ethers.Contract(nftContractAddress, contractABI, signer);
+
+	 await wiscleContract.setURI(uri);
+
+	 let utf8Encoder = new TextEncoder();
+	 var nft = await wiscleContract.mint(nftRecipientId, nftTokenId, 1, utf8Encoder.encode(""));
+
+	 return nft;
+
+}
+
 
 function wsc_setup_wallet_selector() {
 
