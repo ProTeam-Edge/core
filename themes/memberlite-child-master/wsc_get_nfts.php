@@ -24,6 +24,9 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 	$accountsInPlaylist = json_decode(stripslashes($qVars['accounts_in_play']), true);
 	$toolbarCount = count($accountsInPlaylist);
 
+  // alpn_log("GETTING NFTS");
+  // alpn_log($qVars);
+
 	if ((!$inMissionControl && $qVars['member_id']) || ($inMissionControl && $userId)) {
 
     $queryArray = wsc_get_nft_query($qVars);
@@ -33,7 +36,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
     $fullQueryNoLimit = $queryArray["full_query_no_limit"];
     $fullQueryNoLimitAllContracts = $queryArray["full_query_no_limit_all_contracts"];
 
-		$nftResults = $wpdb->get_results(
+		 $nftResults = $wpdb->get_results(
 			$wpdb->prepare("SELECT id, meta, contract_address, token_id, chain_id, account_address, friendly_name, ens_address, relation, category_id, thumb_mime_type, media_mime_type, media_file_key, thumb_file_key, thumb_large_file_key, JSON_UNQUOTE(JSON_EXTRACT(moralis_meta, '$.name')) AS contract_name, JSON_UNQUOTE(JSON_EXTRACT(moralis_meta, '$.symbol')) AS contract_symbol FROM alpn_nft_owner_view WHERE owner_id = %d {$fullQueryLimit}", $ownerId)
 		 );
 
@@ -257,6 +260,15 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 			}
 		 }
 		 //setup lists every time through
+
+     $walletId = $qVars['account_id'];
+     $contractId = $qVars['contract_id'];
+     $slideId = $qVars['slide_id'];
+     $chainId = $qVars['chain_id'];
+     $typeId = $qVars['type_id'];
+     $tagId = $qVars['set_id'];  //Nomenclature change. set_id is public facing now.
+     $categoryId = $qVars['category_id'];
+     $nftQuery = $qVars['nft_query'];
 
 			 if ($inMissionControl) {
 

@@ -36,6 +36,79 @@ function wsc_start_nft_media_processing($data) {
   }
 }
 
+function wsc_overlay_wtc() {
+  //400 x 560
+  //310, 43, 65, 60 -- circle
+  //80, 385, 273, 31 -- title
+  //41, 426, 311, 66 -- attributes
+
+}
+
+function wsc_to_0xid($friendlyId){  //TODO make better
+
+  if ($friendlyId == 'eth') {return "0x1";};
+  if ($friendlyId == 'polygon') {return "0x89";};
+
+}
+
+function wsc_call_cloud_function($data = array()) {   //TODO make this smarter
+
+  $cloudFunction = $data['cloud_function'];
+  $encKey = isset($data['enc_key']) ? urlencode($data['enc_key']) : "";
+  $encIv = isset($data['enc_iv']) ? urlencode($data['enc_iv']) : "";
+  $privateKeyEnc = isset($data['pk_enc']) ? urlencode($data['pk_enc']) : "";
+  $chainId = isset($data['chain_id']) ? $data['chain_id'] : "";
+  $contractTemplateId = isset($data['contract_template_id']) ? $data['contract_template_id'] : "";
+  $contractName = isset($data['contract_name']) ? urlencode($data['contract_name']) : "";
+  $contractSymbol = isset($data['contract_symbol']) ? urlencode($data['contract_symbol']) : "";
+
+  $nftTokenUri = isset($data['nft_token_uri']) ? urlencode($data['nft_token_uri']) : "";
+  $nftAccountAddress = isset($data['nft_account_address']) ? $data['nft_account_address'] : "";
+  $nftContractAddress = isset($data['nft_contract_address']) ? $data['nft_contract_address'] : "";
+  $nftTokenId = isset($data['nft_token_id']) ? $data['nft_token_id'] : "";
+  $nftQuantity = isset($data['nft_quantity']) ? $data['nft_quantity'] : "1";
+  $nftRecipientAddress = isset($data['nft_recipient_id']) ? $data['nft_recipient_id'] : "";
+  $nftTemplateKey = isset($data['nft_template_key']) ? $data['nft_template_key'] : "";
+
+  $security = MORALIS_EXTRA_SECURITY;
+  $moralisAppId = MORALIS_APPID;
+  $moralisServerUrl = MORALIS_SERVER_URL;
+  $headers = array();
+  $fullUrl = "{$moralisServerUrl}/server/functions/{$cloudFunction}?_ApplicationId={$moralisAppId}&security={$security}&pkenc={$privateKeyEnc}&ntk={$nftTemplateKey}&nraa={$nftRecipientAddress}&nqty={$nftQuantity}&nti={$nftTokenId}&nca={$nftContractAddress}&naa={$nftAccountAddress}&ntu={$nftTokenUri}&ctid={$contractTemplateId}&enck={$encKey}&enci={$encIv}&chid={$chainId}&cname={$contractName}&csymb={$contractSymbol}";
+  $options = array(
+      CURLOPT_RETURNTRANSFER => true,
+      CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+      CURLOPT_URL => $fullUrl
+  );
+   $ch = curl_init();
+   curl_setopt_array($ch, $options);
+   $response = curl_exec($ch);
+   curl_close($ch);
+   return $response;
+}
+
+
+function wsc_encrypt_string($simple_string, $secret = '') {
+
+  alpn_log("ENC");
+  alpn_log($simple_string);
+
+  $secret = $secret ? base64_decode($secret) : openssl_random_pseudo_bytes(32);
+  $iv = base64_decode(MORALIS_ENCRYPT_IV);
+
+  $encryptionMethod = "AES-256-CBC";
+  $encryptedMessage = openssl_encrypt($simple_string, $encryptionMethod, $secret, 0, $iv);
+
+  return array("encrypted" => $encryptedMessage, "secret" => base64_encode($secret));
+}
+
+function wsc_decrypt_string($encryption, $secret, $iv) {
+  $encryptionMethod = "AES-256-CBC";
+  $decryptedMessage = openssl_decrypt($encryption, $encryptionMethod, $secret, 0, $iv);
+
+  return $decryptedMessage;
+}
+
 
 function wsc_get_nft_query($qVars) {
 
@@ -117,7 +190,7 @@ function wsc_get_nft_query($qVars) {
     $whereNoFails = "AND state = 'ready' ";
 
     $rowLimit = "LIMIT {$limitOption} ";
-    $ordering = "ORDER BY contract_address, token_id ";
+    $ordering = "ORDER BY contract_address DESC, token_id ASC ";
 
     $listOrdering = "ORDER BY CASE WHEN friendly_name != '' THEN friendly_name ELSE CASE WHEN ens_address != '' THEN ens_address ELSE account_address END END ";
 
@@ -153,6 +226,9 @@ function wsc_get_contracts_for_query($fullQueryNoLimitAllContracts, $queryFilter
    );
 
   $allContracts = array();
+  if ($page == 1) {
+    $allContracts[] = array("id" => "wsc_all_contracts", "text" => "All Contracts");
+  }
   if (isset($contractData[0])) {
     foreach($contractData as $contractItem) {
       if ($contractItem->contract_name && $contractItem->contract_name != 'null') {
@@ -404,7 +480,7 @@ function wsc_prepare_tweet_elements($fileId, $setName, $action, $words) {
   $userId = $userInfo->data->ID;
 
   $nfts = $wpdb->get_results(
-    $wpdb->prepare("SELECT n.* from alpn_nft_meta n LEFT JOIN alpn_nft_sets s ON s.nft_id = n.id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY s.id", $userId, $setName)
+    $wpdb->prepare("SELECT n.* from alpn_nft_meta n LEFT JOIN alpn_nft_sets s ON s.nft_id = n.id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY RAND()", $userId, $setName)
    );
 
    if (isset($nfts[0])) {
@@ -457,7 +533,7 @@ function wsc_get_twitter_preview_art($setName, $action, $uniqueId, $words = "") 
               if(filesize($imageFourPath)) {unlink($imageFourPath);}
               $html = "<div class='wsc_nft_ww_row'>
                          <div class='wsc_nft_ww_flex_container'>
-                          <a href ='{$imageOneUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageOneUrl}'></a>
+                          <a href ='{$imageOneUrl}' target='_blank'><img class='wsc_ww_image_preview_wide' src='{$imageOneUrl}'></a>
                          </div>
                        </div>
                       ";
@@ -545,7 +621,7 @@ function wsc_get_twitter_preview_art($setName, $action, $uniqueId, $words = "") 
           $imageUrl = WSC_PREVIEWS_URL . $fileId . "?" . time();
           $html = "<div class='wsc_nft_ww_row'>
                      <div class='wsc_nft_ww_flex_container'>
-                      <a href ='{$imageUrl}' target='_blank'><img class='wsc_ww_image_preview_single' src='{$imageUrl}'></a>
+                      <a href ='{$imageUrl}' target='_blank'><img class='wsc_ww_image_preview_wide' src='{$imageUrl}'></a>
                      </div>
                    </div>
                   ";
@@ -567,8 +643,8 @@ function wsc_create_nft_certificate($certificateName, $data) {
   // alpn_log("Creating CERTIFICATE");
   // alpn_log($data);
 
-  $name = (isset($data['name']) && $data['name']) ? stripslashes($data['name']) : "NFT Name";
-  $description = (isset($data['description']) && $data['description']) ? stripslashes($data['description']) : "NFT Description";
+  $name = (isset($data['name']) && $data['name']) ? stripslashes($data['name']) : " -- ";
+  $description = (isset($data['description']) && $data['description']) ? stripslashes($data['description']) : " -- ";
   $attributes = (isset($data['attributes']) && $data['attributes']) ? $data['attributes'] : array();
   $processId = (isset($data['wscProcessId']) && $data['wscProcessId']) ? $data['wscProcessId'] : false;
   $mediaType = (isset($data['wsc_media_type']) && $data['wsc_media_type']) ? $data['wsc_media_type'] : false;
@@ -664,6 +740,7 @@ $QRCode = new QRCode($options);
 $certificateImage = $QRCode->render($mediaUrl);
 file_put_contents($destinationFileQR, $certificateImage);
 $certificateImageRes = imagecreatefrompng($destinationFileQR);
+
 unlink($destinationFileQR);
 imagecopyresampled($image, $certificateImageRes, 558, 150, 0, 0, 140, 140, imagesx($certificateImageRes), imagesy($certificateImageRes));
 ob_start();
@@ -730,7 +807,7 @@ function wsc_set_to_banner($previewId, $setId, $bannerType, $words = "") {
   $userId = $userInfo->data->ID;
 
   $nfts = $wpdb->get_results(
-    $wpdb->prepare("SELECT n.* from alpn_nft_meta n LEFT JOIN alpn_nft_sets s ON s.nft_id = n.id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY s.id", $userId, $setId)
+    $wpdb->prepare("SELECT n.* from alpn_nft_meta n LEFT JOIN alpn_nft_sets s ON s.nft_id = n.id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY RAND()", $userId, $setId)
    );
 
    $destinationFile = WSC_PREVIEWS_PATH . $previewId;
@@ -802,9 +879,9 @@ function imageToJpeg($srcFile, $thumbFile, $maxSize = 100) {
         case IMAGETYPE_GIF:
             $gfe = new GifFrameExtractor\GifFrameExtractor();
             if ($gfe->isAnimatedGif($srcFile)) {
-              $gfe->extract($srcFile);
+              $gfe->extract($srcFile, true);
               $frames = $gfe->getFrames();
-              $frame = $frames[1];
+              $frame = $frames[0];
               $image = $frame['image'];
             } else {
               alpn_log("NON ANIMATED?");
@@ -852,9 +929,9 @@ function imageToWebp($srcFile, $thumbFile, $maxSize = 100) {
         case IMAGETYPE_GIF:
             $gfe = new GifFrameExtractor\GifFrameExtractor();
             if ($gfe->isAnimatedGif($srcFile)) {
-              $gfe->extract($srcFile);
+              $gfe->extract($srcFile, true);
               $frames = $gfe->getFrames();
-              $frame = $frames[1];
+              $frame = $frames[0];
               $image = $frame['image'];
             } else {
               $image = imagecreatefromgif($srcFile);
@@ -962,7 +1039,7 @@ function getFileMetaFromMimeType($mimeType) {
 
 function wsc_track_accounts($walletAddress) {
 
-  pp("Track Account -- " . $walletAddress);
+  // pp("Track Account -- " . $walletAddress);
 
   try { //track non authenticated addresses. Srill need to know transfers.
     $parseClient = new ParseClient;
@@ -972,17 +1049,82 @@ function wsc_track_accounts($walletAddress) {
       "address" => $walletAddress,
       "sync_historical" => true
     ), array("useMasterKey" => true));
-    pp($results);
+    // pp($results);
     $results = ParseCloud::run("watchPolygonAddress", array(
       "address" => $walletAddress,
       "sync_historical" => true
     ), array("useMasterKey" => true));
-    pp($results);
-    pp("DONE");
+    // pp($results);
+    // pp("DONE");
  } catch (ParseException $error) {
   pp("PARSE TRACK ACCOUNTS FAILED");
   pp($error);
  }
+}
+
+function wsc_get_owned_web3_accounts_list() {
+
+  global $wpdb;
+
+  $userInfo = wp_get_current_user();
+  $ownerId = $userInfo->data->ID;
+
+  $ownedAccounts = $wpdb->get_results(
+		$wpdb->prepare("SELECT r.account_address, m.friendly_name, m.ens_address, m.pk_enc IS NOT NULL AS is_custodial FROM alpn_wallet_relationships r LEFT JOIN alpn_wallet_meta m ON m.account_address = r.account_address WHERE r.owner_id = %d AND r.relation = 'owner' ORDER BY CASE WHEN m.friendly_name != '' THEN m.friendly_name ELSE CASE WHEN m.ens_address != '' THEN m.ens_address ELSE r.account_address END END;", $ownerId)
+	);
+
+  $selectedAccountAddress = "";
+
+  if (isset($ownedAccounts[0])) {
+
+    $selectedAccountAddress = $ownedAccounts[0]->account_address;
+
+    $accountSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_owned_accounts'>";
+    foreach ($ownedAccounts as  $key => $value) {
+      // $selectedItem = ($value->contract_address == $selectedContract) ? " SELECTED " : "";
+      $selectedItem = "";
+      $accountFriendlyName = $value->friendly_name ? $value->friendly_name . " | " : "";
+      $accountEnsName = $value->ens_address ? $value->ens_address . " | " : "";
+      $accountName = $accountFriendlyName . $accountEnsName . $value->account_address;
+      $accountSelect .= "<option data-cust='{$value->is_custodial}' value='{$value->account_address}' $selectedItem>{$accountName}</option>";
+    }
+    $accountSelect .= "</select></div>";
+  } else {
+    $accountSelect = "<div class='wsc_ww_select_wrapper wsc_ww_attention'>Please add a web3 account</div>";
+  }
+
+  return array("html" => $accountSelect, "selected_account_address" => $selectedAccountAddress);
+
+}
+
+function wsc_get_available_contracts_list($data = array()) {
+
+  global $wpdb;
+
+  $userInfo = wp_get_current_user();
+  $ownerId = $userInfo->data->ID;
+
+  $selectedContract = isset($data['selected_contract']) && $data['selected_contract'] ? $data['selected_contract'] : "";
+  $chainId = isset($data['chain_id']) && $data['chain_id'] ? $data['chain_id'] : "polygon";
+  $accountAddress = isset($data['account_address']) && $data['account_address'] ? $data['account_address'] : "";
+
+  $availableContracts = $wpdb->get_results(
+		$wpdb->prepare("SELECT contract_address, collection_name, collection_symbol, contract_name, contract_description FROM alpn_deployed_contracts_view WHERE owner_id = %d AND wallet_address = %s AND chain_id = %s AND state = 'ready' ORDER BY collection_name", $ownerId, $accountAddress, $chainId)
+	);
+
+  if (isset($availableContracts[0])) {
+    $contractSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_smart_contracts'>";
+  	foreach ($availableContracts as  $key => $value) {
+  		$collectionName = $value->collection_name ? $value->collection_name : $value->contract_name . " | " . $value->contract_address;
+  		$selectedItem = ($value->contract_address == $selectedContract) ? " SELECTED " : "";
+  		$contractSelect .= "<option value='{$value->contract_address}' $selectedItem>{$collectionName}</option>";
+  	}
+  	$contractSelect .= "</select></div>";
+  } else {
+    $contractSelect = "<div class='wsc_ww_select_wrapper wsc_ww_attention'>Please deploy a smart contract/collection and then come back</div>";
+  }
+return $contractSelect;
+
 }
 
 
@@ -1001,10 +1143,10 @@ function wsc_get_nft_view_toolbar(){
     <i id='wsc_clear_filters' style='margin-left: 5px;' class='far fa-times-circle wsc_nft_scan' title='Clear Filters' onclick='wsc_clear_gallery();'></i>
     <div class='wsc_toolbar_wait_container'><img id='wsc_nft_loading_wait' class='wsc_nft_loading_wait' src='{$waitIndicator}'></div>
     <br>
-    <span style='font-size: 14px; margin-right: 5px;' class='wsc_nft_toolbar_help_text'>Attach your account:</span>
-  	<i id='wsc_scan_wallet' class='far fa-qrcode wsc_nft_scan' title='Attach your account with owner rights by scanning a QR code with your mobile wallet' onclick='wsc_scan_account_to_attach();'></i>
-    <span style='font-size: 14px; margin-right: 5px; margin-left: 10px;' class='wsc_nft_toolbar_help_text'>Attach any account:</span>
-    <input id='wsc_nft_add_wallet_address' title='Attach any account with visitor rights by pasting its public key' placeholder='Paste any web3 public key' style='font-size: 12px !important; color: black; padding: 0 0 0 10px !important; line-height: 20px; border-style: solid; border-width: 1px; border-radius: 0 0 0 0 !important; border-color: #ccc; height: 24px; width: 175px; font-weight: normal; background-color: white;'>
+    <span style='font-size: 14px; margin-right: 5px;' class='wsc_nft_toolbar_help_text'>Add your account:</span>
+  	<i id='wsc_scan_wallet' class='far fa-qrcode wsc_nft_scan' title='Add your web3 account with owner rights by scanning a QR code with your mobile wallet' onclick='wsc_scan_account_to_attach();'></i>
+    <span style='font-size: 14px; margin-right: 5px; margin-left: 10px;' class='wsc_nft_toolbar_help_text'>Follow any account:</span>
+    <input id='wsc_nft_add_wallet_address' title='Follow accounts with visitor rights by pasting its public key' placeholder='Paste any web3 public key' style='font-size: 12px !important; color: black; padding: 0 0 0 10px !important; line-height: 20px; border-style: solid; border-width: 1px; border-radius: 0 0 0 0 !important; border-color: #ccc; height: 24px; width: 175px; font-weight: normal; background-color: white;'>
     <i id='wsc_copy_gallery_link' style='margin-left: 5px;' class='far fa-link wsc_nft_scan' title='Copy Link to this Gallery' onclick='wsc_copy_gallery_link();'></i>
   	<script>
     alpn_wait_for_ready(10000, 250,
@@ -1059,9 +1201,7 @@ function wsc_get_nft_view_toolbar(){
               };
             },
             processResults: function (data, params) {
-
               params.page = params.page || 1;
-
               return {
                 results: data.items,
                 pagination: {
@@ -1224,6 +1364,7 @@ function wsc_store_nft_file($fileSettings, $unlinkSource = true){
 }
 
 function wsc_get_single_nft_metadata ($nftAddress, $tokenId, $chain='eth'){
+
   $headers = array();
   $moralisApiKey = MORALIS_API_KEY;
   $fullUrl = "https://deep-index.moralis.io/api/v2/nft/{$nftAddress}/{$tokenId}?chain={$chain}";
@@ -1243,6 +1384,7 @@ function wsc_get_single_nft_metadata ($nftAddress, $tokenId, $chain='eth'){
 }
 
 function wsc_resync_single_nft_metadata ($nftAddress, $tokenId, $chain='eth', $updateType='uri'){
+
   $headers = array();
   $moralisApiKey = MORALIS_API_KEY;
   $fullUrl = "https://deep-index.moralis.io/api/v2/nft/{$nftAddress}/{$tokenId}/metadata/resync?chain={$chain}&flag={$updateType}&mode=sync";
@@ -1265,8 +1407,8 @@ function wsc_nft_deep_update($contractAddress, $tokenId, $chain="eth") {
 
   global $wpdb;
 
-  $resyncResult = wsc_resync_single_nft_metadata($contractAddress, $tokenId);
-  $newMetaDataResult = wsc_get_single_nft_metadata($contractAddress, $tokenId);
+  $resyncResult = wsc_resync_single_nft_metadata($contractAddress, $tokenId, $chain);
+  $newMetaDataResult = wsc_get_single_nft_metadata($contractAddress, $tokenId, $chain);
   $nftData = array(
                     "state" => "processing",
                     "moralis_meta" => $newMetaDataResult,
@@ -1543,7 +1685,7 @@ function wsc_get_all_member_nfts($walletAddress) {
 
     foreach ($chains as $chain) {
 
-      $nftResults = wsc_get_nft_page($walletAddress, 0, 500, '', $chain);
+      $nftResults = wsc_get_nft_page($walletAddress, '', $chain);
 
       alpn_log("CHAIN -- " . $chain . " -- " . $nftResults['total']);
 
@@ -1556,7 +1698,7 @@ function wsc_get_all_member_nfts($walletAddress) {
 
         while ( $cursor && ($nftPage * $nftPageSize <= $breakAfter) && ($nftPage * $nftPageSize <= $nftTotal ) ) {
           alpn_log($nftPage . " -- " . $nftPageSize . " -- " . $nftPage * $nftPageSize . " -- " . $nftTotal);
-          $nftResults = wsc_get_nft_page($walletAddress, 0, 0, $cursor, $chain);
+          $nftResults = wsc_get_nft_page($walletAddress, $cursor, $chain);
           $cursor = $nftResults['cursor'];
           $nftPage = intval($nftResults['page']);
         }
@@ -1599,17 +1741,15 @@ function wsc_handle_insert_multiple_nfts($nftPlaceholders, $values) {
 
 }
 
-function wsc_get_nft_page ($walletAddress, $offset = 0, $limit = 500, $cursor = '', $chain = 'eth'){
-
-  $chainSlug = ($chain == "polygon") ? "matic" : $chain;
+function wsc_get_nft_page ($walletAddress, $cursor = '', $chain = 'eth'){
 
   try {
     $headers = array();
     $moralisApiKey = MORALIS_API_KEY;
     if ($cursor) {
-      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?&cursor={$cursor}&chain={$chainSlug}";
+      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?&cursor={$cursor}&limit=100&chain={$chain}";
     } else {
-      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?limit={$limit}&offset={$offset}&chain={$chainSlug}&format=decimal";
+      $fullUrl = "https://deep-index.moralis.io/api/v2/{$walletAddress}/nft?&chain={$chain}&limit=100&format=decimal";
     }
     $headers[] = "Accept: application/json";
     $headers[] = "X-API-Key: {$moralisApiKey}";
@@ -1637,6 +1777,7 @@ function wsc_get_nft_page ($walletAddress, $offset = 0, $limit = 500, $cursor = 
      $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
      curl_close($ch);
      // alpn_log("NFT PAGING HTTP CODE -- " . $httpCode);
+     // alpn_log($response);
 
      $nftResults = json_decode($response, true);
      $allNfts = $nftResults['result'];
@@ -1646,10 +1787,10 @@ function wsc_get_nft_page ($walletAddress, $offset = 0, $limit = 500, $cursor = 
        $nowGm = gmdate ("Y-m-d H:i:s", time());
        array_push( $nfts, $allNfts[$i]['owner_of'], $allNfts[$i]['token_address'], $allNfts[$i]['token_id'], $chain, "processing", $nowGm, json_encode($allNfts[$i]));
        $nftPlaceholders[] = "( %s, %s, %s, %s, %s, %s, %s)";
-       if (($i % 100) == 0) { //write
-         wsc_handle_insert_multiple_nfts($nftPlaceholders, $nfts);
-         $nfts = array(); $nftPlaceholders = array();
-       }
+       // if (($i % 100) == 0) { //write -- MOralis decreased to 100 so...
+       //   wsc_handle_insert_multiple_nfts($nftPlaceholders, $nfts);
+       //   $nfts = array(); $nftPlaceholders = array();
+       // }
      }
      if (count($nfts)) {  //balance
        wsc_handle_insert_multiple_nfts($nftPlaceholders, $nfts);
@@ -1707,14 +1848,61 @@ function wsc_log_current_user_into_parse() {
 
 }
 
-function wsc_create_new_parse_user() {
+
+function wsc_create_web3_support($userId){
+
+  global $wpdb;
+
+//  wsc_create_new_parse_user($userId);
+
+  $data = array(
+    'cloud_function' => 'wsc_create_wallet',
+    'contract_template_id' => '',
+    'pk' => ''
+  );
+
+  $walletInfo = json_decode(wsc_call_cloud_function($data), true);
+
+  if (isset($walletInfo['result']) && $walletInfo['result']) {
+
+    $walletAddress = $walletInfo['result']['address'];
+    $walletPk = wsc_encrypt_string($walletInfo['result']['privateKey']);
+    $walletMnemonic = wsc_encrypt_string($walletInfo['result']['mnemonic'], $walletPk['secret']);
+
+    wsc_track_accounts($walletAddress);
+
+   $walletData = array(
+      'account_address' => $walletAddress,
+      'friendly_name' => "Wiscle Plus",
+      'state' => "ready",
+      'pk_enc' => $walletPk['encrypted'],
+      'mnemonics_enc' => $walletMnemonic['encrypted'],
+      'enc_key' => $walletPk['secret']
+    );
+    $wpdb->insert( 'alpn_wallet_meta', $walletData );
+
+    $walletRelationshipData = array(
+      'account_address' => $walletAddress,
+      'relation' => "owner",
+      'owner_id' => $userId
+    );
+    $wpdb->insert( 'alpn_wallet_relationships', $walletRelationshipData );
+  }
+
+  //$cloudFunction = "wsc_create_wallet";
+  //$cloudFunction = "wsc_sign_transaction";
+  //$cloudFunction = "wsc_setup_contract_object";
+  // $contractTemplateId = "eSIybJulHThMDnZZ39tDFmXy";
+  // $privateKey = "0xfaa849a9ae4ea5cad2c7f2f8cf7afa6438532a3ffe48b547c77effc499dc1051";
+
+
+}
+
+function wsc_create_new_parse_user($userId) {
 
   alpn_log("CREATING PARSE USER");
 
   global $wpdb;
-
-  $userInfo = wp_get_current_user();
-  $userId = $userInfo->data->ID;
 
   if ($userId) {
 
@@ -1722,9 +1910,6 @@ function wsc_create_new_parse_user() {
 
       $newParseUserName = Uuid::uuid4()->toString();
       $newParsePassword = Uuid::uuid4()->toString();
-
-      alpn_log($newParseUserName);
-      alpn_log($newParsePassword);
 
       $parseClient = new ParseClient;
       $parseClient->initialize( MORALIS_APPID, null, MORALIS_MK );
@@ -1752,10 +1937,6 @@ function wsc_create_new_parse_user() {
       alpn_log($e);
     }
   }
-
-
-
-
 }
 
 

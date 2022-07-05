@@ -40,6 +40,10 @@ define('TRANSLOADIT_SECRET', 'dc9f8e71f6dd1b7ab3c6093e850e12d11141ecb8');
 //sendgrid
 define('SENDGRID_KEY', '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');
 
+//metaData
+define('MORALIS_EXTRA_SECURITY', "aNdJXsw9msZ25HGGMUsN8GSXSuFH6fpvFJtX");
+define('MORALIS_ENCRYPT_IV', "Kxl9uzVXpc38QK+kv9BinA==");
+
 // Twilio
 
 define('ACCOUNT_SID', 'ACa3cfb8ff4e9f2b263e37a00f35c3e1ae');

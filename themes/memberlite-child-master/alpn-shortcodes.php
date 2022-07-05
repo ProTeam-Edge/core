@@ -150,7 +150,7 @@ function db_shortcode($attr) {
 				 <script>
 				 alpn_templatedir = '{$templateDirectory}-child-master/';
 				 </script>
-			 ";		
+			 ";
 				$html .= wsc_get_gallery($gallerySettings);
 
 
@@ -421,21 +421,10 @@ function db_shortcode($attr) {
 
 		break;
 
-		case 'task':  //Interactions
-
-		// <i class='far fa-repeat-alt' style='color: #3172B6; margin-right: 5px;'></i>18
-		// <i class='far fa-pause-circle' style='color: #3172B6; margin-left: 15px;'></i>
-
-		// <div class='alpn_title_bar' style='background-color: transparent; margin-bottom: 5px;'>
-		// 	<div class='alpn_section_head_left'></div>
-		// 	<div class='alpn_section_head_right'></div>
-	 // </div>
+		case 'task':  //Wiscle Workflows
 
 	 $interactionChooser = "<select id='alpn_selector_interaction_selector' class='alpn_selector_interaction_selector alpn_selector'>";
-	 // $interactionChooser .= "<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>";
-	 // $interactionChooser .= "<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>";
-	 // $interactionChooser .= "<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>";
-	 //
+
 	 // if($memberFeatures['fax_1']) {   //Fax Available to all levels other than Community  //TODO make this dynamic
 	 // 	$interactionChooser .= "<option value='fax' data-icon='far fa-fax'>Send as Fax</option>";
 	 // }
@@ -444,40 +433,35 @@ function db_shortcode($attr) {
 
 			$html = "";
 			$html .= "<div id='alpn_section_alert'>
-					<div class='alpn_title_bar_blue'>
-							<div class='alpn_section_head_left_white'>Workflows</div>
-							<div class='alpn_section_head_right_white'>
-										&nbsp;&nbsp;--
-						  </div>
-					 </div>
-
-				 	 <div class='wsc_workflow_selector'>
-					    <div id='wsc_ww_container'>{$interactionChooser}</div><div id='wsc_ww_container_icon'><i id='alpn_vault_interaction_start' class='far fa-arrow-circle-right wsc_ww_start_icon' title='Start this Interaction' onclick='pte_handle_interaction_start(this);'></i></div>
-					 </div>
-
 					 <div id='pte_interaction_outer_container'>
-					 	<div id='pte_interaction_ux_message' class='pte_interaction_ux_message'>Interaction Recalled</div>
+					 	<div id='pte_interaction_ux_message' class='pte_interaction_ux_message'>Wokflow Recalled</div>
 					 	<div id='pte_interaction_current'>
  					 	</div>
 					 </div>
 
 					 <div id='pte_interaction_bar' class='pte_vault_row'>
 
-						<div class='pte_vault_row_50'>
-						 <div id='pte_on_off_outer'>
-						 		<div class='onoffswitch' title='View Active or Filed Interactions'>
-							    <input onchange='pte_handle_active_filed_change(this);' type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='myonoffswitch' tabindex='0' checked>
-							    <label class='onoffswitch-label' for='myonoffswitch'>
-							        <span class='onoffswitch-inner'></span>
-							        <span class='onoffswitch-switch'></span>
-							    </label>
-								</div>
-							</div>
+						<div class='pte_vault_row_65'>
+							<span id='wsc_flowbox_title'>Workflows <img id='interaction_wait_indicator' class='pte_refresh_report_loading' src='{$rootUrl}pdf/web/images/loading-icon.gif'></span>
 						</div>
-						<div class='pte_vault_row_50 pte_vault_right'>
-							<img id='interaction_wait_indicator' class='pte_refresh_report_loading' src='{$rootUrl}pdf/web/images/loading-icon.gif'>
+						<div class='pte_vault_row_35'>
+						<div id='pte_on_off_outer'>
+							 <div class='onoffswitch' title='View Active or Filed Workflows'>
+								 <input onchange='pte_handle_active_filed_change(this);' type='checkbox' name='onoffswitch' class='onoffswitch-checkbox' id='myonoffswitch' tabindex='0' checked>
+								 <label class='onoffswitch-label' for='myonoffswitch'>
+										 <span class='onoffswitch-inner'></span>
+										 <span class='onoffswitch-switch'></span>
+								 </label>
+							 </div>
+						 </div>
 						</div>
 					</div>
+
+
+					<div class='wsc_workflow_selector'>
+						 <div id='wsc_ww_container'>{$interactionChooser}</div><div id='wsc_ww_container_icon'><i id='alpn_vault_interaction_start' class='far fa-arrow-circle-right wsc_ww_start_icon' title='Start Workflow' onclick='pte_handle_interaction_start(this);'></i></div>
+					</div>
+
 					";
 			$html .= "<div id='pte_interactions_table_container'>";
 

@@ -70,7 +70,7 @@ topicStates = {'10': "Added", '20': "Invited", '30': "Joined", '40': "Linked", '
 
 
 access_levels = {'5': 'Guest', '10': 'Shared', '20': 'Restricted', '30': 'Special', '40': 'Private'};
-processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10", "twitter_actions": "3", "mint_nft": "1"};
+processColorMap = {"fax_send": "2", "fax_received": "4", "file_received": "5", "proteam_invitation": "6", "proteam_invitation_received": "7", "email_send": "9", "sms_send": "10", "twitter_actions": "3", "mint_nft": "1", "deploy_contract": "8"};
 
 pte_supported_types_map = {
 	'image/jpeg': 'JPEG',
@@ -1751,6 +1751,8 @@ function pte_handle_active_filed_change(tObj){
 		dataType: "json",
 		success: function(json) {
 
+			console.log("ITABLE", json);
+
 			var html = json.table_html;
 			var interactionFilter = json.filter_html;
 			var interactionsTableContainer = jQuery("#pte_interactions_table_container");
@@ -1768,6 +1770,9 @@ function pte_handle_active_filed_change(tObj){
 			var searchField = "#table_interactions_filter";
 			alpn_prepare_search_field(searchField);
 			//jQuery(searchField);
+
+			console.log("Interaction Filter", interactionFilter);
+
 			jQuery(interactionFilter).insertBefore('#table_interactions_filter');
 			jQuery('#pte_interaction_table_filter').select2({
 				theme: "bootstrap",
@@ -2496,16 +2501,29 @@ function pte_handle_sync(data, item = false){
 
 	switch(syncSection) {
 
+		case 'twitter_action_done':
+			console.log("Twitter Action Done...");
+			pte_show_process_ux(syncPayload.process_id);
+		break;
+		case 'smart_contract_is_ready':
+			console.log("Handling Contract Ready");
+			pte_show_process_ux(syncPayload.process_id);
+		break;
+		case 'new_nft_is_ready':
+			console.log("Handling NFT Ready");
+			pte_show_process_ux(syncPayload.process_id);
+		break;
 		case 'nft_start_mint':
 			console.log("Handling START MINT!!!");
-			console.log(syncPayload);
-			wsc_start_minting(syncPayload.nft_token_uri, syncPayload.nft_contract_address, syncPayload.nft_token_id, syncPayload.nft_recipient_id);
+			wsc_start_minting(syncPayload);
 		break;
-
+		case 'nft_notify_user_files_ready':
+			console.log("Notify User Files Ready");
+			jQuery("span#wsc_nft_files_status").html("Ready");
+			jQuery("button#wsc_ww_send_button").removeClass('pte_ipanel_button_disabled');
+		break;
 		case 'has_connects':
-
 			jQuery("i#wcl_manage_connections_icon").addClass("wcl_connections_button_highlighted").attr("title", "You have connection requests waiting");
-
 		break;
 
 		case 'no_connects':
@@ -3042,39 +3060,54 @@ async function moralisLogOut() {
 	console.log('logged out');
 }
 
-// async function moralisUpload() {
-//
-// 	const data = {};
-// 	const imageFile = new Moralis.File(data.name, data);
-// 	await imageFile.saveIPFS();
-// 	const imageURI = imageFile.ipfs();
-// 	const metadata = {
-// 		'name': 'NAME',
-// 		'description': 'DESCRIPTION',
-// 		'image': imageURI
-// 	}
-// 	const metadataFile = new Moralis.File('metadata.json', {base64: btoa(JSON.stringify(metadata))});
-// 	await metadataFile.saveIPFS();
-// 	const metadataURI = metadataFile.ipfs();
-//
-//   const txt = await mintToken(metadataURI).then(function(_txt){
-//
-// 		console.log("RECEIVED MINT NOTIFICATION");
-// 		console.log(_txt);
-//
-// 	});
-// }
+
+function wsc_handle_resend_nft () {   //TODO Package with Interactions.
+
+		jQuery("button#wsc_ww_send_button").addClass('pte_ipanel_button_disabled');
+		jQuery("span#wsc_wait_indicator_send").html('Minting...');
+
+		console.log("MINTING NFT");
+
+		var security = specialObj.security;
+
+		// jQuery.ajax({
+		// 	url: alpn_templatedir + 'wsc_nft_get_mint_data.php',
+		// 	type: 'POST',
+		// 	data: {
+		// 		"security": security,
+		// 		"nft_name": context.nft_name,
+		// 		"nft_description": context.nft_description,
+		// 		"nft_recipient_id": context.nft_recipient_id,
+		// 		"nft_blockchain": context.nft_blockchain,
+		// 		"nft_contract_address": context.nft_contract_address,
+		// 		"process_id": context.process_id,
+		// 		"nft_attributes": JSON.stringify(context.nft_attributes)
+		// 	},
+		// 	dataType: "json",
+		// 	success: async function(json) {
+		// 		console.log("NFT Ready to Send...");
+		// 		console.log(json);
+		// 	},
+		// 	error: function(json) {
+		// 		console.log("Failed Sending NFT");
+		// 		//TODO handle
+		// 	}
+		// });
+}
+
 
 
 
 function wsc_handle_send_nft () {   //TODO Package with Interactions.
 
-		var context = wsc_get_mint_nft_values();
+		jQuery("button#wsc_ww_send_button").addClass('pte_ipanel_button_disabled');
+		jQuery("span#wsc_wait_indicator_send").html('Finalizing...');
 
+		var context = wsc_get_mint_nft_values();
 		console.log("SENDING NFT");
 
 		console.log(context);
-		//
+
 		// if (context.twitter_logged_state != "connected") {
 		// 	pte_show_message('yellow_question', 'ok', "Please connect to Twitter to continue");
 		// 	return;
@@ -3085,6 +3118,7 @@ function wsc_handle_send_nft () {   //TODO Package with Interactions.
 		// 	return;
 		// }
 
+		const accountType = context.nft_account_type;
 		var security = specialObj.security;
 
 		jQuery.ajax({
@@ -3093,7 +3127,13 @@ function wsc_handle_send_nft () {   //TODO Package with Interactions.
 			data: {
 				"security": security,
 				"nft_name": context.nft_name,
+				"nft_account_address": context.nft_account,
+				"nft_account_type": context.nft_account_type,
 				"nft_description": context.nft_description,
+				"nft_recipient_id": context.nft_recipient_id,
+				"nft_blockchain": context.nft_blockchain,
+				"nft_quantity": context.nft_quantity,
+				"nft_contract_address": context.nft_contract_address,
 				"process_id": context.process_id,
 				"nft_attributes": JSON.stringify(context.nft_attributes)
 			},
@@ -3109,151 +3149,311 @@ function wsc_handle_send_nft () {   //TODO Package with Interactions.
 		});
 }
 
-async function wsc_start_minting(uri, nftContractAddress, nftTokenId, nftRecipientId = false) {
+async function wsc_start_minting(data) {
+
+	jQuery("span#wsc_wait_indicator_send").html('');
+
 	if (Moralis.ensureWeb3IsInstalled()) {
 				console.log("ALREADY CONNECTED - Minting!");
-				await moralisMintToken(uri, nftContractAddress, nftTokenId, nftRecipientId);
 				Moralis.deactivateWeb3();
+				wsc_start_minting(data);
 	} else {
 		Moralis.enableWeb3({
 				signingMessage: 'Please Connect to Wiscle',
-				provider: "walletconnect",
-				chainId: 137,
-				anyNetwork: true
+				provider: "walletconnect"
 			}).then(async function(newProvider){
-				console.log("NEWLY CONNECTED - Minting!");
-				window.web3 = newProvider;
-				var mintResult = await moralisMintToken(uri, nftContractAddress, nftTokenId, nftRecipientId);
-				console.log(mintResult);
-				Moralis.deactivateWeb3();
+				console.log("NEWLY CONNECTED - Minting!", newProvider);
+					window.web3 = newProvider;
+					wsc_mint_token(data);
+			}).catch(function (err){
+				console.log("Update Process with Wallet Error");
+				const security = specialObj.security;
+				const processData = {nft_wallet_error: true};
+				jQuery.ajax({
+					 url: alpn_templatedir + 'wsc_update_process_with_data.php',
+					 type: 'POST',
+					 data: {
+						 "security": security,
+						 "process_type_id": "mint_nft",
+						 "process_id": data.process_id,
+						 "data": processData
+					 },
+					 dataType: "json",
+					 success: function(json) {
+						 console.log("Process Updated", json);
+						 console.log(json);
+						 pte_show_process_ux(json.process_id);
+					 },
+					 error: function(json) {
+						 console.log("Failed Updating Process");
+					 }
+				 });
+					Moralis.deactivateWeb3();
 			});
 	}
 }
 
-async function moralisMintToken(uri, nftContractAddress, nftTokenId, nftRecipientId = false){
+async function wsc_mint_token(data){
 
-	console.log("NFT STUFF");
-	const ethers = Moralis.web3Library;
+	console.log("NFT Mint Token");
+	console.log(data);
 
-	 const contractABI = [
-			{
-				"inputs": [],
-				"stateMutability": "nonpayable",
-				"type": "constructor"
+	const uri = data.nft_token_uri;
+	const nftContractTemplateId = data.nft_contract_template_id;
+	const nftAccountAddress = data.nft_account_address;
+	const nftContractAddress = data.nft_contract_address;
+	const nftTokenId = data.nft_token_id;
+	const nftQuantity = data.nft_quantity ? data.nft_quantity : 1;
+	const nftRecipientIdProvided = data.nft_recipient_id;
+	const nftBlockchain = data.nft_blockchain;
+	const processId = data.process_id;
+	const security = specialObj.security;
+
+		jQuery.ajax({
+			url: alpn_templatedir + 'wsc_get_contract_data.php',
+			type: 'POST',
+			data: {
+				"security": security,
+				"type": 'contract_call',
+				"method_name": 'set_uri_and_mint',
+				"nft_contract_template_id": nftContractTemplateId
 			},
-			{
-				"inputs": [
-					{
-						"internalType": "address",
-						"name": "account",
-						"type": "address"
-					},
-					{
-						"internalType": "uint256",
-						"name": "id",
-						"type": "uint256"
-					},
-					{
-						"internalType": "uint256",
-						"name": "amount",
-						"type": "uint256"
-					},
-					{
-						"internalType": "bytes",
-						"name": "data",
-						"type": "bytes"
-					}
-				],
-				"name": "mint",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
+			dataType: "json",
+			success: async function(json) {
+
+					console.log("Minting Token");
+					console.log(json);
+
+					 const methodABI = JSON.parse(json.contract_data.method_abi);
+					 const ethers = Moralis.web3Library;
+					 let signer = window.web3.getSigner(nftAccountAddress);
+
+					 const nftRecipientId = nftRecipientIdProvided ? nftRecipientIdProvided : nftAccountAddress;
+
+					 try {
+						 const wiscleContract = await new ethers.Contract(nftContractAddress, methodABI, signer);
+						 let utf8Encoder = new TextEncoder();
+						 let result = await wiscleContract.set_uri_and_mint(uri, nftRecipientId, nftTokenId, nftQuantity, utf8Encoder.encode(""));
+						 console.log(result);
+						 Moralis.deactivateWeb3();
+					 } catch(err) {
+						 console.log("HANDLING NEW CONTRACT", err);
+						 Moralis.deactivateWeb3();
+					 }
+
+					 const security = specialObj.security;
+
+					 jQuery.ajax({
+				 		url: alpn_templatedir + 'wsc_create_member_nft.php',
+				 		type: 'POST',
+				 		data: {
+				 			"security": security,
+				 			"process_id": processId,
+				 			"chain_id": nftBlockchain,
+				 			"contract_template_id": nftContractTemplateId,
+				 			"wallet_address": nftAccountAddress,
+				 			"contract_address": nftContractAddress,
+							"nft_token_id": nftTokenId,
+							"nft_quantity": nftQuantity,
+							"nft_recipient_id": nftRecipientId
+				 		},
+				 		dataType: "json",
+				 		success: async function(json) {
+				 			console.log("Creating Member NFT Record");
+				 			console.log(json);
+
+				 		},
+				 		error: function(json) {
+				 			console.log("Failed Creating Member NFT");
+				 			//TODO handle
+				 		}
+				 	});
+
+					 pte_show_process_ux(data.process_id);
+
 			},
-			{
-	      "anonymous": false,
-	      "inputs": [
-	        {
-	          "indexed": true,
-	          "internalType": "address",
-	          "name": "operator",
-	          "type": "address"
-	        },
-	        {
-	          "indexed": true,
-	          "internalType": "address",
-	          "name": "from",
-	          "type": "address"
-	        },
-	        {
-	          "indexed": true,
-	          "internalType": "address",
-	          "name": "to",
-	          "type": "address"
-	        },
-	        {
-	          "indexed": false,
-	          "internalType": "uint256",
-	          "name": "id",
-	          "type": "uint256"
-	        },
-	        {
-	          "indexed": false,
-	          "internalType": "uint256",
-	          "name": "value",
-	          "type": "uint256"
-	        }
-	      ],
-	      "name": "TransferSingle",
-	      "type": "event"
-	    },
-			{
-				"inputs": [
-					{
-						"internalType": "string",
-						"name": "newuri",
-						"type": "string"
-					}
-				],
-				"name": "setURI",
-				"outputs": [],
-				"stateMutability": "nonpayable",
-				"type": "function"
-			},
-			{
-				"inputs": [
-					{
-						"internalType": "uint256",
-						"name": "",
-						"type": "uint256"
-					}
-				],
-				"name": "uri",
-				"outputs": [
-					{
-						"internalType": "string",
-						"name": "",
-						"type": "string"
-					}
-				],
-				"stateMutability": "view",
-				"type": "function"
+			error: function(json) {
+				console.log("Failed Getting Contract");
+				//TODO handle
 			}
-		];
+		});
+}
 
-	 const currentUser = Moralis.User.current();
- 	 const ethAddress = currentUser.get("ethAddress");
-	 nftRecipientId = nftRecipientId ? nftRecipientId : ethAddress;
 
- 	 let signer = window.web3.getSigner(ethAddress);
-	 const wiscleContract = await new ethers.Contract(nftContractAddress, contractABI, signer);
+function wsc_handle_deploy_contract () {   //TODO Package with Interactions.
+		jQuery("button#wsc_ww_send_button").addClass('pte_ipanel_button_disabled');
+		jQuery("span#wsc_wait_indicator_send").html('Deploying...');
+		var context = wsc_get_smart_contract_values();
+		wsc_start_deploy_contract(context);
+}
 
-	 await wiscleContract.setURI(uri);
+async function wsc_start_deploy_contract(data) {
 
-	 let utf8Encoder = new TextEncoder();
-	 var nft = await wiscleContract.mint(nftRecipientId, nftTokenId, 1, utf8Encoder.encode(""));
+	jQuery("span#wsc_wait_indicator_send").html('');
 
-	 return nft;
+	const accountType = data.contract_account_type;
 
+	if (accountType == '1') {
+
+		console.log('handle on server');
+		const security = specialObj.security;
+		data.deploy_contract_as_custodial = true;
+
+		jQuery.ajax({
+			 url: alpn_templatedir + 'wsc_update_process_with_data.php',
+			 type: 'POST',
+			 data: {
+				 "security": security,
+				 "process_type_id": "deploy_contract",
+				 "process_id": data.process_id,
+				 "data": data
+			 },
+			 dataType: "json",
+			 success: function(json) {
+				 console.log("Process Updated", json);
+				 console.log(json);
+			 },
+			 error: function(json) {
+				 console.log("Failed Updating Process");
+			 }
+		 });
+
+	} else {
+
+		if (Moralis.ensureWeb3IsInstalled()) {
+					console.log("ALREADY CONNECTED - Deploying Contract!");
+					Moralis.deactivateWeb3();
+					wsc_start_deploy_contract(data);
+		} else {
+			Moralis.enableWeb3({
+					signingMessage: 'Please Connect to Wiscle',
+					provider: "walletconnect"
+				}).then(async function(newProvider){
+					console.log("NEWLY CONNECTED - Deploying Contract!");
+					window.web3 = newProvider;
+					wsc_contract_factory_deploy(data);
+				}).catch(function (err){
+					console.log("Start Deploy Error");
+					console.log(err);
+				});
+		}
+
+	}
+
+
+}
+
+function wsc_contract_factory_deploy(data){
+
+	console.log("wsc_contract_factory_deploy");
+
+	const contractAccount = data.contract_account;
+	const contractBlockchain = data.contract_blockchain;
+	const contractTemplateId = data.contract_template_id;
+	const contractName = data.contract_name;
+	const contractSymbol = data.contract_symbol;
+	const processId = data.process_id;
+
+	const security = specialObj.security;
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'wsc_get_contract_data.php',
+		type: 'POST',
+		data: {
+			"security": security,
+			"type": 'contract_factory',
+			"nft_contract_template_id": contractTemplateId
+		},
+		dataType: "json",
+		success: async function(json) {
+
+					const contractData = json.contract_data;
+					let abi =  JSON.parse(contractData.contract_abi);
+					let bytecode =  JSON.parse(contractData.contract_bytecode);
+					const ethers = Moralis.web3Library;
+					let signer = window.web3.getSigner(contractAccount);
+					const factory = await new ethers.ContractFactory(abi, bytecode, signer);
+					let contract = await factory.deploy(contractName, contractSymbol);
+					let contractAddress = await contract.address;
+					Moralis.deactivateWeb3();
+
+					jQuery.ajax({
+						url: alpn_templatedir + 'wsc_create_member_smart_contract.php',
+						type: 'POST',
+						data: {
+							"security": security,
+							"process_id": processId,
+							"chain_id": contractBlockchain,
+							"contract_template_id": contractTemplateId,
+							"wallet_address": contractAccount,
+							"contract_address": contractAddress,
+							"contract_collection_name": contractName,
+							"contract_collection_symbol": contractSymbol
+						},
+						dataType: "json",
+						success: async function(json) {
+							console.log("wsc_contract_factory_deploy PART DEUX");
+							console.log(json);
+							pte_show_process_ux(processId);
+
+						},
+						error: function(json) {
+							console.log("Failed Updating Member Contract");
+							//TODO handle
+						}
+					});
+		},
+		error: function(json) {
+			console.log("Failed Getting Contract");
+			//TODO handle
+		}
+	});
+
+}
+
+function wsc_update_available_contracts() {
+	console.log("Updating Contracts");
+
+	const nftAccountList = jQuery('select#alpn_select2_small_owned_accounts');
+	const nftAccountData = nftAccountList.select2('data');
+	if (typeof nftAccountData != 'undefined' && typeof nftAccountData[0] != 'undefined') {
+		 var nftAccount = nftAccountData[0].id;
+	} else {
+		var nftAccount = '';
+	}
+	const nftChainList = jQuery('select#alpn_select2_small_nft_blockchains');
+	const nftChainData = nftChainList.select2('data');
+	if (typeof nftChainData != 'undefined' && typeof nftChainData[0] != 'undefined') {
+		var nftBlockchain = nftChainData[0].id;
+	} else {
+		var nftBlockchain = '';
+	}
+
+	const security = specialObj.security;
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'wsc_get_available_contracts.php',
+		type: 'POST',
+		data: {
+			"security": security,
+			"chain_id": nftBlockchain,
+			"account_address": nftAccount
+		},
+		dataType: "json",
+		success: function(json) {
+				jQuery("div#wsc_contract_list_container_ww").html(json.contracts_list);
+				jQuery('select#alpn_select2_small_smart_contracts').select2( {
+					theme: 'bootstrap',
+					width: '100%',
+					allowClear: false,
+					minimumResultsForSearch: -1
+				});
+		},
+		error: function(json) {
+			console.log("Failed getting available contracts list");
+			//TODO handle
+		}
+	});
 }
 
 
@@ -3278,31 +3478,8 @@ function wsc_setup_wallet_selector() {
 			wallets.append(newOption).trigger('change');
 
 			for (const ethaddressIndex in userAccounts) {
-
 				ethAddress = userAccounts[ethaddressIndex];
-
 				wallets.append(newOption).trigger('change');
-
-
-			// 	Moralis.Web3API.resolve.resolveAddress ({ address: ethAddress })
-			// 	.then (function(ensDomain) {
-			//
-			// 		ethAddress = ensDomain.name + " | " + ethAddress;
-			//
-			// 		console.log(ethAddress);
-			// 		console.log(ensDomain);
-			//
-			// 		newOption = new Option(ethAddress, ethAddress, false, false);
-			// 		wallets.append(newOption).trigger('change');
-			//
-			// }).catch (function(e){
-			// 	console.log('EXCEPTION');
-			// 	console.log(e);
-			// 	newOption = new Option(ethAddress, ethAddress, false, false);
-			// 	wallets.append(newOption).trigger('change');
-			//
-			// });
-
 		}
 	}
 }
@@ -3364,11 +3541,13 @@ function wsc_remove_set(setName, nftId) {
 
 }
 
-function wsc_change_category(categoryId, nftId) {
+function wsc_change_category(viewingCategoryId, updateSourceId, categoryId, nftId) {
 
 	console.log('wsc_change_category');
 	// console.log(categoryId);
 	// console.log(nftId);
+
+	jQuery("span#wsc_actual_owner_tools").addClass("wsc_owner_tools_disabled");
 
 	const security = specialObj.security;
 
@@ -3378,11 +3557,19 @@ function wsc_change_category(categoryId, nftId) {
 		data: {
 			"security": security,
 			"category_id": categoryId,
+			"source_id": updateSourceId,
+			"viewing_category_id": viewingCategoryId,
 			"nft_id": nftId
 		},
 		dataType: "json",
 		success: function(json) {
-			//	console.log(json);
+			console.log(json);
+			jQuery("span#wsc_owner_tools_message").html("Saved").show();
+			setTimeout(function(){
+				jQuery("span#wsc_owner_tools_message").hide();
+				jQuery("span#wsc_actual_owner_tools").removeClass("wsc_owner_tools_disabled");
+			}, 1500);
+
 		},
 		error: function(json) {
 			console.log("Failed Changing Category");
@@ -3678,6 +3865,20 @@ function wsc_gather_nft_query_data(accountAddress = "", initialState = {}, clear
 	}
 }
 
+function wsc_manage_category() {
+
+	console.log("MANAGE CATEGORY...");
+
+	var catSource = jQuery('select.alpn_select2_small_nft_source').select2('data')[0];
+	var catCat = jQuery('select.alpn_select2_small_nft_category').select2('data')[0];
+	var currentViewing = jQuery('select#alpn_select2_categories').select2('data')[0];
+
+	wsc_change_category(currentViewing.id, catSource.id, catCat.id, jQuery("div.lg-current div.wsc_gallery_single_nft_container").data('wsc-nft'));
+
+	jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-cat", catCat.id);
+
+}
+
 
 function wsc_change_nfts (accountAddress = "", initialState = {}, clearAll = false) {
 
@@ -3726,7 +3927,7 @@ function wsc_change_nfts (accountAddress = "", initialState = {}, clearAll = fal
 		dataType: "JSON",
 		success: function(json) {
 
-			console.log(json);
+			//console.log(json);
 
 			const html = json.html;
 
@@ -3878,25 +4079,25 @@ function wsc_change_nfts (accountAddress = "", initialState = {}, clearAll = fal
 
 		var ownerToolBar = "<div class='wsc_gallery_single_nft_owner_panel wsc_owner_tools_hidden'>";
 				ownerToolBar += "<span id='wsc_owner_tools_message' class='pte_hidden_for_now'></span>";
-				ownerToolBar += "<span id='wsc_actual_owner_tools' class='wsc_owner_tools_off'><span class='wsc_dash_label'>Category:</span><select class='alpn_select2_small_nft_category'><option value='visible'>Visible</option><option value='staging'>Staging</option><option value='archived'>Archived</option><option value='error'>Error</option><option value='spam'>SPAM</option></select></span>";
+				ownerToolBar += "<span id='wsc_actual_owner_tools' class='wsc_owner_tools_off'><span class='wsc_dash_label_flush'>Put</span><select class='alpn_select2_small_nft_source'><option value='single' title='This NFT only'>NFT</option><option value='all' title='All NFTs in this Contract/Collection'>All</option><option value='all_ex' title='All NFTs in this Contract/Collection except for this one'>All Ex</option></select><span class='wsc_dash_label_flush'>in</span><select class='alpn_select2_small_nft_category'><option value='visible'>Visible</option><option value='staging'>Staging</option><option value='archived'>Archived</option><option value='error'>Error</option><option value='spam'>SPAM</option></select><button style='margin-left: 5px;' id='wsc_update_category_button' title='' type='button' aria-label='' class='wsc_nft_toolbar_button' onclick='wsc_manage_category();'><i title='Go!' class='far fa-arrow-circle-right'></i></button></span>";
 				ownerToolBar += "<span class='wsc_dash_label'>Sets:</span><select class='wsc_multi_select_tags form-control' multiple='multiple'></select>";
-				ownerToolBar += "<button id='wsc_refresh_metadata_button' title='' type='button' aria-label='Hide' class='lg-icon' title='Refresh Metadata' onclick='wsc_refresh_nft_metadata();'><i class='far fa-sync-alt'></i></button>";
+				ownerToolBar += "<button id='wsc_refresh_metadata_button' title='' type='button' aria-label='' class='lg-icon wsc_nft_toolbar_button' onclick='wsc_refresh_nft_metadata();'><i title='Refresh Metadata' class='far fa-sync-alt'></i></button>";
 				ownerToolBar += "</div>";
 
   	const copyButton =
  	  jQuery('.lg-toolbar').append(ownerToolBar);
 
-		jQuery('select.alpn_select2_small_nft_category:not(.select2-hidden-accessible)').select2({
-			width: '75px',
+		jQuery('select.alpn_select2_small_nft_source:not(.select2-hidden-accessible)').select2({
+			width: '60px',
 			theme: 'bootstrap',
 			allowClear: false,
 			minimumResultsForSearch: -1
 		});
-		jQuery('select.alpn_select2_small_nft_category.select2-hidden-accessible').on('select2:select', function (e) {
-			console.log("CHANGE CATEGORY...");
-			var data = e.params.data
-			wsc_change_category(data.id, jQuery("div.lg-current div.wsc_gallery_single_nft_container").data('wsc-nft'));
-			jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-cat", data.id);
+		jQuery('select.alpn_select2_small_nft_category:not(.select2-hidden-accessible)').select2({
+			width: '80px',
+			theme: 'bootstrap',
+			allowClear: false,
+			minimumResultsForSearch: -1
 		});
 
 		jQuery('select.wsc_multi_select_tags:not(.select2-hidden-accessible)').select2( {
@@ -3968,7 +4169,7 @@ function wsc_refresh_nft_metadata() {
 	setTimeout(function(){
 		jQuery("span#wsc_owner_tools_message").hide();
 		jQuery("button#wsc_refresh_metadata_button").removeClass("wsc_owner_tools_off");
-	}, 3000);
+	}, 1500);
 
 	var currentNftId = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data('wsc-nft');
 	const security = specialObj.security;
@@ -5782,7 +5983,7 @@ function pte_setup_pdf_viewer(viewerSettings) {
 
 				var pdfui = window.pdfui = new PDFUI({
 						viewerOptions: {
-								defaultScale: 'fitWidth',
+								defaultScale: 'fitPage',
 								libPath: alpn_templatedir + 'foxitpdf/lib/',
 								jr: {
 										readyWorker: readyWorker,
@@ -6189,6 +6390,9 @@ function wsc_update_preview (twitterActionSlug, nftSetSlug, textData){
 
 function wsc_ww_send_twitter () {
 	console.log("SENDING TWITTER ACTION");
+
+	jQuery("span#wsc_wait_indicator_send").html('Finalizing...');
+
 	var context = wsc_twitter_ww_get_changes();
 
 	if (context.twitter_logged_state != "connected") {
@@ -6201,6 +6405,9 @@ function wsc_ww_send_twitter () {
 		return;
 	}
 
+	jQuery("button#wsc_ww_send_button").addClass("wsc_owner_tools_off");
+
+
 	var security = specialObj.security;
 	jQuery.ajax({
 		url: alpn_templatedir + 'wsc_do_twitter_action.php',
@@ -6210,15 +6417,13 @@ function wsc_ww_send_twitter () {
 			"twitter_action_slug": context.twitter_action_slug,
 			"twitter_set_slug": context.twitter_set_slug,
 			"twitter_text_data": context.twitter_text_data,
-			"unique_id": context.process_id
+			"process_id": context.process_id
 		},
 		dataType: "json",
 		success: function(json) {
 			console.log("Sent to Twitter...");
 			console.log(json);
-
-			jQuery("button#wsc_ww_send_button").addClass("wsc_owner_tools_off");
-
+			jQuery("span#wsc_wait_indicator_send").html('');
 		},
 		error: function(json) {
 			console.log("Faled Sending to Twitter");
@@ -6273,6 +6478,17 @@ function alpn_vault_control(operation, originator = 'user') {
 //TODO CHeck for rights at server??
 
 	switch(operation) {
+
+		case 'deploy_contract':
+			console.log("START DEPLOY SMART CONTRACT...");
+			var sendData = {
+				'topic_id': topicId,
+				'process_type_id': 'deploy_contract'
+			};
+			pte_handle_widget_interaction(sendData);
+			pte_overlay_success('alpn_vault_interaction_start');  //Animates button to give user feedback that am interaction is starting. TODO get this right
+
+		break;
 
 		case 'mint_nft':
 			console.log("START MINT NFT INTERACTION...");
@@ -6546,11 +6762,12 @@ function alpn_vault_control(operation, originator = 'user') {
 		jQuery('#alpn_name_field_label').attr('style', 'pointer-events: auto; opacity: 1.0;');
 
 		wsc_reset_ww_list();
-		wsc_add_ww("<option value='mint_nft' data-icon='far fa-cube'>Mint NFT</option>");
-		wsc_add_ww("<option value='email' data-icon='far fa-envelope'>Send xLink by Email</option>");
-		wsc_add_ww("<option value='sms' data-icon='far fa-sms'>Send xLink by SMS</option>");
-		wsc_add_ww("<option value='fax' data-icon='far fa-fax'>Send as Fax</option>");
-		wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
+		wsc_add_ww("<option value='mint_nft' data-icon='far fa-cube'>Mint NFT from Vault File</option>");
+		wsc_add_ww("<option value='email' data-icon='far fa-envelope'>Email xLink to Vault File</option>");
+		wsc_add_ww("<option value='sms' data-icon='far fa-sms'>SMS xLink to Vault File</option>");
+		// wsc_add_ww("<option value='fax' data-icon='far fa-fax'>Send by Fax</option>");
+		wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send a Team Invitation</option>", 'topic');
+		wsc_add_ww("<option value='deploy_contract' data-icon='far fa-file-signature'>Deploy Smart Contract</option>");
 
 		break;
 
@@ -7711,7 +7928,7 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 					alpn_oldVaultSelectedId = '';
 
 					wsc_reset_ww_list();
-					wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
+					wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send a Team Invitation</option>", 'topic');
 
 					pte_setup_pdf_viewer(viewerSettings);
 					if (!pte_back_button) {
@@ -7766,7 +7983,8 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 					jQuery('#alpn_edit_container').html(html).fadeIn();
 
 					wsc_reset_ww_list();
-					wsc_add_ww("<option value='twitter_actions' data-icon='fab fa-twitter'>Twitter NFT Actions</option>");
+					wsc_add_ww("<option value='twitter_actions' data-icon='fab fa-twitter'>Twitter NFT Fun</option>");
+					wsc_add_ww("<option value='deploy_contract' data-icon='far fa-file-signature'>Deploy Smart Contract</option>");
 
 				},
 				error: function() {
@@ -7926,7 +8144,8 @@ function alpn_mission_control(operation, uniqueRecId = '', overRideTopic = ''){ 
 					alpn_oldVaultSelectedId = '';
 
 					wsc_reset_ww_list();
-					wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send Team Invitation</option>", 'topic');
+					wsc_add_ww("<option value='team_invite' data-icon='far fa-user-friends'>Send a Team Invitation</option>", 'topic');
+					wsc_add_ww("<option value='deploy_contract' data-icon='far fa-file-signature'>Deploy Smart Contract</option>");
 
 					var delButtonEl = jQuery("#delete_topic_button");
 					if (delButtonEl.hasClass('pte_ipanel_button_disabled')) {

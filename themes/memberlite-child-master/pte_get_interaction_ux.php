@@ -6,7 +6,6 @@ use Bueltge\Marksimple\Marksimple;
 use Abraham\TwitterOAuth\TwitterOAuth;
 
 
-
 if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
@@ -15,7 +14,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
    echo 'Not a valid request.';
    die;
 }
-
 
 $siteUrl = get_site_url();
 
@@ -95,6 +93,9 @@ function pte_make_interaction_editor_ux($uxMeta) {
 
 		case 'proteam_invitation_received':
 			$html .= pte_make_invitation_received_panel($uxMeta);
+		break;
+		case 'deploy_contract':
+			$html .= pte_make_smart_contract_panel($uxMeta);
 		break;
     case 'twitter_actions':
       $html .= pte_make_twitter_actions_panel($uxMeta);
@@ -186,10 +187,28 @@ function pte_make_button_line($lineType, $uxMeta) {
 
 	$html = "";
 	switch ($lineType) {
-		case 'nft_send':
+
+		case 'deploy_contract_send':
 			$html .= "
 					<div style='float: right; width: 100%; text-align: right; font-size: 20px; color: rgb(0, 116, 187); margin: 10px 0 0 0;'>
-						<button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_handle_send_nft();' style='margin-right: 0; width: 65px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Send</button>
+						<span id='wsc_wait_indicator_send'></span><button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_handle_deploy_contract();' style='margin-right: 0; width: 120px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Deploy Contract</button>
+					</div>
+					<div style='clear: both;'></div>
+			";
+		break;
+		case 'nft_mint':
+			$html .= "
+					<div style='float: right; width: 100%; text-align: right; font-size: 20px; color: rgb(0, 116, 187); margin: 10px 0 0 0;'>
+						<span id='wsc_wait_indicator_send'></span><button id='wsc_ww_resend_button' class='btn btn-danger btn-sm' onclick='wsc_handle_resend_nft();' style='margin-right: 0; width: 120px; height: 24px; font-size: 12px; margin-bottom: 6px;'>Mint</button>
+					</div>
+					<div style='clear: both;'></div>
+			";
+		break;
+		case 'nft_send':
+			$mediaReady = (!isset($uxMeta['nft_ipfs_files']) || isset($uxMeta['nft_token_uri'])) ? "pte_ipanel_button_disabled" : "";
+			$html .= "
+					<div style='float: right; width: 100%; text-align: right; font-size: 20px; color: rgb(0, 116, 187); margin: 10px 0 0 0;'>
+						<span id='wsc_wait_indicator_send'></span><button id='wsc_ww_send_button' class='btn btn-danger btn-sm {$mediaReady}' onclick='wsc_handle_send_nft();' style='margin-right: 0; width: 120px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Finalize and Mint</button>
 					</div>
 					<div style='clear: both;'></div>
 			";
@@ -197,7 +216,7 @@ function pte_make_button_line($lineType, $uxMeta) {
     case 'twitter_send':
       $html .= "
           <div style='float: right; width: 100%; text-align: right; font-size: 20px; color: rgb(0, 116, 187); margin: 10px 0 0 0;'>
-            <button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_ww_send_twitter();' style='margin-right: 0; width: 65px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Send</button>
+            <span id='wsc_wait_indicator_send'></span><button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_ww_send_twitter();' style='margin-right: 0; width: 65px; height: 20px; font-size: 12px; margin-bottom: 6px;'>Send</button>
           </div>
           <div style='clear: both;'></div>
       ";
@@ -402,8 +421,8 @@ function pte_make_button_line($lineType, $uxMeta) {
 function pte_make_interaction_link($linkType, $uxMeta) {
 
 	alpn_log('pte_make_interaction_link');
-	alpn_log($linkType);
-	alpn_log($uxMeta);
+	// alpn_log($linkType);
+	// alpn_log($uxMeta);
 
 	$currentDomain = PTE_HOST_DOMAIN_NAME;
 
@@ -548,6 +567,106 @@ function pte_make_data_line ($lineType, $uxMeta) {
 	$phoneNumber =	isset($uxMeta['fax_field_fax_number']) ? $uxMeta['fax_field_fax_number'] : "";
 
 	switch ($lineType) {
+
+		case 'nft_results':
+
+			$walletError = isset($uxMeta['nft_wallet_error']) && $uxMeta['nft_wallet_error'] ? true : false;
+
+			$mediaType = isset($uxMeta['nft_ipfs_files']) ? $uxMeta['nft_ipfs_files']['wsc_media_type'] : "";
+			$nftImage = isset($uxMeta['nft_ipfs_files']['image']) ? $uxMeta['nft_ipfs_files']['image'] : "";
+			$mediaUrl = isset($uxMeta['nft_ipfs_files']['image_url']) ? $uxMeta['nft_ipfs_files']['image_url'] : "";
+			$mediaUrl = isset($uxMeta['nft_ipfs_files']['animation_url']) ? $uxMeta['nft_ipfs_files']['animation_url'] : $mediaUrl;
+			$mediaUrl = isset($uxMeta['nft_ipfs_files']['document_url']) ? $uxMeta['nft_ipfs_files']['document_url'] : $mediaUrl;
+			$mediaUrl = isset($uxMeta['nft_ipfs_files']['archive_url']) ? $uxMeta['nft_ipfs_files']['archive_url'] : $mediaUrl;
+			$mediaUrl = isset($uxMeta['nft_ipfs_files']['music_url']) ? $uxMeta['nft_ipfs_files']['music_url'] : $mediaUrl;
+
+			$nftName = isset($uxMeta['nft_name']) ? $uxMeta['nft_name'] : "";
+			$nftDescription = isset($uxMeta['nft_description']) ? $uxMeta['nft_description'] : "";
+			$nftRecipientAddress = isset($uxMeta['nft_recipient_address']) ? $uxMeta['nft_recipient_address'] : "";
+			$nftContractAddress = isset($uxMeta['nft_contract_address']) ? $uxMeta['nft_contract_address'] : "";
+			$nftTokenUri = isset($uxMeta['nft_token_uri']) ? $uxMeta['nft_token_uri'] : "";
+			$nftQuantity = isset($uxMeta['nft_quantity']) ? $uxMeta['nft_quantity'] : "";
+			$nftBlockChainId = isset($uxMeta['nft_blockchain']) ? $uxMeta['nft_blockchain'] : "";
+			$nftTokenId = isset($uxMeta['nft_token_id']) ? $uxMeta['nft_token_id'] : "";
+			$nftCertificateUrl = isset($uxMeta['nft_certificate_url']) ? $uxMeta['nft_certificate_url'] : "";
+
+			if ($nftBlockChainId == "eth") {
+				$openWalletInScan = "https://etherscan.io/address/{$nftRecipientAddress}";
+				$openInScan = "https://etherscan.io/token/{$nftContractAddress}?a={$nftTokenId}";
+				$openInScanName = "Etherscan";
+				$openInOpenSea = "https://opensea.io/assets/{$nftContractAddress}/{$nftTokenId}";
+			} else if ($nftBlockChainId == "polygon") {
+				$openWalletInScan = "https://polygonscan.com/address/{$nftRecipientAddress}";
+				$openInScan = "https://polygonscan.com/token/{$nftContractAddress}?a={$nftTokenId}";
+				$openInScanName = "Polygonscan";
+				$openInOpenSea = "https://opensea.io/assets/matic/{$nftContractAddress}/{$nftTokenId}";
+			}
+
+			$source = "https://ipfs.moralis.io:2053/ipfs/";
+			$sourceLen = strlen($source);
+			if (substr($mediaUrl, 0, $sourceLen) == $source) {
+				$mediaUrl = "https://gateway.moralisipfs.com/ipfs/" . substr($mediaUrl, $sourceLen);
+			}
+			if (substr($nftImage, 0, $sourceLen) == $source) {
+				$nftImage = "https://gateway.moralisipfs.com/ipfs/" . substr($nftImage, $sourceLen);
+			}
+			if (substr($nftTokenUri, 0, $sourceLen) == $source) {
+				$nftTokenUri = "https://gateway.moralisipfs.com/ipfs/" . substr($nftTokenUri, $sourceLen);
+			}
+
+			if ($walletError) {
+				$html .= pte_make_button_line("nft_mint", $uxMeta);
+			}
+			$html .="<div class='pte_data_line_title_wide'>Name</div><div id='pte_data_line_value' class='pte_data_line_value_wide'>{$nftName}</div>";
+			$html .= "<div class='pte_data_line_title_wide'>Description</div><div id='pte_data_line_value' class='pte_data_line_value_wide'>{$nftDescription}</div>";
+			$html .= "<div class='pte_data_line_title_wide'>Media Type</div><div id='pte_data_line_value' class='pte_data_line_value_wide'>{$mediaType}</div>";
+			$html .= "<div class='pte_data_line_title_wide'>Quantity</div><div id='pte_data_line_value' class='pte_data_line_value_wide'>{$nftQuantity}</div>";
+			$html .=  "<div class='wsc_vault_item_container'>" . pte_make_interaction_link('vault_item', $uxMeta) . "</div>";
+			$html .= "<div class='pte_data_line_title_wide'>Info</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$openInScan}' target='_blank'>{$openInScanName}</a></div>";
+			$html .= "<div class='pte_data_line_title_wide'>Market</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$openInOpenSea}' target='_blank' title='View in OpenSea'>OpenSea</a></div>";
+			$html .= "<div class='pte_data_line_title_wide'>Recipient</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$openWalletInScan}' target='_blank' title='View in {$openInScanName}'>{$nftRecipientAddress}</a></div>";
+			$html .= "<div class='wsc_data_spacer_vertical'></div>";
+			$html .= "<div class='pte_data_line_title_wide'>Image</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$nftImage}' target='_blank'>{$nftImage}</a></div>";
+			$html .= "<div class='pte_data_line_title_wide'>Media</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$mediaUrl}' target='_blank'>{$mediaUrl}</a></div>";
+			$html .= "<div class='pte_data_line_title_wide'>Metadata</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$nftTokenUri}' target='_blank'>{$nftTokenUri}</a></div>";
+			$html .= "<div class='pte_data_line_title_wide'>Certificate</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$nftCertificateUrl}' target='_blank' title='View Wiscle Certificate'>{$nftCertificateUrl}</a></div>";
+
+		break;
+
+		case 'twitter_results':
+
+		$tweetId = isset($uxMeta['twitter_status_id']) ? $uxMeta['twitter_status_id'] : "";
+		$twitterBase = "https://twitter.com/wisclenft/status/";
+
+		$html = "<div class='pte_data_line_title_wide'>Tweet</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$twitterBase}{$tweetId}' target='_blank'>{$tweetId}</a></div>";
+		if (isset($uxMeta['twitter_user_mentions']) && $uxMeta['twitter_user_mentions']) {
+			foreach ($uxMeta['twitter_user_mentions'] as $userMention) {
+				$userScreenName = $userMention['screen_name'];
+				$html .= "<div class='pte_data_line_title_wide'>Mention</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='https://twitter.com/{$userScreenName}' target='_blank'>{$userScreenName}</a></div>";
+			}
+		}
+		break;
+		case 'smart_contract_address':
+
+			$smartContractAddress = isset($uxMeta['smart_contract_address']) ? $uxMeta['smart_contract_address'] : "";
+			$contractBlockChainId = isset($uxMeta['smart_contract_chain_id']) ? $uxMeta['smart_contract_chain_id'] : "";
+			$contractTemplateId = isset($uxMeta['smart_contract_template_id']) ? $uxMeta['smart_contract_template_id'] : "";
+
+			if ($contractBlockChainId == "eth") {
+				$openInScan = "https://etherscan.io/token/{$smartContractAddress}";
+				$openInScanName = "Etherscan";
+				$openInOpenSea = "https://opensea.io/assets/{$smartContractAddress}";
+			} else if ($contractBlockChainId == "polygon") {
+				$openInScan = "https://polygonscan.com/token/{$smartContractAddress}";
+				$openInScanName = "Polygonscan";
+				$openInOpenSea = "https://opensea.io/assets/matic/{$smartContractAddress}";
+			}
+
+			$html .= "<div class='pte_data_line_title_wide'>OpenSea</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$openInOpenSea}' target='_blank'>{$openInOpenSea}</a></div>";
+			$html .= "<div class='pte_data_line_title_wide'>{$openInScanName}</div><div id='pte_data_line_value' class='pte_data_line_value_wide'><a class='pte_topic_link' href='{$openInScan}' target='_blank'>{$openInScan}</a></div>";
+			$html .= "<div class='pte_data_line_title_wide'>Blockchain</div><div id='pte_data_line_value' class='pte_data_line_value_wide'>{$contractBlockChainId}</div>";
+			$html .= "<div class='pte_data_line_title_wide'>Contract</div><div id='pte_data_line_value' class='pte_data_line_value_wide'>{$contractTemplateId}</div>";
+		break;
 		case 'to_from_line':
 			$html = "<div class='pte_data_line_title'>{$toFrom}</div><div id='pte_to_line' class='pte_data_line_value' data-cid='{$networkId}'>{$networkName}</div>";
 		break;
@@ -692,7 +811,7 @@ function pte_make_info_panel($uxMeta){
 	$html .= "<div id='pte_interaction_message_container'>";
 		foreach ($messageLines as $key) {
 			$html .= pte_make_message_line($key, $uxMeta);
-		}
+	}
 	$html .= "</div>";
 	//Link Lines
 	$html .= "<div id='pte_interaction_information_links'>";
@@ -706,161 +825,240 @@ function pte_make_info_panel($uxMeta){
 return $html;
 }
 
+function pte_make_smart_contract_panel ($uxMeta) {
+
+	global $wpdb;
+
+	$html = "";
+
+	$supportedChains = array("eth" => "Ethereum", "polygon" => "Polygon");
+	$selectedBlockChain = "polygon";
+
+	$sendLine = pte_make_button_line('deploy_contract_send', $uxMeta);
+	$processId = $uxMeta['process_id'];
+
+	$filesProcessing =	isset($uxMeta['nft_ipfs_files']) ?  "Ready" : "Processing...";
+
+	$blockChainSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_nft_blockchains'>";
+	foreach ($supportedChains as  $key => $value) {
+		$selectedItem = ($key == $selectedBlockChain) ? " SELECTED " : "";
+		$blockChainSelect .= "<option value='{$key}' $selectedItem>{$value}</option>";
+	}
+	$blockChainSelect .= "</select></div>";
+
+	$contractTemplateSelect = "";
+	$status = "active";
+
+	$contractTemplates = $wpdb->get_results(
+		$wpdb->prepare("SELECT id, contract_name, contract_description FROM alpn_smart_contract_templates WHERE status = %s", $status)
+	 );
+
+	if (isset($contractTemplates[0])) {
+				$contractTemplateSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_smart_contracts'>";
+				foreach ($contractTemplates as $key => $value) {
+					$contractTemplateSelect .= "<option value='{$value->id}' title='{$value->contract_description}'>{$value->contract_name}</option>";
+				}
+				$contractTemplateSelect .= "</select></div>";
+
+	}
+
+	$accountSelectData = wsc_get_owned_web3_accounts_list();
+	$accountSelect = $accountSelectData['html'];
+
+	$infoPanel = pte_make_info_panel($uxMeta);
+	$html .= "<div id='wsc_twitter_panel'>
+							<div class='wsc_section_title_ww'>Web3 Account</div>
+							{$accountSelect}
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Chain</div>
+							{$blockChainSelect}
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Type</div>
+							{$contractTemplateSelect}
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Name</div>
+							<input type='text' id='wsc_nft_contract_name_field' class='wsc_ww_field' placeholder='Collection Name in Marketplace'></input>
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Symbol</div>
+							<input type='text' id='wsc_nft_contract_symbol_field' class='wsc_ww_field' placeholder='Collection Symbol in Marketplace'></input>
+							{$sendLine}
+							{$infoPanel}
+						</div>
+						<script>
+								jQuery('select#alpn_select2_small_owned_accounts').select2( {
+									theme: 'bootstrap',
+									width: '100%',
+									allowClear: false,
+									minimumResultsForSearch: -1
+								});
+								jQuery('select#alpn_select2_small_nft_blockchains').select2( {
+									theme: 'bootstrap',
+									width: '100%',
+									allowClear: false,
+									minimumResultsForSearch: -1
+								});
+								jQuery('select#alpn_select2_small_smart_contracts').select2( {
+									theme: 'bootstrap',
+									width: '100%',
+									allowClear: false,
+									minimumResultsForSearch: -1
+								});
+								function wsc_get_smart_contract_values(){
+									var contractName = jQuery('input#wsc_nft_contract_name_field').val();
+									var contractSymbol = jQuery('input#wsc_nft_contract_symbol_field').val();
+									const chainList = jQuery('#alpn_select2_small_nft_blockchains');
+									const chainData = chainList.select2('data');
+									if (typeof chainData != 'undefined' && typeof chainData[0] != 'undefined') {
+										 var contractBlockChain = chainData[0].id;
+									}
+									const contractsList = jQuery('#alpn_select2_small_smart_contracts');
+									const contractsData = contractsList.select2('data');
+									if (typeof contractsData != 'undefined' && typeof contractsData[0] != 'undefined') {
+										 var contractTemplateId = contractsData[0].id;
+									}
+									const nftAccountList = jQuery('select#alpn_select2_small_owned_accounts');
+									const nftAccountData = nftAccountList.select2('data');
+									if (typeof nftAccountData != 'undefined' && typeof nftAccountData[0] != 'undefined') {
+										 var nftAccountType = jQuery(nftAccountData[0].element).data('cust');
+										 var nftAccount = nftAccountData[0].id;
+									} else {
+										var nftAccountType = '';
+										var nftAccount = '';
+									}
+									return {
+										'contract_name': contractName,
+										'contract_account': nftAccount,
+										'contract_account_type': nftAccountType,
+										'contract_symbol': contractSymbol,
+										'contract_blockchain': contractBlockChain,
+										'contract_template_id': contractTemplateId,
+										'process_id': '{$processId}'
+									};
+								}
+							</script>";
+return $html;
+}
+
 function pte_make_mint_nft_panel ($uxMeta) {
 
 	global $wpdb;
 
+	$supportedChains = array("eth" => "Ethereum", "polygon" => "Polygon");
+	$selectedBlockChain = "polygon";
+
 	$sendLine = pte_make_button_line('nft_send', $uxMeta);
 	$processId = $uxMeta['process_id'];
+	$ownerId = $uxMeta['owner_id'];
 
-	return "<div>Mint NFT</div>
-					<div>{$sendLine}</div>
-					<script>
+	$filesProcessing =	isset($uxMeta['nft_ipfs_files']) ?  "Ready" : "Processing...";
 
-					function wsc_get_mint_nft_values(){
-						var nftName = `A Really Nice NFT`;
-						var nftDescription = `I'm a creator and I made this.`;
-						return {
-							'nft_name': nftName,
-							'nft_description': nftDescription,
-							'process_id': '{$processId}',
-							'nft_attributes': {}
-						};
-					}
-					</script>
-	";
+	$accountSelectData = wsc_get_owned_web3_accounts_list();
+	$accountSelect = $accountSelectData['html'];
 
-	$userInfo = wp_get_current_user();
-	$ownerId = $userInfo->data->ID;
+	$contractData = array(
+		"account_address" => $accountSelectData['selected_account_address'],
+		"chain_id" => $selectedBlockChain
+	);
 
-	$processId = 	isset($uxMeta['process_id']) ? $uxMeta['process_id'] : "";
+	$contractSelect = wsc_get_available_contracts_list($contractData);
 
-  $actionsArray = array(
-    "tweet" => "Tweet up to 4 NFTs",
-    "pfp" => "Set Profile Picture to an NFT",
-    "3x1" => "Set Profile Banner to 3 NFTs",
-    "6x2" => "Set Profile Banner to 12 NFTs",
-    "9x3" => "Set Profile Banner to 27 NFTs",
-    "12x4" => "Set Profile Banner to 48 NFTs",
-    "15x5" => "Set Profile Banner to 75 NFTs",
-    "2xwords" => "Set Profile Banner to 2 NFTs and Caption",
-    "8xwords" => "Set Profile Banner to 8 NFTs and Caption",
-    "18xwords" => "Set Profile Banner to 18 NFTs and Caption",
-    "32xwords" => "Set Profile Banner to 32 NFTs and Caption"
-  );
-  $hasWordsArray = array("tweet", "2xwords", "8xwords", "18xwords", "32xwords");
-  $hasWordsClass= in_array($initialAction, $hasWordsArray) ? "" : "wsc_owner_tools_off";
+	$blockChainSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_nft_blockchains'>";
+	foreach ($supportedChains as  $key => $value) {
+		$selectedItem = ($key == $selectedBlockChain) ? " SELECTED " : "";
+		$blockChainSelect .= "<option value='{$key}' $selectedItem>{$value}</option>";
+	}
+	$blockChainSelect .= "</select></div>";
 
-	$html = "";
+	$mediaUrlHtml = $mediaUrl ? "<div id='wsc_nft_ww_media_url' class='wsc_nft_url_container'>Media: {$mediaUrl}</div>" : "";
+	$imageUrlHtml = $mediaUrl ? "<div id='wsc_nft_ww_image_url'>Image: {$imageUrl}</div>" : "";
+	$wiscleLinkHtml = $mediaUrl ? "<div id='wsc_nft_ww_image_url'>Vault: {$wiscleLink}</div>" : "";
 
-  if ($processId && $ownerId) {
+	$html .= "<div id='wsc_twitter_panel'>
+							<div class='wsc_section_title_ww'>Web3 Account</div>
+							{$accountSelect}
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Chain</div>
+							{$blockChainSelect}
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Smart Contract/Collection</div>
+							<div id='wsc_contract_list_container_ww'>{$contractSelect}</div>
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Name</div>
+							<input type='text' id='wsc_nft_name_field' class='wsc_ww_field' placeholder='NFT Name'></input>
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Description</div>
+							<textarea id='wsc_nft_description_field' class='wsc_textarea_standard' placeholder='NFT Description'>{$textContent}</textarea>
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Attributes</div>
+							- under construction --
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Quantity</div>
+							<input type='text' id='wsc_nft_quantity_field' class='wsc_ww_field' placeholder='Quantity Available'></input>
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Web3 Account to Receive NFT</div>
+							<input type='text' class='wsc_ww_field' id='wsc_nft_account_field' placeholder='0x... Leave empty to receive in your own account'></input>
+							<div class='wsc_section_title_ww wsc_ww_line_separator'>Media: <span id='wsc_nft_files_status' style='font-weight: normal;'>{$filesProcessing}</span></div>
+							{$sendLine}
+							{$mediaUrlHtml}
+							{$imageUrlHtml}
+							{$wiscleLinkHtml}
+						</div>
+						<script>
+								jQuery('select#alpn_select2_small_owned_accounts').select2( {
+									theme: 'bootstrap',
+									width: '100%',
+									allowClear: false,
+									minimumResultsForSearch: -1
+								});
+								jQuery('select#alpn_select2_small_smart_contracts').select2( {
+									theme: 'bootstrap',
+									width: '100%',
+									allowClear: false,
+									minimumResultsForSearch: -1
+								});
+								jQuery('select#alpn_select2_small_owned_accounts').on('select2:select', function (e) {
+									wsc_update_available_contracts();
+								});
+								jQuery('select#alpn_select2_small_nft_blockchains').select2( {
+									theme: 'bootstrap',
+									width: '100%',
+									allowClear: false,
+									minimumResultsForSearch: -1
+								});
+								jQuery('select#alpn_select2_small_nft_blockchains').on('select2:select', function (e) {
+									wsc_update_available_contracts();
+								});
 
-  	$setData = $wpdb->get_results(
-  		$wpdb->prepare("SELECT DISTINCT set_name FROM alpn_nft_sets WHERE owner_id = %d ORDER BY set_name", $ownerId)
-  	);
-
-    if (isset($setData[0])) {
-
-          $initialSet = isset($uxMeta['twitter_set_name']) ? $uxMeta['twitter_set_name'] : $setData[0]->set_name;
-
-          $twitterActionsSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_twitter_actions'>";
-          foreach ($actionsArray as  $key => $value) {
-            $selectedItem = ($key == $initialAction) ? " SELECTED " : "";
-        		$twitterActionsSelect .= "<option value='{$key}' $selectedItem>{$value}</option>";
-        	}
-          $twitterActionsSelect .= "</select></div>";
-
-        	$setSelect = "<div class='wsc_ww_select_wrapper'><select id='alpn_select2_small_nft_sets'>";
-        	foreach ($setData as  $setItem) {
-            $selectedItem = ($setItem->set_name == $initialSet) ? " SELECTED " : "";
-        		$setSelect .= "<option value='{$setItem->set_name}' $selectedItem>{$setItem->set_name}</option>";
-        	}
-        	$setSelect .= "</select></div>";
-
-          $previewHtml = wsc_get_twitter_preview_art($initialSet, $initialAction, $processId, $textContent);
-
-          $userMeta = $wpdb->get_results(
-            $wpdb->prepare("SELECT twitter from alpn_user_metadata WHERE id = %d ", $ownerId)
-        	);
-          $accessTokenData = json_decode($userMeta[0]->twitter, true);
-          $accessToken = isset($accessTokenData['oauth_token']) ? $accessTokenData['oauth_token'] : false;
-
-          if ($accessToken && $accessTokenData['user_id']) {
-            $twitterName = $accessTokenData['screen_name'];
-            $connectToTwitter = "<div id='wsc_twitter_connection' class='wsc_twitter_connection' data-wsc-state='connected'>
-                                    Status: Connected as @<a class='wsc_external_links' href='https://twitter.com/{$twitterName}' target='_blank'>{$twitterName}</a> -- <a class='wsc_external_links' onclick='wsc_twitter_disconnect();'>Disconnect</a>
-                                </div>";
-          } else {
-            $connection = new TwitterOAuth(TWITTER_CONSUMER_KEY, TWITTER_CONSUMER_SECRET);
-            $request_token = $connection->oauth('oauth/request_token', array('oauth_callback' => TWITTER_OAUTH_CALLBACK));
-
-            if (isset($request_token['oauth_token'])) {
-              $userMeta = array('twitter' => json_encode($request_token));
-              $whereClause = array('id' => $ownerId);
-              $wpdb->update( 'alpn_user_metadata', $userMeta, $whereClause );
-
-              $url = $connection->url('oauth/authorize', array('oauth_token' => $request_token['oauth_token']));
-              $connectToTwitter = "<div id='wsc_twitter_connection' class='wsc_twitter_connection' data-wsc-state='disconnected'>
-                                    Status: Disconnected -- <a class='wsc_external_links' onclick='window.open(`{$url}`, `_blank`, `top=100,left=500,width=640,height=480`)'>Connect to Twitter</a>
-                                  </div>";
-            }
-          }
-
-          $sendLine = pte_make_button_line('twitter_send', $uxMeta);
-
-        	$html .= "<div id='wsc_twitter_panel'>
-          <div class='wsc_section_title_ww'>Twitter</div>
-                      {$connectToTwitter}
-                      <div class='wsc_section_title_ww wsc_ww_line_separator'>Workflow</div>
-                      {$twitterActionsSelect}
-                      <div class='wsc_section_title_ww wsc_ww_line_separator'>NFT Set</div>
-                      {$setSelect}
-                      <div id='wsc_twitter_preview_area' class='wsc_twitter_preview_area {$hasWordsClass}'>
-                        <div class='wsc_section_title_ww wsc_ww_line_separator'>Words</div>
-                        <textarea id='wsc_twitter_note' class='wsc_textarea_standard'>{$textContent}</textarea>
-                      </div>
-                      {$sendLine}
-                      <div class='wsc_section_title_ww'>Art Preview</div>
-                      <div id='wsc_twitter_preview_container'>{$previewHtml}</div>
-        						</div>
-                		<script>
-                        function wsc_handle_twitter_action_changes(){
-                          var context = wsc_twitter_ww_get_changes();
-                          wsc_update_preview(context.twitter_action_slug, context.twitter_set_slug, context.twitter_text_data);
-                        }
-                				jQuery('select#alpn_select2_small_twitter_actions').select2( {
-                					theme: 'bootstrap',
-                					width: '100%',
-                					allowClear: false,
-                					minimumResultsForSearch: -1
-                				});
-                				jQuery('#alpn_select2_small_twitter_actions').on('select2:select', function (e) {
-                          wsc_handle_twitter_action_changes();
-                				});
-                        jQuery('select#alpn_select2_small_nft_sets').select2( {
-                          theme: 'bootstrap',
-                          width: '100%',
-                          allowClear: false
-                        });
-                        jQuery('#alpn_select2_small_nft_sets').on('select2:select', function (e) {
-                          wsc_handle_twitter_action_changes();
-                        });
-                        jQuery('textarea#wsc_twitter_note').donetyping(function(){
-                            wsc_handle_twitter_action_changes();
-                        });
-                      </script>
-        		";
-
-
-    }
-
-
-
-
-  } else {
-    alpn_log("Error Twitter");
-  }
-
+								function wsc_get_mint_nft_values(){
+									const nftName = jQuery('input#wsc_nft_name_field').val();
+									const nftDescription = jQuery('textarea#wsc_nft_description_field').val();
+									const nftRecipientId = jQuery('input#wsc_nft_account_field').val();
+									const nftQuantity = jQuery('input#wsc_nft_quantity_field').val();
+									const nftAccountList = jQuery('select#alpn_select2_small_owned_accounts');
+									const nftAccountData = nftAccountList.select2('data');
+									if (typeof nftAccountData != 'undefined' && typeof nftAccountData[0] != 'undefined') {
+										 var nftAccountType = jQuery(nftAccountData[0].element).data('cust');
+										 var nftAccount = nftAccountData[0].id;
+									} else {
+										var nftAccount = '';
+									}
+									const nftChainList = jQuery('select#alpn_select2_small_nft_blockchains');
+									const nftChainData = nftChainList.select2('data');
+									if (typeof nftChainData != 'undefined' && typeof nftChainData[0] != 'undefined') {
+										var nftBlockchain = nftChainData[0].id;
+									} else {
+										var nftBlockchain = '';
+									}
+									const nftContractsList = jQuery('select#alpn_select2_small_smart_contracts');
+									const nftContractsData = nftContractsList.select2('data');
+									if (typeof nftContractsData != 'undefined' && typeof nftContractsData[0] != 'undefined') {
+										 var nftContractAddress = nftContractsData[0].id;
+									} else {
+										var nftContractAddress = '';
+									}
+									return {
+										'nft_name': nftName,
+										'nft_account': nftAccount,
+										'nft_account_type': nftAccountType,
+										'nft_description': nftDescription,
+										'nft_recipient_id': nftRecipientId,
+										'nft_blockchain': nftBlockchain,
+										'nft_quantity': nftQuantity,
+										'nft_contract_address': nftContractAddress,
+										'process_id': '{$processId}',
+										'nft_attributes': {}
+									};
+								}
+							</script>";
 return $html;
 }
 
@@ -949,7 +1147,6 @@ function pte_make_twitter_actions_panel ($uxMeta) {
                                   </div>";
             }
           }
-
 
           $sendLine = pte_make_button_line('twitter_send', $uxMeta);
 
@@ -1241,6 +1438,7 @@ function pte_make_send_panel($uxMeta) {
 	}
 	$linkPanel = pte_make_interaction_link('topic_panel', $uxMeta);
 	$regardingLineHtml = pte_make_data_line('regarding_line', $uxMeta);
+	$contractAddressHtml = pte_make_data_line('regarding_line', $uxMeta);
 
 	$html .= "
 	<div class='pte_interaction_information_panel'>

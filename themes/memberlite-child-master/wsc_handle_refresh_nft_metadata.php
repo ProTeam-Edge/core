@@ -22,7 +22,7 @@ $nftId = isset($qVars['nft_id']) ? $qVars['nft_id'] : false;
 if ($userId && $nftId) {
 
 	$results = $wpdb->get_results(
-		$wpdb->prepare("SELECT * from alpn_nft_meta WHERE id = %d LIMIT 1", $nftId)
+		$wpdb->prepare("SELECT contract_address, token_id, chain_id from alpn_nft_meta WHERE id = %d LIMIT 1", $nftId)
 	 );
 
 	 if (isset($results[0])) {

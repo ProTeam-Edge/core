@@ -21,10 +21,18 @@ use Parse\ParseClient;
 // ));
 
 $replaceStrings = array();
-$html = $faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
+$faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";
 $qVars = $_POST;
 $domainName = PTE_HOST_DOMAIN_NAME;
 
+ //wsc_create_web3_support(164);
+
+// $encrypted = wsc_encrypt_string("Hello, World");
+//
+// pp($encrypted);
+
+//pp($encrypted);
+//pp(wsc_decrypt_string($encrypted));
 
 if(!is_user_logged_in()) {
    echo '<script>window.location.href = "./my-account";</script>';
@@ -37,7 +45,6 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 }
 
 //wsc_create_new_parse_user();
-
 
 $recordId = isset($qVars['uniqueRecId']) ? $qVars['uniqueRecId'] : '';
 //$recordId = "9ccaa051-40e4-11eb-bb24-d60131c04105";
@@ -203,9 +210,9 @@ foreach ($fullMap as $key => $value) {
 }
 
 if ($topicProfileHandle) {
-	$topicImage = "<img id='pte_profile_pic_topic' src='{$ppCdnBase}{$topicProfileHandle}' style='height: 35px; width: 35px; margin-left: 10px; border-radius: 50%;'>";
+	$topicImage = "<img id='pte_profile_pic_topic' src='{$ppCdnBase}{$topicProfileHandle}' style='height: 35px; width: 35px; margin-left: 10px; border-radius: 50%; margin-top: 3px;'>";
 } else if ($topicImageHandle) {
-	$topicImage = "<img id='pte_profile_pic_topic' src='{$ppCdnBase}{$topicImageHandle}' style='height: 35px; width: 35px; margin-left: 10px; border-radius: 50%;'>";
+	$topicImage = "<img id='pte_profile_pic_topic' src='{$ppCdnBase}{$topicImageHandle}' style='height: 35px; width: 35px; margin-left: 10px; border-radius: 50%;  margin-top: 3px;'>";
 } else {
 	$topicImage = "<i class='{$topicIcon}' style='margin-left: 10px; color: rgb(68, 68, 68); font-size: 24px;'></i>";
 }
@@ -280,15 +287,15 @@ if ($topicSpecial == 'contact' || $topicSpecial == 'user' ) {   //user or networ
 		$profilePicTitle = "Icon";
 		$showMessageAccordion = "block";
 		$showAddressBookAccordion = "none";   //TODO Turn this back to block to turn it on.
-		$showImportanceAccordions = "block";
+		$showImportanceAccordions = "none";
 
 
     $showFaxAccordian = "none";
     if($memberFeatures['fax_1']) {   //Fax Available to all levels other than Community  //TODO make this dynamic
-      $showFaxAccordian = "block";
+      $showFaxAccordian = "none";
     }
 
-		$showEmailAccordian = "block";
+		$showEmailAccordian = "none";
 
 		$networkOptions = pte_get_topic_list('network_contacts') ;
 		$topicOptions = pte_get_topic_list('topics') ;
@@ -313,13 +320,14 @@ if ($topicEmailRoute || $topicFaxRoute) {
 	$emailAddress = "{$dottedName} - ProTeam Edge Topic <{$topicEmailRoute}@files.{$domainName}>";
 	$emailRouteHtml = $topicEmailRoute ? "<div title='Copy Email Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Email\", \"{$emailAddress}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Email</div>" : "";
 	$faxHtml = $topicFaxRoute ? "<div title='Copy Fax Number Route' class='pte_route_container_item pte_topic_link' onclick='pte_topic_link_copy_string(\"Fax Number\", \"{$topicFaxRouteNoCounty}\");'><i class='far fa-copy'></i>&nbsp;&nbsp;Fax: {$topicFaxRouteFormatted}</div>" : "";
-	$routes = "
-			<div class='pte_route_container'>
-				<div class='pte_route_container_title'>Inbound Routes</div>
-				{$emailRouteHtml}
-				{$faxHtml}
-			</div>
-	";
+	// $routes = "
+	// 		<div class='pte_route_container'>
+	// 			<div class='pte_route_container_title'>Inbound Routes</div>
+	// 			{$emailRouteHtml}
+	// 			{$faxHtml}
+	// 		</div>
+	// ";
+
 }
 $friendlyLogoNameHtml = isset($friendlyLogoName) && $friendlyLogoName ? $friendlyLogoName : "Image/Logo";
 
@@ -503,6 +511,7 @@ if (count($topicLinkKeys)) {
 }
 
 $tableCounter = 1; //wpforms numbers tables odd numbers
+
 foreach ($topicTabs as $key => $value) {
 
 	$topicClass = isset($usedTopicTypes[$typeKey]) && $usedTopicTypes[$typeKey] ? $usedTopicTypes[$typeKey] : "special";
@@ -617,6 +626,9 @@ foreach ($topicTabs as $key => $value) {
 		{$tabHtml}
 		</div>
 		</div>";
+
+break;
+
 }
 $tabs = "<div id='pte_tab_wrapper' class='pte_tab_wrapper'><i id='pte_tab_bar_left_arrow' onmousedown='pte_scroll_tab(\"left\");' class='far fa-caret-left pte_tab_bar_left_arrow pte_ipanel_button_disabled'></i><div id='pte_tab' class='pte_tab' onscroll='pte_handle_tab_bar_scroll();'>{$tabButtons}</div><i id='pte_tab_bar_right_arrow' onmousedown='pte_scroll_tab(\"right\");' class='far fa-caret-right pte_tab_bar_right_arrow pte_ipanel_button_disabled'></i></div>{$tabPanels}";
 //Buttons

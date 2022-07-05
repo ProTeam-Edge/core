@@ -13,7 +13,36 @@ fff5ee
 
 /* div.fv__pdf-viewer{
 	overflow-x: hidden;
+
 } */
+
+
+div.wsc_ww_attention{
+	color: green;
+}
+
+div.wsc_data_spacer_vertical{
+	height: 10px;
+}
+
+div.wsc_vault_item_container{
+	margin: 10px 0 3px 0;
+}
+
+span#wsc_flowbox_title{
+	font-weight: bold;
+}
+
+div.wsc_workflow_selector{
+	margin-top: 5px;
+}
+
+
+span#wsc_wait_indicator_send{
+	margin-right: 20px;
+	font-size: 12px;
+	color: rgb(68, 68, 68);
+}
 
 ul#select2-alpn_select2_tags-results,
 ul#select2-alpn_select2_wallets_new-results,
@@ -22,21 +51,39 @@ ul#select2-alpn_select2_contracts-results {
 	overflow-y: auto;
 }
 
-div#wsc_owner_tools_message{
-	padding: 30px 0;
-	font-size: 20px;
+span#wsc_owner_tools_message{
+	font-size: 12px;
+	vertical-align: middle;
+	margin-right: 25px;
 }
 
 
-button#wsc_refresh_metadata_button{
+button.wsc_nft_toolbar_button,
+button.wsc_nft_toolbar_button:active,
+button.wsc_nft_toolbar_button:focus,
+button.wsc_nft_toolbar_button:focus-within,
+button.wsc_nft_toolbar_button:hover{
 	vertical-align: middle;
 	height: 26px !important;
 	line-height: 26px !important;
 	padding: 0 !important;
+	font-size: 22px !important;
+	color: rgb(0, 132, 238) !important;
+	background-color: transparent !important;
+  box-shadow: none !important;
+  transform: none !important;
+  appearance: auto !important;
 }
 
 img.wsc_ww_image_preview_single{
-	max-height: 125px !important
+	width: 125px !important;
+	height: 125px !important;
+	object-fit: contain;
+}
+
+img.wsc_ww_image_preview_wide{
+	max-height: 125px !important;
+	object-fit: contain;
 }
 
 
@@ -196,6 +243,12 @@ button#wsc_import_button{
 	padding: 0;
 }
 
+.wsc_owner_tools_disabled {
+	pointer-events: none;
+	cursor:auto;
+}
+
+
 .wsc_owner_tools_off {
 	opacity: 0.60;
 	pointer-events: none;
@@ -256,13 +309,20 @@ span.wsc_dash_label{
 	color: rgb(0, 132, 238);
 }
 
+span.wsc_dash_label_flush{
+	vertical-align: middle;
+	margin: 0 5px 0 5px;
+	display: inline-block;
+	color: rgb(0, 132, 238);
+}
+
 div.wsc_gallery_single_nft_owner_panel{
 	font-size: 12px;
 	line-height: 16px;
 	display: block;
 	float: right;
 	color: white;
-	margin: 8px 20px 0 0;
+	margin: 11px 20px 0 0;
 	white-space: nowrap;
 }
 
@@ -441,8 +501,10 @@ button.lg-icon {
 }
 
 img.wsc_nft_gallery_thumb {
-	width: 175px;
+	width: 140px;
+	height: 140px;
 	margin: 0 5px;
+	object-fit: contain;
 	cursor: pointer;
 
 }
@@ -1320,7 +1382,7 @@ nav.meta-navigation{
 
 span.show-password-input{
 	right: 10px !important;
-	top: 5px !important;
+	top: 0px !important;
 }
 
 .content-area input[type=text],
@@ -2045,9 +2107,10 @@ div#table_reports_filter {margin: 0 0 3px !important;}
 }
 
 .pte_refresh_report_loading{
-	position: relative;
-	right: 5px;
 	display: none;
+	height: 18px;
+	width: 18px;
+	margin-left: 5px;
 }
 
 .pte_max_width_75{
@@ -2170,6 +2233,7 @@ div#table_reports_filter {margin: 0 0 3px !important;}
 	padding-right: 15px;
 	user-select: none;
 	margin-bottom: 5px;
+	display: none;
 }
 
 
@@ -3392,6 +3456,26 @@ table#table_vault td.column-draw_id{
 	line-height: 18px;
 }
 
+.pte_data_line_title_wide {
+	width: 75px;
+	display: inline-block;
+	font-weight: bold;
+	vertical-align: middle;
+	font-size: 12px;
+	line-height: 18px;
+}
+
+.pte_data_line_value_wide {
+	display: inline-block;
+	vertical-align: middle;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	width: calc(100% - 75px);
+	font-size: 12px;
+	line-height: 18px;
+}
+
 .pte_data_line_value {
 	display: inline-block;
 	vertical-align: middle;
@@ -3755,7 +3839,7 @@ button[aria-label="Crop portrait (9:16)"]
 }
 
 #pte_on_off_outer{
-	margin-left: 2px;
+	margin: 3px;
 }
 .onoffswitch {
     position: relative;
@@ -5245,7 +5329,7 @@ div#pte_topic_icon_container{
 .site-branding {margin: 3px 0 3px 0; line-height: 0;}
 .main-navigation {padding-top: 0; padding-bottom:0}
 .meta-member-inner {padding: 0.2em 0.5em 0.2em 0.5em !important;}
-.wp-block-columns {margin-top: 10px !important;}
+.wp-block-columns {margin-top: 0px !important; padding: 0 10px; gap: 10px !important;}
 .wp-block-column {margin-left: 10px; margin-right: 10px;}
 .kt-row-column-wrap {padding: 0;}
 .dt-buttons {margin-bottom: 0px !important;}
@@ -5780,9 +5864,9 @@ table#table_network.wpDataTable td {
 	min-width: 240px;
 }
 
-.alpn_column_3{
+/* .alpn_column_3{
 	margin-left: 10px !important;
-}
+} */
 
 .alpn_icon_left{
 	padding: 0 3px;
@@ -5819,7 +5903,7 @@ div.pte_toolbar_container span.select2 {
 	font-size: 1.5em;
 	color: #3172B6;
 	cursor: pointer;
-	vertical-align: top;
+	vertical-align: middle;
 }
 .alpn_activity_cell {cursor: pointer; white-space: normal;}
 .alpn_network_cell {cursor: pointer;}
@@ -5835,7 +5919,7 @@ div.pte_toolbar_container span.select2 {
 
 .alpn_section_head_left {
 	float: left;
-	line-height: 1.5em;
+	line-height: 30px;
 }
 
 .alpn_section_head_right{
@@ -5938,13 +6022,18 @@ div.pte_toolbar_container span.select2 {
 	box-shadow: none !important
 }
 
+input.wsc_ww_field:active,
+input.wsc_ww_field:focus,
+input.wsc_ww_field:focus-within,
+input.wsc_ww_field:hover,
+input.wsc_ww_field,
 #pte_message_title_field:active,
 #pte_message_title_field:focus,
 #pte_message_title_field:focus-within,
 #pte_message_title_field:hover,
 #pte_message_title_field{
 	height: 24px;
-	width: 100%;
+	width: 100% !important;
 	padding: 0 5px;
 	margin: 0;
 	font-size: 12px !important;
@@ -6229,8 +6318,9 @@ div.pte_toolbar_container span.select2 {
 .alpn_edit_container {
 	display: none;
 	background-color: white;
-	padding: 0px 10px 10px 10px;
+	padding: 0px 20px 10px 10px;
 	min-height: 860px;
+	border-right: solid 10px rgb(240, 240, 240);
 }
 
 .alpn_profile_container {

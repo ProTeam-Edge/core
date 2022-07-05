@@ -27,9 +27,6 @@ if ($processId) {
 	pte_manage_interaction($processData);
 }
 
-
-
-
 pte_json_out(array("qvars" => $qVars));
 
 ?>

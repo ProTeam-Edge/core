@@ -25,26 +25,21 @@ function pte_get_registry_twitter_actions() {
             alpn_log('Start Twitter Sending...');
             global $wpdb;
             $requestData = $token->getValue("process_context");
-            $requestData['interaction_type_name'] = "NFT";
+            $requestData['interaction_type_name'] = "Twitter Fun";
             $requestData['interaction_template_name'] = "";
-            $requestData['interaction_type_status'] = "Twitter Actions";
+            $requestData['interaction_type_status'] = "Select Options";
             $requestData['interaction_to_from_string'] = "";
             $requestData['interaction_to_from_name'] = "";
             $requestData['interaction_regarding'] = "";
             $requestData['interaction_vault_link'] = "";
             $requestData['interaction_file_away_handling'] = "delete_interaction";
 
-            $processAction =  $token->getValue("action_to_process");
-
-            $processAction = false;  //TEST
-
-            if ($processAction) {    // TODO Why is this not in requestdata by now?
+            if ($requestData['twitter_finish_action']) {
 
               $token->setValue("process_context", $requestData);
               return;
             }
             $requestData['widget_type_id'] = "twitter_actions";
-            //$requestData['information_title'] = "Send Email";
             $requestData['buttons'] =  array(
               "file" => true
               );
@@ -58,42 +53,34 @@ function pte_get_registry_twitter_actions() {
       },
       'twitter_sent' => function(Token $token) {
 
-          alpn_log('HANDLING SENT');
+          alpn_log('HANDLING Twitter SENT');
           $requestData = $token->getValue("process_context");
 
-          $requestData['interaction_to_from_name'] = $requestData["send_email_address_name"];
-          $requestData['static_name'] = $requestData["send_email_address_name"];
-          $requestData['interaction_type_status'] = "xLink Sent by Email";
+          $requestData['interaction_type_status'] = "Complete";
           $requestData['interaction_complete'] = true;
           $requestData['interaction_file_away_handling'] = "archive_interaction";
+          $requestData['interaction_type_status'] = "Complete";
+
+          $requestData['data_lines'] =  array(
+            "twitter_results"
+            );
 
           $requestData['widget_type_id'] = "information";
-          $requestData['template_name'] = $token->getValue("template_name");
           $requestData['buttons'] =  array(
             "file" => true
             );
-            $requestData['data_lines'] =  array(
-                "to_from_line_static",
-                "regarding_line"
-              );
-          $requestData['content_lines'] =  array(
-            "vault_item",
-            "url_panel"
-            );
 
-          if ($requestData['network_id']){
-            $requestData['content_lines'][] = "network_panel";
-          }
-          if ($requestData['topic_id'] && $requestData['topic_special'] == 'user') {
-            $requestData['content_lines'][] = "personal_panel";
-          } else {
-            $requestData['content_lines'][] = "topic_panel";
-          }
-          $requestData['message_lines'] =  array(
-              "message_view_only"
-            );
           $requestData['sync'] = true;
           $requestData['requires_user_attention'] = false;
+
+          $contractData = array("process_id" => $requestData['process_id']);
+          $data = array(
+            "sync_type" => 'add_update_section',
+            "sync_section" => 'twitter_action_done',
+            "sync_user_id" => $requestData['owner_id'],
+            "sync_payload" => $contractData
+          );
+          pte_manage_user_sync($data);
 
           $token->setValue("process_context", $requestData);
           return true;

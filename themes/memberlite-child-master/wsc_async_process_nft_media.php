@@ -30,7 +30,9 @@ if ( $verificationKey ) {
 
 	$data = vit_get_kvp($verificationKey);
 
-	if (isset($data['process_id']) && isset($data['owner_id']) && isset($data['vault_id'])) {
+	if (isset($data['process_id']) && isset($data['owner_id']) && isset($data['vault_id']) && isset($data['nft_token_id'])) {
+
+			$tokenId = $data['nft_token_id'];
 
 			$name = $description = $imageContent = "";
 			$results = $wpdb->get_results(
@@ -76,7 +78,8 @@ if ( $verificationKey ) {
 											$attributes = (isset($manifest['attributes']) && $manifest['attributes']) ? $manifest['attributes'] : array();
 											$content = file_get_contents($mediaFile);
 											if (isset($manifest['image_file_name']) && $manifest['image_file_name']) {
-												$imageKey = $manifest['image_file_name'];
+												$originalImageExt = substr($manifest['image_file_name'], strrpos($manifest['image_file_name'], ".") + 1);
+												$imageKey = "{$tokenId}.{$originalImageExt}";
 												$imageFile = $tmpDir . "/{$imageKey}";
 												if (file_exists($imageFile)) {
 													$imageContent = file_get_contents($imageFile);
@@ -102,24 +105,19 @@ if ( $verificationKey ) {
 
 						} else if ($currentMimeType == "application/zip") {
 
-							alpn_log("VIDEO/AUDIO");
-							alpn_log($fileKey);
-
 							$content = file_get_contents("gs://pte_file_store1/{$fileKey}");
 
 							$destination = PTE_ROOT_PATH . "tmp/{$fileKey}";
 							file_put_contents($destination, $content);
 							$zip = new ZipArchive;
 							if ($zip->open($destination)) {
-								alpn_log("ZIPPY");
-
 								$fileKey = $zip->getNameIndex(0);
 								$zip->extractTo(PTE_ROOT_PATH . "tmp");
 								$zip->close();
-								//unlink($destination);
+								unlink($destination);
 								$newFile = PTE_ROOT_PATH . "tmp/{$fileKey}";
 								$content = file_get_contents($newFile);
-								//unlink($newFile);
+								unlink($newFile);
 							} else {
 								alpn_log('Unzip Process failed');
 							}
@@ -129,13 +127,13 @@ if ( $verificationKey ) {
 						//Check filesize of media. 50mb
 
 						if (!$imageContent && in_array($originalExt, $supportedFilesImage)) {
-							$imageKey = "_p_{$fileKey}";
+							$imageKey = "_p_{$tokenId}.{$originalExt}";
 							$imageContent = $content; //TODO alts
 						}
 
 						$fileArray = array(
 							array(
-								"path" => "{$data['process_id']}/{$fileKey}",
+								"path" => "{$data['process_id']}/{$tokenId}.{$originalExt}",
 								"content" => base64_encode($content)
 							)
 						);
@@ -145,6 +143,7 @@ if ( $verificationKey ) {
 								"content" => base64_encode($imageContent)
 							);
 						}
+
 						$fileArray = json_encode($fileArray);
 						$client = new Client([
 								'timeout'  => 60

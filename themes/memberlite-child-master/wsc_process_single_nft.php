@@ -21,16 +21,18 @@ register_shutdown_function(function(){
  $tokenId = $qVars['token_id'];
  $chainId = $qVars['chain_id'];
 
+ alpn_log($value);
+
  if (!$value && $tokenAddress) {
 		 $valueRaw = wsc_get_single_nft_metadata($tokenAddress, $tokenId, $chainId);
 		 $value = json_decode($valueRaw, true);
-		 if (isset($value['token_address'])) {
+		 if (isset($value['contract_address']) && $value['contract_address']) {
 			 alpn_log("METADATA HANDLER UPDATING NFT");
 			 $moralisMeta = array("moralis_meta" => $valueRaw);
 			 $whereClause = array('contract_address' => $tokenAddress, "token_id" => $tokenId, "chain_id" => $chainId);
 			 $wpdb->update( 'alpn_nft_meta', $moralisMeta, $whereClause );
 		 } else {
-			 alpn_log("METADATA HANDLER UNABLE TO UPDATE -- NO TOKEN ADDRESS");
+			 alpn_log("METADATA HANDLER UNABLE TO UPDATE -- NO CONTRACT ADDRESS");
 		 }
  }
 
@@ -56,7 +58,12 @@ if ($value['token_uri'] || $nftMetaImage) {
 		$openSeaMetaDataFailed = false;
 		$response = wsc_get_file($fullUrl, $tempFileName);
 		$httpResponseCode = $response["http_code"];
-		if ($httpResponseCode >= 300 && $nftMetaImage) {  //super fallback if can't reach token_uri
+
+		// alpn_log("PROCESS SINGLE");
+		// alpn_log($response);
+		// alpn_log($httpResponseCode);
+
+		if (($httpResponseCode >= 300 || !$httpResponseCode ) && $nftMetaImage) {  //super fallback if can't reach token_uri
 				$openSeaMetaDataFailed = isset($response['opensea_meta']) && $response['opensea_meta'] ? true : false;
 				$response = wsc_get_file($nftMetaImage, $tempFileName);
 				$fullUrl = $nftMetaImage;
@@ -99,6 +106,8 @@ if ($value['token_uri'] || $nftMetaImage) {
 		 $attributes = [];
 
 		 $newNft = array("opensea_meta" => $openSeaMetaDataFailed, "error" => "", "file_key" => $tempFileId, "mime_type" => $fileMimeType, "name" => $name, "description" => $description, "attributes" => $attributes, "pdf_url" => "", "animation_url" => "", "image_url" => $imageUrl, "source" => "metadata_file");
+		 unlink($tempFileName);
+
 }
 
 } else {
