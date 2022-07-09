@@ -767,16 +767,143 @@ function wsc_addtext_to_nft_certificate($certificateImage, $textBox, $words){
 
 }
 
-function wsc_set_to_banner($previewId, $setId, $bannerType, $words = "") {
+function wsc_create_nft_liftoff_card($data) {
+
+  pp("Creating LIFTOFF CARD");
+
+  $cardId = (isset($data['card_id']) && $data['card_id']) ? $data['card_id'] : "01";
+  $cardTitle = (isset($data['title']) && $data['title']) ? $data['title'] : "Enterprise";
+  $attributes = (isset($data['attributes']) && $data['attributes']) ? $data['attributes'] : array();
+  $showUrl = isset($data['nft_contract_address']) && $data['nft_contract_address'] && isset($data['nft_token_id']) && $data['nft_token_id'] ? true : false;
+
+  $cardUrl = PTE_ROOT_PATH . "dist/assets/" . "wtc_{$cardId}.png";
+  $localFile = PTE_ROOT_PATH . "tmp/" . "wtc_{$cardId}.png";
+
+  $image = imagecreatefrompng($cardUrl);
+
+  $titleBox = array(
+    'font_face' => 'Enchanted Land.otf',
+    'font_color' => new Color(89,39,32),
+    'font_size' => 52,
+    'line_height' => 1.25,
+    'horizontal_align' => 'center',
+    'vertical_align' => 'center',
+    'x' => 76,
+    'y' => 375,
+    'width' => 270,
+    'height' => 33
+  );
+  $image = wsc_addtext_to_nft_certificate($image, $titleBox, $cardTitle);
+
+  $calculatedTitleSize = strlen($attributes['wcl-own']) >= 4 ? 32 : 36;
+
+  $titleBox = array(
+    'font_face' => 'Enchanted Land.otf',
+    'font_color' => new Color(89,39,32),
+    'font_size' => $calculatedTitleSize,
+    'line_height' => 1.25,
+    'horizontal_align' => 'center',
+    'vertical_align' => 'center',
+    'x' => 311,
+    'y' => 38,
+    'width' => 65,
+    'height' => 65
+  );
+  $image = wsc_addtext_to_nft_certificate($image, $titleBox, $attributes['wcl-own']);
+
+  $counter = 0;
+  $columnCount = 2;
+  $boxWidth = 310;
+  $columnWidth = intdiv($boxWidth, $columnCount);
+  $boxHeight = 100;
+  $attributeCount = count($attributes);
+  $rowHeight = 28;
+  $boxX = 52;
+  $boxY = 412;
+  $labelWidthPercent = 0.46;
+
+foreach ($attributes as $key => $value) {
+
+  $row = intdiv($counter, 2);
+  $column = $counter % 2;
+
+  $labelX = $boxX + ($column * $columnWidth);
+  $labelY = $boxY + ($row * $rowHeight);
+  $labelWidth = $columnWidth * $labelWidthPercent;
+  $labelHeight = $rowHeight;
+
+  $attributeBox = array(
+    'font_face' => 'Enchanted Land.otf',
+    'font_color' => new Color(89,39,32),
+    'font_size' => 28,
+    'line_height' => 1.25,
+    'horizontal_align' => 'left',
+    'vertical_align' => 'top',
+    'x' => $labelX,
+    'y' => $labelY + 3,
+    'width' => $labelWidth,
+    'height' => $labelHeight
+  );
+  $image = wsc_addtext_to_nft_certificate($image, $attributeBox, "{$key}");
+
+  $valueX = $labelX + $labelWidth;
+  $valueY = $boxY + ($row * $rowHeight);
+  $valueWidth = intval($columnWidth * (1 - $labelWidthPercent));
+  $valueHeight = $rowHeight;
+
+  $attributeBox = array(
+    'font_face' => 'Enchanted Land.otf',
+    'font_color' => new Color(89,39,32),
+    'font_size' => 32,
+    'line_height' => 1.25,
+    'horizontal_align' => 'left',
+    'vertical_align' => 'top',
+    'x' => $valueX,
+    'y' => $valueY,
+    'width' => $valueWidth,
+    'height' => $valueHeight
+  );
+  $image = wsc_addtext_to_nft_certificate($image, $attributeBox, $value);
+  $counter++;
+}
+
+if ($showUrl) {
+
+  $viewUrl = PTE_BASE_URL . "nftview/?ca={$data['nft_contract_address']}&ti={$data['nft_token_id']}";
+
+  $options = new QROptions([
+  'version'             => 7,
+  'outputType'          => QRCode::OUTPUT_IMAGE_PNG,
+  'scale'               => 10,
+  'imageBase64'         => false,
+  'imageTransparent'    => true,
+  'drawCircularModules' => false,
+  'circleRadius'        => 0.4
+]);
+  $QRCode = new QRCode($options);
+  $qrImage = $QRCode->render($viewUrl);
+  $destinationFileQR = PTE_ROOT_PATH . "tmp/" . "qr_{$data['nft_token_id']}.png";
+  file_put_contents($destinationFileQR, $qrImage);
+  $qrImageRes = imagecreatefrompng($destinationFileQR);
+  unlink($destinationFileQR);
+  imagecopyresampled($image, $qrImageRes, 43, 46, 0, 0, 75, 75, imagesx($qrImageRes), imagesy($qrImageRes));
+}
+  imagepng($image, $localFile);
+  imagedestroy($image);
+}
+
+
+function wsc_set_to_banner($previewId, $setId, $bannerType, $words = "", $userIdOveride = false) {
 
   global $wpdb;
+
+  $bannerType = explode("x", $bannerType);
+  $across = $bannerType[0];
+  $down = $bannerType[1];
 
   $bannerWidth = 1500;
   $bannerWidthNFTs = 1500;
   $bannerHeight = 500;
-  $bannerType = explode("x", $bannerType);
-  $across = $bannerType[0];
-  $down = $bannerType[1];
 
   if ($down == "words") {    // 1, 6, 24
     $bannerWidthNFTs = 1000;
@@ -798,13 +925,17 @@ function wsc_set_to_banner($previewId, $setId, $bannerType, $words = "") {
             $down = 1;
             $across = 2;
     }
+  } else if ($down > $across) {
+    $bannerWidth = 500;
+    $bannerWidthNFTs = 500;
+    $bannerHeight = 1500;
   }
 
   $individualSize =  $bannerWidthNFTs / $across;
   $blankPlaceHolder = PTE_IMAGES_ROOT_URL . "500x500_empty.webp";
 
   $userInfo = wp_get_current_user();
-  $userId = $userInfo->data->ID;
+  $userId = $userIdOveride ? $userIdOveride : $userInfo->data->ID;
 
   $nfts = $wpdb->get_results(
     $wpdb->prepare("SELECT n.* from alpn_nft_meta n LEFT JOIN alpn_nft_sets s ON s.nft_id = n.id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY RAND()", $userId, $setId)
@@ -1274,6 +1405,10 @@ function wsc_store_nft_file($fileSettings, $unlinkSource = true){
 
   $localFile =  PTE_ROOT_PATH . "tmp/" . $fileKey;
 
+  if (!filesize($localFile)) {
+    alpn_log("ZERO BYTES");
+  }
+
   $typeLookup = getFileMetaFromMimeType($mimeType);
 
   if ($typeLookup['type'] && $typeLookup['type'] != "unsupported") {
@@ -1639,6 +1774,7 @@ function wsc_get_file($source, $destination, $retry = 1) {
        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
        curl_close($ch);
        fclose($file);
+
 
        if ($httpCode >= 300) {
          alpn_log("ERROR GETTING FILE - " . $httpCode);

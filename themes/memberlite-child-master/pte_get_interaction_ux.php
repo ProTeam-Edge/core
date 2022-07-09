@@ -582,7 +582,7 @@ function pte_make_data_line ($lineType, $uxMeta) {
 
 			$nftName = isset($uxMeta['nft_name']) ? $uxMeta['nft_name'] : "";
 			$nftDescription = isset($uxMeta['nft_description']) ? $uxMeta['nft_description'] : "";
-			$nftRecipientAddress = isset($uxMeta['nft_recipient_address']) ? $uxMeta['nft_recipient_address'] : "";
+			$nftRecipientAddress = isset($uxMeta['nft_recipient_id']) ? $uxMeta['nft_recipient_id'] : "";
 			$nftContractAddress = isset($uxMeta['nft_contract_address']) ? $uxMeta['nft_contract_address'] : "";
 			$nftTokenUri = isset($uxMeta['nft_token_uri']) ? $uxMeta['nft_token_uri'] : "";
 			$nftQuantity = isset($uxMeta['nft_quantity']) ? $uxMeta['nft_quantity'] : "";

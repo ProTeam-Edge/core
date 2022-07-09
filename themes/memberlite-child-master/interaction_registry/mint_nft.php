@@ -118,7 +118,7 @@ function pte_get_registry_mint_nft() {
               );
               $fileArray = json_encode($fileArray);
               $client = new Client([
-                  'timeout'  => 60
+                  'timeout'  => 90
               ]);
               $fullUrl = "https://deep-index.moralis.io/api/v2/ipfs/uploadFolder";
               $moralisApiKey = MORALIS_API_KEY;
@@ -156,7 +156,7 @@ function pte_get_registry_mint_nft() {
 
                      $metaDataArray['description'] = $metaDataArray['description'] . "\n\nCertificate: " . $Url1Gateway;
                      $client = new GuzzleHttp\Client([
-                        'timeout'  => 60
+                        'timeout'  => 90
                      ]);
                      $fileArray = array(
                       array(
@@ -197,6 +197,10 @@ function pte_get_registry_mint_nft() {
                         function ($reason) {
                           alpn_log( 'The final promise was rejected.' );
                           alpn_log( $reason );
+
+                          //TODO HANDLE THIS
+
+
                         }
                     )->wait();
 
@@ -214,11 +218,9 @@ function pte_get_registry_mint_nft() {
               throw new WaitExecutionException();
             }
 
-
             if (isset($requestData['nft_token_uri']) && isset($requestData['nft_account_type']) && $requestData['nft_account_type'] == '1') {
-              //have pk
+              //custodial
               alpn_log( 'PROCESSING CUSTODIAL' );
-
               $accountAddress = $requestData['nft_account_address'];
               $custodialAccount = $wpdb->get_results(
                 $wpdb->prepare("SELECT pk_enc, enc_key FROM alpn_wallet_meta WHERE account_address = %s", $accountAddress)
@@ -242,14 +244,34 @@ function pte_get_registry_mint_nft() {
                   "nft_template_key" => "hyuxxVrjwREjj2KCrXTerc7q"
                 );
                 $nftInfo = json_decode(wsc_call_cloud_function($data), true);
-
                 alpn_log($nftInfo);
 
+                //TODO HAndle errors
+
+                try {
+
+                  $nftData = array(
+                    "contract_address" => $requestData['nft_contract_address'],
+                    "token_id" => $requestData['nft_token_id'],
+                    "wallet_address" => $requestData['nft_account_address'],
+                    "process_id" => $requestData['process_id'],
+                    "chain_id" => $requestData['nft_blockchain'],
+                    "quantity" => $requestData['nft_quantity'],
+                    "state" => 'processing',
+                    "recipient_address" => $requestData['nft_recipient_id'],
+                    "template_id" => $requestData['nft_contract_template_id']
+                  );
+                  $wpdb->insert( 'alpn_nfts_deployed', $nftData );
+                  $requestData['nft_record_id'] = $wpdb->insert_id;
+
+                } catch (Exception $e) {
+              		alpn_log($e);
+              	}
                 //refresh client.
                 $nftData = array("process_id" => $requestData['process_id']);
                 $data = array(
                   "sync_type" => 'add_update_section',
-                  "sync_section" => 'smart_contract_is_ready', //not quite -- just refreshes process.
+                  "sync_section" => 'smart_contract_is_ready', //not quite -- just refreshes process UI.
                   "sync_user_id" => $requestData['owner_id'],
                   "sync_payload" => $nftData
                 );

@@ -165,7 +165,7 @@ if ($mHeaders && $mTriggerName && $mObject && $mIp) {
 
 		}	 else {
 			alpn_log("MORALIS TRANSACTION NO CONTRACT ADDRESS");
-			alpn_log($moralisData);
+			alpn_log($transactionDetails);
 		}
 	}
 

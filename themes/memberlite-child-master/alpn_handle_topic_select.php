@@ -25,7 +25,23 @@ $faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emai
 $qVars = $_POST;
 $domainName = PTE_HOST_DOMAIN_NAME;
 
- //wsc_create_web3_support(164);
+$data = array(
+  "card_id" => "02",
+  "title" => "Endeavor",
+  "nft_token_id" => "1287",
+  "nft_contract_address" => "0x24c8865985749206B829eDB4A7cA0aaB1B36Dc44",
+  "attributes" => array(
+    "wcl" => "25",
+    "wcl-own" => "100",
+    "polygon" => "10",
+    "" => "",
+    "swag" => "star",
+    "access" => "member"
+  )
+);
+ //wsc_create_nft_liftoff_card($data);
+
+ //wsc_create_web3_support(162);
 
 // $encrypted = wsc_encrypt_string("Hello, World");
 //

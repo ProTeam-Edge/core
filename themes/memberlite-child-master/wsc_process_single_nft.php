@@ -21,8 +21,6 @@ register_shutdown_function(function(){
  $tokenId = $qVars['token_id'];
  $chainId = $qVars['chain_id'];
 
- alpn_log($value);
-
  if (!$value && $tokenAddress) {
 		 $valueRaw = wsc_get_single_nft_metadata($tokenAddress, $tokenId, $chainId);
 		 $value = json_decode($valueRaw, true);
@@ -42,10 +40,11 @@ if (!$value) {
 	exit;
 }
 
-// alpn_log($value);
+ //alpn_log($value);
 
 $nftMeta = json_decode($value['metadata'], true);
 $nftMetaImage = (isset($nftMeta['image']) && $nftMeta['image']) ? wsc_cleanup_nft_uri($nftMeta['image']) : false;
+
 
 if ($value['token_uri'] || $nftMetaImage) {
 
@@ -59,9 +58,7 @@ if ($value['token_uri'] || $nftMetaImage) {
 		$response = wsc_get_file($fullUrl, $tempFileName);
 		$httpResponseCode = $response["http_code"];
 
-		// alpn_log("PROCESS SINGLE");
-		// alpn_log($response);
-		// alpn_log($httpResponseCode);
+		alpn_log("PROCESS SINGLE");
 
 		if (($httpResponseCode >= 300 || !$httpResponseCode ) && $nftMetaImage) {  //super fallback if can't reach token_uri
 				$openSeaMetaDataFailed = isset($response['opensea_meta']) && $response['opensea_meta'] ? true : false;
@@ -69,6 +66,7 @@ if ($value['token_uri'] || $nftMetaImage) {
 				$fullUrl = $nftMetaImage;
 		}
 		$fileMimeType = mime_content_type($tempFileName);
+
 
 		if ($fileMimeType == "application/json" || $fileMimeType == "text/plain" || $fileMimeType == "text/html" || $fileMimeType == "text/xml") {   //probably a better way to fail
 		 $newFile = file_get_contents($tempFileName);
@@ -95,7 +93,7 @@ if ($value['token_uri'] || $nftMetaImage) {
 
 	} else { //it's a file  //TODO unlink this file later
 
-		// alpn_log("FILE");
+		alpn_log("FILE");
 
 		 $name = isset($value['name']) ? $value['name'] : "";
 		 $description = isset($value['symbol']) ? $value['symbol'] : "";
@@ -106,7 +104,11 @@ if ($value['token_uri'] || $nftMetaImage) {
 		 $attributes = [];
 
 		 $newNft = array("opensea_meta" => $openSeaMetaDataFailed, "error" => "", "file_key" => $tempFileId, "mime_type" => $fileMimeType, "name" => $name, "description" => $description, "attributes" => $attributes, "pdf_url" => "", "animation_url" => "", "image_url" => $imageUrl, "source" => "metadata_file");
-		 unlink($tempFileName);
+
+
+		 alpn_log("TEMP FILE");
+		 alpn_log($tempFileName);
+		 //unlink($tempFileName);
 
 }
 
@@ -116,7 +118,7 @@ if ($value['token_uri'] || $nftMetaImage) {
 	unlink($tempFileName);
 }
 
-// alpn_log("ABOUT TO PROCESS");
+// alpn_log("PROCESSING");
 // alpn_log($newNft);
 
 
@@ -210,7 +212,6 @@ if (!$newNft['error']) {
 			$fileMimeType = mime_content_type($tempFileName);
 
 			$fileSettings = array(
-				"account_address" => $walletAddress,
 				"file_key" => $tempFileId,
 				"mime_type" => $fileMimeType
 			);
@@ -223,7 +224,6 @@ if (!$newNft['error']) {
 			$fileMimeType = mime_content_type($tempFileName);
 
 			$fileSettings = array(
-				"account_address" => $walletAddress,
 				"file_key" => $tempFileId,
 				"mime_type" => $fileMimeType
 			);
@@ -290,7 +290,6 @@ if (!$newNft['error']) {
 		$openSeaDelisted = isset($newNft["opensea_meta"]) && $newNft["opensea_meta"] ? true : false;
 
 		$fileSettings = array(
-			"account_address" => $walletAddress,
 			"file_key" => $newNft['file_key'],
 			"mime_type" => $newNft['mime_type']
 		);
