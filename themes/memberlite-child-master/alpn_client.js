@@ -2992,7 +2992,7 @@ async function moralisAttachWalletConnect() {
 									const userAttributes = (typeof user.attributes != "undefined") ? user.attributes : false;
 									const userAccounts = (typeof userAttributes.accounts != "undefined" && userAttributes.accounts) ? userAttributes.accounts : [];
 									if (!userAccounts.includes(ethAddress)) {
-										await Moralis.link(ethAddress, { signingMessage: "Please Sign to attach this web3 account" }).catch(function(e){
+										await Moralis.link(ethAddress, { signingMessage: "Please Sign to add this web3 account" }).catch(function(e){
 											console.log("LINK EXCEPTION");
 											console.log(e);
 										});
@@ -3002,12 +3002,12 @@ async function moralisAttachWalletConnect() {
 											const processedMessage = !json.account_processed ? "We're processing these NFTs for the first time. Please stay tuned." : "&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>";
 											var newOption = new Option(ethAddress, ethAddress, false, false);
 											jQuery('select#alpn_select2_wallets_new').append(newOption).trigger('change');
-											pte_show_message('green', 'ok', "Your web3 account is now attached. " + processedMessage);
+											pte_show_message('green', 'ok', "Your web3 account is added. " + processedMessage);
 										} else {
-											pte_show_message('green', 'ok', "Your web3 account is already attached.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
+											pte_show_message('green', 'ok', "Your web3 account is already added.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
 										}
 									} else {
-										pte_show_message('green', 'ok', "Your web3 account is already attached.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
+										pte_show_message('green', 'ok', "Your web3 account is already added.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
 										Moralis.deactivateWeb3();								}
 								} else {//ERROR?
 									console.log("NO USER");
@@ -3709,9 +3709,9 @@ function wsc_handle_wallet_pasted (e) {
 							const processedMessage = !json.account_processed ? "We're processing these NFTs for the first time. Please stay tuned." : "&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>";
 							var newOption = new Option(ethAddress, ethAddress, false, false);
 							jQuery('select#alpn_select2_wallets_new').append(newOption).trigger('change');
-							pte_show_message('green', 'ok', "This web3 account is now attached. " + processedMessage);
+							pte_show_message('green', 'ok', "You are now following this web3 account. " + processedMessage);
 						} else {
-							pte_show_message('green', 'ok', "This web3 account is already attached.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
+							pte_show_message('green', 'ok', "You are already following this web3 account.&nbsp;&nbsp;&nbsp;<a class='wsc_message_bar_link' onclick='wsc_change_nfts(\"" + ethAddress + "\");'>View this Account?</a>");
 						}
 						jQuery('input#wsc_nft_add_wallet_address').removeClass("wsc_owner_tools_off").val("");
 					},
@@ -3776,18 +3776,30 @@ function wsc_gather_nft_query_data(accountAddress = "", initialState = {}, clear
 			}
 
 		} else {
-
-			let searchParams = new URLSearchParams(window.location.search);
-			var slideId = searchParams.has('slide_id') ? searchParams.get('slide_id') : '';
-			var openNav = searchParams.has('open_nav') ? searchParams.get('open_nav') : '';
-			var memberId = searchParams.has('member_id') ? searchParams.get('member_id') : '';
-			var accountId = searchParams.has('account_id') ? searchParams.get('account_id') : '';
-			var contractId = searchParams.has('contract_id') ? searchParams.get('chain_id') : '';
-			var chainId = searchParams.has('chain_id') ? searchParams.get('contract_id') : '';
-			var typeId = searchParams.has('type_id') ? searchParams.get('type_id') : '';
-			var setId = searchParams.has('set_id') ? searchParams.get('set_id') : '';
-			var categoryId = searchParams.has('category_id') ? searchParams.get('category_id') : '';
-			var nftQuery = searchParams.has('nft_query') ? searchParams.get('nft_query') : '';
+			if (initialState.set_id) {
+				var slideId = '';
+				var openNav =  '';
+				var memberId = initialState.set_owner_id;
+				var accountId = '';
+				var contractId = '';
+				var chainId = '';
+				var typeId = '';
+				var setId = initialState.set_id;
+				var categoryId = '';
+				var nftQuery = '';
+			} else {
+				let searchParams = new URLSearchParams(window.location.search);
+				var slideId = searchParams.has('slide_id') ? searchParams.get('slide_id') : '';
+				var openNav = searchParams.has('open_nav') ? searchParams.get('open_nav') : '';
+				var memberId = searchParams.has('member_id') ? searchParams.get('member_id') : '';
+				var accountId = searchParams.has('account_id') ? searchParams.get('account_id') : '';
+				var contractId = searchParams.has('contract_id') ? searchParams.get('chain_id') : '';
+				var chainId = searchParams.has('chain_id') ? searchParams.get('contract_id') : '';
+				var typeId = searchParams.has('type_id') ? searchParams.get('type_id') : '';
+				var setId = searchParams.has('set_id') ? searchParams.get('set_id') : '';
+				var categoryId = searchParams.has('category_id') ? searchParams.get('category_id') : '';
+				var nftQuery = searchParams.has('nft_query') ? searchParams.get('nft_query') : '';
+			}
 		}
 
 	} else {  //setup complete -- just do the thing
@@ -3879,8 +3891,39 @@ function wsc_manage_category() {
 
 }
 
+async function wsc_check_opensea() {
 
-function wsc_change_nfts (accountAddress = "", initialState = {}, clearAll = false) {
+	jQuery("span#wsc_opensea_check").html("<i style='color: white' title='Checks out on OpenSea' class='fas fa-spinner'></i>");
+
+	const contractAddress = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-contract");
+	const tokenId = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-token-id");
+	const chainId = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-chain");
+
+	console.log(chainId);
+
+	if (chainId == "eth") {
+		jQuery.ajax({
+			url: 'https://api.opensea.io/api/v1/asset/' + contractAddress + '/' + tokenId + '/?include_orders=false',
+			type: 'GET',
+			data: {},
+			dataType: "json",
+			success: function(json) {
+				console.log(json);
+				jQuery("span#wsc_opensea_check").html("<i style='color: green' title='Listed on OpenSea' class='fas fa-check-circle'></i>");
+			},
+			error: function() {
+				console.log('problemo - check opensea');
+				jQuery("span#wsc_opensea_check").html("<i style='color: red' title='DELISTED on OpenSea' class='fas fa-exclamation-triangle'></i>");
+			}
+		});
+	} else {
+		jQuery("span#wsc_opensea_check").html("<i style='color: orange' title='OpenSea listing status is not supported on this blockchain' class='fas fa-info'></i>");
+	}
+
+}
+
+
+ function wsc_change_nfts (accountAddress = "", initialState = {}, clearAll = false) {
 
 	console.log("CHANGING NFTS");
 
@@ -4028,6 +4071,10 @@ function wsc_change_nfts (accountAddress = "", initialState = {}, clearAll = fal
 					}
 
 				if (inMissionControl) {
+
+					wsc_check_opensea();
+
+
 					jQuery("div.wsc_gallery_single_nft_owner_panel").removeClass('wsc_owner_tools_hidden');
 					const nftRelation = jQuery("div.lg-current div.wsc_gallery_single_nft_container").data("wsc-rel");
 					if (nftRelation == 'owner') {

@@ -5,6 +5,8 @@ alpn_log("MORALIS CALLBACK");
 $post = file_get_contents('php://input');
 $moralisData = json_decode($post, true);
 
+// alpn_log($moralisData);
+
 $mHeaders = isset($moralisData['headers']) ? $moralisData['headers'] : false;
 $mTriggerName = isset($moralisData['triggerName']) ? $moralisData['triggerName'] : false;
 $mObject = isset($moralisData['object']) ? $moralisData['object'] : false;

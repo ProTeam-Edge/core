@@ -17,6 +17,20 @@ fff5ee
 } */
 
 
+span#wsc_opensea_check{
+	width: 80px;
+	height: 100px;
+	margin-left: 30px;
+	font-size: 20px;
+	vertical-align: baseline;
+}
+
+ul#wsc_home_list{
+	margin: 30px 0 0 60px;
+	font-family: Montserrat;
+}
+
+
 div.wsc_ww_attention{
 	color: green;
 }
@@ -1303,7 +1317,7 @@ header.woocommerce-products-header{
 
 .vit_home_feature_image {
 	padding: 10px;
-	border: solid 1px #C0C0C0;
+	text-align: center;
 }
 
 .vit_circles_image{

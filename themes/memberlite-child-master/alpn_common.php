@@ -22,6 +22,14 @@ use chillerlan\QRCode\{QRCode, QROptions};
 use chillerlan\QRCode\Data\QRMatrix;
 use Throwable;
 
+
+
+function test_OpenSea() {
+
+
+
+}
+
 function wsc_start_nft_media_processing($data) {
   alpn_log("STARTING MEDIA PROCESSING");
   $verificationKey = pte_get_short_id();
@@ -3671,6 +3679,26 @@ return $html;
 
 function wsc_get_gallery($gallerySettings) {
 
+  global $wpdb;
+
+  $galleryId = is_numeric(array_key_first($_GET)) ? array_key_first($_GET) : false ;
+
+  $twitterMeta = "{}";
+
+  if ($galleryId) {
+    $galleryDetails = $wpdb->get_results(
+      $wpdb->prepare(
+        "SELECT twitter_meta from alpn_user_metadata WHERE id = %d;", $galleryId)
+    );
+    if (isset($galleryDetails[0]) && $galleryDetails[0]->twitter_meta != '{}') {
+      $twitterMeta = json_decode($galleryDetails[0]->twitter_meta, true);
+      $galleryMeta = json_encode(array(
+        "set_owner_id" => $twitterMeta['profile']['set_owner_id'],
+        "set_id" => $twitterMeta['profile']['set_id']
+      ));
+    }
+  }
+
   $nftToolbar = wsc_get_nft_view_toolbar();
 
   $html .= "
@@ -3685,7 +3713,7 @@ function wsc_get_gallery($gallerySettings) {
     </div>
   </div>
   <script>
-    wsc_change_nfts();
+    wsc_change_nfts('', {$galleryMeta});
   </script>
   ";
 

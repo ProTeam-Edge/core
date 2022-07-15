@@ -92,16 +92,22 @@ if (!isset($twitterData[0]) || $twitterData[0]->twitter == '{}') {
 // alpn_log("FINISHED TWITTER ACCOUNT CHECK EXITING");
 // exit;
 
-$twitterContent = $wpdb->get_results(
-	$wpdb->prepare("SELECT message, source_set, source_owner_id, twitter_accounts, curator, nft_category FROM alpn_twitter_content WHERE status = 'ready' ORDER BY RAND() LIMIT 1")
- );
+// $twitterContent = $wpdb->get_results(
+// 	$wpdb->prepare("SELECT message, source_set, source_owner_id, twitter_accounts, curator, nft_category FROM alpn_twitter_content WHERE status = 'ready' ORDER BY RAND() LIMIT 1")
+//  );
+
+ $twitterContent = $wpdb->get_results(
+ 	$wpdb->prepare("SELECT message, source_set, source_owner_id, twitter_accounts, account_string, curator, nft_category FROM alpn_twitter_content WHERE id = 6")
+  );
+
+
+
 
 if (isset($twitterContent[0])) {
 
 	$setId = $twitterContent[0]->source_set;
 	$setOwnerId = $twitterContent[0]->source_owner_id;
 	$twitterMessage = $twitterContent[0]->message;
-	$isPfp = $twitterContent[0]->nft_category == "pfp" ? true : false;
 
 	$setContent = $wpdb->get_results(
 		$wpdb->prepare("SELECT s.nft_id, m.thumb_large_file_key, m.thumb_share_file_key, m.thumb_mime_type FROM alpn_nft_sets s LEFT JOIN alpn_nft_meta m ON m.id = s.nft_id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY RAND()", $setOwnerId, $setId)
@@ -121,18 +127,22 @@ if (isset($twitterContent[0])) {
 		 $galleryCuratorTwitter = $twitterContent[0]->curator;
 		 $curator = "\ncurator: {$galleryCuratorTwitter}";
 
-		 $creatorList = $twitterContent[0]->twitter_accounts ? "\ncreators: {$twitterContent[0]->twitter_accounts}" : "";
+		 $accountString = $twitterContent[0]->account_string ? "{$twitterContent[0]->account_string}: " : "";
+		 $creatorList = $twitterContent[0]->twitter_accounts ? "\n{$accountString}{$twitterContent[0]->twitter_accounts}" : "";
+
 		 $twitterTextData = "gallery: https://wiscle.com/gallery/?member_id={$setOwnerId}&set_id={$setId}{$creatorList}{$curator}";
 
-			$tweetOptions = array("tweet", "tweet", "banner", "banner", "profile_banner");
-			if ($isPfp) {
-				$tweetOptions[] = "profile_pfp";
-			}
+		 //$tweetOptions = array("tweet", "tweet", "banner", "banner", "profile_banner_pfp");
+		 $tweetOptions = array("tweet", "tweet", "tweet", "banner", "banner", "banner", "profile_banner_pfp");
+
 		  $doThis = $tweetOptions[array_rand($tweetOptions)];
-		  $doThis = "profile_banner";
+
+		  $doThis = "tweet";
+
 			switch ($doThis) {
-					case "profile_banner":
-						alpn_log("PROFILE BANNER");
+
+					case "profile_banner_pfp":
+						alpn_log("PROFILE BANNER AND PFP");
 
 						$availableSizes = array();
 						foreach ($availableBanners as $key => $value) {
@@ -155,14 +165,17 @@ if (isset($twitterContent[0])) {
 							wsc_set_to_banner($fileId, $setId, $key, "", $setOwnerId);
 							$bannerData = base64_encode(file_get_contents($filePath));
 							$result = $connection->post("account/update_profile_banner", ["banner" => $bannerData]);
-
-							$pfpDescription = isset($twitterMeta['pfp']) ? "\npfp: https://wiscle.com/gallery/?member_id={$twitterMeta['pfp']['set_owner_id']}&set_id={$twitterMeta['pfp']['set_id']} curator: {$twitterMeta['banner']['curator_twitter_id']}" : "";
-							$newProfileDescription = "banner: https://wiscle.com/gallery/?member_id={$setOwnerId}&set_id={$setId} curator: {$galleryCuratorTwitter}{$pfpDescription}";
+							$newProfileDescription = "gallery: https://wiscle.com/gallery?{$twitterAccountOwnerId}{$creatorList}{$curator}";
 							$result = $connection->post("account/update_profile", ["description" => $newProfileDescription]);
 
-							alpn_log($result);
+							$nft = $setContent[0];
+							$shareFileKey = $nft->thumb_share_file_key;
+							$nftUrl = PTE_IMAGES_ROOT_URL . $shareFileKey;
 
-							$twitterMeta['banner'] = array(
+							$imageData = base64_encode(file_get_contents($nftUrl));
+							$result = $connection->post("account/update_profile_image", ["image" => $imageData]);
+
+							$twitterMeta['profile'] = array(
 								"set_owner_id" => $setOwnerId,
 								"set_id" => $setId,
 								"curator_twitter_id" => $galleryCuratorTwitter
@@ -176,13 +189,13 @@ if (isset($twitterContent[0])) {
 						alpn_log($error);
 					 }
 					try {
-						$twitterTextData = "New profile banner @wisclenft\n\n" . $twitterTextData;
-						// $media1 = $connection->upload('media/upload', ['media' => $filePath]);
-						// $parameters = [
-						// 	'status' => $twitterTextData,
-						// 	'media_ids' => $media1->media_id_string
-						// 	];
-					 // $result = $connection->post('statuses/update', $parameters);
+						$twitterTextData = "New pfp and banner selected from a Wiscle NFT Multimedia Gallery\n\n" . $twitterTextData;
+						$media = $connection->upload('media/upload', ['media' => $filePath]);
+						$parameters = [
+							'status' => $twitterTextData,
+							'media_ids' => $media->media_id_string
+							];
+					 $result = $connection->post('statuses/update', $parameters);
 					 unlink($filePath);
 
 				 } catch (Exception $error) {
@@ -256,51 +269,6 @@ if (isset($twitterContent[0])) {
 				 alpn_log("BOOM4");
 				 alpn_log($error);
 				}
-			break;
-			case "profile_pfp":
-				alpn_log("PFP");
-				try {
-					$nft = $setContent[0];
-					$shareFileKey = $nft->thumb_share_file_key;
-					$filePath = WSC_PREVIEWS_PATH . $shareFileKey;
-					$nftUrl = PTE_IMAGES_ROOT_URL . $shareFileKey;
-
-					$imageData = base64_encode(file_get_contents($nftUrl));
-					$result = $connection->post("account/update_profile_image", ["image" => $imageData]);
-
-					$bannerDescription = isset($twitterMeta['banner']) ? "banner: https://wiscle.com/gallery/?member_id={$twitterMeta['banner']['set_owner_id']}&set_id={$twitterMeta['banner']['set_id']} curator: {$twitterMeta['banner']['curator_twitter_id']}\n" : "";
-					$newProfileDescription = "{$bannerDescription}pfp: https://wiscle.com/gallery/?member_id={$setOwnerId}&set_id={$setId} curator: {$galleryCuratorTwitter}";
-					$result = $connection->post("account/update_profile", ["description" => $newProfileDescription]);
-
-					$twitterMeta['pfp'] = array(
-						"set_owner_id" => $setOwnerId,
-						"set_id" => $setId,
-						"curator_twitter_id" => $galleryCuratorTwitter
-					);
-					$twitterMetaUpdate = array("twitter_meta" => json_encode($twitterMeta));
-					$whereClause['id'] = $twitterAccountOwnerId;
-					$wpdb->update( 'alpn_user_metadata', $twitterMetaUpdate, $whereClause );
-
-				} catch (Exception $error) {
-					alpn_log("BOOM6");
-					alpn_log($error);
-				}
-				try {
-					$twitterTextData = "New PFP @wisclenft\n\n" . $twitterTextData;
-					file_put_contents($filePath, file_get_contents($nftUrl));
-					$media = $connection->upload('media/upload', ['media' => $filePath]);
-					$parameters = [
-						'status' => $twitterTextData,
-						'media_ids' => $media->media_id_string
-						];
-				 $result = $connection->post('statuses/update', $parameters);
-
-				 unlink($filePath);
-
-			 } catch (Exception $error) {
-				alpn_log("BOOM7");
-				alpn_log($error);
-			 }
 			break;
 		}
 	}

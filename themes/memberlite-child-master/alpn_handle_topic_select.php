@@ -9,6 +9,10 @@ use Parse\ParseException;
 use Parse\ParseClient;
 
 
+// $emailFrom = mailparse_rfc822_parse_addresses("Patrick Vermont <pvermont@wiscle.com>");
+// pp($emailFrom);
+
+
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
@@ -19,6 +23,17 @@ use Parse\ParseClient;
 //   "description" => "Hello, Description\nYo Dawg",
 //   "media_url" => "https://wiscle.com"
 // ));
+
+
+// $data = array(
+//   "cloud_function" => "wsc_get_opensea_asset",
+//   "nft_contract_address" => "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
+//   "nft_token_id" => "1"
+// );
+//
+// $result = wsc_call_cloud_function($data);
+// pp(json_decode($result, true));
+
 
 $replaceStrings = array();
 $faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emailUx = $proTeamHtml = $networkOptions = $topicOptions = $importantNetworkItems = $importantTopicItems = $interactionTypeSliders = $routes = $ownerFirst = $networkContactTopics = "";

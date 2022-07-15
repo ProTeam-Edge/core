@@ -150,7 +150,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
                 </div>
               </div>
             <div class='wsc_nft_info_row'>
-            <div class='pte_vault_row_100'><span class='wsc_nav_label'>View on:</span><a class='wsc_nav_link' href='{$openInOpenSea}' target='_blank'>OpenSea</a><a class='wsc_nav_link' href='{$openInRarible}' target='_blank'>Rarible</a><a class='wsc_nav_link' href='{$openInScan}' target='_blank'>{$openInScanName}</a></div>
+            <div class='pte_vault_row_100' style=''><span class='wsc_nav_label'>View on:</span><a class='wsc_nav_link' href='{$openInOpenSea}' target='_blank'>OpenSea</a><a class='wsc_nav_link' href='{$openInRarible}' target='_blank'>Rarible</a><a class='wsc_nav_link' href='{$openInScan}' target='_blank'>{$openInScanName}</a><span id='wsc_opensea_check'><i style='color: white' title='Checks out on OpenSea' class='fas fa-spinner'></i></span></div>
             </div>
             </div>
           </div>
@@ -164,7 +164,7 @@ if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
 			 }
 			 $attributeHtml .= "</table>";
 
-			 $allData = "<div class='wsc_gallery_single_nft_container' data-wsc-rel='{$nftRelation}' data-wsc-set='{$setValues}' data-wsc-cat='{$nft->category_id}' data-wsc-nft='{$nft->id}' data-wsc-contract='{$nft->contract_address}' data-wsc-owner='{$nft->account_address}' data-wsc-chain='{$nft->chain_id}' data-wsc-media-type='{$mediaType}'><div class='wsc_gallery_nft_name'>{$name}</div><div class='wsc_gallery_nft_description'>{$description}</div>{$infoPanel}<div class='wsc_gallery_nft_attributes'>{$attributeHtml}</div></div>";
+			 $allData = "<div class='wsc_gallery_single_nft_container' data-wsc-rel='{$nftRelation}' data-wsc-set='{$setValues}' data-wsc-cat='{$nft->category_id}' data-wsc-nft='{$nft->id}' data-wsc-contract='{$nft->contract_address}' data-wsc-token-id='{$nft->token_id}' data-wsc-owner='{$nft->account_address}' data-wsc-chain='{$nft->chain_id}' data-wsc-media-type='{$mediaType}'><div class='wsc_gallery_nft_name'>{$name}</div><div class='wsc_gallery_nft_description'>{$description}</div>{$infoPanel}<div class='wsc_gallery_nft_attributes'>{$attributeHtml}</div></div>";
 
 			 $thumbMimeType = $nft->thumb_mime_type;
 			 $thumbType = getFileMetaFromMimeType($thumbMimeType)['type'];
