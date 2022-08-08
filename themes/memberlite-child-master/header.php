@@ -7,9 +7,9 @@
  * @package Memberlite
  */
 
-$nameWithType = "Wiscle Collaboration Network";
-$description = "Team Up with Anyone, Anywhere to Collaborate on Anything";
-$imageUrl = "https://storage.googleapis.com/pte_media_store_1/08701530-audrey2.png";
+$nameWithType = "Wiscle Network";
+$description = "NFT Social Collaboration Tools";
+$imageUrl = "https://storage.googleapis.com/pte_media_store_1/wiscleshare2.png";
 $linkUrl = "https://wiscle.com";
 
 $wscMeta = "";

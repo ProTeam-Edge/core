@@ -21,10 +21,10 @@ register_shutdown_function(function(){
  $tokenId = $qVars['token_id'];
  $chainId = $qVars['chain_id'];
 
- if (!$value && $tokenAddress) {
+ if ($qVars['moralis_meta'] == '{}' && $tokenAddress) {
 		 $valueRaw = wsc_get_single_nft_metadata($tokenAddress, $tokenId, $chainId);
 		 $value = json_decode($valueRaw, true);
-		 if (isset($value['contract_address']) && $value['contract_address']) {
+		 if (isset($value['token_address']) && $value['token_address']) {
 			 alpn_log("METADATA HANDLER UPDATING NFT");
 			 $moralisMeta = array("moralis_meta" => $valueRaw);
 			 $whereClause = array('contract_address' => $tokenAddress, "token_id" => $tokenId, "chain_id" => $chainId);
@@ -40,11 +40,10 @@ if (!$value) {
 	exit;
 }
 
- //alpn_log($value);
+ // alpn_log($value);
 
 $nftMeta = json_decode($value['metadata'], true);
 $nftMetaImage = (isset($nftMeta['image']) && $nftMeta['image']) ? wsc_cleanup_nft_uri($nftMeta['image']) : false;
-
 
 if ($value['token_uri'] || $nftMetaImage) {
 
@@ -59,13 +58,26 @@ if ($value['token_uri'] || $nftMetaImage) {
 		$httpResponseCode = $response["http_code"];
 
 		alpn_log("PROCESS SINGLE");
+		alpn_log($response);
+
 
 		if (($httpResponseCode >= 300 || !$httpResponseCode ) && $nftMetaImage) {  //super fallback if can't reach token_uri
 				$openSeaMetaDataFailed = isset($response['opensea_meta']) && $response['opensea_meta'] ? true : false;
+
 				$response = wsc_get_file($nftMetaImage, $tempFileName);
-				$fullUrl = $nftMetaImage;
+				alpn_log("HANDLING ERROR");
+				alpn_log($response);
+
+				if ($response['http_code'] == 200 && filesize($tempFileName)) {
+					alpn_log("DOING THE THING");
+					$fullUrl = $tempFileName;
+				} else {
+					$fullUrl = $nftMetaImage;
+				}
 		}
 		$fileMimeType = mime_content_type($tempFileName);
+
+		alpn_log($fullUrl);
 
 
 		if ($fileMimeType == "application/json" || $fileMimeType == "text/plain" || $fileMimeType == "text/html" || $fileMimeType == "text/xml") {   //probably a better way to fail
@@ -145,6 +157,8 @@ if (!$newNft['error']) {
 
 		if ($contentUrl == $thumbUrl) {
 
+			alpn_log("DOING THIS");
+
 			$tempFileId = pte_get_short_id();
 			$tempFileName = PTE_ROOT_PATH . "tmp/" . $tempFileId;
 			$response = wsc_get_file($contentUrl, $tempFileName);
@@ -159,6 +173,10 @@ if (!$newNft['error']) {
 			if (isset($nftResponseMedia['status']) && $nftResponseMedia['status'] == "ok" && $nftResponseMedia['media_type'] && $nftResponseMedia['media_type'] != "unsupported") {
 
 				$newThumbData = wsc_process_thumb($nftResponseMedia);
+
+
+				alpn_log($newThumbData);
+
 				$fileKeyThumb = $newThumbData['file_key']; //with extension added
 				$fileKeyThumbLarge = $newThumbData['large_file_key']; //with extension added
 				$fileKeyThumbShare = $newThumbData['share_file_key']; //with extension added

@@ -14,7 +14,7 @@ if (!$isSecure) {
 	exit;
 }
 
-$twitterAccountOwnerId = 164;
+$twitterAccountOwnerId = 344;
 
 $availableBanners = array(
 	"3x1" => array(
@@ -92,16 +92,20 @@ if (!isset($twitterData[0]) || $twitterData[0]->twitter == '{}') {
 // alpn_log("FINISHED TWITTER ACCOUNT CHECK EXITING");
 // exit;
 
-// $twitterContent = $wpdb->get_results(
-// 	$wpdb->prepare("SELECT message, source_set, source_owner_id, twitter_accounts, curator, nft_category FROM alpn_twitter_content WHERE status = 'ready' ORDER BY RAND() LIMIT 1")
-//  );
+$twitterCount = $wpdb->get_results(
+	$wpdb->prepare("SELECT COUNT(id) AS gallery_count FROM alpn_twitter_content WHERE status = 'ready'")
+ );
 
- $twitterContent = $wpdb->get_results(
- 	$wpdb->prepare("SELECT message, source_set, source_owner_id, twitter_accounts, account_string, curator, nft_category FROM alpn_twitter_content WHERE id = 6")
-  );
+ $galleryCount = isset($twitterCount[0]->gallery_count) ? $twitterCount[0]->gallery_count : false;
+ $galleryId = random_int(1, $galleryCount);
 
+$twitterContent = $wpdb->get_results(
+	$wpdb->prepare("SELECT count(id) as galleryCount, message, source_set, source_owner_id, twitter_accounts, account_string, curator, nft_category FROM alpn_twitter_content WHERE status = 'ready' AND id = %d", $galleryId)
+ );
 
-
+ // $twitterContent = $wpdb->get_results(
+ // 	$wpdb->prepare("SELECT count(id) as galleryCount, message, source_set, source_owner_id, twitter_accounts, account_string, curator, nft_category FROM alpn_twitter_content WHERE id = 26")
+ //  );
 
 if (isset($twitterContent[0])) {
 
@@ -110,7 +114,7 @@ if (isset($twitterContent[0])) {
 	$twitterMessage = $twitterContent[0]->message;
 
 	$setContent = $wpdb->get_results(
-		$wpdb->prepare("SELECT s.nft_id, m.thumb_large_file_key, m.thumb_share_file_key, m.thumb_mime_type FROM alpn_nft_sets s LEFT JOIN alpn_nft_meta m ON m.id = s.nft_id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY RAND()", $setOwnerId, $setId)
+		$wpdb->prepare("SELECT s.nft_id, m.thumb_large_file_key, m.thumb_share_file_key, m.thumb_mime_type FROM alpn_nft_sets s JOIN alpn_nft_meta m ON m.id = s.nft_id WHERE s.owner_id = %d AND s.set_name = %s ORDER BY RAND()", $setOwnerId, $setId)
 	 );
 
 	 $setCount = count($setContent);
@@ -130,14 +134,14 @@ if (isset($twitterContent[0])) {
 		 $accountString = $twitterContent[0]->account_string ? "{$twitterContent[0]->account_string}: " : "";
 		 $creatorList = $twitterContent[0]->twitter_accounts ? "\n{$accountString}{$twitterContent[0]->twitter_accounts}" : "";
 
-		 $twitterTextData = "gallery: https://wiscle.com/gallery/?member_id={$setOwnerId}&set_id={$setId}{$creatorList}{$curator}";
+		 $twitterTextData = "gallery({$setCount}): https://wiscle.com/gallery/?member_id={$setOwnerId}&set_id={$setId}{$creatorList}{$curator}";
 
 		 //$tweetOptions = array("tweet", "tweet", "banner", "banner", "profile_banner_pfp");
 		 $tweetOptions = array("tweet", "tweet", "tweet", "banner", "banner", "banner", "profile_banner_pfp");
 
 		  $doThis = $tweetOptions[array_rand($tweetOptions)];
 
-		  $doThis = "tweet";
+		  // $doThis = "tweet";
 
 			switch ($doThis) {
 
@@ -189,7 +193,7 @@ if (isset($twitterContent[0])) {
 						alpn_log($error);
 					 }
 					try {
-						$twitterTextData = "New pfp and banner selected from a Wiscle NFT Multimedia Gallery\n\n" . $twitterTextData;
+						$twitterTextData = "New pfp and banner created from a Wiscle NFT Multimedia Gallery\n\n" . $twitterTextData;
 						$media = $connection->upload('media/upload', ['media' => $filePath]);
 						$parameters = [
 							'status' => $twitterTextData,
@@ -265,6 +269,10 @@ if (isset($twitterContent[0])) {
 						 'media_ids' => implode(',', $fileIds)
 					];
 					$result = $connection->post('statuses/update', $parameters);
+
+
+					alpn_log($result);
+
 				} catch (Exception $error) {
 				 alpn_log("BOOM4");
 				 alpn_log($error);

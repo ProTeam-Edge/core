@@ -282,6 +282,10 @@ $filepath = $oldFilePath = PTE_ROOT_PATH . "tmp/" . $thumbData['original_file_ke
 $sourceFileKey = $thumbData['file_key'];
 $sourceMimeType = $thumbData['mime_type'];
 
+
+alpn_log($filepath);
+alpn_log($sourceFileKey);
+
 if (isset($thumbData['status']) && $thumbData['status'] == 'ok') {
 
   $fileType = getFileMetaFromMimeType($thumbData['mime_type'])['type'];
@@ -320,7 +324,6 @@ if (isset($thumbData['status']) && $thumbData['status'] == 'ok') {
     $thumbpathShare = PTE_ROOT_PATH . "tmp/". $fileNameWithExtensionShare;
     imageToJpeg($filepath, $thumbpathShare, 480);
     $thumbShareFileSize = @filesize($thumbpathShare);
-
 
     if ($thumbFileSize && $thumbLargeFileSize && $thumbShareFileSize) {
 
@@ -368,6 +371,8 @@ if (isset($thumbData['status']) && $thumbData['status'] == 'ok') {
 
       } else {  //failed creating viable thumbs
         $fileType = getFileMetaFromMimeType($thumbData['mime_type'])['type'];
+
+        alpn_log('FAILED CREATING THUMBS');
 
         if ($fileType == 'image') {
           $thumbData['file_key'] = $thumbData['large_file_key'] = $thumbData['share_file_key'] = $sourceFileKey;
@@ -646,6 +651,185 @@ function wsc_get_twitter_preview_art($setName, $action, $uniqueId, $words = "") 
     return $html;
 }
 
+
+function wsc_resize_image($sourceImage, $targetImage, $maxWidth, $maxHeight)
+{
+
+    // Get dimensions of source image.
+    list($origWidth, $origHeight) = getimagesize($sourceImage);
+
+    if ($maxWidth == 0)
+    {
+        $maxWidth  = $origWidth;
+    }
+
+    if ($maxHeight == 0)
+    {
+        $maxHeight = $origHeight;
+    }
+
+    // Calculate ratio of desired maximum sizes and original sizes.
+    $widthRatio = $maxWidth / $origWidth;
+    $heightRatio = $maxHeight / $origHeight;
+
+    // Ratio used for calculating new image dimensions.
+    $ratio = min($widthRatio, $heightRatio);
+
+    // Calculate new image dimensions.
+    $newWidth  = (int)$origWidth  * $ratio;
+    $newHeight = (int)$origHeight * $ratio;
+
+    // Create final image with new dimensions.
+    $newImage = imagecreatetruecolor($newWidth, $newHeight);
+    imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+    imagejpeg($newImage, $targetImage, $quality);
+
+    // Free up the memory.
+    imagedestroy($image);
+    imagedestroy($newImage);
+
+    return true;
+}
+
+function wsc_remove_emoji($string) {
+    return trim(preg_replace('/[\x{1F3F4}](?:\x{E0067}\x{E0062}\x{E0077}\x{E006C}\x{E0073}\x{E007F})|[\x{1F3F4}](?:\x{E0067}\x{E0062}\x{E0073}\x{E0063}\x{E0074}\x{E007F})|[\x{1F3F4}](?:\x{E0067}\x{E0062}\x{E0065}\x{E006E}\x{E0067}\x{E007F})|[\x{1F3F4}](?:\x{200D}\x{2620}\x{FE0F})|[\x{1F3F3}](?:\x{FE0F}\x{200D}\x{1F308})|[\x{0023}\x{002A}\x{0030}\x{0031}\x{0032}\x{0033}\x{0034}\x{0035}\x{0036}\x{0037}\x{0038}\x{0039}](?:\x{FE0F}\x{20E3})|[\x{1F415}](?:\x{200D}\x{1F9BA})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F467}\x{200D}\x{1F467})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F467}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F467})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F466}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F466})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F467}\x{200D}\x{1F467})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F466}\x{200D}\x{1F466})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F467}\x{200D}\x{1F466})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F467})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F467}\x{200D}\x{1F467})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F466}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F467}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F467})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F466})|[\x{1F469}](?:\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F469})|[\x{1F469}\x{1F468}](?:\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F468})|[\x{1F469}](?:\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F48B}\x{200D}\x{1F469})|[\x{1F469}\x{1F468}](?:\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F48B}\x{200D}\x{1F468})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9BD})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9BC})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9AF})|[\x{1F575}\x{1F3CC}\x{26F9}\x{1F3CB}](?:\x{FE0F}\x{200D}\x{2640}\x{FE0F})|[\x{1F575}\x{1F3CC}\x{26F9}\x{1F3CB}](?:\x{FE0F}\x{200D}\x{2642}\x{FE0F})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F692})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F680})|[\x{1F468}\x{1F469}](?:\x{200D}\x{2708}\x{FE0F})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F3A8})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F3A4})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F4BB})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F52C})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F4BC})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F3ED})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F527})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F373})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F33E})|[\x{1F468}\x{1F469}](?:\x{200D}\x{2696}\x{FE0F})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F3EB})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F393})|[\x{1F468}\x{1F469}](?:\x{200D}\x{2695}\x{FE0F})|[\x{1F471}\x{1F64D}\x{1F64E}\x{1F645}\x{1F646}\x{1F481}\x{1F64B}\x{1F9CF}\x{1F647}\x{1F926}\x{1F937}\x{1F46E}\x{1F482}\x{1F477}\x{1F473}\x{1F9B8}\x{1F9B9}\x{1F9D9}\x{1F9DA}\x{1F9DB}\x{1F9DC}\x{1F9DD}\x{1F9DE}\x{1F9DF}\x{1F486}\x{1F487}\x{1F6B6}\x{1F9CD}\x{1F9CE}\x{1F3C3}\x{1F46F}\x{1F9D6}\x{1F9D7}\x{1F3C4}\x{1F6A3}\x{1F3CA}\x{1F6B4}\x{1F6B5}\x{1F938}\x{1F93C}\x{1F93D}\x{1F93E}\x{1F939}\x{1F9D8}](?:\x{200D}\x{2640}\x{FE0F})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9B2})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9B3})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9B1})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9B0})|[\x{1F471}\x{1F64D}\x{1F64E}\x{1F645}\x{1F646}\x{1F481}\x{1F64B}\x{1F9CF}\x{1F647}\x{1F926}\x{1F937}\x{1F46E}\x{1F482}\x{1F477}\x{1F473}\x{1F9B8}\x{1F9B9}\x{1F9D9}\x{1F9DA}\x{1F9DB}\x{1F9DC}\x{1F9DD}\x{1F9DE}\x{1F9DF}\x{1F486}\x{1F487}\x{1F6B6}\x{1F9CD}\x{1F9CE}\x{1F3C3}\x{1F46F}\x{1F9D6}\x{1F9D7}\x{1F3C4}\x{1F6A3}\x{1F3CA}\x{1F6B4}\x{1F6B5}\x{1F938}\x{1F93C}\x{1F93D}\x{1F93E}\x{1F939}\x{1F9D8}](?:\x{200D}\x{2642}\x{FE0F})|[\x{1F441}](?:\x{FE0F}\x{200D}\x{1F5E8}\x{FE0F})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1E9}\x{1F1F0}\x{1F1F2}\x{1F1F3}\x{1F1F8}\x{1F1F9}\x{1F1FA}](?:\x{1F1FF})|[\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1F0}\x{1F1F1}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1FA}](?:\x{1F1FE})|[\x{1F1E6}\x{1F1E8}\x{1F1F2}\x{1F1F8}](?:\x{1F1FD})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1F0}\x{1F1F2}\x{1F1F5}\x{1F1F7}\x{1F1F9}\x{1F1FF}](?:\x{1F1FC})|[\x{1F1E7}\x{1F1E8}\x{1F1F1}\x{1F1F2}\x{1F1F8}\x{1F1F9}](?:\x{1F1FB})|[\x{1F1E6}\x{1F1E8}\x{1F1EA}\x{1F1EC}\x{1F1ED}\x{1F1F1}\x{1F1F2}\x{1F1F3}\x{1F1F7}\x{1F1FB}](?:\x{1F1FA})|[\x{1F1E6}\x{1F1E7}\x{1F1EA}\x{1F1EC}\x{1F1ED}\x{1F1EE}\x{1F1F1}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FE}](?:\x{1F1F9})|[\x{1F1E6}\x{1F1E7}\x{1F1EA}\x{1F1EC}\x{1F1EE}\x{1F1F1}\x{1F1F2}\x{1F1F5}\x{1F1F7}\x{1F1F8}\x{1F1FA}\x{1F1FC}](?:\x{1F1F8})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EA}\x{1F1EB}\x{1F1EC}\x{1F1ED}\x{1F1EE}\x{1F1F0}\x{1F1F1}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F8}\x{1F1F9}](?:\x{1F1F7})|[\x{1F1E6}\x{1F1E7}\x{1F1EC}\x{1F1EE}\x{1F1F2}](?:\x{1F1F6})|[\x{1F1E8}\x{1F1EC}\x{1F1EF}\x{1F1F0}\x{1F1F2}\x{1F1F3}](?:\x{1F1F5})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1E9}\x{1F1EB}\x{1F1EE}\x{1F1EF}\x{1F1F2}\x{1F1F3}\x{1F1F7}\x{1F1F8}\x{1F1F9}](?:\x{1F1F4})|[\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1ED}\x{1F1EE}\x{1F1F0}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FA}\x{1F1FB}](?:\x{1F1F3})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1E9}\x{1F1EB}\x{1F1EC}\x{1F1ED}\x{1F1EE}\x{1F1EF}\x{1F1F0}\x{1F1F2}\x{1F1F4}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FA}\x{1F1FF}](?:\x{1F1F2})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1EE}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F8}\x{1F1F9}](?:\x{1F1F1})|[\x{1F1E8}\x{1F1E9}\x{1F1EB}\x{1F1ED}\x{1F1F1}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FD}](?:\x{1F1F0})|[\x{1F1E7}\x{1F1E9}\x{1F1EB}\x{1F1F8}\x{1F1F9}](?:\x{1F1EF})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EB}\x{1F1EC}\x{1F1F0}\x{1F1F1}\x{1F1F3}\x{1F1F8}\x{1F1FB}](?:\x{1F1EE})|[\x{1F1E7}\x{1F1E8}\x{1F1EA}\x{1F1EC}\x{1F1F0}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1F9}](?:\x{1F1ED})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1E9}\x{1F1EA}\x{1F1EC}\x{1F1F0}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FA}\x{1F1FB}](?:\x{1F1EC})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F9}\x{1F1FC}](?:\x{1F1EB})|[\x{1F1E6}\x{1F1E7}\x{1F1E9}\x{1F1EA}\x{1F1EC}\x{1F1EE}\x{1F1EF}\x{1F1F0}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F7}\x{1F1F8}\x{1F1FB}\x{1F1FE}](?:\x{1F1EA})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1EE}\x{1F1F2}\x{1F1F8}\x{1F1F9}](?:\x{1F1E9})|[\x{1F1E6}\x{1F1E8}\x{1F1EA}\x{1F1EE}\x{1F1F1}\x{1F1F2}\x{1F1F3}\x{1F1F8}\x{1F1F9}\x{1F1FB}](?:\x{1F1E8})|[\x{1F1E7}\x{1F1EC}\x{1F1F1}\x{1F1F8}](?:\x{1F1E7})|[\x{1F1E7}\x{1F1E8}\x{1F1EA}\x{1F1EC}\x{1F1F1}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F6}\x{1F1F8}\x{1F1F9}\x{1F1FA}\x{1F1FB}\x{1F1FF}](?:\x{1F1E6})|[\x{00A9}\x{00AE}\x{203C}\x{2049}\x{2122}\x{2139}\x{2194}-\x{2199}\x{21A9}-\x{21AA}\x{231A}-\x{231B}\x{2328}\x{23CF}\x{23E9}-\x{23F3}\x{23F8}-\x{23FA}\x{24C2}\x{25AA}-\x{25AB}\x{25B6}\x{25C0}\x{25FB}-\x{25FE}\x{2600}-\x{2604}\x{260E}\x{2611}\x{2614}-\x{2615}\x{2618}\x{261D}\x{2620}\x{2622}-\x{2623}\x{2626}\x{262A}\x{262E}-\x{262F}\x{2638}-\x{263A}\x{2640}\x{2642}\x{2648}-\x{2653}\x{265F}-\x{2660}\x{2663}\x{2665}-\x{2666}\x{2668}\x{267B}\x{267E}-\x{267F}\x{2692}-\x{2697}\x{2699}\x{269B}-\x{269C}\x{26A0}-\x{26A1}\x{26AA}-\x{26AB}\x{26B0}-\x{26B1}\x{26BD}-\x{26BE}\x{26C4}-\x{26C5}\x{26C8}\x{26CE}-\x{26CF}\x{26D1}\x{26D3}-\x{26D4}\x{26E9}-\x{26EA}\x{26F0}-\x{26F5}\x{26F7}-\x{26FA}\x{26FD}\x{2702}\x{2705}\x{2708}-\x{270D}\x{270F}\x{2712}\x{2714}\x{2716}\x{271D}\x{2721}\x{2728}\x{2733}-\x{2734}\x{2744}\x{2747}\x{274C}\x{274E}\x{2753}-\x{2755}\x{2757}\x{2763}-\x{2764}\x{2795}-\x{2797}\x{27A1}\x{27B0}\x{27BF}\x{2934}-\x{2935}\x{2B05}-\x{2B07}\x{2B1B}-\x{2B1C}\x{2B50}\x{2B55}\x{3030}\x{303D}\x{3297}\x{3299}\x{1F004}\x{1F0CF}\x{1F170}-\x{1F171}\x{1F17E}-\x{1F17F}\x{1F18E}\x{1F191}-\x{1F19A}\x{1F201}-\x{1F202}\x{1F21A}\x{1F22F}\x{1F232}-\x{1F23A}\x{1F250}-\x{1F251}\x{1F300}-\x{1F321}\x{1F324}-\x{1F393}\x{1F396}-\x{1F397}\x{1F399}-\x{1F39B}\x{1F39E}-\x{1F3F0}\x{1F3F3}-\x{1F3F5}\x{1F3F7}-\x{1F3FA}\x{1F400}-\x{1F4FD}\x{1F4FF}-\x{1F53D}\x{1F549}-\x{1F54E}\x{1F550}-\x{1F567}\x{1F56F}-\x{1F570}\x{1F573}-\x{1F57A}\x{1F587}\x{1F58A}-\x{1F58D}\x{1F590}\x{1F595}-\x{1F596}\x{1F5A4}-\x{1F5A5}\x{1F5A8}\x{1F5B1}-\x{1F5B2}\x{1F5BC}\x{1F5C2}-\x{1F5C4}\x{1F5D1}-\x{1F5D3}\x{1F5DC}-\x{1F5DE}\x{1F5E1}\x{1F5E3}\x{1F5E8}\x{1F5EF}\x{1F5F3}\x{1F5FA}-\x{1F64F}\x{1F680}-\x{1F6C5}\x{1F6CB}-\x{1F6D2}\x{1F6D5}\x{1F6E0}-\x{1F6E5}\x{1F6E9}\x{1F6EB}-\x{1F6EC}\x{1F6F0}\x{1F6F3}-\x{1F6FA}\x{1F7E0}-\x{1F7EB}\x{1F90D}-\x{1F93A}\x{1F93C}-\x{1F945}\x{1F947}-\x{1F971}\x{1F973}-\x{1F976}\x{1F97A}-\x{1F9A2}\x{1F9A5}-\x{1F9AA}\x{1F9AE}-\x{1F9CA}\x{1F9CD}-\x{1F9FF}\x{1FA70}-\x{1FA73}\x{1FA78}-\x{1FA7A}\x{1FA80}-\x{1FA82}\x{1FA90}-\x{1FA95}]/u', '', $string));
+}
+
+
+function wsc_retrieve_emoji($string) {
+    preg_match_all('/[\x{1F3F4}](?:\x{E0067}\x{E0062}\x{E0077}\x{E006C}\x{E0073}\x{E007F})|[\x{1F3F4}](?:\x{E0067}\x{E0062}\x{E0073}\x{E0063}\x{E0074}\x{E007F})|[\x{1F3F4}](?:\x{E0067}\x{E0062}\x{E0065}\x{E006E}\x{E0067}\x{E007F})|[\x{1F3F4}](?:\x{200D}\x{2620}\x{FE0F})|[\x{1F3F3}](?:\x{FE0F}\x{200D}\x{1F308})|[\x{0023}\x{002A}\x{0030}\x{0031}\x{0032}\x{0033}\x{0034}\x{0035}\x{0036}\x{0037}\x{0038}\x{0039}](?:\x{FE0F}\x{20E3})|[\x{1F415}](?:\x{200D}\x{1F9BA})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F467}\x{200D}\x{1F467})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F467}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F467})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F466}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F466})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F467}\x{200D}\x{1F467})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F466}\x{200D}\x{1F466})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F467}\x{200D}\x{1F466})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F467})|[\x{1F468}](?:\x{200D}\x{1F468}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F467}\x{200D}\x{1F467})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F466}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F467}\x{200D}\x{1F466})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F467})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F469}\x{200D}\x{1F466})|[\x{1F469}](?:\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F469})|[\x{1F469}\x{1F468}](?:\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F468})|[\x{1F469}](?:\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F48B}\x{200D}\x{1F469})|[\x{1F469}\x{1F468}](?:\x{200D}\x{2764}\x{FE0F}\x{200D}\x{1F48B}\x{200D}\x{1F468})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9BD})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9BC})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9AF})|[\x{1F575}\x{1F3CC}\x{26F9}\x{1F3CB}](?:\x{FE0F}\x{200D}\x{2640}\x{FE0F})|[\x{1F575}\x{1F3CC}\x{26F9}\x{1F3CB}](?:\x{FE0F}\x{200D}\x{2642}\x{FE0F})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F692})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F680})|[\x{1F468}\x{1F469}](?:\x{200D}\x{2708}\x{FE0F})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F3A8})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F3A4})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F4BB})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F52C})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F4BC})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F3ED})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F527})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F373})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F33E})|[\x{1F468}\x{1F469}](?:\x{200D}\x{2696}\x{FE0F})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F3EB})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F393})|[\x{1F468}\x{1F469}](?:\x{200D}\x{2695}\x{FE0F})|[\x{1F471}\x{1F64D}\x{1F64E}\x{1F645}\x{1F646}\x{1F481}\x{1F64B}\x{1F9CF}\x{1F647}\x{1F926}\x{1F937}\x{1F46E}\x{1F482}\x{1F477}\x{1F473}\x{1F9B8}\x{1F9B9}\x{1F9D9}\x{1F9DA}\x{1F9DB}\x{1F9DC}\x{1F9DD}\x{1F9DE}\x{1F9DF}\x{1F486}\x{1F487}\x{1F6B6}\x{1F9CD}\x{1F9CE}\x{1F3C3}\x{1F46F}\x{1F9D6}\x{1F9D7}\x{1F3C4}\x{1F6A3}\x{1F3CA}\x{1F6B4}\x{1F6B5}\x{1F938}\x{1F93C}\x{1F93D}\x{1F93E}\x{1F939}\x{1F9D8}](?:\x{200D}\x{2640}\x{FE0F})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9B2})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9B3})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9B1})|[\x{1F468}\x{1F469}](?:\x{200D}\x{1F9B0})|[\x{1F471}\x{1F64D}\x{1F64E}\x{1F645}\x{1F646}\x{1F481}\x{1F64B}\x{1F9CF}\x{1F647}\x{1F926}\x{1F937}\x{1F46E}\x{1F482}\x{1F477}\x{1F473}\x{1F9B8}\x{1F9B9}\x{1F9D9}\x{1F9DA}\x{1F9DB}\x{1F9DC}\x{1F9DD}\x{1F9DE}\x{1F9DF}\x{1F486}\x{1F487}\x{1F6B6}\x{1F9CD}\x{1F9CE}\x{1F3C3}\x{1F46F}\x{1F9D6}\x{1F9D7}\x{1F3C4}\x{1F6A3}\x{1F3CA}\x{1F6B4}\x{1F6B5}\x{1F938}\x{1F93C}\x{1F93D}\x{1F93E}\x{1F939}\x{1F9D8}](?:\x{200D}\x{2642}\x{FE0F})|[\x{1F441}](?:\x{FE0F}\x{200D}\x{1F5E8}\x{FE0F})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1E9}\x{1F1F0}\x{1F1F2}\x{1F1F3}\x{1F1F8}\x{1F1F9}\x{1F1FA}](?:\x{1F1FF})|[\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1F0}\x{1F1F1}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1FA}](?:\x{1F1FE})|[\x{1F1E6}\x{1F1E8}\x{1F1F2}\x{1F1F8}](?:\x{1F1FD})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1F0}\x{1F1F2}\x{1F1F5}\x{1F1F7}\x{1F1F9}\x{1F1FF}](?:\x{1F1FC})|[\x{1F1E7}\x{1F1E8}\x{1F1F1}\x{1F1F2}\x{1F1F8}\x{1F1F9}](?:\x{1F1FB})|[\x{1F1E6}\x{1F1E8}\x{1F1EA}\x{1F1EC}\x{1F1ED}\x{1F1F1}\x{1F1F2}\x{1F1F3}\x{1F1F7}\x{1F1FB}](?:\x{1F1FA})|[\x{1F1E6}\x{1F1E7}\x{1F1EA}\x{1F1EC}\x{1F1ED}\x{1F1EE}\x{1F1F1}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FE}](?:\x{1F1F9})|[\x{1F1E6}\x{1F1E7}\x{1F1EA}\x{1F1EC}\x{1F1EE}\x{1F1F1}\x{1F1F2}\x{1F1F5}\x{1F1F7}\x{1F1F8}\x{1F1FA}\x{1F1FC}](?:\x{1F1F8})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EA}\x{1F1EB}\x{1F1EC}\x{1F1ED}\x{1F1EE}\x{1F1F0}\x{1F1F1}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F8}\x{1F1F9}](?:\x{1F1F7})|[\x{1F1E6}\x{1F1E7}\x{1F1EC}\x{1F1EE}\x{1F1F2}](?:\x{1F1F6})|[\x{1F1E8}\x{1F1EC}\x{1F1EF}\x{1F1F0}\x{1F1F2}\x{1F1F3}](?:\x{1F1F5})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1E9}\x{1F1EB}\x{1F1EE}\x{1F1EF}\x{1F1F2}\x{1F1F3}\x{1F1F7}\x{1F1F8}\x{1F1F9}](?:\x{1F1F4})|[\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1ED}\x{1F1EE}\x{1F1F0}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FA}\x{1F1FB}](?:\x{1F1F3})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1E9}\x{1F1EB}\x{1F1EC}\x{1F1ED}\x{1F1EE}\x{1F1EF}\x{1F1F0}\x{1F1F2}\x{1F1F4}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FA}\x{1F1FF}](?:\x{1F1F2})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1EE}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F8}\x{1F1F9}](?:\x{1F1F1})|[\x{1F1E8}\x{1F1E9}\x{1F1EB}\x{1F1ED}\x{1F1F1}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FD}](?:\x{1F1F0})|[\x{1F1E7}\x{1F1E9}\x{1F1EB}\x{1F1F8}\x{1F1F9}](?:\x{1F1EF})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EB}\x{1F1EC}\x{1F1F0}\x{1F1F1}\x{1F1F3}\x{1F1F8}\x{1F1FB}](?:\x{1F1EE})|[\x{1F1E7}\x{1F1E8}\x{1F1EA}\x{1F1EC}\x{1F1F0}\x{1F1F2}\x{1F1F5}\x{1F1F8}\x{1F1F9}](?:\x{1F1ED})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1E9}\x{1F1EA}\x{1F1EC}\x{1F1F0}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F8}\x{1F1F9}\x{1F1FA}\x{1F1FB}](?:\x{1F1EC})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F9}\x{1F1FC}](?:\x{1F1EB})|[\x{1F1E6}\x{1F1E7}\x{1F1E9}\x{1F1EA}\x{1F1EC}\x{1F1EE}\x{1F1EF}\x{1F1F0}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F7}\x{1F1F8}\x{1F1FB}\x{1F1FE}](?:\x{1F1EA})|[\x{1F1E6}\x{1F1E7}\x{1F1E8}\x{1F1EC}\x{1F1EE}\x{1F1F2}\x{1F1F8}\x{1F1F9}](?:\x{1F1E9})|[\x{1F1E6}\x{1F1E8}\x{1F1EA}\x{1F1EE}\x{1F1F1}\x{1F1F2}\x{1F1F3}\x{1F1F8}\x{1F1F9}\x{1F1FB}](?:\x{1F1E8})|[\x{1F1E7}\x{1F1EC}\x{1F1F1}\x{1F1F8}](?:\x{1F1E7})|[\x{1F1E7}\x{1F1E8}\x{1F1EA}\x{1F1EC}\x{1F1F1}\x{1F1F2}\x{1F1F3}\x{1F1F5}\x{1F1F6}\x{1F1F8}\x{1F1F9}\x{1F1FA}\x{1F1FB}\x{1F1FF}](?:\x{1F1E6})|[\x{00A9}\x{00AE}\x{203C}\x{2049}\x{2122}\x{2139}\x{2194}-\x{2199}\x{21A9}-\x{21AA}\x{231A}-\x{231B}\x{2328}\x{23CF}\x{23E9}-\x{23F3}\x{23F8}-\x{23FA}\x{24C2}\x{25AA}-\x{25AB}\x{25B6}\x{25C0}\x{25FB}-\x{25FE}\x{2600}-\x{2604}\x{260E}\x{2611}\x{2614}-\x{2615}\x{2618}\x{261D}\x{2620}\x{2622}-\x{2623}\x{2626}\x{262A}\x{262E}-\x{262F}\x{2638}-\x{263A}\x{2640}\x{2642}\x{2648}-\x{2653}\x{265F}-\x{2660}\x{2663}\x{2665}-\x{2666}\x{2668}\x{267B}\x{267E}-\x{267F}\x{2692}-\x{2697}\x{2699}\x{269B}-\x{269C}\x{26A0}-\x{26A1}\x{26AA}-\x{26AB}\x{26B0}-\x{26B1}\x{26BD}-\x{26BE}\x{26C4}-\x{26C5}\x{26C8}\x{26CE}-\x{26CF}\x{26D1}\x{26D3}-\x{26D4}\x{26E9}-\x{26EA}\x{26F0}-\x{26F5}\x{26F7}-\x{26FA}\x{26FD}\x{2702}\x{2705}\x{2708}-\x{270D}\x{270F}\x{2712}\x{2714}\x{2716}\x{271D}\x{2721}\x{2728}\x{2733}-\x{2734}\x{2744}\x{2747}\x{274C}\x{274E}\x{2753}-\x{2755}\x{2757}\x{2763}-\x{2764}\x{2795}-\x{2797}\x{27A1}\x{27B0}\x{27BF}\x{2934}-\x{2935}\x{2B05}-\x{2B07}\x{2B1B}-\x{2B1C}\x{2B50}\x{2B55}\x{3030}\x{303D}\x{3297}\x{3299}\x{1F004}\x{1F0CF}\x{1F170}-\x{1F171}\x{1F17E}-\x{1F17F}\x{1F18E}\x{1F191}-\x{1F19A}\x{1F201}-\x{1F202}\x{1F21A}\x{1F22F}\x{1F232}-\x{1F23A}\x{1F250}-\x{1F251}\x{1F300}-\x{1F321}\x{1F324}-\x{1F393}\x{1F396}-\x{1F397}\x{1F399}-\x{1F39B}\x{1F39E}-\x{1F3F0}\x{1F3F3}-\x{1F3F5}\x{1F3F7}-\x{1F3FA}\x{1F400}-\x{1F4FD}\x{1F4FF}-\x{1F53D}\x{1F549}-\x{1F54E}\x{1F550}-\x{1F567}\x{1F56F}-\x{1F570}\x{1F573}-\x{1F57A}\x{1F587}\x{1F58A}-\x{1F58D}\x{1F590}\x{1F595}-\x{1F596}\x{1F5A4}-\x{1F5A5}\x{1F5A8}\x{1F5B1}-\x{1F5B2}\x{1F5BC}\x{1F5C2}-\x{1F5C4}\x{1F5D1}-\x{1F5D3}\x{1F5DC}-\x{1F5DE}\x{1F5E1}\x{1F5E3}\x{1F5E8}\x{1F5EF}\x{1F5F3}\x{1F5FA}-\x{1F64F}\x{1F680}-\x{1F6C5}\x{1F6CB}-\x{1F6D2}\x{1F6D5}\x{1F6E0}-\x{1F6E5}\x{1F6E9}\x{1F6EB}-\x{1F6EC}\x{1F6F0}\x{1F6F3}-\x{1F6FA}\x{1F7E0}-\x{1F7EB}\x{1F90D}-\x{1F93A}\x{1F93C}-\x{1F945}\x{1F947}-\x{1F971}\x{1F973}-\x{1F976}\x{1F97A}-\x{1F9A2}\x{1F9A5}-\x{1F9AA}\x{1F9AE}-\x{1F9CA}\x{1F9CD}-\x{1F9FF}\x{1FA70}-\x{1FA73}\x{1FA78}-\x{1FA7A}\x{1FA80}-\x{1FA82}\x{1FA90}-\x{1FA95}]/u', $string, $emojis);
+
+    return $emojis;
+}
+
+
+function wsc_add_rounded_image_to_certificate($newAssembly, $imageData) {
+  $srcFile = $imageData['pfp_url'];
+  $srcFile = substr($srcFile, 0, strrpos($srcFile, "_")) . substr($srcFile, strrpos($srcFile, "."));
+  list($width_orig, $height_orig, $type) = getimagesize($srcFile);
+  switch ($type)
+  {
+      case IMAGETYPE_GIF:
+          $image = imagecreatefromgif($srcFile);
+          break;
+      case IMAGETYPE_JPEG:
+          $image = imagecreatefromjpeg($srcFile);
+          break;
+      case IMAGETYPE_PNG:
+          $image = imagecreatefrompng($srcFile);
+          break;
+      case IMAGETYPE_WEBP:
+          $image = imagecreatefromwebp($srcFile);
+          break;
+  }
+  $newwidth = $imageData['w'];
+  $newheight = $imageData['h'];
+  $newX = $imageData['x'];
+  $newY = $imageData['y'];
+  $newImage = imagecreatetruecolor($newwidth, $newheight);
+  imagealphablending($newImage, true);
+  imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newwidth, $newheight, $width_orig, $height_orig);
+  $mask = imagecreatetruecolor($newwidth, $newheight);
+  $transparent = imagecolorallocate($mask, 255, 0, 0);
+  imagecolortransparent($mask, $transparent);
+  imagefilledellipse($mask, $newwidth/2, $newheight/2, $newwidth, $newheight, $transparent);
+  $transp = imagecolorallocate($mask, 0, 0, 0);
+  imagecopymerge($newImage, $mask, 0, 0, 0, 0, $newwidth, $newheight, 100);
+  imagedestroy($mask);
+  imagecolortransparent($newImage, $transp);
+  imagefill($newImage, 0, 0, $transp);
+  imagecopymerge($newAssembly, $newImage, $newX, $newY, 0, 0, $newwidth, $newheight, 100);
+  imagedestroy($newImage);
+  return $newAssembly;
+}
+
+
+
+function wsc_create_dm_certificate($data) {
+
+  alpn_log("Creating DM CERTIFICATE");
+  // alpn_log($data);
+
+  $name = isset($data['screen_name']) && $data['screen_name'] ? "@{$data['screen_name']}" : " -- ";
+  $today = date("F j, Y");
+
+  $twitterRecipientId = isset($data['twitter_recipient_id']) && $data['twitter_recipient_id'] ? $data['twitter_recipient_id'] : false;
+  $description = isset($data['description']) && $data['description'] ? $data['description'] : " -- ";
+  $templateFile = isset($data['template_file']) && $data['template_file'] ? $data['template_file'] : false;
+
+  $imageUrl = isset($data['pfp_url']) && $data['pfp_url'] ? $data['pfp_url'] : false;
+
+  $certificateUrl = PTE_IMAGES_ROOT_URL . $templateFile;
+  $localFile = PTE_ROOT_PATH . "tmp/" . $templateFile;
+
+  if (!file_exists($localFile)) {
+    file_put_contents($localFile, file_get_contents($certificateUrl));
+  }
+
+  list($templateWidth, $templateHeight) = getimagesize($localFile);
+  $certificateImage = imagecreatefrompng($localFile);
+
+  $newAssembly = imagecreatetruecolor($templateWidth, $templateHeight);
+  imagealphablending($newAssembly, true);
+
+  imagecopymerge($newAssembly, $certificateImage, 0, 0, 0, 0, $templateWidth, $templateHeight, 100);
+  imagedestroy($certificateImage);
+
+  if ($imageUrl) {
+      $newAssembly = wsc_add_rounded_image_to_certificate($newAssembly, $data);
+  }
+
+  $titleBox = array(
+    'font_face' => 'Best Valentina TTF.ttf',
+    'font_color' => new Color(0, 85, 135),
+    'font_size' => 150,
+    'line_height' => 1.25,
+    'horizontal_align' => 'center',
+    'vertical_align' => 'center',
+    'x' => 465,
+    'y' => 500,
+    'width' => 957,
+    'height' => 151
+  );
+  $newAssembly = wsc_addtext_to_nft_certificate($newAssembly, $titleBox, $name);
+
+  $titleBox = array(
+    'font_face' => 'OpenSans-Semibold.ttf',
+    'font_color' => new Color(0, 0, 0),
+    'font_size' => 42,
+    'line_height' => 1.25,
+    'horizontal_align' => 'center',
+    'vertical_align' => 'center',
+    'x' => 356,
+    'y' => 975,
+    'width' => 323,
+    'height' => 72
+  );
+  $newAssembly = wsc_addtext_to_nft_certificate($newAssembly, $titleBox, $today);
+
+  $titleBox = array(
+    'font_face' => 'OpenSans-Semibold.ttf',
+    'font_color' => new Color(0, 0, 0),
+    'font_size' => 30,
+    'line_height' => 1.5,
+    'horizontal_align' => 'left',
+    'vertical_align' => 'center',
+    'x' => 325,
+    'y' => 725,
+    'width' => 1275,
+    'height' => 165
+  );
+  $newAssembly = wsc_addtext_to_nft_certificate($newAssembly, $titleBox, $description);
+
+  $shortId = pte_get_short_id();
+  $localFile = PTE_ROOT_PATH . "tmp/" . "{$shortId}.png";
+  imagepng($newAssembly, $localFile);
+  imagedestroy($newAssembly);
+
+  return "{$shortId}.png";
+}
+
+
 function wsc_create_nft_certificate($certificateName, $data) {
 
   // alpn_log("Creating CERTIFICATE");
@@ -654,8 +838,9 @@ function wsc_create_nft_certificate($certificateName, $data) {
   $name = (isset($data['name']) && $data['name']) ? stripslashes($data['name']) : " -- ";
   $description = (isset($data['description']) && $data['description']) ? stripslashes($data['description']) : " -- ";
   $attributes = (isset($data['attributes']) && $data['attributes']) ? $data['attributes'] : array();
-  $processId = (isset($data['wscProcessId']) && $data['wscProcessId']) ? $data['wscProcessId'] : false;
-  $mediaType = (isset($data['wsc_media_type']) && $data['wsc_media_type']) ? $data['wsc_media_type'] : false;
+  $processId = (isset($data['wscProcessId']) && $data['wscProcessId']) ? $data['wscProcessId'] : false;  //UNIQUE ID
+  $mediaType = (isset($data['wsc_media_type']) && $data['wsc_media_type']) ? $data['wsc_media_type'] : "Image NFT";
+  $titleBoxText = (isset($data['wsc_title_box']) && $data['wsc_title_box']) ? $data['wsc_title_box'] : "NFT Contract";
 
   if (isset($data['image_url']) && $data['image_url']) {
     $mediaUrl = $data['image_url'];
@@ -669,6 +854,8 @@ function wsc_create_nft_certificate($certificateName, $data) {
     $mediaUrl = $data['animation_url'];
   }
 
+  $imageUrl = isset($data['image']) && $data['image'] ? $data['image'] : false;
+
   $certificateUrl = PTE_IMAGES_ROOT_URL . "{$certificateName}.png";
   $localFile = PTE_ROOT_PATH . "tmp/" . "{$certificateName}.png";
   $destinationFileQR = PTE_ROOT_PATH . "tmp/qr_{$processId}.png";
@@ -677,6 +864,60 @@ function wsc_create_nft_certificate($certificateName, $data) {
     file_put_contents($localFile, file_get_contents($certificateUrl));
   }
   $image = imagecreatefrompng($localFile);
+
+  if ($imageUrl) {
+    $mediaImage = false;
+    $imageType = exif_imagetype($imageUrl);
+    $supportedTypes = array(IMAGETYPE_GIF, IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_WEBP);
+    if (in_array($imageType, $supportedTypes)) {
+      $destinationImage = PTE_ROOT_PATH . "tmp/img_{$processId}.tmp";
+      file_put_contents($destinationImage, file_get_contents($imageUrl));
+      switch ($imageType)
+      {
+          case IMAGETYPE_GIF:
+              $mediaImage = imagecreatefromgif($destinationImage);
+              break;
+          case IMAGETYPE_JPEG:
+              $mediaImage = imagecreatefromjpeg($destinationImage);
+              break;
+          case IMAGETYPE_PNG:
+              $mediaImage = imagecreatefrompng($destinationImage);
+              break;
+          case IMAGETYPE_WEBP:
+              $mediaImage = imagecreatefromwebp($destinationImage);
+              break;
+      }
+      unlink($destinationImage);
+      if ($mediaImage) {
+
+        $containerX = 45;
+        $containerY = 380;
+        $containerWidth = 685;
+        $containerHeight = 310;
+
+        $origWidth = imagesx($mediaImage);
+        $origHeight = imagesy($mediaImage);
+        $maxWidth = $containerWidth;
+        $maxHeight = $containerHeight;
+
+        $widthRatio = $maxWidth / $origWidth;
+        $heightRatio = $maxHeight / $origHeight;
+        $ratio = min($widthRatio, $heightRatio);
+        $newWidth  = (int)$origWidth * $ratio;
+        $newHeight = (int)$origHeight * $ratio;
+
+        $newXIndent = (int)($containerWidth - $newWidth) / 2;
+        $newXIndent = $newXIndent > 0 ? $newXIndent : 0;
+        $newYIndent = (int)($containerHeight - $newHeight) / 2;
+        $newYIndent = $newYIndent > 0 ? $newYIndent : 0;
+
+        $newX = $containerX + $newXIndent;
+        $newY = $containerY + $newYIndent;
+
+        imagecopyresampled($image, $mediaImage, $newX, $newY, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+      }
+    }
+  }
 
   $titleBox = array(
     'font_face' => 'OpenSans-ExtraBold.ttf',
@@ -690,7 +931,7 @@ function wsc_create_nft_certificate($certificateName, $data) {
     'width' => 578,
     'height' => 96
   );
-  $image = wsc_addtext_to_nft_certificate($image, $titleBox, "NFT Contract");
+  $image = wsc_addtext_to_nft_certificate($image, $titleBox, $titleBoxText);
 
   $titleBox = array(
     'font_face' => 'OpenSans-ExtraBold.ttf',
@@ -727,10 +968,10 @@ function wsc_create_nft_certificate($certificateName, $data) {
     'line_height' => 1.40,
     'horizontal_align' => 'left',
     'vertical_align' => 'top',
-    'x' => 70,
+    'x' => 755,
     'y' => 375,
-    'width' => 940,
-    'height' => 275
+    'width' => 300,
+    'height' => 300
   );
   $image = wsc_addtext_to_nft_certificate($image, $titleBox, $description);
 
@@ -748,7 +989,6 @@ $QRCode = new QRCode($options);
 $certificateImage = $QRCode->render($mediaUrl);
 file_put_contents($destinationFileQR, $certificateImage);
 $certificateImageRes = imagecreatefrompng($destinationFileQR);
-
 unlink($destinationFileQR);
 imagecopyresampled($image, $certificateImageRes, 558, 150, 0, 0, 140, 140, imagesx($certificateImageRes), imagesy($certificateImageRes));
 ob_start();
@@ -1502,6 +1742,8 @@ function wsc_store_nft_file($fileSettings, $unlinkSource = true){
       'mime_type' => "",
       'media_type' => "unsupported"
     );
+
+    alpn_log($fileInfo);
       return $fileInfo;
   }
 }
@@ -1783,7 +2025,6 @@ function wsc_get_file($source, $destination, $retry = 1) {
        curl_close($ch);
        fclose($file);
 
-
        if ($httpCode >= 300) {
          alpn_log("ERROR GETTING FILE - " . $httpCode);
          // alpn_log($httpCode);
@@ -1804,10 +2045,15 @@ function wsc_get_file($source, $destination, $retry = 1) {
        }
        if (!filesize($destination)) {
          alpn_log("FALLING BACK TO FILE GET CONTENTS");
+         file_put_contents($destination, file_get_contents($source));
          alpn_log($source);
-         alpn_log($httpCode);
-         $fallback = true;
-         @file_put_contents($destination, @file_get_contents($source));
+         alpn_log($destination);
+         alpn_log(filesize($destination));
+
+         if (filesize($destination)) {
+
+           return array("http_code" => 200, "fall_back" => true, "opensea_meta" => false);
+         }
        }
     } catch (Exception $error) {
      alpn_log("GET FILE EXCEPTION");
@@ -1822,29 +2068,43 @@ function wsc_get_file($source, $destination, $retry = 1) {
 
 function wsc_get_all_member_nfts($walletAddress) {
 
-  $breakAfter = 60000;
+  global $wpdb;
+
+  $maxPerChain = 1000;  //TODO scale up
+
   $chains = array("eth", "polygon");
+  $nftTotal = false;
+  $tooMany = array();
 
   try {
 
     foreach ($chains as $chain) {
 
-      $nftResults = wsc_get_nft_page($walletAddress, '', $chain);
+      $nftResults = wsc_get_nft_page($walletAddress, '', $chain, $maxPerChain);
 
-      alpn_log("CHAIN -- " . $chain . " -- " . $nftResults['total']);
+      if (!$nftResults['total']) {
 
-      if (isset($nftResults['cursor']) && $nftResults['cursor']) {
+        alpn_log("TOO MANY OR NONE -- BREAKING -- " . $chain);
+        $tooMany[$chain] = true;
+        //0xD387A6E4e84a6C86bd90C158C6028A58CC8Ac459
+      } else {
 
         $nftTotal = intval($nftResults['total']);
-        $nftPageSize = intval($nftResults['page_size']);
-        $nftPage = intval($nftResults['page']);
-        $cursor = $nftResults['cursor'];
 
-        while ( $cursor && ($nftPage * $nftPageSize <= $breakAfter) && ($nftPage * $nftPageSize <= $nftTotal ) ) {
-          alpn_log($nftPage . " -- " . $nftPageSize . " -- " . $nftPage * $nftPageSize . " -- " . $nftTotal);
-          $nftResults = wsc_get_nft_page($walletAddress, $cursor, $chain);
-          $cursor = $nftResults['cursor'];
+        alpn_log("CHAIN -- " . $chain . " -- " . $nftResults['total']);
+
+        if (isset($nftResults['cursor']) && $nftResults['cursor']) {
+
+          $nftPageSize = intval($nftResults['page_size']);
           $nftPage = intval($nftResults['page']);
+          $cursor = $nftResults['cursor'];
+
+          while ( $cursor  && ($nftPage * $nftPageSize <= $nftTotal ) ) {
+            alpn_log($nftPage . " -- " . $nftPageSize . " -- " . $nftPage * $nftPageSize . " -- " . $nftTotal);
+            $nftResults = wsc_get_nft_page($walletAddress, $cursor, $chain);
+            $cursor = $nftResults['cursor'];
+            $nftPage = intval($nftResults['page']);
+          }
         }
       }
     }
@@ -1852,6 +2112,19 @@ function wsc_get_all_member_nfts($walletAddress) {
    alpn_log("FAILED GETTING ALL NFTS");
    alpn_log($error);
   }
+
+if (!$nftTotal) {
+
+  $walletInfo = array(
+    "state" => "too_many"
+  );
+  $whereClause = array(
+    "account_address" => $walletAddress
+  );
+  $wpdb->update( 'alpn_wallet_meta', $walletInfo, $whereClause );
+  alpn_log("TELL USER THERE'S A WALLET PROBLEM");
+  alpn_log($tooMany);
+}
 
 return $nftTotal;
 }
@@ -1885,7 +2158,7 @@ function wsc_handle_insert_multiple_nfts($nftPlaceholders, $values) {
 
 }
 
-function wsc_get_nft_page ($walletAddress, $cursor = '', $chain = 'eth'){
+function wsc_get_nft_page ($walletAddress, $cursor = '', $chain = 'eth', $maxPerChain = 1000){
 
   try {
     $headers = array();
@@ -1924,8 +2197,19 @@ function wsc_get_nft_page ($walletAddress, $cursor = '', $chain = 'eth'){
      // alpn_log($response);
 
      $nftResults = json_decode($response, true);
-     $allNfts = $nftResults['result'];
 
+     if ($nftResults['total'] > $maxPerChain) { //BREAK SCALE
+       $newResponse = array(
+         "total" => 0,
+         "page_size" => 0,
+         "page" => 0,
+         "cursor" => "",
+         "response_code" => "too_many_nfts"
+       );
+       return $newResponse;
+     }
+
+     $allNfts = $nftResults['result'];
      $nfts = array(); $nftPlaceholders = array();
      for ($i = 0; $i < count($allNfts); $i++) {
        $nowGm = gmdate ("Y-m-d H:i:s", time());

@@ -9,10 +9,6 @@ use Parse\ParseException;
 use Parse\ParseClient;
 
 
-// $emailFrom = mailparse_rfc822_parse_addresses("Patrick Vermont <pvermont@wiscle.com>");
-// pp($emailFrom);
-
-
 //TODO Check logged in, etc
 //TODO store HTML in MySql using htmlspecialchars()
 
@@ -23,16 +19,6 @@ use Parse\ParseClient;
 //   "description" => "Hello, Description\nYo Dawg",
 //   "media_url" => "https://wiscle.com"
 // ));
-
-
-// $data = array(
-//   "cloud_function" => "wsc_get_opensea_asset",
-//   "nft_contract_address" => "0xb47e3cd837ddf8e4c57f05d70ab865de6e193bbb",
-//   "nft_token_id" => "1"
-// );
-//
-// $result = wsc_call_cloud_function($data);
-// pp(json_decode($result, true));
 
 
 $replaceStrings = array();
@@ -54,16 +40,6 @@ $data = array(
     "access" => "member"
   )
 );
- //wsc_create_nft_liftoff_card($data);
-
- //wsc_create_web3_support(162);
-
-// $encrypted = wsc_encrypt_string("Hello, World");
-//
-// pp($encrypted);
-
-//pp($encrypted);
-//pp(wsc_decrypt_string($encrypted));
 
 if(!is_user_logged_in()) {
    echo '<script>window.location.href = "./my-account";</script>';

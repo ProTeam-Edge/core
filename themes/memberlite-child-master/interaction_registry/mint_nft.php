@@ -91,7 +91,7 @@ function pte_get_registry_mint_nft() {
               if (substr($mediaUrl, 0, $sourceLen) == $source) {
                 $mediaUrl = "https://gateway.moralisipfs.com/ipfs/" . substr($mediaUrl, $sourceLen);
               }
-              $descriptionWithMediaLink = $requestData['nft_description'] . "\n\nMedia: " . $mediaUrl;
+              //$descriptionWithMediaLink = $requestData['nft_description'] . "\n\nMedia: " . $mediaUrl;
               $metaDataArray = array(
                 "name" => $requestData['nft_name'],
                 "description" => $descriptionWithMediaLink,
