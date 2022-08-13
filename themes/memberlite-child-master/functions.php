@@ -288,7 +288,7 @@ function alpn_load_script(){
 
 						wp_register_script(
 		          'moralis_sdk',
-		      		'https://unpkg.com/moralis/dist/moralis.js',
+		      		'https://unpkg.com/moralis-v1@1.11.0/dist/moralis.js',
 		      		array( 'jquery' )
 		          );
 		          wp_enqueue_script( 'moralis_sdk' );

@@ -58,6 +58,7 @@ if ($attachmentsCount || $fromEmailAddress == "nftreview@wiscle.com") {
 					$submissionIdLeft = strrpos($textBody, "*Submission Id:* [") + 18;
 					$submissionIdRight = strpos($textBody, "]", $submissionIdLeft);
 					$submissionId = substr($textBody, $submissionIdLeft, $submissionIdRight - $submissionIdLeft);
+
 					$alreadyExists = $wpdb->get_results(
 						$wpdb->prepare("SELECT * FROM alpn_nft_by_service WHERE id = %d", $submissionId)
 					 );

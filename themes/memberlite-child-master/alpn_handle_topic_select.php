@@ -26,20 +26,171 @@ $faxUx = $walletAddressManagerUX = $profileImageSelector = $topicLogoUrl = $emai
 $qVars = $_POST;
 $domainName = PTE_HOST_DOMAIN_NAME;
 
-$data = array(
-  "card_id" => "02",
-  "title" => "Endeavor",
-  "nft_token_id" => "1287",
-  "nft_contract_address" => "0x24c8865985749206B829eDB4A7cA0aaB1B36Dc44",
-  "attributes" => array(
-    "wcl" => "25",
-    "wcl-own" => "100",
-    "polygon" => "10",
-    "" => "",
-    "swag" => "star",
-    "access" => "member"
-  )
+// $data = array(
+//   "card_id" => "02",
+//   "title" => "Endeavor",
+//   "nft_token_id" => "1287",
+//   "nft_contract_address" => "0x24c8865985749206B829eDB4A7cA0aaB1B36Dc44",
+//   "attributes" => array(
+//     "wcl" => "25",
+//     "wcl-own" => "100",
+//     "polygon" => "10",
+//     "" => "",
+//     "swag" => "star",
+//     "access" => "member"
+//   )
+// );
+
+
+$selectedTemplate =  array(
+		"name" => "Besties",
+		"category" => "Besties",
+   	"contract_address" => "0x94aA6C50aaF87C574F2400c4498c86548c632E84",
+		"template_background" => "wsc_template_1.jpg",
+		"quote" => array(
+			"words" => "Because of you, I laugh a little harder, cry a little less, and smile a lot more.",
+			"font_face" => "Best Valentina TTF.ttf",
+			"font_size" => 140,
+			'line_height' => 1.00,
+	    'horizontal_align' => 'center',
+	    'vertical_align' => 'center',
+			"x" => 165,
+			"y" => 714,
+			"width" => 1633,
+			"height" => 458
+		),
+    "tweet_text" => array(
+      "words" => "Love you Besties!",
+      "font_face" => "OpenSans-SemiboldItalic.ttf",
+      "font_size" => 90,
+      'line_height' => 1.20,
+      'horizontal_align' => 'center',
+      'vertical_align' => 'center',
+      "x" => 540,
+      "y" => 1192,
+      "width" => 1290,
+      "height" => 260
+    ),
+    "date" => array(
+      "words" => "August 12, 2022",
+      "font_face" => "OpenSans-Semibold.ttf",
+      "font_size" => 50,
+      'line_height' => 1.20,
+      'horizontal_align' => 'center',
+      'vertical_align' => 'center',
+      "x" => 750,
+      "y" => 1510,
+      "width" => 850,
+      "height" => 130
+    ),
+		"primary_color" => "#802BB3",
+		"seconday_color" => "#98BDCB",
+		"tertiary_color" => "#17005D",
+		"minimum_tags" => 1,
+		"maximum_tags" => 3,
+    "sender" => array(
+			"image_url" => "https://pbs.twimg.com/profile_images/1553836363501277184/xNHfXkfb.jpg",
+			"words" => "@pvermont",
+      "x" => 150,
+      "y" => 1160,
+      "width" => 400,
+      "height" => 400,
+			"font_face" => "OpenSans-Regular.ttf",
+      "font_size" => 35,
+      'line_height' => 1.00,
+      'horizontal_align' => 'center',
+      'vertical_align' => 'center'
+    ),
+		"tag_count" => 3,
+		"tagged_1" => array(
+			"item_1" => array(
+				"image_url" => "https://pbs.twimg.com/profile_images/1524513682532618240/4sq7bPXs.jpg",
+				"words" => "@afangonthemove",
+				"x" => 730,
+				"y" => 60,
+				"width" => 500,
+				"height" => 500,
+				"font_face" => "OpenSans-Regular.ttf",
+				"font_size" => 35,
+				'line_height' => 1.00,
+				'horizontal_align' => 'center',
+				'vertical_align' => 'center'
+			)
+		),
+		"tagged_2" => array(
+			"item_1" => array(
+				"image_url" => "https://pbs.twimg.com/profile_images/1524513682532618240/4sq7bPXs.jpg",
+				"words" => "@afangonthemove",
+				"x" => 250,
+				"y" => 60,
+				"width" => 500,
+				"height" => 500,
+				"font_face" => "OpenSans-Regular.ttf",
+				"font_size" => 35,
+				'line_height' => 1.00,
+				'horizontal_align' => 'center',
+				'vertical_align' => 'center'
+			),
+			"item_2" => array(
+				"image_url" => "https://pbs.twimg.com/profile_images/1524513682532618240/4sq7bPXs.jpg",
+				"words" => "@afangonthemovetest",
+				"x" => 1100,
+				"y" => 60,
+				"width" => 500,
+				"height" => 500,
+				"font_face" => "OpenSans-Regular.ttf",
+				"font_size" => 35,
+				'line_height' => 1.00,
+				'horizontal_align' => 'center',
+				'vertical_align' => 'center'
+			)
+		),
+		"tagged_3" => array(
+			"item_1" => array(
+				"image_url" => "https://pbs.twimg.com/profile_images/1524513682532618240/4sq7bPXs.jpg",
+				"words" => "@afangonthemove",
+				"x" => 150,
+				"y" => 100,
+				"width" => 400,
+				"height" => 400,
+				"font_face" => "OpenSans-Regular.ttf",
+				"font_size" => 35,
+				'line_height' => 1.00,
+				'horizontal_align' => 'center',
+				'vertical_align' => 'center'
+			),
+			"item_2" => array(
+				"image_url" => "https://pbs.twimg.com/profile_images/1524513682532618240/4sq7bPXs.jpg",
+				"words" => "@afangonthemovetest",
+				"x" => 780,
+				"y" => 100,
+				"width" => 400,
+				"height" => 400,
+				"font_face" => "OpenSans-Regular.ttf",
+				"font_size" => 35,
+				'line_height' => 1.00,
+				'horizontal_align' => 'center',
+				'vertical_align' => 'center'
+			),
+			"item_3" => array(
+				"image_url" => "https://pbs.twimg.com/profile_images/1524513682532618240/4sq7bPXs.jpg",
+				"words" => "@afangonthemovetest",
+				"x" => 1410,
+				"y" => 100,
+				"width" => 400,
+				"height" => 400,
+				"font_face" => "OpenSans-Regular.ttf",
+				"font_size" => 35,
+				'line_height' => 1.00,
+				'horizontal_align' => 'center',
+				'vertical_align' => 'center'
+			)
+		)
 );
+
+
+ $fungieTmpFile = wsc_create_wiscle_fungie($selectedTemplate);
+
 
 if(!is_user_logged_in()) {
    echo '<script>window.location.href = "./my-account";</script>';
@@ -74,6 +225,7 @@ if (!pte_user_rights_check("topic_dom_view", $rightsCheckData)) {
   echo $html;
   exit;
 }
+
 
 //pp($userInfo->data);
 
