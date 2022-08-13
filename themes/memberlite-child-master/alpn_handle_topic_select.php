@@ -84,7 +84,7 @@ $selectedTemplate =  array(
       "height" => 130
     ),
 		"primary_color" => "#802BB3",
-		"seconday_color" => "#98BDCB",
+		"secondary_color" => "#98BDCB",
 		"tertiary_color" => "#17005D",
 		"minimum_tags" => 1,
 		"maximum_tags" => 3,
@@ -161,7 +161,7 @@ $selectedTemplate =  array(
 			),
 			"item_2" => array(
 				"image_url" => "https://pbs.twimg.com/profile_images/1524513682532618240/4sq7bPXs.jpg",
-				"words" => "@afangonthemovetest",
+				"words" => "@afangonthemoveyo",
 				"x" => 780,
 				"y" => 100,
 				"width" => 400,

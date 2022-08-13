@@ -188,28 +188,24 @@ if (isset($_REQUEST['crc_token'])) {
 
 						//CREATE CARD
 
-					//	$fungieTmpFile = wsc_create_wiscle_fungie($selectedTemplate);
-						$localFile = PTE_ROOT_PATH . "tmp/" . $fungieTmpFile;
-						exit;
+					  $fileName = wsc_create_wiscle_fungie($selectedTemplate);
+						$fileUrl = PTE_ROOT_PATH . "tmp/" . $fileName;
 
 						$serviceMeta = array(
 							"tweet_id" => $tweetId
 						);
-
-						//track it
-
 						$nftData = array(
 							"service_meta" => json_encode($serviceMeta),
 							"nft_name" => $tweetText,
 							"nft_description" => $selectedTemplate['quote'],
 							"file_id" => "",
 							"category" => $selectedTemplate['category'],
-							"mint_quantity" => count($cleanUserList) + 1,
+							"mint_quantity" => count($cleanUserList),
 							"chain_id" => "polygon",
 							"status" => "approved"
 						);
 						$wpdb->insert( 'alpn_nft_by_service', $nftData );
-						$nftId = $wpdb->insert_id;
+						$submissionId = $wpdb->insert_id;
 
 						$userMentions[] = array(
 							"id" => $twitterUserId,
@@ -219,7 +215,7 @@ if (isset($_REQUEST['crc_token'])) {
 						foreach ($userMentions as $key => $mention) {
 							if (!in_array($mention['id'], $usedIds)) {
 								$nftData = array(
-									"nft_owned_id" => $nftId,
+									"nft_owned_id" => $submissionId,
 									"twitter_id" => $mention['id'],
 									"twitter_screen_name" => $mention['screen_name']
 								);
@@ -228,23 +224,19 @@ if (isset($_REQUEST['crc_token'])) {
 							}
 						}
 
-						$mediaDescription = nl2br($mediaDescription);
-
-
+						$mediaDescription = nl2br($selectedTemplate['quote']);
 
 						alpn_log("HANDLING MINT");
 
-						$fileInfo = $alreadyExists[0];
-						$fileName = $fileInfo->file_id;
-						$fileUrl = PTE_IMAGES_ROOT_URL . $fileName;
 						$content = file_get_contents($fileUrl);
+						// unlink ($fileUrl);
 
 						$metaDataArray = array(
 							"name" => $tweetText,
 							"description" => $mediaDescription,
-							"wiscle_category" => $alreadyExists[0]->category,
+							"wiscle_category" => $selectedTemplate['category'],
 							"wiscle_submission" => $submissionId,
-							"wiscle_mint_quantity" => $alreadyExists[0]->mint_quantity,
+							"wiscle_mint_quantity" => count($cleanUserList),
 							"attributes" => array()
 						);
 						$contractTemplateId = 4;
@@ -395,72 +387,22 @@ if (isset($_REQUEST['crc_token'])) {
 																				 $submissionId =  $metaDataArray["wiscle_submission"];
 																				 $nftQuantity =  $metaDataArray["wiscle_mint_quantity"];
 
-																				 $supportedEmojis = array(    //Move to DB
-																					"Academic" => array(
-																						"name" => "Academic",
-																						"contract_address" => "0x41550C277452006d2b7Fe7c84E2441B9C2D2cc92",
-																						"url_slug" => "wiscle-academic"
-																					),
-																					"Appreciation" => array(
-																						"name" => "Appreciation",
-																						"contract_address" => "0x95e275B15B8b27011Ba532CBf0dA23E5e3dcAc74",
-																						"url_slug" => "wiscle-appreciation"
-																					),
-																					"Artsy" => array(
-																						"name" => "Artsy",
-																						"contract_address" => "0xac56a3a34E87aB6db021Dd8E8366803FADe966e0",
-																						"url_slug" => "wiscle-artsy"
-																					),
-																					"Body Art" => array(
-																						"name" => "Body Art",
-																						"contract_address" => "0x923D684c71904b01AD2e0DcF944a91F956Ce9f44",
-																						"url_slug" => "wiscle-body-art"
-																					),
-																					"Friends" => array(
-																						"name" => "Friends",
-																						"contract_address" => "0xd84557d4B6a31b980CbbB720e2B7E0f0d85a58C6",
-																						"url_slug" => "wiscle-friends"
-																					),
-																					"Halloween" => array(
-																						"name" => "Halloween",
-																						"contract_address" => "0x8FE50E080be752FaFF5583AF2054b5d3eD3790a2",
-																						"url_slug" => "wiscle-halloween"
-																					),
-																					"Love" => array(
-																						"name" => "Love",
-																						"contract_address" => "0x1d7E16d2ffdd8C6C64898AE6cc949DD886dD2B6A",
-																						"url_slug" => "wiscle-love"
-																					),
-																					"Pets" => array(
-																						"name" => "Pets",
-																						"contract_address" => "0xFA983Dc27A0f0f3AE42D77C9773aB9a7721C8917",
-																						"url_slug" => "wiscle-pets"
-																					),
-																					"Ride" => array(
-																						"name" => "Ride",
-																						"contract_address" => "0xBB1da9DbEf49254F81DDde72187eA6eCB8297D57",
-																						"url_slug" => "wiscle-ride"
-																					),
-																					"Selfie" => array(
-																						"name" => "Selfie",
-																						"contract_address" => "0x769Aeb7bb67Ce4361A1CdE993C9915CfD77b2799",
-																						"url_slug" => "wiscle-selfie"
-																					),
-																					"Sports" => array(
-																						"name" => "Sports",
-																						"contract_address" => "0xdFF44078cb3f0883c3c50623f3C04751952a726D",
-																						"url_slug" => "wiscle-sports"
-																					),
-																					"Wins" => array(
-																						"name" => "Wins",
-																						"contract_address" => "0x4fC54c79395eb4Da93769173e05e921fD6ecae2F",
-																						"url_slug" => "wiscle-wins"
-																						)
-																				);
+																				 $templates = $wpdb->get_results(
+															 						$wpdb->prepare("SELECT id, name, template_json from alpn_fungie_templates WHERE name = %s", $categorySlug)
+															 					 );
 
-																				$contractAddress = $supportedEmojis[$categorySlug]["contract_address"];
-																				$urlSlug = $supportedEmojis[$categorySlug]["url_slug"];
-																				$collectionName = $supportedEmojis[$categorySlug]["name"];
+															 					 if (isset($templates[0])) {
+
+																					 	$selectedTemplate = json_decode($templates[0]->template_json, true);
+
+																						alpn_log("RIGHT HERE");
+																						alpn_log($selectedTemplate);
+
+																						$contractAddress = $selectedTemplate['contract_address'];
+																						$urlSlug = isset($selectedTemplate['url_slug']) ? $selectedTemplate['url_slug'] : strtolower($selectedTemplate['name']);
+																		 				$collectionName = $selectedTemplate['name'];
+																				}
+
 																			}
 
 																			if (!$contractAddress || !$submissionId || !$accountAddress) {
@@ -528,31 +470,7 @@ if (isset($_REQUEST['crc_token'])) {
 																									$openInOpenSea = "https://opensea.io/assets/matic/{$contractAddress}/{$tokenId}";
 																									$openinOpenSeaPetCollection = "https://opensea.io/collection/{$urlSlug}";
 
-																									if ($contactData[0]->email_address) {
-
-																										$mailer = WC()->mailer();
-																										$emailSubject = "About your Wiscle Email2NFT Submission";
-																										$emailHeading = "Congratulations, your NFT was approved";
-																										$emailBody = "
-																										Here is your NFT on <a href='{$openInOpenSea}'>OpenSea</a><br>
-																										Here are all NFTs on OpenSea <a href='{$openinOpenSeaPetCollection}'>Wiscle Pets</a><br>
-																										Here is your NFT on <a href='{$openInScan}'>Polygon Blockchain Explorer</a><br>
-																										<a href='https://wiscle.com/nft-status-page?e2id={$submissionId}'>Create a free account</a> with this email address to collect your NFT and mint more free NFTs with community-owned Wiscle.<br><br>
-																										It may take a few minutes for your NFT to show up on the blockchain services.
-																										";
-																										 $template = 'vit_generic_email_template.php';
-																										 $content = 	wc_get_template_html( $template, array(
-																												 'email_heading' => $emailHeading,
-																												 'email'         => $mailer,
-																												 'email_body'    => $emailBody
-																											 ), PTE_ROOT_PATH . 'woocommerce/emails/', PTE_ROOT_PATH . 'woocommerce/emails/');
-																										 try {
-																											 $mailer->send( $contactData[0]->email_address, $emailSubject, $content );
-																										 } catch (Exception $e) {
-																												 alpn_log ('Caught email exception: '. $e->getMessage());
-																										 }
-
-																									} else if ($contactData[0]->twitter_screen_name) {
+																									if ($contactData[0]->twitter_screen_name) {
 
 																										$twitterAccountOwnerId = 343;
 
@@ -605,7 +523,7 @@ if (isset($_REQUEST['crc_token'])) {
 																					}
 
 																				} else {
-																					alpn_log("NFT CREATE EMAIL2NFT ERROR");
+																					alpn_log("NFT HASH NOT RECEIVED");
 																					alpn_log($nftData);
 																				}
 																			}
@@ -636,10 +554,6 @@ if (isset($_REQUEST['crc_token'])) {
 						)->wait();
 						http_response_code(200);
 						exit;
-
-
-
-
 
 						 alpn_log("TWITTER CALLBACK DONE");
 

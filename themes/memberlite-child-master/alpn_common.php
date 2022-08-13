@@ -652,37 +652,24 @@ function wsc_get_twitter_preview_art($setName, $action, $uniqueId, $words = "") 
 
 function wsc_resize_image($sourceImage, $targetImage, $maxWidth, $maxHeight)
 {
-
     // Get dimensions of source image.
     list($origWidth, $origHeight) = getimagesize($sourceImage);
-
     if ($maxWidth == 0)
     {
         $maxWidth  = $origWidth;
     }
-
     if ($maxHeight == 0)
     {
         $maxHeight = $origHeight;
     }
-
-    // Calculate ratio of desired maximum sizes and original sizes.
     $widthRatio = $maxWidth / $origWidth;
     $heightRatio = $maxHeight / $origHeight;
-
-    // Ratio used for calculating new image dimensions.
     $ratio = min($widthRatio, $heightRatio);
-
-    // Calculate new image dimensions.
     $newWidth  = (int)$origWidth  * $ratio;
     $newHeight = (int)$origHeight * $ratio;
-
-    // Create final image with new dimensions.
     $newImage = imagecreatetruecolor($newWidth, $newHeight);
     imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
     imagejpeg($newImage, $targetImage, $quality);
-
-    // Free up the memory.
     imagedestroy($image);
     imagedestroy($newImage);
 
@@ -693,8 +680,7 @@ function wsc_resize_image($sourceImage, $targetImage, $maxWidth, $maxHeight)
 function wsc_create_wiscle_fungie($data) {
 
   alpn_log("Creating FUNGIE");
-  alpn_log($data);
-
+  // alpn_log($data);
 
   $fungieBackground = PTE_IMAGES_ROOT_URL . $data['template_background'];
   $localFile = PTE_ROOT_PATH . "tmp/" . $data['template_background'];
@@ -721,7 +707,7 @@ function wsc_create_wiscle_fungie($data) {
   list($tertiaryR, $tertiaryG, $tertiaryB) = sscanf($data['tertiary_color'], "#%02x%02x%02x");
 
   $primaryColor = imagecolorallocate($newAssembly, $primaryR, $primaryG, $primaryB);
-  $scondaryColor = imagecolorallocate($newAssembly, $secondaryR, $secondaryB, $secondaryB);
+  $secondaryColor = imagecolorallocate($newAssembly, $secondaryR, $secondaryG, $secondaryB);
   $tertiaryColor = imagecolorallocate($newAssembly, $tertiaryR, $tertiaryG, $tertiaryB);
 
   imagecopymerge($newAssembly, $image, 0, 0, 0, 0, $templateWidth, $templateHeight, 100);
@@ -743,31 +729,68 @@ function wsc_create_wiscle_fungie($data) {
   }
 
   if ($data['sender']) {
-    $data['sender']['pfp_type'] = "round_name";
+    $pfpType = isset($data['sender']['pfp_type']) ? $data['sender']['pfp_type'] : "round_name";
+    $data['sender']['pfp_type'] = $pfpType;
     $data['sender']['font_color'] = new Color($tertiaryR, $tertiaryG, $tertiaryB);
-    $data['sender']['background_color'] = new Color($secondaryR, $secondaryG, $secondaryB);
-    //$newAssembly = wsc_add_pfp_to_image($newAssembly, $data);
+    $data['sender']['shape_color'] = $secondaryColor;
+    $newAssembly = wsc_add_pfp_to_image($newAssembly, $data['sender']);
   }
 
+  $tagKey = 'tagged_' . $data['tag_count'];
+  $taggedUsers = $data[$tagKey];
+
+  foreach ($taggedUsers as $key => $user) {
+    $pfpType = isset($data['sender']['pfp_type']) ? $data['sender']['pfp_type'] : "round_name";
+    $user['pfp_type'] = $pfpType;
+    $user['font_color'] = new Color($tertiaryR, $tertiaryG, $tertiaryB);
+    $user['shape_color'] = $secondaryColor;
+    $newAssembly = wsc_add_pfp_to_image($newAssembly, $user);
+  }
 
   $shortId = pte_get_short_id();
   $localFile = PTE_ROOT_PATH . "tmp/" . "{$shortId}.jpeg";
-  imagejpeg($newAssembly, $localFile);
+  imagejpeg($newAssembly, $localFile, 100);
   imagedestroy($newAssembly);
 
   return "{$shortId}.jpeg";
 }
 
 function wsc_add_pfp_to_image($image, $data) {
+//  pp($data);
 
-
+  switch ($data['pfp_type']) {
+      case "round_name":
+        $image = wsc_add_rounded_image_to_certificate($image, $data);
+        $x1 = $data['x'] - 50;
+        $y1 = $data['y'] + $data['height'] - 20;
+        $x2 = $data['x'] + $data['width'] + 50;
+        $y2 = $y1 + 75;
+        wsc_image_rounded_rectangle($image, $x1, $y1, $x2, $y2, 10, $data['shape_color']);
+        $data['x'] = $x1;
+        $data['y'] = $y1;
+        $data['width'] = $x2 - $x1;
+        $data['height'] = $y2 - $y1;
+        $image = wsc_addtext_to_nft_certificate($image, $data, "@" . $data['words']);
+      break;
+  }
   return $image;
+}
+
+function wsc_image_rounded_rectangle(&$img, $x1, $y1, $x2, $y2, $r, $color){
+    $r = min($r, floor(min(($x2 - $x1) / 2, ($y2 - $y1) / 2)));
+    imagefilledarc($img, $x1 + $r, $y1 + $r, $r * 2, $r * 2, 180, 270, $color, IMG_ARC_PIE);
+    imagefilledarc($img, $x2 - $r, $y1 + $r, $r * 2, $r * 2, 270, 0, $color, IMG_ARC_PIE);
+    imagefilledarc($img, $x2 - $r, $y2 - $r, $r * 2, $r * 2, 0, 90, $color, IMG_ARC_PIE);
+    imagefilledarc($img, $x1 + $r, $y2 - $r, $r * 2, $r * 2, 0, 180, $color, IMG_ARC_PIE);
+    imagefilledrectangle($img, $x1+$r, $y1, $x2-$r, $y2, $color);
+    imagefilledrectangle($img, $x1, $y1+$r, $x1+$r, $y2-$r, $color);
+    imagefilledrectangle($img, $x2-$r, $y1+$r, $x2, $y2-$r, $color);
+    return true;
 }
 
 
 function wsc_add_rounded_image_to_certificate($newAssembly, $imageData) {
-  $srcFile = $imageData['pfp_url'];
-  $srcFile = substr($srcFile, 0, strrpos($srcFile, "_")) . substr($srcFile, strrpos($srcFile, "."));
+  $srcFile = $imageData['image_url'];
   list($width_orig, $height_orig, $type) = getimagesize($srcFile);
   switch ($type)
   {
@@ -784,22 +807,26 @@ function wsc_add_rounded_image_to_certificate($newAssembly, $imageData) {
           $image = imagecreatefromwebp($srcFile);
           break;
   }
-  $newwidth = $imageData['w'];
-  $newheight = $imageData['h'];
+  $newwidth = $imageData['width'];
+  $newheight = $imageData['height'];
   $newX = $imageData['x'];
   $newY = $imageData['y'];
+
   $newImage = imagecreatetruecolor($newwidth, $newheight);
-  imagealphablending($newImage, true);
   imagecopyresampled($newImage, $image, 0, 0, 0, 0, $newwidth, $newheight, $width_orig, $height_orig);
+
   $mask = imagecreatetruecolor($newwidth, $newheight);
   $transparent = imagecolorallocate($mask, 255, 0, 0);
+  $bg = imagecolorallocate($mask, 121, 43, 51);
+  imagefill($mask, 0, 0, $bg);
   imagecolortransparent($mask, $transparent);
   imagefilledellipse($mask, $newwidth/2, $newheight/2, $newwidth, $newheight, $transparent);
-  $transp = imagecolorallocate($mask, 0, 0, 0);
+
   imagecopymerge($newImage, $mask, 0, 0, 0, 0, $newwidth, $newheight, 100);
   imagedestroy($mask);
-  imagecolortransparent($newImage, $transp);
-  imagefill($newImage, 0, 0, $transp);
+  imagecolortransparent($newImage, $bg);
+  imagefill($newImage, 0, 0, $bg);
+
   imagecopymerge($newAssembly, $newImage, $newX, $newY, 0, 0, $newwidth, $newheight, 100);
   imagedestroy($newImage);
   return $newAssembly;
