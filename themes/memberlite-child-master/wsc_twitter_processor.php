@@ -141,7 +141,7 @@ if (isset($twitterContent[0])) {
 
 		  $doThis = $tweetOptions[array_rand($tweetOptions)];
 
-		  // $doThis = "tweet";
+		  // $doThis = "profile_banner_pfp";
 
 			switch ($doThis) {
 
