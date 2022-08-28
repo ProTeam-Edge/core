@@ -32,12 +32,11 @@ if (isset($_REQUEST['crc_token'])) {
 		 	$eventJSON = file_get_contents('php://input');
 			$twitterResponse = json_decode($eventJSON, true);
 
-			 // alpn_log($twitterResponse);
+			//alpn_log($twitterResponse);
 
 			$ownerUserId = false;
 
 			if (isset($twitterResponse['tweet_create_events'])) {
-
 
 				$connection = false;
 
@@ -51,14 +50,13 @@ if (isset($_REQUEST['crc_token'])) {
 
 				$twitterCreateEvent = $twitterResponse['tweet_create_events'][0];
 
-				// alpn_log($twitterCreateEvent);
-
 				$tweetId = $twitterCreateEvent['id'];
 				$tweetText = trim($twitterCreateEvent['text']);
 				$replyToId = $twitterCreateEvent['in_reply_to_user_id'];
 				$replyToScreenName = $twitterCreateEvent['in_reply_to_screen_name'];
 				$twitterUserId = $twitterCreateEvent['user']['id'];
 				$twitterUserScreenName = $twitterCreateEvent['user']['screen_name'];
+				$twitterUserProfileImageUrl = $twitterCreateEvent['user']['profile_image_url_https'];
 				$userMentions = $twitterCreateEvent['entities']['user_mentions'];
 				$hashTags = $twitterCreateEvent['entities']['hashtags'];
 
@@ -70,10 +68,11 @@ if (isset($_REQUEST['crc_token'])) {
 
 				// alpn_log($twitterResponse);
 
-				//Love you guys! @afangonthemove @WayneMorgan66 @WiscleFungies #besties
+				//Check out this dalle NFT I made for you! @afangonthemove @WiscleFungies #inspo1
 
 				alpn_log("START TWEET");
 				$tweetText = preg_replace('/(\s+|^)@\S+/', '', $tweetText);  //strip Tagged users use json
+				$tweetText = trim(substr($tweetText, 0, strrpos($tweetText, "https://")));
 				alpn_log($tweetText);
 
 				$twitterData = $wpdb->get_results(
@@ -94,103 +93,86 @@ if (isset($_REQUEST['crc_token'])) {
 					 exit;
 				 }
 
-					$selectedTemplateName = false;
-					$tagList = array();
-					foreach ($hashTags as $hashTagKey => $hashTag) {
-						$tagList[] = $hashTag['text'];
-					}
+				 $mediaUrl = false;
+				 $mediaType = false;
+				 $selectedTemplateName = false;
 
-					$templateSlugs = '"' . implode('","', $tagList) . '"';
-					$templates = $wpdb->get_results(
-						$wpdb->prepare("SELECT id, name, template_json from alpn_fungie_templates WHERE name IN ({$templateSlugs}) LIMIT 1")
-					 );
+				 if (isset($twitterCreateEvent['entities']['media'][0])) {
+					 $mediaDescription = $twitterCreateEvent['entities']['media'][0]['description'];
+					 $mediaUrl = $twitterCreateEvent['entities']['media'][0]['media_url_https'];
+					 $mediaType = $twitterCreateEvent['entities']['media'][0]['type'];
+				 }
 
-					 if (isset($templates[0])) {
-
-			 			 $selectedTemplateData = $templates[0];
-			 			 $selectedTemplateName = $selectedTemplateData->name;
-			 			 $selectedTemplate = json_decode($selectedTemplateData->template_json, true);
-			 			 $hashTagPosition = strpos($tweetText, "#" . $selectedTemplateName);
-			 			 $hashTagLength = strlen("#" . $selectedTemplateName);
-			 			 $tweetText = trim(substr($tweetText, 0, $hashTagPosition)) . trim(substr($tweetText, $hashTagPosition + $hashTagLength)); //remove the tag used to select template
-
-					 } else {
-						 //error no template
+				 if (!$mediaUrl || $mediaType == "video") {
+					 $tagList = array();
+					 foreach ($hashTags as $hashTagKey => $hashTag) {
+						 $tagList[] = $hashTag['text'];
 					 }
 
-					$cleanUserList = array();
-					$usedIds = array("1551295064348905472", "1405291443023872000");
-					$allNames = array();
-					foreach ($userMentions as $key => $mention) {
-						if (!in_array($mention['id'], $usedIds)) {
-							$cleanUserList[] = $mention['id'];
-							$usedIds[] = $mention['id'];
+					 $templateSlugs = '"' . implode('","', $tagList) . '"';
+					 $templates = $wpdb->get_results(
+						 $wpdb->prepare("SELECT id, name, template_json from alpn_fungie_templates WHERE name IN ({$templateSlugs}) LIMIT 1")
+						);
+
+						if (isset($templates[0])) {
+							$selectedTemplateData = $templates[0];
+							$selectedTemplateName = $selectedTemplateData->name;
+							$selectedTemplate = json_decode($selectedTemplateData->template_json, true);
+							$hashTagPosition = strpos($tweetText, "#" . $selectedTemplateName);
+							$hashTagLength = strlen("#" . $selectedTemplateName);
+							$tweetText = trim(substr($tweetText, 0, $hashTagPosition)) . trim(substr($tweetText, $hashTagPosition + $hashTagLength)); //remove the tag used to select template
+						} else {
+							//error no template
 						}
-					}
+				 }
 
 					// if ($selectedTemplateName && $tweetText && count($cleanUserList) >= $selectedTemplate['minimum_tags'] && !checkProfanity($tweetText)) {
-					if ($selectedTemplateName && $tweetText && count($cleanUserList) >= $selectedTemplate['minimum_tags']) {
+					if (($selectedTemplateName || $mediaUrl) && $tweetText) {
 
 						alpn_log("PROCESSING TWEET START");
-						alpn_log($selectedTemplateName);
-						alpn_log($tweetText);
+						// alpn_log($selectedTemplateName);
+						// alpn_log($tweetText);
 
-						$selectedTemplate['tweet_text']['words'] = $tweetText;
-						$selectedTemplate['tagged'] = $cleanUserList;
-						$selectedTemplate['creator'] = $twitterUserId;
+						if ($selectedTemplateName) {
 
-						$connection->setApiVersion('2');
-						$response = $connection->get('users', ["user.fields" => "profile_image_url", 'ids' => implode(",", $cleanUserList) . ",{$twitterUserId}",]);
+							$cleanUserList = array();
+							$usedIds = array("1551295064348905472", "1405291443023872000");
+							foreach ($userMentions as $key => $mention) {
+								if (!in_array($mention['id'], $usedIds)) {
+									$cleanUserList[] = $mention['id'];
+									$usedIds[] = $mention['id'];
+								}
+							}
 
-						$userData = (array) $response->data;
+							$connection->setApiVersion('2');
+							$response = $connection->get('users', ["user.fields" => "profile_image_url", 'ids' => implode(",", $cleanUserList)]);
+							$userData = (array) $response->data;
 
-						$itemCount = count($userData);
-						if (!$itemCount) {
-							//FAIL
-						}
+							$selectedTemplate['tag_count'] =  1;  //TODO support multiple recipients
+							$selectedTemplate['tweet_text']['words'] = $tweetText;
+							$selectedTemplate['date']['words'] = date("F j, Y");
 
-						$sender = (array) $userData[$itemCount - 1];
-						$selectedTemplate['tag_count'] = $itemCount - 1;
-						$selectedTemplate['tweet_text']['words'] = $tweetText;
-						$selectedTemplate['date']['words'] = date("F j, Y");
-						$selectedTemplate['sender']['image_url'] = substr($sender['profile_image_url'], 0, strrpos($sender['profile_image_url'], "_")) . substr($sender['profile_image_url'], strrpos($sender['profile_image_url'], "."));
-						$selectedTemplate['sender']['words'] = $sender['username'];
+							$selectedTemplate['sender']['image_url'] = substr($twitterUserProfileImageUrl, 0, strrpos($twitterUserProfileImageUrl, "_")) . substr($twitterUserProfileImageUrl, strrpos($twitterUserProfileImageUrl, "."));
+							$selectedTemplate['sender']['words'] = $twitterUserScreenName;
 
-						if ($itemCount == 2) {
 							$tagged1 = (array) $userData[0];
 							$selectedTemplate['tagged_1']['item_1']['image_url'] = substr($tagged1['profile_image_url'], 0, strrpos($tagged1['profile_image_url'], "_")) . substr($tagged1['profile_image_url'], strrpos($tagged1['profile_image_url'], "."));
 							$selectedTemplate['tagged_1']['item_1']['words'] = $tagged1['username'];
+
+							$nftDescription = $selectedTemplate['quote']['words'];
+							$nftCategory = $selectedTemplate['category'];
+
+							//CREATE CARD
+							$fileName = wsc_create_wiscle_fungie($selectedTemplate);
+							$filePath = PTE_ROOT_PATH . "tmp/{$fileName}";
+
+						} else if ($mediaUrl) {
+							$fileName = substr($mediaUrl, strrpos($mediaUrl, "/") + 1);
+							$filePath = PTE_ROOT_PATH . "tmp/{$fileName}";
+							$nftDescription = $mediaDescription;
+							$nftCategory = 'Custom';
+							file_put_contents($filePath, file_get_contents($mediaUrl));
 						}
-
-						if ($itemCount == 3) {
-							$tagged1 = (array) $userData[0];
-							$selectedTemplate['tagged_2']['item_1']['image_url'] = substr($tagged1['profile_image_url'], 0, strrpos($tagged1['profile_image_url'], "_")) . substr($tagged1['profile_image_url'], strrpos($tagged1['profile_image_url'], "."));
-							$selectedTemplate['tagged_2']['item_1']['words'] = $tagged1['username'];
-
-							$tagged2 = (array) $userData[1];
-							$selectedTemplate['tagged_2']['item_2']['image_url'] = substr($tagged2['profile_image_url'], 0, strrpos($tagged2['profile_image_url'], "_")) . substr($tagged2['profile_image_url'], strrpos($tagged2['profile_image_url'], "."));
-							$selectedTemplate['tagged_2']['item_2']['words'] = $tagged2['username'];
-						}
-
-						if ($itemCount == 4) {
-							$tagged1 = (array) $userData[0];
-							$selectedTemplate['tagged_3']['item_1']['image_url'] = substr($tagged1['profile_image_url'], 0, strrpos($tagged1['profile_image_url'], "_")) . substr($tagged1['profile_image_url'], strrpos($tagged1['profile_image_url'], "."));
-							$selectedTemplate['tagged_3']['item_1']['words'] = $tagged1['username'];
-
-							$tagged2 = (array) $userData[1];
-							$selectedTemplate['tagged_3']['item_2']['image_url'] = substr($tagged2['profile_image_url'], 0, strrpos($tagged2['profile_image_url'], "_")) . substr($tagged2['profile_image_url'], strrpos($tagged2['profile_image_url'], "."));
-							$selectedTemplate['tagged_3']['item_2']['words'] = $tagged2['username'];
-
-							$tagged3 = (array) $userData[2];
-							$selectedTemplate['tagged_3']['item_3']['image_url'] = substr($tagged3['profile_image_url'], 0, strrpos($tagged3['profile_image_url'], "_")) . substr($tagged3['profile_image_url'], strrpos($tagged3['profile_image_url'], "."));
-							$selectedTemplate['tagged_3']['item_3']['words'] = $tagged3['username'];
-						}
-
-						//CREATE CARD
-
-					  $fileName = wsc_create_wiscle_fungie($selectedTemplate);
-						$fileUrl = PTE_ROOT_PATH . "tmp/" . $fileName;
-
 						//store it
 
 						try {
@@ -200,8 +182,8 @@ if (isset($_REQUEST['crc_token'])) {
 							$bucketName = 'pte_media_store_1';
 							$bucket = $storage->bucket($bucketName);
 							$object = $bucket->upload(
-									fopen($fileUrl, 'r'),
-									['name' => $filename]
+									fopen($filePath, 'r'),
+									['name' => $fileName]
 							);
 						} catch (Exception $e) {
 							alpn_log("FAILED UPLOADING TO GOOGLE TWITTER");
@@ -216,33 +198,71 @@ if (isset($_REQUEST['crc_token'])) {
 						$nftData = array(
 							"service_meta" => json_encode($serviceMeta),
 							"nft_name" => $tweetText,
-							"nft_description" => $selectedTemplate['quote']['words'],
+							"nft_description" => $nftDescription,
 							"file_id" => $fileName,
-							"category" => $selectedTemplate['category'],
-							"mint_quantity" => count($cleanUserList) + 1,
+							"category" => $nftCategory,
+							"mint_quantity" => 1,
 							"chain_id" => "polygon",
 							"status" => "approved"
 						);
 						$wpdb->insert( 'alpn_nft_by_service', $nftData );
 						$submissionId = $wpdb->insert_id;
 
-						$userMentions[] = array( "id" => $twitterUserId, "screen_name" =>
-						$twitterUserScreenName ); $usedIds = array("1551295064348905472",
-						"1405291443023872000"); foreach ($userMentions as $key => $mention)
-						{ if (!in_array($mention['id'], $usedIds)) { $nftData = array(
-						"nft_owned_id" => $submissionId, "twitter_id" => $mention['id'],
-						"twitter_screen_name" => $mention['screen_name'] ); $wpdb->insert(
-						'alpn_nft_by_service_owners', $nftData );    //TODO turn into single
-						INSERT $usedIds[] = $mention['id'];
+						$userMentions[] = array(
+							"id" => $twitterUserId,
+							"screen_name" => $twitterUserScreenName,
+							"role" => "creator"
+						);
+						$usedIds = array("1551295064348905472", "1405291443023872000");
+						$twitterRecipientId = false;
+						foreach ($userMentions as $key => $mention) {
+							if (!in_array($mention['id'], $usedIds)) {
+
+								$userRole = isset($mention['role']) ? $mention['role'] : 'recipient';
+
+								if ($userRole == 'creator' || !$twitterRecipientId) {
+									$nftData = array(
+										"nft_owned_id" => $submissionId,
+										"twitter_id" => $mention['id'],
+										"twitter_screen_name" => $mention['screen_name'],
+										"role" => $userRole
+									);
+									$wpdb->insert( 'alpn_nft_by_service_owners', $nftData );    //TODO turn into single INSERT
+									$usedIds[] = $mention['id'];
+									if ($userRole == 'recipient') {   //selects a single recipient //TODO consider adding multiple recipients back for network effects
+										$twitterRecipientId = $mention['id'];
+										$twitterRecipientScreenName = $mention['screen_name'];
+									}
+								}
 							}
 						}
 
+						if ($twitterRecipientScreenName) {
 
-					}
+								$connection->setApiVersion('1.1');
 
-	}
-}
-alpn_log("ERROR CALLBACK TWITTER");
+								 try {
+				 						$media = $connection->upload('media/upload', ['media' => $filePath]);
+				 						$fileId = $media->media_id_string;
+				 						unlink($filePath);
+				 					} catch (Exception $error) {
+					 					 alpn_log("UNABLE TO HANDLE TWITTER MEDIA");
+					 					 alpn_log($error);
+				 					}
+
+								$twitterBody = "Congratulations @{$twitterRecipientScreenName}! @{$twitterUserScreenName} gifted you a Fungie NFT. Safely approve and collect it on Wiscle for free: https://wiscle.com/nft-claim?i={$submissionId}";
+								$parameters = [
+									'status' => $twitterBody,
+									'in_reply_to_status_id' => $tweetId,
+									'auto_populate_reply_metadata' => true,
+									'media_ids' => $fileId
+									];
+							 $result = $connection->post('statuses/update', $parameters);
+						 }
+					 }
+				 }
+			 }
+alpn_log("HANDLE TWITTER CALLBACK DONE");
 http_response_code(200);
 exit;
 //

@@ -17,6 +17,60 @@ fff5ee
 } */
 
 
+div#wsc_ordered_fungie_item_left {
+	flex-grow: 1;
+	flex-basis: 50%;
+	max-width: 50%;
+	font-size: 16px;
+	line-height: 22px;
+	padding-right: 20px;
+}
+
+div#wsc_ordered_fungie_item_right {
+	flex-grow: 1;
+	flex-basis: 50%;
+	max-width: 50%;
+	font-size: 16px;
+	line-height: 22px;
+}
+
+div#claim_nft_container{
+	display: flex;
+	flex-wrap: wrap;
+	width: 100%;
+}
+
+div#claim_nft_image{
+	flex-grow: 1;
+	flex-basis: 60%;
+	max-width: 60%;
+	text-align: center;
+}
+
+div#claim_nft_about{
+	flex-grow: 1;
+	flex-basis: 40%;
+	max-width: 40%;
+	font-size: 16px;
+	line-height: 22px;
+}
+
+div#wsc_claim_fungie_title{
+	margin: 20px 0 10px 0;
+	font-weight: bold;
+}
+
+
+img#claim_fungie_image{
+	width: 400px;
+	border-radius: 20px;
+}
+
+img#claim_fungie_image_liftoff{
+	width: 200px;
+	border-radius: 10px;
+}
+
 span#wsc_opensea_check{
 	width: 80px;
 	height: 100px;
@@ -6477,6 +6531,32 @@ input.wsc_ww_field,
 }
 
 @media only screen and (max-width: 767px) {
+
+	div#wsc_ordered_fungie_item_left {
+		flex-grow: 1;
+		flex-basis: 100%;
+		max-width: 100%;
+	}
+
+	div#wsc_ordered_fungie_item_right {
+		flex-grow: 1;
+		flex-basis: 100%;
+		max-width: 100%;
+	}
+
+
+	div#claim_nft_image{
+		flex-grow: 1;
+		flex-basis: 100%;
+		max-width: 100%;
+	}
+
+	div#claim_nft_about{
+		flex-grow: 1;
+		flex-basis: 100%;
+		max-width: 100%;
+	}
+
 
 	div.walletconnect-modal__mobile__toggle{
 		display: flex !important;

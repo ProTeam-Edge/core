@@ -32,7 +32,7 @@ if (isset($_REQUEST['crc_token'])) {
 		 	$eventJSON = file_get_contents('php://input');
 			$twitterResponse = json_decode($eventJSON, true);
 
-			 alpn_log($twitterResponse);
+			alpn_log($twitterResponse);
 
 			$ownerUserId = false;
 

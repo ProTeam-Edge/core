@@ -686,10 +686,11 @@ function wsc_create_wiscle_fungie($data) {
   $localFile = PTE_ROOT_PATH . "tmp/" . $data['template_background'];
 
   if (!file_exists($localFile)) {
-    file_put_contents($localFile, file_get_contents($certificateUrl));
+    file_put_contents($localFile, file_get_contents($fungieBackground));
   }
 
   list($templateWidth, $templateHeight, $type) = getimagesize($localFile);
+
   switch ($type)
   {
       case IMAGETYPE_JPEG:
@@ -702,6 +703,7 @@ function wsc_create_wiscle_fungie($data) {
 
   $newAssembly = imagecreatetruecolor($templateWidth, $templateHeight);
   imagealphablending($newAssembly, true);
+
   list($primaryR, $primaryG, $primaryB) = sscanf($data['primary_color'], "#%02x%02x%02x");
   list($secondaryR, $secondaryG, $secondaryB) = sscanf($data['secondary_color'], "#%02x%02x%02x");
   list($tertiaryR, $tertiaryG, $tertiaryB) = sscanf($data['tertiary_color'], "#%02x%02x%02x");
@@ -760,17 +762,22 @@ function wsc_add_pfp_to_image($image, $data) {
 
   switch ($data['pfp_type']) {
       case "round_name":
+
+       $pfpTextBoxWidth = isset($data['pfp_text_box_width']) ? $data['pfp_text_box_width'] : 50;
+       $pfpTextBoxHeight = isset($data['pfp_text_box_height']) ? $data['pfp_text_box_height'] : 75;
+       $pfpTextVerticalAdjust = isset($data['pfp_text_vertical_adjust']) ? $data['pfp_text_vertical_adjust'] : 20;
+
         $image = wsc_add_rounded_image_to_certificate($image, $data);
-        $x1 = $data['x'] - 50;
-        $y1 = $data['y'] + $data['height'] - 20;
-        $x2 = $data['x'] + $data['width'] + 50;
-        $y2 = $y1 + 75;
-        wsc_image_rounded_rectangle($image, $x1, $y1, $x2, $y2, 10, $data['shape_color']);
+        $x1 = $data['x'] - $pfpTextBoxWidth;
+        $y1 = $data['y'] + $data['height'] - $pfpTextVerticalAdjust;
+        $x2 = $data['x'] + $data['width'] + $pfpTextBoxWidth;
+        $y2 = $y1 + $pfpTextBoxHeight;
+        //wsc_image_rounded_rectangle($image, $x1, $y1, $x2, $y2, 10, $data['shape_color']);
         $data['x'] = $x1;
         $data['y'] = $y1;
         $data['width'] = $x2 - $x1;
         $data['height'] = $y2 - $y1;
-        $image = wsc_addtext_to_nft_certificate($image, $data, "@" . $data['words']);
+        //$image = wsc_addtext_to_nft_certificate($image, $data, "@" . $data['words']);
       break;
   }
   return $image;
@@ -1971,11 +1978,13 @@ function wsc_cleanup_nft_uri($uri) {
     return "https://" . substr($uri, $sourceLen);
   }
   $source = "ipfs://ipfs/";
+  $useIpfs = "https://ipfs.io/ipfs/";
   $sourceLen = strlen($source);
   if (substr($uri, 0, $sourceLen) == $source) {
     return $useIpfs . substr($uri, $sourceLen);
   }
   $source = "ipfs://";
+  $useIpfs = "https://ipfs.io/ipfs/";
   $sourceLen = strlen($source);
   if (substr($uri, 0, $sourceLen) == $source) {
     return $useIpfs . substr($uri, $sourceLen);

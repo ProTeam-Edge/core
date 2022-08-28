@@ -584,6 +584,65 @@ function simple_shortcode($data) {
 
 		switch ($operation) {
 
+			case 'claim_nft':
+
+				$submissionId = $_GET['i'] ? $_GET['i'] : 71;
+				$claimHtml = "";
+
+				$submissionData = $wpdb->get_results(
+					$wpdb->prepare("SELECT s.file_id, s.nft_name, s.nft_description, o.twitter_screen_name FROM alpn_nft_by_service s LEFT JOIN alpn_nft_by_service_owners o ON o.nft_owned_id = s.id AND o.role = 'creator' WHERE s.id = %d", $submissionId)
+				 );
+				if (isset($submissionData[0])) {
+					$submission = $submissionData[0];
+					$fungieUrl = PTE_IMAGES_ROOT_URL . $submission->file_id;
+
+					// pp($submissionData);
+
+					$claimHtml .= "
+						<div id='claim_nft_container'>
+							<div id='claim_nft_image'>
+								<img id='claim_fungie_image' src='{$fungieUrl}'>
+							</div>
+							<div id='claim_nft_about'>
+								<span class='wsc_opportunity_title'>Gifted By</span> <a href='https://twitter.com/{$submission->twitter_screen_name}' target='_blank'>@{$submission->twitter_screen_name}</a><br><br>
+								<span class='wsc_opportunity_title'>NFT Name</span><br>
+								{$submission->nft_name}<br><br>
+								<span class='wsc_opportunity_title'>NFT Description</span><br>
+								{$submission->nft_description}
+							</div>
+						</div>
+
+
+						<div id='wsc_claim_fungie_title'>Claim Your Fungie NFT</div>
+
+							<div id='claim_nft_container' class='wsc_reward_info'>
+								<div id='wsc_ordered_fungie_item_left'>Don't have a web3 account yet? Choose this option to have us mint and hold your NFT until you do.</div>
+							  <div id='wsc_ordered_fungie_item_right'>UI</div>
+							</div>
+
+							<div id='claim_nft_container' class='wsc_reward_info'>
+								<div id='wsc_ordered_fungie_item_left'>Already have a web3 account? Paste your PUBLIC key or .eth address and we'll mint it to that account.</div>
+							  <div id='wsc_ordered_fungie_item_right'>UI</div>
+							</div>
+
+							<div id='claim_nft_container' class='wsc_reward_info'>
+								<div id='wsc_ordered_fungie_item_left'>Or, create a safe, fun and free account on Wiscle and we'll mint it there.<br><br><span id='wsc_flowbox_title'>Bonus!</span> If you choose this option, we'll also mint you a special Wiscle Liftoff Series NFT that gives you deep ownership in Wiscle, cool SWAG, access to members-only areas and more!<br><br>DM Angela (<a href='https://twitter.com/afangonthemove' target='_blank'>@afangonthemove</a>) on Twitter if you're interested. Please be an NFT enthusiast, comfortable working with pre-release software and willing to give us feedback so we build the best collaborative NFT tools on the planet! DEI advocates move to the top of the list.</div>
+								<div id='wsc_ordered_fungie_item_right'>UI</div>
+							</div>
+
+							<div>
+								<img id='claim_fungie_image_liftoff' src='https://storage.googleapis.com/pte_media_store_1/13168925-wtc_03-214x300.png'>
+							</div>
+						</div>
+
+					";
+
+
+				}
+
+				$html = "<div class=''>{$claimHtml}</div>";
+			break;
+
 			case 'one_click_register':
 
 				$email = $_GET['id'];
