@@ -1,18 +1,29 @@
 {
-	"repositories":[
-        {"type":"composer","url":"https://repo.koolreport.com"}
-    ],
+    "repositories": {
+        "koolreport": {"type":"composer","url":"https://repo.koolreport.com"},
+        "typesetsh": {
+            "type": "composer",
+            "url": "https://packages.typeset.sh"
+        }
+    },
     "require": {
-        "google/cloud": "^0.127.0",
+        "koolreport/core": "^5.5",
+        "koolreport/pro":"^5.9.1",
+        "google/cloud": "^0.175.0",
         "google/apiclient": "^2.4",
         "google/cloud-storage": "^1.18",
-        "twilio/sdk": "^6.6",
-        "koolreport/core": "^4.5",
-        "koolreport/pro":"*",
-				"transloadit/php-sdk": "^3.0",
-				"formapro/pvm": "^0.4.7",
-				"pascaldevink/shortuuid": "^2.3",
-				"brick/structured-data": "^0.1.0",
-				"sendgrid/sendgrid": "^7.8"
+        "twilio/sdk": "^6.35",
+        "transloadit/php-sdk": "^3.0",
+        "formapro/pvm": "^0.4.7",
+        "pascaldevink/shortuuid": "^2.3",
+        "sendgrid/sendgrid": "^7.8",
+        "typesetsh/pdf-parser": "^0.18.5",
+        "parse/php-sdk": "^1.6",
+        "php-ffmpeg/php-ffmpeg": "^0.19.0",
+        "enshrined/svg-sanitize": "^0.15.4",
+        "sybio/gif-frame-extractor": "^1.0",
+        "abraham/twitteroauth": "^4.0",
+        "stil/gd-text": "^1.1",
+        "chillerlan/php-qrcode": "^4.3"
     }
 }
