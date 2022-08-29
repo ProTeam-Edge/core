@@ -127,7 +127,7 @@ if (isset($_REQUEST['crc_token'])) {
 				 }
 
 					// if ($selectedTemplateName && $tweetText && count($cleanUserList) >= $selectedTemplate['minimum_tags'] && !checkProfanity($tweetText)) {
-					if (($selectedTemplateName || $mediaUrl) && $tweetText) {
+					if ($selectedTemplateName || $mediaUrl) {
 
 						alpn_log("PROCESSING TWEET START");
 						// alpn_log($selectedTemplateName);
@@ -250,7 +250,7 @@ if (isset($_REQUEST['crc_token'])) {
 					 					 alpn_log($error);
 				 					}
 
-								$twitterBody = "Congratulations @{$twitterRecipientScreenName}! @{$twitterUserScreenName} gifted you a Fungie NFT. Safely approve and collect it on Wiscle for free: https://wiscle.com/nft-claim?i={$submissionId}";
+								$twitterBody = "Congratulations @{$twitterRecipientScreenName}! @{$twitterUserScreenName} gifted you a Fungie NFT. Approve and collect it on Wiscle for free: https://wiscle.com/nft-claim?i={$submissionId}";
 								$parameters = [
 									'status' => $twitterBody,
 									'in_reply_to_status_id' => $tweetId,

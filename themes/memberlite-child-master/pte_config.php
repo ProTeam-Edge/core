@@ -84,6 +84,7 @@ define('TWITTER_BEARER_TOKEN', 'AAAAAAAAAAAAAAAAAAAAAIw3QgEAAAAAaV7jwWq68aGfcIzC
 define('TWITTER_ACCESS_TOKEN', '56469651-1qKL1X48zGUtU1sxCOj9r6403qNdGDCmFO54heNSU');
 define('TWITTER_ACCESS_TOKEN_SECRET', 'ibOs7dTpJXA6s3LtlSYhUJcmO0WuZXlYG6AY2ExoiH2Hb');
 define('TWITTER_OAUTH_CALLBACK', "https://{$domainName}/wp-content/themes/memberlite-child-master/wsc_twitter_oauth_handler.php");
+define('TWITTER_OAUTH_CALLBACK_FUNGIES', "https://{$domainName}/wp-content/themes/memberlite-child-master/wsc_twitter_oauth_handler_fungies.php");
 
 
 
