@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set('UTC');
 
-include_once('pte_config.php');
+include_once('/var/www/html/proteamedge/private/pte_config.php');
 require 'vendor/autoload.php';
 
 use Google\Cloud\Storage\StorageClient;

@@ -27,7 +27,7 @@ $mediaIcons = array(
 
     // run code
 } */
-include_once('pte_config.php');
+include_once('/var/www/html/proteamedge/private/pte_config.php');
 $domainName = PTE_HOST_DOMAIN_NAME;
 ini_set('memory_limit', '512M');
 
