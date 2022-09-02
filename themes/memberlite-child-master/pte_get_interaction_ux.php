@@ -10,7 +10,7 @@ if(!is_user_logged_in() ) {
 	echo 'Not a valid request.';
 	die;
 }
-if(!check_ajax_referer('alpn_script', 'security',FALSE)) {
+if(!check_ajax_referer('alpn_script', 'security', FALSE)) {
    echo 'Not a valid request.';
    die;
 }

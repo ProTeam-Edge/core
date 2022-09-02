@@ -32,7 +32,7 @@ if (isset($_REQUEST['crc_token'])) {
 		 	$eventJSON = file_get_contents('php://input');
 			$twitterResponse = json_decode($eventJSON, true);
 
-			//alpn_log($twitterResponse);
+			alpn_log($twitterResponse);
 
 			$ownerUserId = false;
 
@@ -69,12 +69,13 @@ if (isset($_REQUEST['crc_token'])) {
 				// alpn_log($twitterResponse);
 
 				//Check out this dalle NFT I made for you! @afangonthemove @WiscleFungies #inspo1
+				//Hang in there! You've got this! @afangonthemove @WiscleFungies #inspo1
 
 				alpn_log("START TWEET");
 				$tweetText = preg_replace('/(\s+|^)@\S+/', '', $tweetText);  //strip Tagged users use json
-				$tweetText = trim(substr($tweetText, 0, strrpos($tweetText, "https://")));
-				alpn_log($tweetText);
-
+				if (strrpos($tweetText, "https://")) {
+					$tweetText = trim(substr($tweetText, 0, strrpos($tweetText, "https://")));
+				}
 				$twitterData = $wpdb->get_results(
 					$wpdb->prepare("SELECT twitter, twitter_meta from alpn_user_metadata WHERE id = %d ", $twitterAccountOwnerId)
 				 );
@@ -208,11 +209,14 @@ if (isset($_REQUEST['crc_token'])) {
 						$wpdb->insert( 'alpn_nft_by_service', $nftData );
 						$submissionId = $wpdb->insert_id;
 
-						$userMentions[] = array(
-							"id" => $twitterUserId,
-							"screen_name" => $twitterUserScreenName,
-							"role" => "creator"
-						);
+						if (count($userMentions) == 1) {  //only @wisclefungies is tagged add creator as recipient
+							$userMentions[] = array(
+								"id" => $twitterUserId,
+								"screen_name" => $twitterUserScreenName,
+								"role" => "recipient"
+							);
+						}
+
 						$usedIds = array("1551295064348905472", "1405291443023872000");
 						$twitterRecipientId = false;
 						foreach ($userMentions as $key => $mention) {
@@ -220,7 +224,7 @@ if (isset($_REQUEST['crc_token'])) {
 
 								$userRole = isset($mention['role']) ? $mention['role'] : 'recipient';
 
-								if ($userRole == 'creator' || !$twitterRecipientId) {
+								if (!$twitterRecipientId) {
 									$nftData = array(
 										"nft_owned_id" => $submissionId,
 										"twitter_id" => $mention['id'],
@@ -237,20 +241,34 @@ if (isset($_REQUEST['crc_token'])) {
 							}
 						}
 
+						//Add creator as creator always
+						$nftData = array(
+							"nft_owned_id" => $submissionId,
+							"twitter_id" => $twitterUserId,
+							"twitter_screen_name" => $twitterUserScreenName,
+							"role" => 'creator'
+						);
+						$wpdb->insert( 'alpn_nft_by_service_owners', $nftData );
+
 						if ($twitterRecipientScreenName) {
 
-								$connection->setApiVersion('1.1');
+							$connection->setApiVersion('1.1');
 
-								 try {
-				 						$media = $connection->upload('media/upload', ['media' => $filePath]);
-				 						$fileId = $media->media_id_string;
-				 						unlink($filePath);
-				 					} catch (Exception $error) {
-					 					 alpn_log("UNABLE TO HANDLE TWITTER MEDIA");
-					 					 alpn_log($error);
-				 					}
+							 try {
+			 						$media = $connection->upload('media/upload', ['media' => $filePath]);
+			 						$fileId = $media->media_id_string;
+			 						unlink($filePath);
+			 					} catch (Exception $error) {
+				 					 alpn_log("UNABLE TO HANDLE TWITTER MEDIA");
+				 					 alpn_log($error);
+			 					}
 
-								$twitterBody = "Congratulations @{$twitterRecipientScreenName}! @{$twitterUserScreenName} gifted you a Fungie NFT. Approve and collect it on Wiscle for free: https://wiscle.com/nft-claim?i={$submissionId}";
+								if ($twitterRecipientScreenName == $twitterUserScreenName) {
+									$twitterBody = "Congratulations @{$twitterRecipientScreenName}! Approve and mint your Fungie NFT on Wiscle for free: https://wiscle.com/nft-claim?i={$submissionId}";
+								} else {
+									$twitterBody = "Congratulations @{$twitterRecipientScreenName}! @{$twitterUserScreenName} gifted you a Fungie NFT. Approve and mint it on Wiscle for free: https://wiscle.com/nft-claim?i={$submissionId}";
+								}
+
 								$parameters = [
 									'status' => $twitterBody,
 									'in_reply_to_status_id' => $tweetId,

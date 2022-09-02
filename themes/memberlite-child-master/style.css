@@ -16,6 +16,19 @@ fff5ee
 
 } */
 
+
+img.fungie_waiting_indicator{
+	vertical-align: middle;
+	margin-right: 20px;
+	margin-left: 5px;
+
+}
+
+div.fungie_feedback{
+	height: 24px;
+	line-height: 24px;
+}
+
 input#wsc_nft_mint_wallet_address{
 
 	width: 250px;
@@ -101,6 +114,7 @@ img#claim_fungie_image_liftoff{
 	width: 250px;
 	border-radius: 10px;
 	margin-left: 2px;
+	margin-top: 14px;
 }
 
 span#wsc_opensea_check{

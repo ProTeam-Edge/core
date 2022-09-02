@@ -1,3 +1,6 @@
+
+//moralis-admin-cli watch-cloud-folder --moralisApiKey f0lxiJHOtHgJcUx --moralisApiSecret 7bwGJwAn3TjpD54 --moralisSubdomain h2yoot4zcjng.usemoralis.com --autoSave 1 --moralisCloudfolder C:\Users\pverm\Documents\PTE\moralis
+
 //PTE Globals
 alpn_oldSelectedId = "";
 alpn_oldVaultSelectedId = "";
@@ -124,6 +127,78 @@ pte_supported_types_map = {
 // 	    });
 // 		}
 //   });
+
+
+function wsc_mint_fungie(option){
+
+	console.log("Minting Fungie");
+
+	const alpn_templatedir = "https://wiscle.com/wp-content/themes/memberlite-child-master/";
+	const waitingIndicator =  "<img class='fungie_waiting_indicator' src='" + alpn_templatedir + "pdf/web/images/loading-icon.gif'>";
+
+	const metaData = jQuery("div#wsc_fungie_claim_meta");
+	const submissionId = metaData.data("sid");
+	const tokenId = metaData.data("tid");
+	const tweetLink = "https://twitter.com/" + metaData.data("tsn") + "/status/" + metaData.data("twid");
+
+	if (option == 2) {
+		var accountAddress = jQuery("input#wsc_nft_mint_wallet_address").val();
+		if (!accountAddress) {
+			jQuery("div#fungie_feedback_" + option).html("Please add a web3 account address");
+			return;
+		}
+	} else {
+		var accountAddress = "";
+	}
+
+	jQuery("a#wsc_twitter_connection_link").addClass("wsc_owner_tools_off");
+	jQuery("button.btn").addClass("wsc_owner_tools_off");
+	jQuery("input#wsc_nft_mint_wallet_address").addClass("wsc_owner_tools_off");
+
+	jQuery("div#fungie_feedback_" + option).html(waitingIndicator + "Minting your Fungie...");
+
+	var security = specialObj.security;
+
+	jQuery.ajax({
+		url: alpn_templatedir + 'alpn_handle_mint.php',
+		type: 'POST',
+		data: {
+			'mint_option': option,
+			'submission_id': submissionId,
+			'oauth_token_id': tokenId,
+			'account_address': accountAddress,
+			'mint_option': option,
+			'security': security
+		},
+		dataType: "json",
+		success: function(json) {
+
+			console.log(json);
+
+			const wsc_fungie_errors = {
+				invalid_twitter_oauth: "Please confirm this Fungie is yours using the link above",
+				missing_account_address: "Please enter a valid account address or .eth",
+				invalid_account_address: "Please enter a valid account address or .eth"
+			};
+
+
+			if (json.error) {
+				jQuery("a#wsc_twitter_connection_link").removeClass("wsc_owner_tools_off");
+				jQuery("button.btn").removeClass("wsc_owner_tools_off");
+				jQuery("input#wsc_nft_mint_wallet_address").removeClass("wsc_owner_tools_off");
+				jQuery("div#fungie_feedback_" + option).html(wsc_fungie_errors[json.message_key]);
+			} else {
+				jQuery("div#fungie_feedback_" + option).html("Minting Successful! Please check this <a href='" + tweetLink + "' target=_blank'>tweet</a> for links.");
+			}
+
+
+		},
+		error: function() {
+			console.log('problem - minting');
+		//TODO
+		}
+	});
+}
 
 function show_cta(html){
 

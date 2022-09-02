@@ -90,6 +90,8 @@ function wsc_call_cloud_function($data = array()) {   //TODO make this smarter
    curl_setopt_array($ch, $options);
    $response = curl_exec($ch);
    curl_close($ch);
+   alpn_log("CLOUD FUNCTION");
+   alpn_log($response);
    return $response;
 }
 
@@ -2371,6 +2373,19 @@ function wsc_log_current_user_into_parse() {
 
    }
   return $sessionToken;
+
+}
+
+function wsc_validate_eth_address($accountAddress){
+
+  $data = array(
+    'cloud_function' => 'wsc_validate_address',
+    'nft_recipient_id' => $accountAddress
+  );
+
+  $addressCheck = json_decode(wsc_call_cloud_function($data), true);
+
+  return $addressCheck['result'];
 
 }
 

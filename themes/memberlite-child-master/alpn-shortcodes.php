@@ -601,7 +601,7 @@ function simple_shortcode($data) {
 
 					$serviceMeta = json_decode($submission->service_meta, true);
 					$tweetId = $serviceMeta['tweet_id'];
-					$tweetLink = "https://twitter.com/{$submission->twitter_screen_name}/status/{$tweetId}";
+
 
 					// pp($submissionData);
 					//
@@ -615,13 +615,12 @@ function simple_shortcode($data) {
 						$url = $connection->url('oauth/authorize', array('oauth_token' => $request_token['oauth_token']));
 
 						$connectToTwitter = "<div id='wsc_twitter_connection' class='wsc_twitter_connection' data-wsc-state='disconnected'>
-																	Please confirm this Fungie is yours before minting: <a class='wsc_external_links' onclick='window.open(`{$url}`, `_blank`, `top=100,left=500,width=640,height=480`)'> Authorize Wiscle using Twitter</a>
+																	Please confirm this Fungie is yours before minting: <a id='wsc_twitter_connection_link' class='wsc_external_links' onclick='window.open(`{$url}`, `_blank`, `top=100,left=500,width=640,height=480`)'> Authorize Wiscle using Twitter</a>
 																</div>";
 					}
 
-
 					$claimHtml .= "
-						<div id='wsc_fungie_claim_meta' data-tid='{$request_token['oauth_token']}'></div>
+						<div id='wsc_fungie_claim_meta' data-tid='{$request_token['oauth_token']}' data-sid='{$submissionId}' data-tsn='{$submission->twitter_screen_name}' data-twid='{$tweetId}'></div>
 						<div id='claim_nft_container'>
 							<div id='claim_nft_image'>
 								<img id='claim_fungie_image' src='{$fungieUrl}'>
@@ -635,9 +634,6 @@ function simple_shortcode($data) {
 							</div>
 						</div>
 
-						<div id='wsc_claim_fungie_minting_links'>Once your NFT is minted, check your <a href='$tweetLink' target=
-						_blank'>tweet</a> for ownership links.</div>
-
 						<div id='wsc_claim_fungie_title'>Mint Your Fungie NFT</div>
 
 						<div id='wsc_twitter_auth_fungies'>
@@ -647,7 +643,8 @@ function simple_shortcode($data) {
 							<div id='claim_nft_container' class='wsc_reward_info'>
 								<div id='wsc_ordered_fungie_item_left'>Don't have a Web3 account yet? Choose this option to have us mint and hold your NFT until you do.</div>
 							  <div id='wsc_ordered_fungie_item_right'>
-									<button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_mint_fungie();' style='margin-right: 0; width: 250px; height: 30px; font-size: 14px; margin-bottom: 6px;'>Mint Fungie NFT</button>
+									<button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_mint_fungie(1);' style='margin-right: 0; width: 250px; height: 30px; font-size: 14px; margin-bottom: 5px;'>Mint Fungie NFT</button>
+									<div id='fungie_feedback_1' class='fungie_feedback'></div>
 								</div>
 							</div>
 
@@ -659,8 +656,9 @@ function simple_shortcode($data) {
 								<div>
 									<input id='wsc_nft_mint_wallet_address' title='Web3 account to receive this NFT' placeholder='Paste your Web3 PUBLIC key'>
 								</div>
-									<button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_mint_fungie();' style='margin-right: 0; width: 250px; height: 30px; font-size: 14px; margin-bottom: 6px;'>Mint to This Web3 Account</button>
-								</div>
+									<button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='wsc_mint_fungie(2);' style='margin-right: 0; width: 250px; height: 30px; font-size: 14px; margin-bottom: 5px;'>Mint to This Web3 Account</button>
+									<div id='fungie_feedback_2' class='fungie_feedback'></div>
+							</div>
 							</div>
 
 							<div class='wsc_fungie_separator'>&nbsp;</div>
@@ -669,7 +667,8 @@ function simple_shortcode($data) {
 							<div id='claim_nft_container' class='wsc_reward_info'>
 								<div id='wsc_ordered_fungie_item_left'>Or, create a safe, fun and free account on Wiscle Network and we'll mint it there.<br><br><span id='wsc_flowbox_title'>Bonus!</span> If you choose this option, we'll also mint you a limited-edition Wiscle Liftoff Series NFT that gives you token ownership in Wiscle, cool SWAG, access to members-only areas and IRL events and more!<br><br>Please follow and DM Angela (<a href='https://twitter.com/afangonthemove' target='_blank'>@afangonthemove</a>) on Twitter if you're interested. We're looking for NFT enthusiasts who are comfortable working with pre-release software and willing to give us feedback. Your invaluable feedback lets our community build the best and safest collaborative NFT tools on the planet!<br><br><span id='wsc_flowbox_title'>DEI advocates and influencers move to the top of the list!</span></div>
 								<div id='wsc_ordered_fungie_item_right'>
-									<button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='alert(`Coming Soon. Please contact us to participate.`);' style='margin-right: 0; width: 250px; height: 30px; font-size: 14px; margin-bottom: 40px;'>Mint to Your Wiscle Account</button>
+									<button id='wsc_ww_send_button' class='btn btn-danger btn-sm' onclick='alert(`Coming Soon. Please contact Angela to participate.`);' style='margin-right: 0; width: 250px; height: 30px; font-size: 14px; margin-bottom: 5px;'>Mint to Your Wiscle Account</button>
+									<div id='fungie_feedback_3' class='fungie_feedback'></div>
 									<img id='claim_fungie_image_liftoff' src='https://storage.googleapis.com/pte_media_store_1/13168925-wtc_03-214x300.png'>
 								</div>
 							</div>
